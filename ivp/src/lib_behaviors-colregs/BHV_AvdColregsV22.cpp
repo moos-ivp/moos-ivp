@@ -72,8 +72,8 @@ BHV_AvdColregsV22::BHV_AvdColregsV22(IvPDomain gdomain) :
   //  m_headon_bng_range     = 25;
   m_headon_abs_relbng_thresh = 12;//25;
 
-  m_completed_dist    = 100;
-  m_initial_speed     = 0;
+  m_completed_dist = 100;
+  m_initial_speed  = 0;
 
   m_avoid_mode    = "none";
   m_avoid_submode = "none";
@@ -209,6 +209,8 @@ bool BHV_AvdColregsV22::setParam(string param, string value)
     m_pwt_grade = value;
     return(true);
   }  
+  else if(param == "can_disable") 
+    return(setBooleanOnString(m_can_disable, value));
   else
     return(false);
 
@@ -233,6 +235,8 @@ bool BHV_AvdColregsV22::setParam(string param, string value)
 
 void BHV_AvdColregsV22::onHelmStart()
 {
+  IvPContactBehavior::onHelmStart();
+
   if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
 
@@ -245,6 +249,7 @@ void BHV_AvdColregsV22::onHelmStart()
   
   postMessage("BCM_ALERT_REQUEST", request);
 }
+
 
 
 //-----------------------------------------------------------
@@ -260,6 +265,16 @@ void BHV_AvdColregsV22::onIdleState()
 
   if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1)))
     setComplete();  
+}
+
+//-----------------------------------------------------------
+// Procedure: onDisabledState()
+
+void BHV_AvdColregsV22::onDisabledState() 
+{
+  postViewableBearingLine(false);
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
+    setComplete();
 }
 
 //-----------------------------------------------------------
@@ -323,7 +338,7 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
-
+  
   if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1))) {
     setComplete();
     return(0);
@@ -1745,7 +1760,3 @@ string BHV_AvdColregsV22::expandMacros(string sdata)
 
   return(sdata);
 }
-
-
-
-

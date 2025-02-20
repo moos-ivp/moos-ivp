@@ -1438,6 +1438,28 @@ string tokStringParse(const string& str, const string& left,
 
 
 //----------------------------------------------------------------
+// Procedure: tokStringAll()
+//   Purpose: For all param=value pairs, return a vector of all params
+//   Example: info  = "fruit=apple, drink=water, temp=98.6";
+//     Input  result = tokStringParse(info, ',', '=');
+//    Result: result = apple,drink,temp
+
+set<string> tokStringAll(const string& str, char gsep, char lsep)
+{
+  set<string> return_set;
+  
+  vector<string> svector1 = parseStringQ(str, gsep);
+  for(vector<string>::size_type i=0; i<svector1.size(); i++) {
+    vector<string> svector2 = parseString(svector1[i], lsep);
+    if(svector2.size() != 2)
+      continue;
+    return_set.insert(stripBlankEnds(svector2[0]));
+  }
+  return(return_set);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: tokDoubleParse()
 //   Example: info  = "fruit=23, drink=0.4, temp=98.6";
 //     Input  result = str_tok(info, "drink", ',', '=');
@@ -2589,7 +2611,7 @@ bool isKnownVehicleType(const string& vehicle_type)
      (vtype == "ship") || (vtype == "mokai")  || (vtype == "longship") ||
      (vtype == "buoy") || (vtype == "heron")  || (vtype == "swimmer") ||
      (vtype == "cray") || (vtype == "bcray")  || (vtype == "crayx") ||
-     (vtype == "wamv") || (vtype == "bcrayx")) {
+     (vtype == "wamv") || (vtype == "bcrayx") || (vtype == "smr")) {
     return(true);
   }
   
@@ -2891,6 +2913,21 @@ string uintVectorToString(vector<unsigned int> uint_vector, char sep)
 }
 
 //---------------------------------------------------------
+// Procedure: stringSetToVector()
+
+vector<string> stringSetToVector(set<string> str_set)
+{
+  vector<string> rvector;
+  
+  set<string>::iterator p;
+  for(p=str_set.begin(); p!=str_set.end(); p++)
+    rvector.push_back(*p);
+
+  return(rvector);
+}
+
+
+//---------------------------------------------------------
 // Procedure: intToMonth()
 
 string intToMonth(int imonth, bool brief)
@@ -2936,6 +2973,22 @@ bool isValidTurn(const string& str)
     return(true);
 
   return(false);
+}
+
+//---------------------------------------------------------
+// Procedure: digitsOnly()
+
+string digitsOnly(const string& str)
+{
+  string rstr;
+
+  for(unsigned int i=0; i<str.length(); i++) {
+    char c = str[i];
+    if((c >= 48) && (c <= 57))
+      rstr += c;
+  }
+
+  return(rstr);
 }
 
   

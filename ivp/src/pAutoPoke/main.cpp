@@ -1,13 +1,14 @@
 /************************************************************/
 /*    NAME: Mike Benjamin                                   */
 /*    ORGN: MIT, Cambridge MA                               */
-/*    FILE: main.cpp, Cambridge MA                          */
+/*    FILE: main.cpp                                        */
 /*    DATE: October 30th, 2024                              */
 /************************************************************/
 
 #include <string>
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "OpenURL.h"
 #include "AutoPoke.h"
 #include "AutoPoke_Info.h"
 
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/pAutoPoke");
     else if(i==2)
       run_command = argi;
   }

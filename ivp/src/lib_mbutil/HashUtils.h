@@ -31,6 +31,9 @@
 
 std::string missionHash();
 std::string missionHashShort(std::string);
+std::string missionHashLShort(std::string);
+
+double  missionHashUTC(std::string);
 
 std::string zHash();
 std::string zHashShort();
@@ -48,6 +51,8 @@ std::string getCurrMinute();
 std::string getCurrSeconds();
 std::string getCurrSecsUTC();
 double      getCurrTimeUTC();
+std::string getCurrDate();
+std::string getCurrTime();
 
 std::string randomWord(const std::vector<std::string>& );
 

@@ -130,7 +130,7 @@ bool TagHandler::handle()
   for(unsigned int i=0; i<slines.size(); i++) {
     string orig = slines[i];
     string line = stripBlankEnds(slines[i]);
-    if(strBegins(line, "<tag>")) {
+    if(strBegins(line, "<tag>") || strBegins(line, "#<tag>")) {
       biteStringX(line, '>');
       string tagname = stripChevrons(line);
       if(tagname == m_tag) {

@@ -35,17 +35,19 @@ public:
   bool setVar(std::string);
   bool setPolicyConfig(std::string);
   bool setRiderFld(std::string);
+  bool setPrecision(unsigned int);
 
   void setFresh(bool v=true)    {m_fresh=v;}
   void setLastUTC(double utc)   {m_last_utc=utc;}       
 
   bool updateValue(std::string, double utc);
   
-  std::string getVar() const      {return(m_moosvar);}
-  std::string getPolicy() const   {return(m_policy);}
-  std::string getRiderFld() const {return(m_rider_fld);}
-  double getFrequency() const     {return(m_frequency);}
-
+  std::string getVar() const        {return(m_moosvar);}
+  std::string getPolicy() const     {return(m_policy);}
+  std::string getRiderFld() const   {return(m_rider_fld);}
+  double getFrequency() const       {return(m_frequency);}
+  unsigned int getPrecision() const {return(m_precision);}
+  
   bool   isFresh() const         {return(m_fresh);}
   double getLastUTC() const      {return(m_last_utc);}
 
@@ -63,7 +65,8 @@ public:
   std::string  m_policy;
   double       m_frequency;
   std::string  m_rider_fld;
-
+  unsigned int m_precision;
+  
  protected: // state vars
   std::string  m_curr_value;
   double       m_last_utc;

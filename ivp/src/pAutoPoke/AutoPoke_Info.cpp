@@ -22,7 +22,7 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("pAutoPoke is a thin MOOS app for poking the MOOSDB with a user- ");
   blk("configured set of pokes, typically at the start of the mission. ");
-  blk("In the initial verison of this app, the intended use is in a    ");
+  blk("In the initial version of this app, the intended use is in a    ");
   blk("shoreside community, after some specified number of vehicles    ");
   blk("have been declared to be connected, based on the UFSB_NODE_COUNT");
   blk("variable. This ensures that the full N-vehicle plus shoreside is");
@@ -48,8 +48,8 @@ void showHelpAndExit()
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pAutoPoke with the given process name         ");
-  blk("      rather than pAutoPoke.                           ");
+  blk("      Launch pAutoPoke with the given process name              ");
+  blk("      rather than pAutoPoke.                                    ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -57,7 +57,9 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pAutoPoke.        ");
+  blk("      Display the release version of pAutoPoke.                 ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/pAutoPoke ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -71,16 +73,19 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pAutoPoke Example MOOS Configuration                            ");
   blu("=============================================================== ");
   blk("                                                                ");
   blk("ProcessConfig = pAutoPoke                                       ");
   blk("{                                                               ");
-  blk("  AppTick   = 4                                                 ");
-  blk("  CommsTick = 4                                                 ");
+  blk("  AppTick   = 2                                                 ");
+  blk("  CommsTick = 2                                                 ");
   blk("                                                                ");
+  blk("  flag = MOOS_MANUAL_OVERRIDE_ALL=false                         ");
+  blk("  flag = DEPLOY_ALL=false                                       ");
+  blk("                                                                ");
+  blk("  required_nodes = 2                                            ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

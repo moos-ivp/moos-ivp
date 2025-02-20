@@ -28,10 +28,12 @@
 #include <algorithm>
 #include "NodeReporter.h"
 #include "MBUtils.h"
+#include "JsonUtils.h"
 #include "AngleUtils.h"
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
 #include "ACBlock.h"
+#include "LogUtils.h"
 
 // As of Release 15.4 this is now set in CMake, defaulting to be defined
 // #define USE_UTM 
@@ -373,6 +375,7 @@ bool NodeReporter::OnStartUp()
     if((param == "platform_type") ||           // Preferred
        (param == "vessel_type")) {             // Deprecated
       m_record.setType(value);
+      m_record_gt.setType(value);
       handled = true;
     }
     else if((param == "platform_color") && isColor(value)) { 
@@ -384,11 +387,33 @@ bool NodeReporter::OnStartUp()
 	    (param =="vessel_length")) {       // Deprecated
       if(isNumber(value) && (dval >= 0)) {
 	m_record.setLength(dval);
+	m_record_gt.setLength(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_beam") {
+      if(isNumber(value) && (dval >= 0)) {
+	m_record.setBeam(dval);
+	m_record_gt.setBeam(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_aspect") {
+      string pair = value;
+      string left = biteStringX(pair, '=');
+      string right = pair;
+      if((left != "") && (right != "") && !strContains(right, '=')) {
+	m_record.setProperty(left, right);
+	m_record_gt.setProperty(left, right);
 	handled = true;
       }
     }
     else if((param == "platform_transparency") && isNumber(value)) { 
       m_record.setTransparency(atof(value.c_str()));
+      m_record_gt.setTransparency(atof(value.c_str()));
+      handled = true;
+    }
+    else if(param == "platform_aspect") { 
       handled = true;
     }
 
@@ -464,10 +489,20 @@ bool NodeReporter::OnStartUp()
       handled = setNonNegDoubleOnString(m_extrap_hdg_thresh, value);
     else if(param =="extrap_max_gap") 
       handled = setNonNegDoubleOnString(m_extrap_max_gap, value);
+    else if(param =="json_report") 
+      handled = setNonWhiteVarOnString(m_json_report, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
+
+  // interpret json_report=false to be the same as if not specified. This
+  // is the default, no reason user should set to false, but handle anyway.
+  if(tolower(m_json_report == "true"))
+    m_json_report = "true";
+  if(tolower(m_json_report == "false"))
+    m_json_report = "";
+  
   
   registerVariables();
   unsigned int k, ksize = m_plat_vars.size();
@@ -505,6 +540,8 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(3); // meters
     else if(vtype == "buoy")
       m_record.setLength(3); // meters
+    else if(vtype == "smr")
+      m_record.setLength(6); // meters
     else
       reportConfigWarning("Unrecognized platform type: " + vtype);
   }
@@ -556,7 +593,7 @@ bool NodeReporter::Iterate()
     ok_nav_to_post = true;
   else {
     double elapsed_since_start = m_curr_time - m_start_time;
-    if((m_nav_grace_period > 0) && (elapsed_since_start > m_nav_grace_period))
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
       ok_nav_to_post = true;
   }
   m_record.setTimeStamp(m_curr_time); 
@@ -611,6 +648,14 @@ bool NodeReporter::Iterate()
     if(!pruned_due_to_extrap)
       post_report = true;
   }
+
+  // If we still dont have x/y or lat/lon and we're still in the grace period
+  // don't post reports w/out nav info.
+  if(!m_record.isSetXY() && !m_record.isSetLatLon()) {
+    double elapsed_since_start = m_curr_time - m_start_time;
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
+      post_report = false;
+  }
   
   //==============================================================
   // Part 5: Post NodeReport if conditions met
@@ -623,9 +668,37 @@ bool NodeReporter::Iterate()
     string report = assembleNodeReport(m_record);
 
     if(!m_paused) {
-      if(m_reports_posted == 0) 
-	Notify(m_node_report_var+"_FIRST", report);
-      Notify(m_node_report_var, report);
+
+      string json_report;
+      if(m_json_report != "")
+	json_report = cspToJson(report);
+
+      if(m_reports_posted == 0) {
+	// Case 1 Only CSP posted (normal)
+	if(m_json_report == "") 
+	  Notify(m_node_report_var+"_FIRST", report);
+	// Case 2 Only JSON posted
+	else if(tolower(m_json_report) == "true")
+	  Notify(m_node_report_var+"_FIRST", json_report);
+	// Case 3 Both CSP and JSON posted
+	else {
+	  Notify(m_json_report+"_FIRST", json_report);
+	  Notify(m_node_report_var+"_FIRST", report);
+	}
+      }
+      
+      // Case 1 Only CSP posted (normal)
+      if(m_json_report == "") 
+	Notify(m_node_report_var, report);
+      // Case 2 Only JSON posted
+      else if(tolower(m_json_report) == "true")
+	Notify(m_node_report_var, json_report);
+      // Case 3 Both CSP and JSON posted
+      else {
+	Notify(m_json_report, json_report);
+	Notify(m_node_report_var, report);
+      }
+      
       Notify("PNR_POST_GAP", delta_time);
       m_reports_posted++;
       cout << "Posted:" << m_record.getSpec(true) << endl;
@@ -984,11 +1057,7 @@ void NodeReporter::handleHelmSwitch()
 bool NodeReporter::handleMailRiderVars(string var, string sval,
 				       double dval)
 {
-  string update_str = sval;
-  if(sval == "")
-    update_str = doubleToStringX(dval, 4);
-
-  bool ok = m_riderset.updateRider(var, update_str, m_curr_time);
+  bool ok = m_riderset.updateRider(var, sval, dval, m_curr_time);
   return(ok);
 }
 

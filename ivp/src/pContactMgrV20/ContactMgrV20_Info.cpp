@@ -85,7 +85,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pContactMgrV20 Example MOOS Configuration                       ");
   blu("=============================================================== ");
@@ -96,6 +95,8 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // Alert configurations (one or more, keyed by id)            ");
+  blk("  // Note: Alert config in this block is deprecated. Normally   ");
+  blk("  // now configured dynamically via BCM_ALERT_REQUEST mail.     ");
   blk("  alert = id=say, on_flag=SAY_MOOS=hello                        ");
   blk("  alert = id=say, off_flag=SAY_MOOS=bye                         ");
   blk("  alert = id=say, alert_range=80, cpa_range=100                 ");
@@ -119,17 +120,14 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  strict_ignore = true             // Default is true           ");
   blk("                                                                ");
-  blk("  alert_range_color = color        // default is gray65         ");
-  blk("  cpa_range_color   = color        // default is gray35         ");
-  blk("                                                                ");
   blk("  // Policy for retaining potential stale contacts              ");
   blk("  contact_max_age  = 60            //  Default is 60 secs.      ");
   blk("  max_retired_history = 5          //  Default is 5 contacts    ");
   blk("                                                                ");
   blk("  // Configuring other output                                   ");
-  blk("  display_radii    = false         // Default is false          ");
-  blk("  display_radii_id = say           // Default is first known    ");
-  blk("  alert_verbose    = false         // Default is false          ");
+  blk("  display_radii     = false        // Default is false          ");
+  blk("  alert_verbose     = false        // Default is false          ");
+  blk("  alert_range_color = color        // default is gray65         ");
   blk("                                                                ");
   blk("  // Policy for linear extrapolation of stale contacts          ");
   blk("  decay = 15,30                    // Default is 15,30 secs     ");
@@ -141,13 +139,28 @@ void showExampleConfigAndExit()
   blk("  contact_local_coords = verbatim  // Default is verbatim       ");
   blk("  post_closest_range   = false     // Default is false          ");
   blk("  post_closest_relbng  = false     // Default is false          ");
-  blk("  post_all_ranges = false          // Default is false          ");
+  blk("  post_all_ranges      = false     // Default is false          ");
   blk("                                                                ");
   blk("  reject_range = 2000              // Default is 2000 meters    ");
   blk("  max_contacts = 500               // Default is 500            ");
   blk("  alert_verbose = false            // Default is false          ");
   blk("                                                                ");
-  blk("  app_logging = true               // Default is false           ");
+  blk("  // 24.8.x support for disabling/enabling contacts             ");
+  blk("  disable_var  = DISABLE_TARGET    // Default is null string    ");
+  blk("  enable_var   = REENABLE_TARGET   // Default is null string    ");
+  blk("  able_flag    = MOOS_VAR = val                                 ");
+  blk("  disable_flag = MOOS_VAR = val                                 ");
+  blk("  enable_flag  = MOOS_VAR = val                                 ");
+  blk("                                                                ");
+  blk("  // 24.8.x support for disabling/enabling contacts             ");
+  blk("  early_warning_time  = 30        // Default is -1 (off)        ");
+  blk("  early_warning_radii = true      // Default is false           ");
+  blk("  ewarn_radii_color   = yellow    // Default is yellow          ");
+  blk("                                                                ");
+  blk("  early_warning_flag  = MOOS_VAR = val                          ");
+  blk("  cease_warning_flag  = MOOS_VAR = val                          ");
+  blk("                                                                ");
+  blk("  app_logging = true               // Default is false          ");
   blk("                                                                ");
   blk("  hold_alerts_for_helm = true      // Default is false          ");
   blk("}                                                               ");
@@ -216,7 +229,7 @@ void showInterfaceAndExit()
   blk("  CONTACTS_RETIRED     = bravo,foxtrot,kilroy                   ");
   blk("  CONTACTS_UNALERTED   = (gus,avd)(henry,avd)                   ");
   blk("                                                                ");
-  blk("  VIEW_CIRCLE         = x=-150.3,y=-117.5,radius=10,edge_size=1 ");
+  blk("  VIEW_CIRCLE          = x=-150.3,y=-117.5,radius=10,edge_size=1");
   blk("                                                                ");
   blk("  PCONTACTMGRV20_PID   = 3988                                   ");
   exit(0);

@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "HelmIvP.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
@@ -55,6 +56,7 @@ HelmIvP::HelmIvP()
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_info_buffer    = 0;
+  m_ledger_snap    = 0;
   m_verbose        = "verbose";
   m_verbose_reset  = false;
   m_helm_iteration = 0;
@@ -95,6 +97,9 @@ HelmIvP::HelmIvP()
   m_helm_start_posted  = false;
   m_hold_apps_all_seen = true; // will init to false if apps specified
   
+  m_nav_started = false;
+  m_nav_grace = 5;
+
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
   // variable given by m_refresh_var. The user can set minimum interval
@@ -121,6 +126,7 @@ HelmIvP::HelmIvP()
 HelmIvP::~HelmIvP()
 {
   if(m_info_buffer)  delete(m_info_buffer);
+  if(m_ledger_snap)  delete(m_ledger_snap);
   if(m_bhv_set)      delete(m_bhv_set);
   if(m_hengine)      delete(m_hengine);
 }
@@ -131,14 +137,6 @@ HelmIvP::~HelmIvP()
 void HelmIvP::handlePrepareRestart()
 {
   m_ibuffer_curr_time_updated = false;
-
-#if 0  // To be implemented (8/30/15)
-  if(m_reset_pending == "type2") {
-    if(m_info_buffer)
-      delete(m_info_buffer);
-    m_info_buffer = 0;
-  }
-#endif
 
   if(m_bhv_set)
     delete(m_bhv_set);
@@ -189,6 +187,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   //     is synched in *both" OnNewMail and Iterate, the "time since 
   //     last update" will be non-zero.
 
+  m_ledger.setCurrTimeUTC(m_curr_time);
   m_info_buffer->setCurrTime(m_curr_time);
   m_ibuffer_curr_time_updated = true;
 
@@ -298,15 +297,28 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(moosvar == "IVPHELM_REJOURNAL")
       m_rejournal_requested = true;
+
+    // Added Nov1624. Helm will register only if a bhv does.
+    else if(moosvar == "BHV_ABLE_FILTER") {
+      if(m_hengine) {
+	bool ok = m_hengine->addAbleFilterMsg(sval);
+	if(!ok)
+	  reportRunWarning("Unhandled BHV_ABLE_FILTER");
+      }
+    }
+    else if(moosvar == "NODE_REPORT_LOCAL") {
+      bool ok = processNodeReportLocal(sval);
+      if(!ok)
+	reportRunWarning("Unhandled NODE_REPORT_LOCAL");
+    }
     else if(vectorContains(m_node_report_vars, moosvar)) {
       bool ok = processNodeReport(sval);
       if(!ok)
 	reportRunWarning("Unhandled NODE_REPORT");
       updateInfoBuffer(msg);
     }
-    else if(moosvar == m_refresh_var) {
+    else if(moosvar == m_refresh_var)
       m_refresh_pending = true;
-    }
     else
       updateInfoBuffer(msg);
   }
@@ -340,8 +352,13 @@ bool HelmIvP::Iterate()
     AppCastingMOOSApp::PostReport();
     return(true);
   }
-  
+
   postCharStatus();
+
+  if(holdForNavSolution()) {
+    AppCastingMOOSApp::PostReport();
+    return(true);
+  }
   
   if(m_init_vars_ready && !m_init_vars_done)
     handleInitialVarsPhase2();
@@ -349,10 +366,27 @@ bool HelmIvP::Iterate()
   // If the info_buffer curr_time is not synched in the OnNewMail
   // function (possibly because there was no new mail), synch the
   // current time now.
-  if(!m_ibuffer_curr_time_updated) 
+  if(!m_ibuffer_curr_time_updated)
     m_info_buffer->setCurrTime(m_curr_time);
   if(m_start_time == 0)
     m_start_time = m_curr_time;
+
+  m_ledger.setCurrTimeUTC(m_curr_time);
+
+  // Clear all stale nodes(vnames) from the contact ledger, UNLESS
+  // there is a behavior currently present that is still reasoning
+  // about a contact. Get a list of keep_vnames and pass this to the
+  // contact ledger.
+  vector<string> keep_vnames;
+  if(m_bhv_set)
+    keep_vnames = m_bhv_set->getContactNames();
+  m_ledger.clearStaleNodes(keep_vnames);
+
+  m_ledger.extrapolate();
+  updateLedgerSnap();
+  if(keep_vnames.size() > 0)
+    Notify("IVPHELM_CONTACT_SUMMARY", stringVectorToString(keep_vnames));
+  Notify("IVPHELM_LEDGER_SUMMARY", m_ledger.getSummary(20));
 
   // Now we're done addressing whether the info_buffer curr_time is
   // synched on this iteration. It was done either in this function or
@@ -485,6 +519,7 @@ bool HelmIvP::Iterate()
     }
   }
 
+  Notify("HD", 11);
   
   if(allstop_msg != "clear")
     postAllStop(allstop_msg);
@@ -781,7 +816,7 @@ void HelmIvP::postModeMessages()
 }
 
 //------------------------------------------------------------
-// Procedure: handleHelmStartMessages
+// Procedure: handleHelmStartMessages()
 //      Note: In release 17.7.x this was only executed upon startup.
 //            In later releases this is executed on startup and in
 //            each iteration of the iterate loop, but it is also
@@ -1082,7 +1117,7 @@ bool HelmIvP::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void HelmIvP::registerVariables()
 {
@@ -1092,7 +1127,10 @@ void HelmIvP::registerVariables()
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
   registerSingleVariable("IVPHELM_REJOURNAL");
+  registerSingleVariable("BHV_ABLE_FILTER");
   
+  registerSingleVariable("NAV_X");
+  registerSingleVariable("NAV_Y");
   registerSingleVariable("NAV_SPEED");
   registerSingleVariable("NAV_HEADING");
   registerSingleVariable("NAV_DEPTH");
@@ -1120,7 +1158,7 @@ void HelmIvP::registerVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: registerNewVariables
+// Procedure: registerNewVariables()
 
 void HelmIvP::registerNewVariables()
 {
@@ -1133,7 +1171,7 @@ void HelmIvP::registerNewVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: registerSingleVariable
+// Procedure: registerSingleVariable()
 
 void HelmIvP::registerSingleVariable(string varname, double frequency)
 {
@@ -1148,7 +1186,7 @@ void HelmIvP::registerSingleVariable(string varname, double frequency)
 
 
 //------------------------------------------------------------
-// Procedure: requestBehaviorLogging
+// Procedure: requestBehaviorLogging()
 
 void HelmIvP::requestBehaviorLogging()
 {
@@ -1162,7 +1200,7 @@ void HelmIvP::requestBehaviorLogging()
 }
 
 //------------------------------------------------------------
-// Procedure: checkForTakeOver
+// Procedure: checkForTakeOver()
 
 void HelmIvP::checkForTakeOver()
 {
@@ -1202,6 +1240,7 @@ bool HelmIvP::OnStartUp()
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
 
+  CMOOSGeodesy geodesy;
   double lat_origin, lon_origin;
   if(!m_MissionReader.GetValue("LatOrigin", lat_origin)) {
     reportConfigWarning("No LatOrigin in *.moos file");
@@ -1211,10 +1250,17 @@ bool HelmIvP::OnStartUp()
     reportConfigWarning("No LongOrigin set in *.moos file");
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
-  else if(!m_geodesy.Initialise(lat_origin, lon_origin)) {
+  else if(!geodesy.Initialise(lat_origin, lon_origin)) {
     reportConfigWarning("Lat/Lon Origin found but Geodesy init failed.");
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
+
+  if(!m_ledger_snap)
+    m_ledger_snap = new LedgerSnap;
+  
+  m_ledger.setCurrTimeUTC(m_curr_time);
+  m_ledger.setGeodesy(geodesy);
+  m_ledger.setStaleThresh(10);
 
   vector<string> behavior_dirs;
 
@@ -1256,6 +1302,8 @@ bool HelmIvP::OnStartUp()
       handled = setNonWhiteVarOnString(m_helm_prefix, value);
     else if((param == "HOLD_ON_APP") || (param == "HOLD_ON_APPS"))
       handled = handleConfigHoldOnApp(value);
+    else if(param == "NAV_GRACE")
+      handled = setDoubleOnString(m_nav_grace, value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
     else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
@@ -1283,10 +1331,11 @@ bool HelmIvP::OnStartUp()
     return(true);
   }
 
-  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer);
+  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer, m_ledger_snap);
 
   Populator_BehaviorSet *p_bset;
-  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
+  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer,
+				     m_ledger_snap);
   p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
   p_bset->setOwnship(m_ownship);
   unsigned int ksize = behavior_dirs.size();
@@ -1315,6 +1364,8 @@ bool HelmIvP::OnStartUp()
     MOOSTrace("NULL Behavior Set \n");
     return(false);
   }
+  else // added nov1724
+    m_hengine->setBehaviorSet(m_bhv_set);
 
   // Set the "ownship" parameter for all behaviors
   unsigned int i, bsize = m_bhv_set->size();
@@ -1342,7 +1393,7 @@ bool HelmIvP::OnStartUp()
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigNodeSkew
+// Procedure: handleConfigNodeSkew()
 //   Example: NODE_SKEW = macrura,43
 
 bool HelmIvP::handleConfigNodeSkew(const string& given_value)
@@ -1362,7 +1413,7 @@ bool HelmIvP::handleConfigNodeSkew(const string& given_value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigSkewAny
+// Procedure: handleConfigSkewAny()
 
 bool HelmIvP::handleConfigSkewAny(const string& value)
 {
@@ -1384,7 +1435,7 @@ bool HelmIvP::handleConfigSkewAny(const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigStandBy
+// Procedure: handleConfigStandBy()
 
 bool HelmIvP::handleConfigStandBy(const string& value)
 {
@@ -1398,7 +1449,7 @@ bool HelmIvP::handleConfigStandBy(const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigDomain
+// Procedure: handleConfigDomain()
 
 bool HelmIvP::handleConfigDomain(const string& g_entry)
 {
@@ -1575,7 +1626,7 @@ bool HelmIvP::detectRepeatOnKey(const string& key)
 }
 
 //--------------------------------------------------------------------
-// Procedure: detectChangeOnKey
+// Procedure: detectChangeOnKey()
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
@@ -1606,7 +1657,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: detectChangeOnKey
+// Procedure: detectChangeOnKey()
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
@@ -1637,7 +1688,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: postAllStop
+// Procedure: postAllStop()
 //   Purpose: Post zero-values to all decision variables. 
 //  
 //   clear
@@ -1707,49 +1758,52 @@ void HelmIvP::postAllStop(string msg)
 
 bool HelmIvP::processNodeReport(const string& report)
 {
-  NodeRecord new_record = string2NodeRecord(report);
-  //if(!new_record.valid("name,x,y,time"))
-  //  return(false);
-
-  string raw_vname = new_record.getName();
-  string vname = toupper(raw_vname);
-
-  if(!new_record.isSetX() || !new_record.isSetY()) {
-    double nav_x, nav_y;
-    double lat = new_record.getLat();
-    double lon = new_record.getLon();
-    
-#ifdef USE_UTM
-    m_geodesy.LatLong2LocalUTM(lat, lon, nav_y, nav_x);
-#else
-    m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
-#endif
-    new_record.setX(nav_x);
-    new_record.setY(nav_y);
+  string whynot;
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(vname == "") {
+    reportRunWarning("Bad NodeReport: " + report);
+    reportRunWarning("The issue: " + whynot);
   }
+
+  string nav_group = m_ledger.getGroup(vname);
+  string nav_type  = m_ledger.getType(vname);
+
+  string uvname = toupper(vname);
+  m_info_buffer->setValue(uvname+"_NAV_GROUP", nav_group);
+  m_info_buffer->setValue(uvname+"_NAV_TYPE", nav_type);
   
-  m_info_buffer->setValue(vname+"_NAV_X", new_record.getX());
-  m_info_buffer->setValue(vname+"_NAV_Y", new_record.getY());
-  m_info_buffer->setValue(vname+"_NAV_SPEED", new_record.getSpeed());
-  m_info_buffer->setValue(vname+"_NAV_HEADING", new_record.getHeading());
-  m_info_buffer->setValue(vname+"_NAV_DEPTH", new_record.getDepth());
-  m_info_buffer->setValue(vname+"_NAV_LAT", new_record.getLat());
-  m_info_buffer->setValue(vname+"_NAV_LONG", new_record.getLon());
-  m_info_buffer->setValue(vname+"_NAV_GROUP", new_record.getGroup());
-  m_info_buffer->setValue(vname+"_NAV_TYPE", new_record.getType());
+  return(true);
+}
 
-  double timestamp = new_record.getTimeStamp();
+//--------------------------------------------------------------------
+// Procedure: processNodeReportLocal()
+
+bool HelmIvP::processNodeReportLocal(const string& report)
+{
+  NodeRecord record = string2NodeRecord(report);
   
-  // Apply a skew if one is declared for this vehicle
-  map<string, double>::iterator p = m_node_skews.find(vname);
-  if(p == m_node_skews.end())
-    p = m_node_skews.find(raw_vname);
-  if(p != m_node_skews.end()) 
-    timestamp += p->second;
-  // Done applying the skew
+  string upp_vname  = toupper(record.getName());
 
-  m_info_buffer->setValue(vname+"_NAV_UTC", timestamp);
+  string nav_group  = record.getGroup();
+  string nav_type   = record.getType();
+  string nav_color  = record.getColor();
+  double nav_length = record.getLength();
 
+  if(upp_vname == "")
+    return(false);
+
+  if(nav_group != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_GROUP", nav_group);
+
+  if(nav_type != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_TYPE", nav_type);
+
+  if(nav_color != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_COLOR", nav_color);
+  
+  if(nav_length != 0)
+    m_info_buffer->setValue(upp_vname+"_NAV_LENGTH", nav_length);
+  
   return(true);
 }
 
@@ -1815,7 +1869,7 @@ void HelmIvP::updatePlatModel()
   // Sanity checks
   if(!m_info_buffer || !m_hengine)
     return;
-  
+
   bool ok1, ok2, ok3, ok4;
   double osx = m_info_buffer->dQuery("NAV_X", ok1);
   double osy = m_info_buffer->dQuery("NAV_Y", ok2);
@@ -1832,3 +1886,69 @@ void HelmIvP::updatePlatModel()
 
   m_hengine->setPlatModel(pmodel);
 }
+
+//--------------------------------------------------------------------
+// Procedure: updateLedgerSnap()
+
+void HelmIvP::updateLedgerSnap()
+{
+  if(!m_ledger_snap)
+    return;
+
+  m_ledger_snap->clear();
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string v = vnames[i];
+    m_ledger_snap->setX(v, m_ledger.getX(v));
+    m_ledger_snap->setY(v, m_ledger.getY(v));
+    m_ledger_snap->setHdg(v, m_ledger.getHeading(v));
+    m_ledger_snap->setSpd(v, m_ledger.getSpeed(v));
+    m_ledger_snap->setDep(v, m_ledger.getDepth(v));
+    m_ledger_snap->setLat(v, m_ledger.getLat(v));
+    m_ledger_snap->setLon(v, m_ledger.getLon(v));
+    m_ledger_snap->setUTC(v, m_ledger.getUTC(v));
+    m_ledger_snap->setUTCAge(v, m_ledger.getUTCAge(v));
+    m_ledger_snap->setUTCReceived(v, m_ledger.getUTCReceived(v));
+    m_ledger_snap->setUTCAgeReceived(v, m_ledger.getUTCAgeReceived(v));
+  }
+  m_ledger_snap->setCurrTimeUTC(m_curr_time);
+}
+  
+//--------------------------------------------------------------------
+// Procedure: holdForNavSolution()
+
+bool HelmIvP::holdForNavSolution()
+{
+  if(m_nav_started)
+    return(false);
+
+  bool nav_started = true;
+
+  if(!m_info_buffer->isKnown("NAV_X"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_Y"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_HEADING"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_SPEED"))
+    nav_started = false;
+
+  if(m_ivp_domain.hasDomain("depth")) {
+    if(!m_info_buffer->isKnown("NAV_DEPTH"))
+      nav_started = false;
+  }
+  
+  if(nav_started) {
+    m_nav_started = true;
+    retractRunWarning("Waiting for Helm Nav Solution");
+    return(false);    
+  }
+
+  double elapsed = m_curr_time - m_start_time;
+  if(elapsed > m_nav_grace)
+    reportRunWarning("Waiting for Helm Nav Solution");
+  
+  return(true);
+}
+  

@@ -77,6 +77,43 @@ string missionHashShort(string full)
 
 
 //---------------------------------------------------------
+// Procedure: missionHashLShort(string)
+//   Example: 221103-0834K-FOXY-WEED  ==> K-FOXY-WEED
+//   Example: mhash=240121-1540N-LIVE-GULL,utc=170528.23 ==> N-LIVE-GULL 
+
+string missionHashLShort(string full)
+{
+  string mhash = full;
+  if(strContains(full, "mhash="))
+    mhash = tokStringParse(full, "mhash", ',', '=');
+
+  string lchar;
+  if(mhash.length() > 12)
+    lchar = mhash.at(11);
+  
+  biteString(mhash, '-');
+  biteString(mhash, '-');
+
+  mhash = lchar + "-" + mhash;
+  
+  return(mhash);
+}
+
+
+//---------------------------------------------------------
+// Procedure: missionHashUTC(string)
+//   Example: mhash=250121-1122S-GLAD-ARLO,utc=1737476534.76 ==> 1737476534.76
+
+double missionHashUTC(string full)
+{
+  string utc_str = tokStringParse(full, "utc", ',', '=');
+  double utc_dbl = atof(utc_str.c_str());
+
+  return(utc_dbl);
+}
+
+
+//---------------------------------------------------------
 // Procedure: zHash()
 //   Example: 241103-0834-SANIBEL-88
 
@@ -308,6 +345,31 @@ double getCurrTimeUTC()
     dfT = TimeVal.tv_sec+TimeVal.tv_usec/1000000.0;
   }
   return(dfT);
+}
+
+
+//---------------------------------------------------------
+// Procedure: getCurrTime()
+
+string getCurrTime()
+{
+  string time = getCurrHour();
+  time += ":" + getCurrMinute();
+  time += ":" + getCurrSeconds();
+
+  return(time);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrDate()
+
+string getCurrDate()
+{
+  string date = getCurrYear(true);
+  date += ":" + getCurrMonth();
+  date += ":" + getCurrDay();
+
+  return(date);
 }
 
 

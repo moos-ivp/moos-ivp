@@ -155,7 +155,7 @@ SET(IVP_NON_GUI_LIBS
   lib_contacts       lib_obstacles       lib_realm
   lib_ufield         lib_logutils        lib_mbutil
   lib_manifest       lib_marine_pid      lib_turngeo
-  lib_dep_behaviors
+  lib_geodaid        lib_survey          lib_dep_behaviors
 )
 SET(IVP_GUI_LIBS
   lib_ipfview        lib_marineview
@@ -196,7 +196,7 @@ SET(IVP_GUI_APPS
   app_zaic_hleq      app_zaic_vect       app_zaic_hdg
   app_zaic_spd       app_zaic_peak       pMarineViewer
   uFunctionVis       uMACView            uPlotViewer
-  uCommand           
+  uCommand           app_pairview
 # app_vzaicview      app_gzaicview
 )
 
@@ -238,6 +238,7 @@ ENDIF()
 
 LIST(APPEND IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS_DEPRECATED})
 
+message("IVP_LIBS_TO_BUILD: ${IVP_LIBS_TO_BUILD}")
 
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 

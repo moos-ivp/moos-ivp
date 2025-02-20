@@ -509,10 +509,11 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
 #endif
 
   // We do not handle bearing reports - yet.
-  BearingLine bng_line;
+  //BearingLine bng_line;
   
   if(m_vehi_settings.isViewableVehicles())
-    drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1);
+    drawCommonVehicle(record, vehi_color, vname_color, vname_draw, 1);
+  //    drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1);
 }
 
 

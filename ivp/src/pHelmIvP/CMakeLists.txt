@@ -29,6 +29,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   helmivp
   dep_behaviors
   behaviors-marine
+  geodaid
   contacts
   behaviors-colregs
   ufield

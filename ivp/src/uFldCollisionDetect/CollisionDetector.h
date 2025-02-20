@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionDetector.h                                  */
-/*    DATE: 21 May 2013                                          */
+/*    DATE: May 21st 2013                                        */
+/*    DATE: Dec 30st 2024 Added ContactLedger in CPAMonitor      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -24,10 +25,9 @@
 #ifndef COLLISION_DETECTOR_HEADER
 #define COLLISION_DETECTOR_HEADER
 
-#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-
 #include <string>
 #include <map>
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "CPAMonitor.h"
 #include "CPAEvent.h"
 #include "VarDataPair.h"
@@ -47,7 +47,7 @@ class CollisionDetector : public AppCastingMOOSApp
   bool OnStartUp();
   
  protected: 
-  void handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string& whynot);
   bool buildReport();
   void registerVariables();
   void handleCPAEvent(CPAEvent);

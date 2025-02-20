@@ -32,7 +32,7 @@
 using namespace std;
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 BehaviorSet::BehaviorSet()
 {
@@ -46,7 +46,7 @@ BehaviorSet::BehaviorSet()
 }
 
 //------------------------------------------------------------
-// Destructor
+// Destructor()
 
 BehaviorSet::~BehaviorSet()
 {
@@ -54,7 +54,7 @@ BehaviorSet::~BehaviorSet()
 }
 
 //------------------------------------------------------------
-// Procedure: addBehaviorDir
+// Procedure: addBehaviorDir()
 
 bool BehaviorSet::addBehaviorDir(string dirname)
 {
@@ -72,7 +72,7 @@ bool BehaviorSet::addBehaviorDir(string dirname)
 }
 
 //------------------------------------------------------------
-// Procedure: addBehavior
+// Procedure: addBehavior()
 
 void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
@@ -92,7 +92,7 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
 }
 
 //------------------------------------------------------------
-// Procedure: setDomain
+// Procedure: setDomain()
 
 void BehaviorSet::setDomain(IvPDomain domain)
 {
@@ -111,13 +111,35 @@ void BehaviorSet::clearBehaviors()
 
 
 //------------------------------------------------------------
-// Procedure: addBehaviorSpec
+// Procedure: addBehaviorSpec()
 
 void BehaviorSet::addBehaviorSpec(BehaviorSpec spec)
 {
   m_behavior_specs.push_back(spec);
 }
 
+
+//------------------------------------------------------------
+// Procedure: getContactNames()
+//   Purpose: Poll all behaviors for their contact name. If they
+//            are not a contact behavior, this will be an empty
+//            string. We want the names of all contacts for which
+//            there is currently a contact related behavior.
+
+vector<string> BehaviorSet::getContactNames() 
+{
+  vector<string> contacts;
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    if(m_bhv_entry[i].getBehavior()) {
+      string contact = m_bhv_entry[i].getBehavior()->getContact();
+      if((contact != "") && !vectorContains(contacts, contact))
+	contacts.push_back(contact);
+    }
+  }
+
+  return(contacts);
+}
 
 //------------------------------------------------------------
 // Procedure: connectInfoBuffer()
@@ -134,6 +156,50 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
   vsize = m_behavior_specs.size();
   for(i=0; i<vsize; i++)
     m_behavior_specs[i].setInfoBuffer(info_buffer);    
+}
+
+//------------------------------------------------------------
+// Procedure: connectLedgerSnap()
+//      Note: Connects ledger_snap to all bhvs, behavior_specs
+//      Note: ledger_snap is not "owned" by behaviors or specs
+
+void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++)
+    if(m_bhv_entry[i].getBehavior())
+      m_bhv_entry[i].getBehavior()->setLedgerSnap(lsnap);
+
+  vsize = m_behavior_specs.size();
+  for(i=0; i<vsize; i++)
+    m_behavior_specs[i].setLedgerSnap(lsnap);    
+}
+
+//------------------------------------------------------------
+// Procedure: applyAbleFilterMsg()
+//      Note: Apply the BHV_ABLE_FILTER msg to all behaviors
+//      Note: Filter msg can/will be applied many times over, to
+//            the same behaviors. The manner in which filter msgs
+//            are applied, repeated msgs make no difference.
+//   Example: action=disable, contact=345, gen_type=safety,
+//            bhv_type=AvdColregs
+//    Fields: action=disable/able  (mandatory)
+//            contact=345          (one of these three)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+
+bool BehaviorSet::applyAbleFilterMsg(string msg)
+{
+  bool all_ok = true;
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    if(m_bhv_entry[i].getBehavior()) {
+      bool ok = m_bhv_entry[i].getBehavior()->applyAbleFilter(msg);
+      if(!ok)
+	all_ok = false;    
+    }
+  }
+
+  return(all_ok);
 }
 
 //------------------------------------------------------------
@@ -535,9 +601,11 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 				    string& new_activity_state,
 				    bool& ipf_reuse)
 {
+  cout << "POF 111" << endl;
   // Quick index sanity check
   if(ix >= m_bhv_entry.size())
     return(0);
+  cout << "POF 222" << endl;
   
   // ===================================================================
   // Part 1: Prepare and update behavior, determine its new activity state
@@ -545,6 +613,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   IvPFunction *ipf = 0;
   IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
+  cout << "POF 333" << bhv->getDescriptor() << endl;
+  
+  
   bhv->incBhvIteration();
   
   // possible vals: "", "idle", "running", "active"
@@ -561,7 +632,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   for(unsigned int i=0; i<update_results.size(); i++)
     m_update_results.push_back(update_results[i]);
 
-
   bhv->setHelmIteration(iteration);
   // Check if the behavior duration is to be reset
   bhv->checkForDurationReset();
@@ -570,12 +640,13 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // MOOS posting to COMMS_POLICY
   bhv->checkForUpdatedCommsPolicy();
   
-  // Possible vals: "completed", "idle", "running"
+  // Possible vals: "completed", "idle", "running", "disabled"
   new_activity_state = bhv->isRunnable();
   
   // Invoke the onEveryState() function applicable in all situations
   bhv->onEveryState(new_activity_state);
   
+  cout << "POF 444" << bhv->getDescriptor() << endl;
   // ===================================================================
   // Part 2: With new_activity_state set, act appropriately for
   //         each behavior.
@@ -590,7 +661,20 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->postFlags("configflags");
     bhv->setConfigPosted(true);
   }
-  
+
+  // Part 2AA: Handle disabled behaviors
+  if(new_activity_state == "disabled") {
+    if(old_activity_state != "disabled") {
+      bhv->postFlags("disableflags", true);
+    }
+    bhv->onDisabledState();
+  }
+  else {
+    if(old_activity_state == "disabled") {
+      bhv->postFlags("enableflags", true);
+    }
+  }
+    
   // Part 2B: Handle idle behaviors
   if(new_activity_state == "idle") {
     if(old_activity_state != "idle") {
@@ -604,7 +688,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   }
   
   // Part 2C: Handle running behaviors
+  cout << "POF 555" << bhv->getDescriptor() << endl;
   if(new_activity_state == "running") {
+    cout << "POF 666"  << endl;
     double pwt = 0;
     int    pcs = 0;
 
@@ -619,6 +705,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     if(old_activity_state == "idle")
       bhv->onIdleToRunState();
 
+    cout << "POF 777"  << endl;
     // Step 1: Ask the behavior to build a IvP function
     bool need_to_run = bhv->onRunStatePrior();
     ipf_reuse = !need_to_run;
@@ -643,6 +730,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	pcs = 0;
       }
     }
+    cout << "POF 888"  << endl;
     // Step 4: If we're serializing and posting IvP functions, do here
     if(ipf && m_report_ipf) {
       string desc_str = bhv->getDescriptor();
@@ -666,6 +754,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	bhv->postFlags("inactiveflags", true); // true means repeatable
       bhv->onInactiveState();
     }
+    cout << "POF 999"  << endl;
+    
     bhv->updateStateDurations("running");
   }
 
@@ -680,6 +770,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->onCompleteState();
   }    
    
+  cout << "POF AAA"  << endl;
   
   // =========================================================================
   // Part 3: Update all the bookkeeping structures 
@@ -701,6 +792,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->postFlags("spawnxflags", true);
 
   
+  cout << "POF BBB"  << endl;
   // Return either the IvP function or NULL
   return(ipf);
 }
@@ -1115,7 +1207,7 @@ vector<string> BehaviorSet::getTemplatingSummary() const
 
 
 //------------------------------------------------------------
-// Procedure: print
+// Procedure: print()
 
 void BehaviorSet::print()
 {
@@ -1165,3 +1257,16 @@ unsigned long int BehaviorSet::size() const
   return(amt);
 }
 
+//------------------------------------------------------------
+// Procedure: bhvStateCount()
+
+unsigned int BehaviorSet::bhvStateCount(string state) const
+{
+  unsigned int total = 0;
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    if(m_bhv_entry[i].getState() == state)
+      total++;
+  }
+  return(total);
+}
+  

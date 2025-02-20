@@ -29,7 +29,7 @@
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYPolygon.h"
-#include "NodeRecord.h"
+#include "ContactLedger.h"
 #include "VarDataPair.h"
 
 
@@ -56,7 +56,7 @@ class ObstacleSim : public AppCastingMOOSApp
   bool handleConfigObstacleFile(std::string filename);
   void handleConfigObstacleDurations();
 
-  bool handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string& whynot);
   bool handleMailPointSize(std::string);
 
   void postObstaclesRefresh();
@@ -118,9 +118,10 @@ private: // State variables
   std::vector<double>    m_durations;
 
   // Maps keyed on vnames. 
-  std::map<std::string, NodeRecord>  m_map_vrecords;
   std::map<std::string, double>      m_map_vrange;
 
+  ContactLedger m_ledger;
+  
   // Maps keyed on obstacle key/label 
   std::map<std::string, unsigned int> m_map_pts_published;
   std::map<std::string, unsigned int> m_map_giv_published;

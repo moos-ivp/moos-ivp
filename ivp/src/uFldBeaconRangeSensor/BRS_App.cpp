@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BRS_App.cpp                                          */
 /*    DATE: Feb 2nd, 2011                                        */
+/*    DATE: Dec 30th, 2024 Contact Ledger integrated             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -29,12 +30,11 @@
 #include "MBUtils.h"
 #include "XYRangePulse.h"
 #include "XYMarker.h"
-#include "NodeRecordUtils.h"
 
 using namespace std;
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 BRS_App::BRS_App()
 {
@@ -61,7 +61,7 @@ BRS_App::BRS_App()
 
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool BRS_App::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -74,14 +74,21 @@ bool BRS_App::OnNewMail(MOOSMSG_LIST &NewMail)
     string key  = msg.GetKey();
     string sval = msg.GetString();
 
-    bool handled = false;
+    bool   handled = true;
+    string whynot; 
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-      handled = handleNodeReport(sval);
+      handled = handleNodeReport(sval, whynot);
     else if(key == "BRS_RANGE_REQUEST")
       handled = handleRangeRequest(sval);
-    
-    if(!handled)
-      reportRunWarning("Unhandled Mail: " + key);
+    else
+      handled = false;
+
+    if(!handled) {
+      string warning = "Bad Mail: " + key;
+      if(whynot != "")
+	warning += " " + whynot;
+      reportRunWarning(warning);
+    }
   }
   return(true);
 }
@@ -94,8 +101,18 @@ bool BRS_App::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+   // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
+
   map<string, bool> handled;
-  
   STRING_LIST sParams;
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
     reportConfigWarning("No config block found for " + GetAppName());
@@ -204,24 +221,21 @@ bool BRS_App::Iterate()
       m_beacons[bix].incPingsUnsol();
 
       // For each vehicle, if valid, if in range, post report
-      map<string, NodeRecord>::iterator p;
-      for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-	string vname = p->first;
-	string VNAME = toupper(vname);
-	NodeRecord node_record = p->second;
-	if(node_record.valid()) {
-	  double actual_range = getTrueBeaconNodeRange(bix, vname);
-	  double vehicle_pull_dist = m_map_node_pull_dist[vname];
+      vector<string> vnames = m_ledger.getVNames();
+      for(unsigned int i=0; i<vnames.size(); i++) {
+	string vname = tolower(vnames[i]);
 
-	  if(pingTrans(beacon_push_dist, vehicle_pull_dist, actual_range)) {
-	    m_map_node_pings_usol[vname]++;
-	    reportEvent("Beacon["+label+ "]  ))-->  Range Broadcast to " + VNAME);
-	    postBeaconRangeReport(bix, actual_range, vname);
-	  }
-	  else {
-	    if(m_verbose)
-	      reportEvent("Beacon["+label+ "]  XX-->  Failed Range Brdcast to " + VNAME);
-	  }	      
+	double actual_range = getTrueBeaconNodeRange(bix, vname);
+	double vehicle_pull_dist = m_map_node_pull_dist[vname];
+	
+	if(pingTrans(beacon_push_dist, vehicle_pull_dist, actual_range)) {
+	  m_map_node_pings_usol[vname]++;
+	  reportEvent("Beacon["+label+ "]  ))-->  Range Broadcast to " + vname);
+	  postBeaconRangeReport(bix, actual_range, vname);
+	}
+	else {
+	  if(m_verbose)
+	    reportEvent("Beacon["+label+ "]  XX-->  Failed Range Brdcast to " + vname);
 	}
       }
     }
@@ -232,7 +246,7 @@ bool BRS_App::Iterate()
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool BRS_App::OnConnectToServer()
 {
@@ -241,7 +255,7 @@ bool BRS_App::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void BRS_App::registerVariables()
 {
@@ -252,7 +266,7 @@ void BRS_App::registerVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: addBeaconBuoy
+// Procedure: addBeaconBuoy()
 
 bool BRS_App::addBeaconBuoy(const string& line)
 {
@@ -302,25 +316,17 @@ bool BRS_App::addBeaconBuoy(const string& line)
 }
 
 //---------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=ENGAGED
 
-bool BRS_App::handleNodeReport(const string& node_report_str)
+bool BRS_App::handleNodeReport(string report, string& whynot)
 {
-  NodeRecord new_node_record = string2NodeRecord(node_report_str);
-
-  if(!new_node_record.valid())
-    return(false);
-
-  string vname = new_node_record.getName();
+  string vname = m_ledger.processNodeReport(report, whynot);
   if(vname == "")
     return(false);
-
-  m_map_node_records[vname] = new_node_record;
-  m_map_node_reps_recd[vname]++;
 
   // If node push_dist not pre-configured, set to node default
   if(m_map_node_push_dist.count(vname) == 0)
@@ -336,15 +342,14 @@ bool BRS_App::handleNodeReport(const string& node_report_str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleRangeRequest
+// Procedure: handleRangeRequest()
 //   Example: name=alpha
 
 bool BRS_App::handleRangeRequest(const string& request)
 {
   string vname = tokStringParse(request, "name", ',', '=');
-  string VNAME = toupper(vname);
   
-  if((vname == "")  || (m_map_node_records.count(vname) == 0)) {
+  if((vname == "")  || !m_ledger.hasVName(vname)) {
     reportRunWarning("Failed Range Request: Unknown vehicle["+vname+"]");
     reportEvent("Failed Range Request: Unknown vehicle["+vname+"]");
     return(false);
@@ -352,8 +357,8 @@ bool BRS_App::handleRangeRequest(const string& request)
 
   m_map_node_pings_gend[vname]++;
 
-  double v_x = m_map_node_records[vname].getX();
-  double v_y = m_map_node_records[vname].getY();
+  double vx = m_ledger.getX(vname);
+  double vy = m_ledger.getY(vname);
 
   // Determine if this vehicle is allowed to make a range request
   double elapsed_time  = m_curr_time - m_map_node_last_ping[vname];
@@ -364,26 +369,26 @@ bool BRS_App::handleRangeRequest(const string& request)
     m_map_node_last_ping[vname] = m_curr_time;
   
   if(!query_allowed) {
-    reportRunWarning("Failed Range Request from "+VNAME+": exceeds query freq.");
+    reportRunWarning("Failed Range Req from "+vname+": exceeds query freq.");
     if(m_verbose) {
-      reportEvent("Failed Range Request from "+VNAME+": exceeds query frequency.");
-      reportEvent("  Elapsed time for "+VNAME+": " + doubleToString(elapsed_time));
+      reportEvent("Failed Range Req from "+vname+": exceeds query frequency.");
+      reportEvent("  Elapsed time for "+vname+": " + doubleToString(elapsed_time));
     }
     m_map_node_xping_freq[vname]++;
     return(true);
   }
   
-  reportEvent("Valid Range Request from "+VNAME+". Checking beacon ranges...");
+  reportEvent("Valid Range Req from "+vname+". Checking beacon ranges...");
 
   if(m_ping_payments == "upon_accept") {
     if(m_verbose)
-      reportEvent("  Range Request resets the clock for vehicle " +VNAME);
+      reportEvent("  Range Request resets the clock for vehicle " +vname);
     m_map_node_last_ping[vname] = m_curr_time;
   }
   
   // Build the RangePulse for the requesting vehicle
   string vlabel = vname + "_range_req";
-  postRangePulse(v_x, v_y, "white", vlabel, 6, 40);
+  postRangePulse(vx, vy, "white", vlabel, 6, 40);
 
   // Phase 1: Handle range reports to fixed beacons
   double node_push_dist = m_map_node_push_dist[vname];
@@ -400,7 +405,7 @@ bool BRS_App::handleRangeRequest(const string& request)
     if(pingTrans(node_push_dist, beacon_pull_dist, actual_range_now)) {
       m_beacons[bix].incPingsReceived();
       string label = m_beacons[bix].getLabel();
-      reportEvent("Beacon["+label+ "]  <----  Ping from " + VNAME);
+      reportEvent("Beacon["+label+ "]  <----  Ping from " + vname);
 
       // Then determine if the vehicle is close enough to hear the beacon
       double beacon_push_dist = m_beacons[bix].getPushDist();
@@ -411,7 +416,7 @@ bool BRS_App::handleRangeRequest(const string& request)
 	double y = m_beacons[bix].getY();
 	if(m_ping_payments == "upon_response")
 	  m_map_node_last_ping[vname] = m_curr_time;
-	reportEvent("Beacon["+label+ "]    -->  Range Reply to " + VNAME);
+	reportEvent("Beacon["+label+ "]    -->  Range Reply to " + vname);
 	postBeaconRangeReport(bix, actual_range_now, vname);
 	postRangePulse(x, y, "pink", label, 15, 40);
 	m_beacons[bix].setTimeStamp(m_curr_time);
@@ -446,7 +451,7 @@ void BRS_App::postVisuals()
 
 
 //------------------------------------------------------------
-// Procedure: postBeaconRangePulse
+// Procedure: postBeaconRangePulse()
 
 void BRS_App::postBeaconRangePulse(unsigned int ix, string color)
 {
@@ -527,13 +532,13 @@ double BRS_App::getTrueBeaconNodeRange(unsigned int beacon_ix,
 {
   if(beacon_ix >= m_beacons.size())
     return(-1);
-  if(m_map_node_records.count(vname) == 0)
+  if(!m_ledger.hasVName(vname))
     return(-1);
 
   double beacon_x = m_beacons[beacon_ix].getX();
   double beacon_y = m_beacons[beacon_ix].getY();
-  double vnode_x  = m_map_node_records[vname].getX();
-  double vnode_y  = m_map_node_records[vname].getY();
+  double vnode_x  = m_ledger.getX(vname);
+  double vnode_y  = m_ledger.getY(vname);
   double range    = hypot((beacon_x-vnode_x), (beacon_y-vnode_y));
 
   return(range);
@@ -560,7 +565,7 @@ double BRS_App::getNoisyBeaconNodeRange(double true_range) const
 
 
 //------------------------------------------------------------
-// Procedure: setNodePushDistance
+// Procedure: setNodePushDistance()
 //      Note: Negative values indicate infinity
 
 bool BRS_App::setNodePushDistance(string str)
@@ -585,7 +590,7 @@ bool BRS_App::setNodePushDistance(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setNodePullDistance
+// Procedure: setNodePullDistance()
 //      Note: Negative values indicate infinity
 
 bool BRS_App::setNodePullDistance(string str)
@@ -611,7 +616,7 @@ bool BRS_App::setNodePullDistance(string str)
 
 
 //------------------------------------------------------------
-// Procedure: setPingWait
+// Procedure: setPingWait()
 //      Note: Negative values no wait time mandated
 
 bool BRS_App::setPingWait(string str)
@@ -636,7 +641,7 @@ bool BRS_App::setPingWait(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setPingPayments
+// Procedure: setPingPayments()
 
 bool BRS_App::setPingPayments(string str)
 {
@@ -652,7 +657,7 @@ bool BRS_App::setPingPayments(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setReportVars
+// Procedure: setReportVars()
 
 bool BRS_App::setReportVars(string str)
 {
@@ -666,7 +671,7 @@ bool BRS_App::setReportVars(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setRandomNoiseAlgorithm
+// Procedure: setRandomNoiseAlgorithm()
 
 bool BRS_App::setRandomNoiseAlgorithm(string str)
 {
@@ -692,15 +697,13 @@ bool BRS_App::setRandomNoiseAlgorithm(string str)
 
 
 //------------------------------------------------------------
-// Procedure: postRangePulse
+// Procedure: postRangePulse()
 
 void BRS_App::postRangePulse(double x, double y, string color,
 			       string label, double duration,
 			       double radius)
 {
-  XYRangePulse pulse;
-  pulse.set_x(x);
-  pulse.set_y(y);
+  XYRangePulse pulse(x,y);
   pulse.set_label(label);
   pulse.set_rad(radius);  
   pulse.set_fill(0.9);
@@ -715,7 +718,7 @@ void BRS_App::postRangePulse(double x, double y, string color,
 }
 
 //------------------------------------------------------------
-// Procedure: pingTrans
+// Procedure: pingTrans()
 //      Note: A negative push/pull distance means infinity
 
 bool BRS_App::pingTrans(double push, double pull, double threshold)
@@ -790,17 +793,16 @@ bool BRS_App::buildReport()
   m_msgs << endl << endl;
 
   // Part 2: Build a report on the Vehicles
-  m_msgs << "Vehicles(" << m_map_node_records.size() << "):" << endl;
+  m_msgs << "Vehicles(" << m_ledger.size() << "):" << endl;
 
   actab = ACTable(8);
   actab << "      | Push | Pull | Unsol | Pings | Pings | Too  | Too ";
   actab << "VName | Dist | Dist | Rec'd | Gen'd | Rep'd | Freq | Far ";
   actab.addHeaderLines();
 
-  map<string, NodeRecord>::iterator p;
-
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string vname = p->first;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = tolower(vnames[i]);
 
     double push_dist = m_map_node_push_dist[vname];
     string spush = "inf";
@@ -821,6 +823,9 @@ bool BRS_App::buildReport()
   }
   m_msgs << actab.getFormattedString();
 
+  m_msgs << endl << endl;
+  m_msgs << "Ledger: " << m_ledger.getSummary() << endl;
+  
   return(true);
 }
 

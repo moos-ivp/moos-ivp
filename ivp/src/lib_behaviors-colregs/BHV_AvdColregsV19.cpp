@@ -188,6 +188,8 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
     m_pwt_grade = value;
     return(true);
   }  
+  else if(param == "can_disable") 
+    return(setBooleanOnString(m_can_disable, value));
   else
     return(false);
 
@@ -212,6 +214,8 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
 
 void BHV_AvdColregsV19::onHelmStart()
 {
+  IvPContactBehavior::onHelmStart();
+  
   if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
 
@@ -225,7 +229,16 @@ void BHV_AvdColregsV19::onHelmStart()
   postMessage("BCM_ALERT_REQUEST", request);
 }
 
+//-----------------------------------------------------------
+// Procedure: onDisabledState()
 
+void BHV_AvdColregsV19::onDisabledState() 
+{
+  postViewableBearingLine(false);
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
+    setComplete();
+}
+ 
 //-----------------------------------------------------------
 // Procedure: onIdleState()
 

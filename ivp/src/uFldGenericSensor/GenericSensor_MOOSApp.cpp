@@ -349,7 +349,7 @@ bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
   circ.set_edge_size(1);
   circ.set_transparency(m_scope_transparency);
   circ.set_time(m_curr_time);
-  circ.setDuration(10);
+  circ.set_duration(10);
   Notify("VIEW_CIRCLE", circ.get_spec());
   
   return(true);

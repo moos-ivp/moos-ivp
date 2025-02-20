@@ -32,19 +32,25 @@
 #include "MBTimer.h"
 #include "PlatModelGenerator.h"
 #include "PlatModel.h"
+#include "LedgerSnap.h"
 
 class InfoBuffer;
+class LedgerSnap;
 class IvPFunction;
 class IvPProblem;
 class BehaviorSet;
 class HelmEngine {
 public:
-  HelmEngine(IvPDomain, InfoBuffer*);
+  //HelmEngine(IvPDomain, InfoBuffer*);
+  HelmEngine(IvPDomain, InfoBuffer*, LedgerSnap*);
   ~HelmEngine();
 
+  void setBehaviorSet(BehaviorSet *bset) {m_bhv_set=bset;}
   void setPlatModel(const PlatModel& pm) {m_pmodel=pm;}
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
-
+  bool addAbleFilterMsg(std::string);
+  bool applyAbleFilterMsgs();
+  
   unsigned long int size() const;
   
 protected:
@@ -70,6 +76,7 @@ protected:
   unsigned int m_total_pcs_cached;
   IvPProblem  *m_ivp_problem;
   InfoBuffer  *m_info_buffer;
+  LedgerSnap  *m_ledger_snap;
   PlatModel    m_pmodel;
   
   double       m_max_create_time;
@@ -82,6 +89,8 @@ protected:
   MBTimer  m_create_timer;
   MBTimer  m_ipf_timer;
   MBTimer  m_solve_timer;
+
+  std::list<std::string> m_able_filter_msgs;
 };
 
 #endif

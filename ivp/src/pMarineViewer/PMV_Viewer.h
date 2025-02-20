@@ -28,10 +28,10 @@
 #include <string>
 #include <map>
 #include "MarineViewer.h"
-#include "VehicleSet.h"
 #include "VarDataPair.h"
 #include "VPlug_GeoShapes.h"
 #include "VPlug_GeoShapesMap.h"
+#include "ContactLedger.h"
 
 class PMV_Viewer : public MarineViewer
 {
@@ -47,7 +47,7 @@ class PMV_Viewer : public MarineViewer
   bool  setParam(std::string p, double v);
   void  setConfigComplete() {m_config_complete=true;}
 
-  void  updateMOOSGeodesy() {m_vehiset.setMOOSGeodesy(m_geodesy);}
+  void  updateMOOSGeodesy() {m_ledger.setGeodesy(m_geodesy);}
   
   bool  handleNodeReport(std::string, std::string&);
 
@@ -63,7 +63,8 @@ class PMV_Viewer : public MarineViewer
   void  setLeftMouseKey(std::string key)  {m_left_mouse_key = key;}
   void  setRightMouseKey(std::string key) {m_right_mouse_key = key;}
 
-  std::string getStringInfo(const std::string& info_type, int precision=0);
+  std::string getStringInfo(std::string info_type, int precision=0);
+  std::string getStringInfo2(std::string info_type, int precision=0);
 
   std::vector<VarDataPair> getLeftMousePairs(bool=true);
   std::vector<VarDataPair> getRightMousePairs(bool=true);
@@ -93,7 +94,7 @@ class PMV_Viewer : public MarineViewer
   void   setWeightedCenterView();
   
  private:
-  VehicleSet  m_vehiset;
+  ContactLedger m_ledger;
 
   std::string m_reference_point;
   std::string m_reference_bearing;

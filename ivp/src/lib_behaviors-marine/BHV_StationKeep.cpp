@@ -321,24 +321,31 @@ IvPFunction *BHV_StationKeep::onRunState()
 
 bool BHV_StationKeep::updateInfoIn()
 {
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
+    return(false);
+
+  m_currtime = getBufferCurrTime();
+  
+#if 0
   // PART 1: GET THE INFORMATION NEEDED FROM THE INFO_BUFFER
   bool ok1, ok2, ok3;
   // ownship position in meters from some 0,0 reference point.
-  m_currtime = getBufferCurrTime();
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-
-  // If previous state was idle (mark_time=-1), note the time entered
-  // into the running state.
-  if(m_mark_time == -1)
-    m_mark_time = m_currtime;
 
   // Must get ownship nav position from InfoBuffer
   if(!ok1 || !ok2 || !ok3) {
     postEMessage("No ownship X/Y or HDG info in info_buffer.");
     return(false);
   }
+#endif
+  
+  // If previous state was idle (mark_time=-1), note the time entered
+  // into the running state.
+  if(m_mark_time == -1)
+    m_mark_time = m_currtime;
 
   // PART 2: UPDATE THE STATION-KEEP POINT IF NECESSARY
   bool ctr_changed = false;

@@ -33,14 +33,13 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 XYCircle::XYCircle()
 {
   m_x    = 0;
   m_y    = 0;
   m_rad  = 0;
-  m_duration = -1;  // unlimited
 
   m_x_set   = false;
   m_y_set   = false;
@@ -53,7 +52,7 @@ XYCircle::XYCircle()
 }
 
 //-------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 XYCircle::XYCircle(double g_x, double g_y, double g_rad)
 {
@@ -62,7 +61,6 @@ XYCircle::XYCircle(double g_x, double g_y, double g_rad)
   // Number of significant digits in x,y,rad fields in string spec
   m_sdigits = 2;  
   m_draw_vertices = 0;
-  m_duration = -1;
 }
 
 //-------------------------------------------------------------
@@ -126,10 +124,6 @@ string XYCircle::get_spec(string param) const
   if(m_draw_vertices > 0) {
     spec += ",vertices=";
     spec += uintToString(m_draw_vertices);
-  }
-  if(m_duration >= 0) {
-    spec += ",duration=";
-    spec += doubleToStringX(m_duration,1); 
   }
 
   string obj_spec = XYObject::get_spec(param);

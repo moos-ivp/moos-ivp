@@ -31,6 +31,7 @@
 #include <vector>
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
+#include "LedgerSnap.h"
 #include "CPAEngine.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
@@ -54,6 +55,7 @@ public:
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
   virtual void onSpawn() {}
+  virtual void onDisabledState() {}
   virtual void onIdleState() {}
   virtual void onCompleteState() {}
   virtual void onInactiveState() {}
@@ -69,17 +71,20 @@ public:
   virtual double getMemSize() {return(0);}
   virtual bool isConstraint() {return(false);}
   virtual std::string isDeprecated() {return("");}
+  virtual bool applyAbleFilter(std::string) {return(true);}
+  virtual std::vector<std::string> getInfoVars();
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
+  void   setLedgerSnap(const LedgerSnap*);
   void   setPlatModel(PlatModel pm) {m_plat_model=pm;}
   bool   checkUpdates();
   std::string isRunnable();
-
+  bool   updatePlatformInfo();
+  
   void   statusInfoAdd(std::string param, std::string value);
   void   statusInfoPost();
 
-  std::vector<std::string> getInfoVars();
   std::string getDescriptor()            {return(m_descriptor);}
   std::string getUpdateVar() const       {return(m_update_var);}
   std::string getBehaviorType()          {return(m_behavior_type);}
@@ -98,6 +103,7 @@ public:
   bool    isDynamicallySpawned() const    {return(m_dynamically_spawned);}
   bool    isDynamicallySpawnable() const  {return(m_dynamically_spawnable);}
   std::string getSpawnBaseName() const    {return(m_spawn_basename);}
+  std::string getContact() const          {return(m_contact);}
   
  protected:
   bool    setBehaviorName(std::string str);
@@ -186,8 +192,17 @@ public:
   std::string              getBufferStringVal(std::string, bool&);
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
+
+  double  getLedgerInfoDbl(std::string vname, std::string fld, bool&);
+  string  getLedgerInfoStr(std::string, std::string, bool&);
+  double  getLedgerInfoDbl(std::string vname, std::string fld);
+  string  getLedgerInfoStr(std::string, std::string);
+
   std::vector<std::string> getStateSpaceVars();
   std::string              getOwnGroup();
+  std::string              getOwnType();
+  std::string              getOwnColor();
+  double                   getOwnLength();
 
   bool                     getBufferDoubleValX(std::string, double&);
   bool                     getBufferStringValX(std::string, std::string&);
@@ -205,6 +220,8 @@ public:
   
 protected:
   const InfoBuffer* m_info_buffer;
+  const LedgerSnap* m_ledger_snap;
+
   PlatModel m_plat_model;
 
   std::string m_us_name;       
@@ -214,6 +231,7 @@ protected:
   double m_osy;   // Current ownship y position (meters) 
   double m_osh;   // Current ownship heading (degrees 0-359)
   double m_osv;   // Current ownship speed (meters) 
+  double m_osd;   // Current ownship depth (meters) 
 
   std::string m_contact; // Name for contact in InfoBuffer
   std::string m_behavior_type;
@@ -297,6 +315,9 @@ protected:
   unsigned int m_macro_ctr_04;
   unsigned int m_macro_ctr_05;
 
+  bool m_disabled;
+  bool m_can_disable;
+  
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()

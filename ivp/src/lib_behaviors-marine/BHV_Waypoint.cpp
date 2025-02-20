@@ -612,23 +612,9 @@ void BHV_Waypoint::onIdleState()
 
 bool BHV_Waypoint::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4;
-  m_osx = getBufferDoubleVal("NAV_X",       ok1);
-  m_osy = getBufferDoubleVal("NAV_Y",       ok2);
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED",   ok4);
-
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2) {
-    postEMessage("No ownship X/Y info in info_buffer.");
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
-  }
-
-  // Must get ownship heading from InfoBuffer
-  if(!ok3) {
-    postEMessage("No ownship heading info in info_buffer.");
-    return(false);
-  }
 
   if(m_greedy_tour_pending) {
     m_greedy_tour_pending = false;
@@ -636,11 +622,6 @@ bool BHV_Waypoint::updateInfoIn()
     XYSegList shtour_segl = greedyPath(original_segl, m_osx, m_osy);
     m_waypoint_engine.setSegList(shtour_segl);
   }
-
-  // If NAV_SPEED info is not found in the info_buffer, its
-  // not a show-stopper. A warning will be posted.
-  if(!ok4)
-    postWMessage("No ownship speed info in info_buffer");
 
   return(true);
 }
@@ -898,8 +879,8 @@ void BHV_Waypoint::postViewableSegList()
       postMessage("VIEW_POLYGON", poly.get_spec());
     }
   }
-  
-  postMessage("VIEW_SEGLIST", segl.get_spec());
+
+  postMessage("VIEW_SEGLIST", segl.get_spec(3));
 }
 
 //-----------------------------------------------------------

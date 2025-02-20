@@ -112,7 +112,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   return(true);
 }
 
-
 //--------------------------------------------------------------
 // Procedure: OnConnectToServer()
 //      Note: virtual overide of base class CMOOSApp member.

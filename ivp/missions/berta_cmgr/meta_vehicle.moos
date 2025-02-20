@@ -1,0 +1,235 @@
+//----------------------------------------------------
+// Vehicle MOOS config file
+// M. Benjamin, MIT
+
+ServerHost = localhost
+ServerPort = $(MOOS_PORT)
+Community  = $(VNAME)
+
+#include plugs.moos <origin_warp>
+
+//----------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB         @ NewConsole = false
+  Run = uProcessWatch  @ NewConsole = false
+  Run = pShare         @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
+  Run = pNodeReporter  @ NewConsole = false
+  Run = pMarinePIDV22  @ NewConsole = false
+  Run = pHelmIvP       @ NewConsole = false
+  Run = pHostInfo      @ NewConsole = false
+  Run = uFldNodeBroker @ NewConsole = false
+  Run = uLoadWatch     @ NewConsole = false
+  Run = uMemWatch      @ NewConsole = false
+  Run = pContactMgrV20 @ NewConsole = false
+  Run = pRealm         @ NewConsole = false
+
+#ifdef XMODE SIM
+  Run = uSimMarineV22  @ NewConsole = false
+#elseifdef XMODE M300
+  Run = iM300          @ NewConsole = false
+#endif
+	}
+
+#ifdef XMODE SIM
+#include plugs.moos <uSimMarine>
+#elseifdef XMODE M300
+#include plugs.moos <iM300>
+#endif
+	
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <uProcessWatch>
+
+//----------------------------------------------------
+// pHelmIvP Config Block  
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors    = targ_$(VNAME).bhv  
+  verbose      = false
+  domain       = course:0:359:360
+  domain       = speed:0:$(MAX_SPD):21
+
+	app_logging = true
+	
+	hold_on_apps = pContactMgrV20
+}
+	
+//----------------------------------------------------
+// pNodeReporter Config Block 
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+	platform_color = $(COLOR)
+  vessel_type    = $(VTYPE=kayak)
+  //terse_reports  = true
+
+	coord_policy_global = true
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Config Block
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+	app_logging = true
+	
+  alert_verbose = true
+
+	contact_local_coords = force_lat_lon
+	
+  contact_max_age   = 35
+  display_radii     = true
+	display_radii_id  = avd
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+
+	early_warning_range = 60
+	early_warning_flag  = CMGR_WARNING = Warning=$[CONTACT], at $[RNG]
+	early_warning_ref_spd = 3.4
+	early_warning_radii = true
+
+	cease_warning_flag = CMGR_WARNING = off
+	
+  disable_var = XYZ_DISABLE_TARGET
+  enable_var  = XYZ_REENABLE_TARGET
+	
+	post_closest_range   = true
+  hold_alerts_for_helm = true
+}
+
+//--------------------------------------------------
+// uFldNodeBroker Config Block
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=$(SHORE_IP):$(SHORE_PSHARE)
+
+	//shadow_shore = ip=192.168.7.22, name=henry, dur=45000
+	
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_CIRCLE
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=CMGR_WARNING
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+//--------------------------------------------------
+// uLoadWatch Config Block
+
+ProcessConfig = uLoadWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  thresh = app=pHelmIvP,  gapthresh=3
+  thresh = app=pHostInfo, gapthresh=5
+  thresh = app=any,       gapthresh=2.0
+  thresh = app=uMemWatch, gapthresh=50
+  thresh = app=uSimMarineV22, gapthresh=3
+
+  breach_trigger = 5
+}
+
+//--------------------------------------------------------
+// uMemWatch Config Block
+
+ProcessConfig = uMemWatch
+{
+  AppTick   = 0.4
+  CommsTick = 0.4
+
+  absolute_time_gap = 2
+  watch_only = pHelmIvP
+}
+
+//-----------------------------------------------------
+// pMarinePIDV22 Config Block
+
+ProcessConfig = pMarinePIDV22
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+  verbose       = true
+  depth_control = false
+  active_start  = true
+  
+  // Yaw PID controller
+  yaw_pid_kp             = 1.2
+  yaw_pid_kd             = 0.1
+  yaw_pid_ki             = 0.3
+  yaw_pid_integral_limit = 0.07
+  
+  // Speed PID controller
+  speed_pid_kp           = 1.0
+  speed_pid_kd           = 0.0
+  speed_pid_ki           = 0.0
+  speed_pid_integral_limit = 0.07
+  
+  // Maximums
+  maxrudder  = 100
+  maxthrust  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//--------------------------------------------------
+// pLogger Config Block
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 5
+  CommsTick = 5
+  
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
+  FileTimeStamp = true
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = BCM_ALERT_REQUEST @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+//  WildCardOmitPattern = DB_RWSUMMARY
+
+  //WildCardOmitPattern = NAV_LAT, NAV_LONG
+  WildCardOmitPattern = NAV_PITCH, NAV_YAW, NAV_Z
+  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y
+  WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
+  //WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*
+  WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_LEN
+  WildCardOmitPattern = PHI_HOST*
+
+  // WildCardOmitPattern = DB_CLIENTS
+  // WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
+}
+	

@@ -62,6 +62,7 @@ protected: // Utility function(s)
   
  protected:
   // SIM variables
+  bool         m_post_navpos_summary;
   std::string  m_sim_prefix;
   USM_Model    m_model;
   bool         m_enabled;

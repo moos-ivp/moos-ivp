@@ -14,6 +14,7 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$1"; fi }
 #---------------------------------------------------------------
 VERBOSE=""
 KILLALL=""
+BOOLCHK=""
 
 rst=$(tput setaf 0)  # Reset                                                    
 red=$(tput setaf 1)  # Red                                                      
@@ -29,8 +30,12 @@ COMMON_APPS+=("uFldNodeComms" "uFldShoreBroker" "uFldNodeBroker")
 COMMON_APPS+=("pShare" "uProcessWatch" "pRealm" "pHostInfo")
 COMMON_APPS+=("uMayFinish" "pAutoPoke" "pMarineViewer")
 COMMON_APPS+=("pMarinePID" "pMarinePIDV22" "uLoadWatch")
-COMMON_APPS+=("pContactMgrV20" "uMemWatch")
-COMMON_APPS+=("pEchoVar" "uDelve")
+COMMON_APPS+=("pContactMgrV20" "uMemWatch" "pObstacleMgr")
+COMMON_APPS+=("pEchoVar" "uDelve" "uSimMarine" "uSimMarineV22" )
+COMMON_APPS+=("pMissionEval" "uFldObstacleSim" )
+COMMON_APPS+=("uFldCollObDetect" )
+# Swarm
+COMMON_APPS+=("uFldVoronoi")
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -47,6 +52,7 @@ for ARGI; do
 	echo "  --help, -h         Show this help message              " 
 	echo "  --verbose, -v      Show the results for each app       " 
 	echo "  --killall, -k      Send killall to any dangling apps   " 
+	echo "  --boolchk, -b      check if ANY MOOS apps are running  " 
 	echo "                                                         " 
 	echo "Options:                                                 " 
 	echo "  0 if none of the given apps are running                " 
@@ -56,8 +62,27 @@ for ARGI; do
         VERBOSE="yes"
     elif [ "${ARGI}" = "--killall" -o "${ARGI}" = "-k" ]; then
         KILLALL="yes"
+    elif [ "${ARGI}" = "--boolchk" -o "${ARGI}" = "-b" ]; then
+        BOOLCHK="yes"
     fi
 done
+
+
+# Exit val success=0 until unresolvable dangling app found
+if [ "${BOOLCHK}" = "yes" ]; then
+    rm -f $HOME/.moos_alive
+    for app in "${COMMON_APPS[@]}"
+    do
+	pgrep -x $app > /dev/null
+	# If a dangling app is encountered:
+	if [ $? = 0 ]; then
+	    touch $HOME/.moos_alive
+	    exit 0
+	fi
+    done
+    exit 1
+fi
+	
 
 #-------------------------------------------------------
 #  Part 3: Iterate through the apps

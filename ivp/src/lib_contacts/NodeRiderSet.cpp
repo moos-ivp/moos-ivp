@@ -46,7 +46,16 @@ bool NodeRiderSet::addNodeRider(string str)
       handled = handled && rider.setPolicyConfig(value);
     else if(param == "rfld")
       handled = handled && rider.setRiderFld(value);
-    else
+    else if(param == "prec") {
+      int int_prec = atoi(value.c_str());
+      if(int_prec < 0)
+	handled = false;
+      else {
+	unsigned int uint_prec = (unsigned int)(int_prec);
+	handled = handled && rider.setPrecision(uint_prec);
+      }
+    }
+    else 
       handled = false;
   }
 
@@ -78,6 +87,25 @@ bool NodeRiderSet::updateRider(string var, string val, double utc)
   for(unsigned int i=0; i<m_riders.size(); i++) {
     if(m_riders[i].getVar() == var) 
       ok = m_riders[i].updateValue(val, utc);
+  }
+  return(ok);
+}
+
+//------------------------------------------------------------
+// Procedure: updateRider()
+
+bool NodeRiderSet::updateRider(string var, string sval,
+			       double dval, double utc)
+{
+  bool ok = false;
+  for(unsigned int i=0; i<m_riders.size(); i++) {
+    if(m_riders[i].getVar() == var) {
+      if(sval == "") {
+	unsigned int prec = m_riders[i].getPrecision();
+	sval = doubleToString(dval, prec);
+      }
+      ok = m_riders[i].updateValue(sval, utc);	
+    }
   }
   return(ok);
 }

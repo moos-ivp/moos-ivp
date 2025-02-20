@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactLedger.cpp                                    */
-/*    DATE: Aug 31st 2022                                        */
+/*    DATE: Aug 31st 2024                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,26 +21,30 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cmath>
 #include <iostream>
 #include "ContactLedger.h"
 #include "LinearExtrapolator.h"
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
-#include "ACTable.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
 //---------------------------------------------------------
 // Constructor()
 
-ContactLedger::ContactLedger()
+ContactLedger::ContactLedger(unsigned int history_size)
 {
   // Config vars
   m_stale_thresh = -1;
+  m_history_size = history_size;
 
   // If a record has been received as recently as this value
   // don't bother calculating an extrapolated position.
-  m_extrap_thresh = 0.2; 
+  m_extrap_thresh = 0.02;
+  m_decay_start = 15;
+  m_decay_end   = 30;
   
   // State vars
   m_curr_utc = 0;
@@ -80,27 +84,14 @@ bool ContactLedger::setGeodesy(double dlat, double dlon)
 }
 
 //---------------------------------------------------------------
-// Procedure: addIgnoreVName()
+// Procedure: setRecord()
 
-bool ContactLedger::addIgnoreVName(string vname)
+void ContactLedger::setRecord(string vname, NodeRecord record)
 {
-  if(vname == "")
-    return(false);
+  m_map_records_rep[vname] = record;
 
-  m_ignore_vnames.insert(toupper(vname));
-  return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: addIgnoreGroup()
-
-bool ContactLedger::addIgnoreGroup(string group)
-{
-  if(group == "")
-    return(false);
   
-  m_ignore_groups.insert(toupper(group));
-  return(true);
+  extrapolate(vname);
 }
 
 //---------------------------------------------------------------
@@ -113,61 +104,20 @@ string ContactLedger::processNodeReport(string report,
 {
   NodeRecord record = string2NodeRecord(report);
 
-  bool ok = preCheckNodeRecord(record, whynot);
-  if(!ok)
-    return("");
-  
-  return(processNodeRecord(record, whynot));
-}
-
-//---------------------------------------------------------------
-// Procedure: precheckNodeReport()
-//      Note: Utiity for users of ContactLedger class that wish
-//            to (a) convert a node report msg to a record, (b)
-//            apply some criteria of their own before deciding
-//            to add it to the ledger, e.g., range/bng, before
-//            (c) finally adding it to the ledger. 
-
-NodeRecord ContactLedger::preCheckNodeReport(string report,
-					     string& whynot)
-{
-  NodeRecord record = string2NodeRecord(report);
-
-  if(!preCheckNodeRecord(record, whynot)) {
-    NodeRecord empty_record;
-    return(empty_record);
-  }
-
-  return(record);
-}
-
-//---------------------------------------------------------------
-// Procedure: preCheckNodeRecord()
-//   Purpose: (a) Sanity checks for required fields, (b) cross fill
-//            the coordinates if necessary.
-//      Note: This function modifies the incoming record.
-//            All records will have both Lat/Lon and X/Y at end.
-
-bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
-				       string& whynot)
-{
   // Check 1: Must have a name
-  if(record.getName() == "") {
-    whynot = "Missing vname";    
-    return(false);
-  }
-  
+  if(record.getName() == "")
+    whynot += "Missing vname.";    
+
   // Check 2: Must have a timestamp
-  if(!record.isSetTimeStamp()) {
-    whynot = "Missing timestamp";
-    return(false);
-  }
+  if(!record.isSetTimeStamp())
+    whynot += "Missing timestamp.";
 
   // Check 3: Must have either Lat/Lon or X/Y
-  if(!record.isSetLatLon() && !record.isSetXY()) {
-    whynot = "Missing both x/y and lat/lon";
-    return(false);
-  }
+  if(!record.isSetLatLon() && !record.isSetXY())
+    whynot += "Missing both x/y and lat/lon.";
+
+  if(whynot != "")
+    return("");
 
   // Cross-fill coords if one or the other is missing
   if(record.isSetLatLon() && !record.isSetXY())
@@ -175,7 +125,7 @@ bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
   else if(!record.isSetLatLon() && record.isSetXY())
     updateGlobalCoords(record);
 
-  return(true);
+  return(processNodeRecord(record, whynot));
 }
 
 //---------------------------------------------------------------
@@ -185,30 +135,88 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 					string& whynot)
 {
   m_total_reports++;
-
-  // Check 1: Check record min reqs, and cross-fill coords
-  if(!preCheckNodeRecord(record, whynot))
-    return("");
   
-  string vname = toupper(record.getName());
-  string group = toupper(record.getGroup());
-
-  // Check 2: Ignore vnames on ignore list, (ownship somtimes)
-  if(m_ignore_vnames.count(vname))
-    return("");
-
-  // Check 3: Ignore groups on ignore list, (red/blue team)
-  if((group != "") && m_ignore_groups.count(group))
-    return("");
+  string vname = record.getName();
   
   m_total_reports_valid++;
+
+  // ========================================================
+  // Part 1: Do some "Type-Fixing".
+  // Known types: kayak, auv, glider, ship, wamv, etc.
+  // ========================================================
+  string vtype = record.getType();
+  if(vtype == "uuv")
+    vtype = "auv";
+  else if(!isKnownVehicleType(vtype))
+    vtype = "ship";
+
+  if((vtype == "auv") || (vtype == "glider")) { 
+    if(!record.valid("depth")) {
+      whynot = "underwater vehicle type with no depth reported";
+      return("");
+    }
+  }
+  record.setType(vtype);
   
-  // Part 2: Receive the node reccord
+  // ========================================================
+  // Part 2: Add defaults lengths if field is missing.
+  // ========================================================
+  double vlen = record.getLength();
+  if(!record.valid("length") || (vlen <= 0)) {
+    if((vtype == "auv") || (vtype == "kayak") || (vtype == "heron"))
+      vlen = 3.0; // meters
+    else if(vtype == "glider")
+      vlen = 2.0; // meters
+    else if((vtype == "cray")  || (vtype == "bcray") ||
+	    (vtype == "crayx") || (vtype == "bcrayx"))
+      vlen = 1.5; // meters
+    else if(vtype == "ship")
+      vlen = 12; // meters
+    else if(vtype == "longship")
+      vlen = 15; // meters
+    else if(vtype == "wamv")
+      vlen = 6; // meters
+    else if(vtype == "smr")
+      vlen = 6; // meters
+  }
+  record.setLength(vlen);
+  
+
+  // ========================================================
+  // Part 3: Receive the node reccord
+  // ========================================================
   m_map_records_rep[vname] = record;
   m_map_records_ext[vname] = record;
   m_map_records_utc[vname] = m_curr_utc;
 
-  // Part 3: Determine skew and update stats
+  if(m_active_vname == "")
+    m_active_vname = vname;
+  
+  // ========================================================
+  // Part 4: Update the vehicle position history
+  // ========================================================
+  if(m_history_size > 0) {
+    double pos_x = record.getX();
+    double pos_y = record.getY();
+    
+    ColoredPoint point(pos_x, pos_y);
+    map<string,CPList>::iterator p2;
+    p2 = m_map_hist.find(vname);
+    if(p2 != m_map_hist.end()) {
+      p2->second.push_back(point);
+      if(p2->second.size() > m_history_size)
+	p2->second.pop_front();
+    }
+    else {
+      list<ColoredPoint> newlist;
+      newlist.push_back(point);
+      m_map_hist[vname] = newlist;
+    }
+  }
+
+  // ========================================================
+  // Part 5: Determine skew and update stats
+  // ========================================================
   double skew = m_curr_utc - record.getTimeStamp();
 
   m_map_skew_cnt[vname]++;
@@ -240,6 +248,63 @@ void ContactLedger::clearNode(string vname)
 {
   m_map_records_rep.erase(vname);
   m_map_records_ext.erase(vname);
+  m_map_records_utc.erase(vname);
+
+  m_map_records_total.erase(vname);
+  m_map_skew_min.erase(vname);
+  m_map_skew_max.erase(vname);
+  m_map_skew_cnt.erase(vname);
+  m_map_skew_avg.erase(vname);
+
+  m_map_hist.erase(vname);
+}
+
+//---------------------------------------------------------------
+// Procedure: clearAllNodes()
+
+void ContactLedger::clearAllNodes()
+{
+  m_map_records_rep.clear();
+  m_map_records_ext.clear();
+  m_map_records_utc.clear();
+
+  m_map_records_total.clear();
+  m_map_skew_min.clear();
+  m_map_skew_max.clear();
+  m_map_skew_cnt.clear();
+  m_map_skew_avg.clear();
+
+  m_map_hist.clear();
+}
+
+//---------------------------------------------------------------
+// Procedure: clearStaleNodes()
+
+void ContactLedger::clearStaleNodes()
+{
+  vector<string> keep_vnames;
+  clearStaleNodes(keep_vnames);
+}
+
+//---------------------------------------------------------------
+// Procedure: clearStaleNodes()
+
+void ContactLedger::clearStaleNodes(vector<string> keep_vnames)
+{
+  vector<string> stale_vnames;
+  
+  map<string,NodeRecord>::iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+    string vname = p->first;
+    if(vectorContains(keep_vnames, vname))
+      continue;
+    double utc_age = getUTCAge(vname);
+    if(utc_age > m_stale_thresh)
+      stale_vnames.push_back(vname);
+  }
+
+  for(unsigned int i=0; i<stale_vnames.size(); i++)
+    clearNode(stale_vnames[i]);
 }
 
 //---------------------------------------------------------------
@@ -255,6 +320,36 @@ void ContactLedger::extrapolate(double utc)
     string vname = p->first;
     extrapolate(vname);
   }
+}
+
+//---------------------------------------------------------------
+// Procedure: setActiveVName()
+
+void ContactLedger::setActiveVName(string vstr)
+{
+  // If given arg matches a known vname, then just set it
+  if(m_map_records_rep.count(vstr)) {
+    m_active_vname = vstr;
+    return;
+  }
+
+  // If the request is to cycle, then find the active vname and ++
+  if(vstr == "CYCLE_ACTIVE") {
+    map<string, NodeRecord>::iterator p;
+    for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+      string vname = p->first;
+      if(m_active_vname == "") 
+	m_active_vname = vname;
+      else if(vname == m_active_vname) {
+	p++;
+	if(p == m_map_records_rep.end())
+	  p = m_map_records_rep.begin();
+	m_active_vname = p->first;
+      }
+    }
+  }
+
+  // Otherwise just take no action
 }
 
 //---------------------------------------------------------------
@@ -291,6 +386,7 @@ void ContactLedger::extrapolate(string vname)
   // If reported record is very recent, then we're done
   double record_utc = record_rep.getTimeStamp();
   double elapsed = m_curr_utc - record_utc;
+  //cout << "elapsed:" << elapsed << endl;
   if(elapsed < m_extrap_thresh)
     return;
 
@@ -299,6 +395,8 @@ void ContactLedger::extrapolate(string vname)
   double y = record_rep.getY();
   double hdg = record_rep.getHeading();
   double spd = record_rep.getSpeed();
+
+  hdg = angle360(hdg);
   
   LinearExtrapolator extrapolator;
   extrapolator.setPosition(x, y, spd, hdg, record_utc);
@@ -354,36 +452,70 @@ bool ContactLedger::isStale(string vname, double thresh) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getAge()
-//   Purpose: Return age of the most recent report for the given
-//            vname BASED ON TIMESTAMP IN THE REPORT. So it may
-//            reflect discrepancy based on latency and differenc
-//            in clocks between the two vehicles.
-  
-double ContactLedger::getAge(string vname) const
+// Procedure: getUTC()
+//   Purpose: Return the UTC timestamp of the most recent report
+//            for the given vname. Note this is NOT the age of
+//            report, which is relative to current time. It is 
+//            NOT the time the report was received, which is 
+//            typically at higher number timestamp due to latency
+//            (but could be lower due to a clock discrepancy
+//            between vehiclels).
+//   Returns: UTC time in seconds if contact is known.
+//            0 otherwise.
+
+double ContactLedger::getUTC(string vname) const
 {
   map<string,NodeRecord>::const_iterator p;
   p = m_map_records_rep.find(vname);
   if(p == m_map_records_rep.end())
-    return(-1);
+    return(0);
 
   return(p->second.getTimeStamp());
 }
 
 //---------------------------------------------------------------
-// Procedure: getAgeReceived()
+// Procedure: getUTCAge()
 //   Purpose: Return age of the most recent report for the given
-//            vname based on the local time when addaed to the 
-//            ledger.
+//            vname BASED ON TIMESTAMP IN THE REPORT.
   
-double ContactLedger::getAgeReceived(string vname) const
+double ContactLedger::getUTCAge(string vname) const
+{
+  double utc = getUTC(vname);
+  if(utc == 0)
+    return(-1);
+  
+  return(m_curr_utc - utc);
+}
+
+//---------------------------------------------------------------
+// Procedure: getUTCReceived()
+//   Purpose: Return the UTC timestamp of the most recent report
+//            for the given vname based on the local time when
+//            added to the ledger. (Not the timestamp contained
+//            within the record message itself)
+  
+double ContactLedger::getUTCReceived(string vname) const
 {
   map<string,double>::const_iterator p;
   p = m_map_records_utc.find(vname);
   if(p == m_map_records_utc.end())
-    return(-1);
+    return(0);
 
-  double utc = p->second;
+  return(p->second);
+}
+
+//---------------------------------------------------------------
+// Procedure: getUTCAgeReceived()
+//   Purpose: Return age of the most recent report for the given
+//            vname based on the local time when added to the 
+//            ledger.
+  
+double ContactLedger::getUTCAgeReceived(string vname) const
+{
+  double utc = getUTCReceived(vname);
+  if(utc == 0)
+    return(-1);
+  
   return(m_curr_utc - utc);
 }
 
@@ -392,8 +524,6 @@ double ContactLedger::getAgeReceived(string vname) const
 
 bool ContactLedger::hasVName(string vname) const
 {
-  vname = toupper(vname);
-  
   if(m_map_records_rep.count(vname) == 0)
     return(false);
 
@@ -405,8 +535,6 @@ bool ContactLedger::hasVName(string vname) const
 
 bool ContactLedger::hasVNameValid(string vname) const
 {
-  vname = toupper(vname);
-  
   map<string,NodeRecord>::const_iterator q;
   q = m_map_records_rep.find(vname);
   if(q==m_map_records_rep.end())
@@ -421,8 +549,6 @@ bool ContactLedger::hasVNameValid(string vname) const
 bool ContactLedger::hasVNameValidNotStale(string vname,
 					  double thresh) const
 {
-  vname = toupper(vname);
-  
   map<string,NodeRecord>::const_iterator q;
   q = m_map_records_rep.find(vname);
   if(q==m_map_records_rep.end())
@@ -562,6 +688,18 @@ string ContactLedger::getType(string vname) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getColor()
+
+string ContactLedger::getColor(string vname) const
+{
+  if(!hasVName(vname))
+    return("");
+
+  NodeRecord record = getRecord(vname, false);
+  return(record.getColor());
+}
+
+//---------------------------------------------------------------
 // Procedure: getSpec()
 
 string ContactLedger::getSpec(string vname) const
@@ -580,19 +718,17 @@ string ContactLedger::getSpec(string vname) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getIgnoreVNames()
+// Procedure: getVHist()
 
-string ContactLedger::getIgnoreVNames() const
+CPList ContactLedger::getVHist(string vname) const
 {
-  return(stringSetToString(m_ignore_vnames));
-}
-
-//---------------------------------------------------------------
-// Procedure: getIgnoreGroups()
-
-string ContactLedger::getIgnoreGroups() const
-{
-  return(stringSetToString(m_ignore_groups));
+  map<string,CPList>::const_iterator p=m_map_hist.find(vname);
+  if(p==m_map_hist.end()) {
+    CPList empty_cplist;
+    return(empty_cplist);
+  }
+  else
+    return(p->second);
 }
 
 //---------------------------------------------------------------
@@ -606,9 +742,9 @@ set<string> ContactLedger::getVNamesByGroup(string group) const
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
     string vname = p->first;
     string vgroup = p->second.getGroup();
-    if(tolower(group) == tolower(vgroup))
+    if(group == vgroup)
       rset.insert(vname);
-    else if(tolower(group) == tolower("all"))
+    else if(group == "all")
       rset.insert(vname);
   }
 
@@ -654,8 +790,6 @@ vector<string> ContactLedger::getVNamesStale(double thresh) const
 
 unsigned int ContactLedger::totalReports(string vname) const
 {
-  vname = toupper(vname);
-
   map<string, unsigned int>::const_iterator p;
   p = m_map_skew_cnt.find(vname);
   if(p != m_map_skew_cnt.end())
@@ -678,6 +812,7 @@ bool ContactLedger::groupMatch(string vname1, string vname2) const
 //---------------------------------------------------------------
 // Procedure: getReportLags()
 
+#if 0
 vector<string> ContactLedger::getReportLags() const
 {
   ACTable actab(3);
@@ -695,15 +830,13 @@ vector<string> ContactLedger::getReportLags() const
   vector<string> svector = actab.getTableOutput();
   return(svector);
 }
-
+#endif
 
 //---------------------------------------------------------------
 // Procedure: getRecord()
 
 NodeRecord ContactLedger::getRecord(string vname, bool extrap) const
 {
-  vname = toupper(vname);
-  
   if(extrap) {
     map<string,NodeRecord>::const_iterator q=m_map_records_ext.find(vname);
     if(q!=m_map_records_ext.end())
@@ -777,3 +910,86 @@ void ContactLedger::updateGlobalCoords(NodeRecord& record)
   record.setLat(nav_lat);
   record.setLon(nav_lon);  
 }    
+
+
+//-------------------------------------------------------------
+// Procedure: getWeightedCenter()
+
+bool ContactLedger::getWeightedCenter(double& x, double& y) const
+{
+  double total_x = 0;
+  double total_y = 0;
+
+  unsigned int msize = m_map_records_rep.size();
+  if(msize == 0) {
+    x = 0;
+    y = 0;
+    return(false);
+  }
+  
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_records_rep.begin();
+      p!=m_map_records_rep.end(); p++) {
+    total_x += p->second.getX();
+    total_y += p->second.getY();
+  }
+
+  x = total_x / (double)(msize);
+  y = total_y / (double)(msize);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: getSummary()
+//
+// Example: "now:4, max:12, reps:675, who:cal,ben,abe+1"
+
+string ContactLedger::getSummary(unsigned int amt) const
+{
+  string summary = "now:";
+  summary += uintToString(m_map_records_rep.size());
+  summary += ", reps:";
+  summary += uintToString(m_total_reports);
+
+  if(m_total_reports_valid > m_total_reports) {
+    summary += "/";
+    summary += uintToString(m_total_reports_valid);
+  }
+
+  summary += ", who:";
+  vector<string> vnames = getVNames();
+  for(unsigned int i=0; (i<vnames.size() && (i<amt)); i++) {
+    if(i != 0)
+      summary += ",";
+    summary += (vnames[i]);
+  }
+
+  return(summary);
+}
+
+//-------------------------------------------------------------
+// Procedure: getClosestVehicle()
+
+string ContactLedger::getClosestVehicle(double mx, double my) const
+{
+  if(m_map_records_rep.size() == 0)
+    return("");
+
+  double closest_range = -1;
+  string closest_vname;
+  
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+    double vx = p->second.getX();
+    double vy = p->second.getY();
+    double range = hypot(vx-mx, vy-my);
+    if((closest_range == -1) || (range < closest_range)) {
+      closest_range = range;
+      closest_vname = p->second.getName();
+    }      
+  }
+
+  return(closest_vname);
+}
+

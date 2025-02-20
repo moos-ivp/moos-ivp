@@ -999,8 +999,6 @@ void PMV_GUI::updateXY()
   string crs = mviewer->getStringInfo("course", 1);
   string dep = mviewer->getStringInfo("depth", 1);
   string age_ais = mviewer->getStringInfo("age_ais", 2);
-  string range = mviewer->getStringInfo("range", 1);
-  string bearing = mviewer->getStringInfo("bearing", 2);
   if(age_ais == "-1")
     age_ais = "n/a";
 
@@ -1017,9 +1015,6 @@ void PMV_GUI::updateXY()
 
   time->value(time_str.c_str());
   warp->value(swarp.c_str());
-
-  //v_range->value(range.c_str());
-  //v_bearing->value(bearing.c_str());
 
   time->redraw();
   warp->redraw();
@@ -3150,20 +3145,22 @@ void PMV_GUI::resizeWidgets()
   if(content_mode == "appcast") {
     m_brw_nodes->color(color_back);
     m_brw_nodes->textcolor(color_text);
-    m_brw_nodes->position(0);    
+    m_brw_nodes->position(0); 
+    //m_brw_nodes->vposition(0);    // changed from position mikerb 1/11/25
     m_brw_procs->color(color_back);
     m_brw_procs->textcolor(color_text);
-    m_brw_procs->position(0);
+    //m_brw_procs->position(0);
     m_brw_casts->color(color_back);
     m_brw_casts->textcolor(color_text);
   }
   else if(content_mode == "realmcast") {
     m_rc_brw_nodes->color(color_back);
     m_rc_brw_nodes->textcolor(color_text);
-    m_rc_brw_nodes->position(0);    
+    m_rc_brw_nodes->position(0); 
+    //m_rc_brw_nodes->vposition(0); // changed from position mikerb 1/11/25
     m_rc_brw_procs->color(color_back);
     m_rc_brw_procs->textcolor(color_text);
-    m_rc_brw_procs->position(0);
+    //m_rc_brw_procs->position(0);
     m_rc_brw_casts->color(color_back);
     m_rc_brw_casts->textcolor(color_text);
   }

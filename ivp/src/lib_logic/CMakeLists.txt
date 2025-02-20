@@ -10,14 +10,17 @@ SET(SRC
   LogicBuffer.cpp
   ParseNode.cpp
   InfoBuffer.cpp
+  LedgerSnap.cpp
 )
 
 SET(HEADERS
   ConditionalParam.h
-  InfoBuffer.h
   LogicCondition.h
   LogicUtils.h
+  LogicBuffer.h
   ParseNode.h
+  InfoBuffer.h
+  LedgerSnap.h
 )
 
 # Build Library

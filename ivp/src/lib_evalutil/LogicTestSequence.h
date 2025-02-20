@@ -48,6 +48,10 @@ class LogicTestSequence
 
   std::string getStatus() const {return(m_status);}
 
+  unsigned int leadConditions(unsigned int) const;
+  unsigned int passConditions(unsigned int) const;
+  unsigned int failConditions(unsigned int) const;
+  
   bool enabled() const     {return(m_enabled);}
   bool isEvaluated() const {return(m_evaluated);}
   bool isSatisfied() const {return(m_satisfied);}

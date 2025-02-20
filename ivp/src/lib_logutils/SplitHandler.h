@@ -41,11 +41,19 @@ class SplitHandler
   void setProgress(bool v)         {m_progress=v;}
   void setDirectory(std::string s) {m_given_dir=s;}
   void setMaxFilePtrCache(unsigned int);
-
+  bool addDetachedPair(std::string);
+  bool addDetachedPair(std::string, std::string);
+  
  protected:
   bool handlePreCheckSplitDir();
   bool handleMakeSplitFiles();
   bool handleMakeSplitSummary();
+
+  bool handleSplitLine(const std::string& varname,
+		       const std::string& rawline);
+  
+  std::string detached(std::string varname);
+  std::set<std::string> detachedSet(std::string varname);
   
  protected: // Config variables
   std::string  m_alog_file;
@@ -53,6 +61,9 @@ class SplitHandler
   bool         m_verbose;
   bool         m_progress;
   unsigned int m_max_cache;
+
+  std::map<std::string, std::string> m_map_detached_pairs;
+  std::map<std::string, std::set<std::string> > m_map_dpairs;
   
  protected: // State variables
   std::string m_basedir;

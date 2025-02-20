@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <iterator>
 #include "MBUtils.h"
 #include "HashUtils.h"
@@ -53,6 +54,7 @@ bool MissionHash_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key  = msg.GetKey();
+    string sval = msg.GetString(); 
 
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
@@ -61,12 +63,15 @@ bool MissionHash_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
-    string sval = msg.GetString(); 
 #endif
 
     bool handled = true;
     if(key == "RESET_MHASH") 
       handled = setMissionHash();    
+    else if(key == "DB_CLIENTS") {
+      if(strContains(sval, "pMarineViewer"))
+	reportRunWarning("pMissionHash and pMarineViewer both running");
+    }
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
       handled = false;
 
@@ -138,11 +143,17 @@ bool MissionHash_MOOSApp::OnStartUp()
 	m_mhash_short_var = "";
     }
 
-
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
   }
+
+  if(m_mission_hash == m_mhash_short_var) {
+    reportUnhandledConfigWarning("mhash_short_var is in use. Disabling.");
+    m_mhash_short_var = "";
+  }
+  
+  srand(time(NULL) + getpid());
 
   setMissionHash();
   registerVariables();	
@@ -156,6 +167,7 @@ void MissionHash_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   Register("RESET_MHASH");
+  Register("DB_CLIENTS");
 }
 
 //----------------------------------------------------------------------

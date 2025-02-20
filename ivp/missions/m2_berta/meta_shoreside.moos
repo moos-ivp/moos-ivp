@@ -16,7 +16,7 @@ Processconfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+	Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
   Run = pShare          @ NewConsole = false
@@ -47,6 +47,7 @@ ProcessConfig = uFldShoreBroker
   qbridge  = MOOS_MANUAL_OVERRIDE, AVOID, UP_LOITER
   qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
   qbridge  = CONTACT_INFO, NODE_GROUP_UPDATE
+  qbridge  = BHV_ABLE_FILTER
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -152,6 +153,9 @@ ProcessConfig = pMarineViewer
 	scope = REALMCAST_REQ_GILDA
 	scope = REALMCAST_REQ_HENRY
 	
+  left_context[disable] = BHV_ABLE_FILTER_$[UP_VNAME_CLOSEST] = contact=abe, action=disable
+
+  left_context[disable] = BHV_ABLE_FILTER_$[UP_VNAME_CLOSEST] = contact=abe, action=disable
   left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
   left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
   left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true

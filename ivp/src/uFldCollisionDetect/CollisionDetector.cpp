@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionDetector.cpp                                */
 /*    DATE: Dec 21st 2015                                        */
+/*    DATE: Dec 30st 2024 Added ContactLedger in CPAMonitor      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -77,14 +78,24 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
     string key    = msg.GetKey();
     string sval   = msg.GetString(); 
 
+    bool   handled = true;
+    string whynot;
+
     if(key == "NODE_REPORT") 
-      handleMailNodeReport(sval);
+      handled = handleMailNodeReport(sval, whynot);
     if(key == "UCD_RESET") 
       m_cpa_monitor.resetClosestRange();
     else 
       updateInfoBuffer(msg);
+
+    if(!handled) {
+      string warning = "Bad Mail: " + key;
+      if(whynot != "")
+	warning += " " + whynot;
+      reportRunWarning(warning);
+    }
   }
-   return(true);
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -111,6 +122,8 @@ bool CollisionDetector::Iterate()
     if(closest_range > 0)
       Notify("UCD_CLOSEST_RANGE", closest_range);
   }
+
+  cout << "closest_range:" << m_cpa_monitor.getClosestRange() << endl;
   
   if(m_post_closest_range_ever) {
     double closest_range_ever = m_cpa_monitor.getClosestRangeEver();
@@ -140,11 +153,10 @@ bool CollisionDetector::Iterate()
 
 void CollisionDetector::postRings()
 {
-  set<string> vnames = m_cpa_monitor.getVNames();
+  vector<string> vnames = m_cpa_monitor.getVNames();
   
-  set<string>::iterator p;
-  for(p=vnames.begin(); p!=vnames.end(); p++) {
-    string vname = *p;
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
     NodeRecord record = m_cpa_monitor.getVRecord(vname);
     if(record.valid() && (vname != "badguy")) {
       double x = record.getX();
@@ -533,9 +545,6 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
   }
 }
 
-
-
-
 //-----------------------------------------------------------
 // Procedure: checkconditions()
 //   Purpose: Determine if all the logic conditions in the vector
@@ -600,13 +609,14 @@ bool CollisionDetector::updateInfoBuffer(CMOOSMsg &msg)
 //------------------------------------------------------------
 // Procedure: handleMailNodeReport()
 
-void CollisionDetector::handleMailNodeReport(string sval)
+bool CollisionDetector::handleMailNodeReport(string report,
+					     string& whynot)
 {
   // Part 1: inject the node report into the CPAMonitor
   m_total_node_reports++;
-  bool ok = m_cpa_monitor.handleNodeReport(sval);
+  bool ok = m_cpa_monitor.handleNodeReport(report, whynot);
   if(!ok) 
-    reportRunWarning("Unhandled Node Report:" + sval);
+    return(false);
 
   // Part 2: The first time we deal with a particular vehicle, we 
   // post the parameter summary to be sent to that vehicle. We do
@@ -614,12 +624,13 @@ void CollisionDetector::handleMailNodeReport(string sval)
   // be sure that the other vehicle is online when this app starts
   // up. But now that we have received a node report from that 
   // vehicle, we can be pretty sure it will get this one-time msg.
-  string vname = tokStringParse(sval, "NAME", ',', '=');
+  string vname = tokStringParse(report, "NAME", ',', '=');
   if(!vectorContains(m_notified_vehicles, vname)) {
     m_notified_vehicles.push_back(vname);
     vname = toupper(vname);
     Notify("COLLISION_DETECT_PARAMS_" + vname, m_param_summary);
   }
+  return(true);
 }
 
 
@@ -694,6 +705,10 @@ bool CollisionDetector::buildReport()
   string cr_str  = doubleToStringX(closest_range,2);
   string cre_str = doubleToStringX(closest_range_ever,2);
 
+  m_msgs << endl;
+  m_msgs << "Ledger: " << m_cpa_monitor.getLedgerSummary() << endl;
+  m_msgs << endl;
+
   m_msgs << "============================================" << endl;
   m_msgs << "State Overall:                              " << endl;
   m_msgs << "============================================" << endl;
@@ -730,4 +745,3 @@ bool CollisionDetector::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
-

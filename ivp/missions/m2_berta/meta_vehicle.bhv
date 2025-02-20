@@ -72,16 +72,22 @@ Behavior = BHV_AvdColregsV22
 	       //match_group = alpha
         //  match_type = mokai
 
+	can_disable = true
+	
 	exit_on_filter_group = true
 	
 	post_per_contact_info = true
 	
   use_refinery = true
 
+   //     pwt_outer_dist = 15
+   //     pwt_inner_dist = 5
+   //     completed_dist = 20
         pwt_outer_dist = 80
         pwt_inner_dist = 50
         completed_dist = 85
-     min_util_cpa_dist = 10
+
+  min_util_cpa_dist = 10
      max_util_cpa_dist = 18
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0

@@ -29,7 +29,6 @@
 #include "FileBuffer.h"
 #include "ColorParse.h"
 #include "XYFormatUtilsPoly.h"
-#include "NodeRecordUtils.h"
 #include "ObstacleFieldGenerator.h"
 
 using namespace std;
@@ -97,6 +96,8 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
 
+  m_ledger.setCurrTimeUTC(m_curr_time);
+
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
@@ -112,7 +113,8 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-    bool handled = true;
+    bool   handled = true;
+    string whynot;
     if(key=="PMV_CONNECT")
       m_obs_refresh_needed = true;
     else if(key=="OBM_CONNECT")
@@ -122,12 +124,16 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key=="UFOS_POINT_SIZE")
       handled = handleMailPointSize(sval);
     else if(key=="NODE_REPORT") 
-      handled = handleMailNodeReport(sval);
+      handled = handleMailNodeReport(sval, whynot);
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
       handled = false;
     
-    if(!handled) 
-      reportRunWarning("Unhandled Mail: " + key + "=" + sval);    
+    if(!handled) {
+      string warning = "Bad Mail: " + key;
+      if(whynot != "")
+	warning += " " + whynot;
+      reportRunWarning(warning);
+    }
   }
   
   return(true);
@@ -149,6 +155,8 @@ bool ObstacleSim::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  m_ledger.setCurrTimeUTC(m_curr_time);
+
   updateVRanges();
   updateObstaclesField();
   updateObstaclesRefresh();
@@ -169,6 +177,18 @@ bool ObstacleSim::Iterate()
 bool ObstacleSim::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
+
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -277,20 +297,17 @@ void ObstacleSim::registerVariables()
 //------------------------------------------------------------
 // Procedure: handleMailNodeReport()
 
-bool ObstacleSim::handleMailNodeReport(string node_report)
+bool ObstacleSim::handleMailNodeReport(string report, string& whynot)
 {
-  NodeRecord record = string2NodeRecord(node_report);
-  if(!record.valid())
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(whynot != "")
     return(false);
-  string vname = record.getName();
 
   // If this is the first node report from this vehicle, consider
   // it also to be a query for obstacles.
-  if(m_map_vrecords.count(vname) == 0) 
+  if(m_ledger.totalReports(vname) == 1)
     m_obs_refresh_needed = true;
   
-  // Update the node record list for this vehicle
-  m_map_vrecords[vname] = record;
   return(true);
 }
 
@@ -361,6 +378,10 @@ bool ObstacleSim::handleConfigObstacleFile(string filename)
     reportConfigWarning("Error reading: " + filename);
     return(false);
   }
+
+  // Tell the logger to log a copy of the file
+  string command  = "COPY_FILE_REQUEST = " + filename;
+  Notify("PLOGGER_CMD", command);
 
   for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(lines[i]);
@@ -461,14 +482,13 @@ void ObstacleSim::updateVRanges()
 {
   // Part 1: calculate the new min_vrange_to_region
   double min_vrange = -1;
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string     vname = p->first;
-    NodeRecord record = p->second;
 
-    double vx = record.getX();
-    double vy = record.getY();
-
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
+    double vx = m_ledger.getX(vname);
+    double vy = m_ledger.getY(vname);
+    
     if(m_poly_region.is_convex()) {
       if(!m_poly_region.contains(vx, vy)) {
 	double range = m_poly_region.dist_to_poly(vx, vy);
@@ -581,7 +601,6 @@ void ObstacleSim::updateObstaclesRefresh()
   }  
 }
 
-
 //------------------------------------------------------------
 // Procedure: postObstaclesRefresh()
 //     Notes: o VIEW_POLYGON info is likely for GUI apps like PMV
@@ -654,14 +673,14 @@ void ObstacleSim::postObstaclesErase()
 
 void ObstacleSim::postPoints()
 {
-#if 1
-  map<string,NodeRecord>::iterator p;
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname  = p->first;
-    string uvname = toupper(p->first);
-    double osx = p->second.getX();
-    double osy = p->second.getY();
-    string vcolor = p->second.getColor("yellow");
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+  
+    string vname  = vnames[i];
+    string uvname = toupper(vname);
+    double osx    = m_ledger.getX(vname);
+    double osy    = m_ledger.getY(vname);
+    string vcolor = m_ledger.getColor(vname);
     
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].dist_to_poly(osx,osy) <= m_sensor_range) {
@@ -693,7 +712,7 @@ void ObstacleSim::postPoints()
       }
     }
   }
-#endif
+
 #if 0
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
     for(unsigned int j=0; j<m_rate_points; j++) {

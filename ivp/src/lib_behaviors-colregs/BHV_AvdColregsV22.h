@@ -42,6 +42,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   bool         onRunStatePrior();
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onDisabledState();
   void         onRunToIdleState();
   void         onIdleState();
   void         onInactiveState();

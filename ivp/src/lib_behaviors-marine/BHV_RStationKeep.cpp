@@ -142,7 +142,7 @@ bool BHV_RStationKeep::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onIdleState()
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
 //            a pending new center is declared, and set to the 
@@ -250,17 +250,11 @@ IvPFunction *BHV_RStationKeep::onRunState()
 
 bool BHV_RStationKeep::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4, ok5, ok6;
-  // ownship position in meters from some 0,0 reference point.
-  m_osx = getBufferDoubleVal("NAV_X", ok1);
-  m_osy = getBufferDoubleVal("NAV_Y", ok2);
-
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2) {
-    postEMessage("No ownship X/Y info in info_buffer.");
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
-  }
-
+  
+  bool ok3, ok4, ok5, ok6;
   m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok3);
   m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok4);
   m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok5);
@@ -275,7 +269,7 @@ bool BHV_RStationKeep::updateInfoIn()
   if(!ok6)
     postWMessage("No contact NAV_SPEED in info_buffer.");
 
-  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6)
+  if(!ok3 || !ok4 || !ok5 || !ok6)
     return(false);
   
   double adjusted_angle = angle360(m_station_angle + m_cnh);

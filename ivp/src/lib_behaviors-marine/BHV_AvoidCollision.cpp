@@ -39,7 +39,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
@@ -84,7 +84,7 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_AvoidCollision::setParam(string param, string param_val) 
 {
@@ -164,6 +164,8 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     return(setBooleanOnString(m_check_validity, param_val));
   else if(param == "pcheck_thresh")
     return(setNonNegDoubleOnString(m_pcheck_thresh, param_val));
+  else if(param == "can_disable") 
+    return(setBooleanOnString(m_can_disable, param_val));
 
   // Safety check, in case user did not explicitly set completed dist
   if(m_completed_dist < m_pwt_outer_dist)
@@ -198,6 +200,16 @@ void BHV_AvoidCollision::onHelmStart()
   request = augmentSpec(request, getFilterSummary());
   
   postMessage("BCM_ALERT_REQUEST", request);
+}
+
+//-----------------------------------------------------------
+// Procedure: onDisabledState()
+
+void BHV_AvoidCollision::onDisabledState()
+{
+  postViewableBearingLine(false);
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
+    setComplete();
 }
 
 //-----------------------------------------------------------
@@ -274,7 +286,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   else
     ipf = getAvoidIPF();
 
-  
   if(ipf) {
     ipf->getPDMap()->normalize(0, 100);
     ipf->setPWT(m_relevance * m_priority_wt);
