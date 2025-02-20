@@ -79,6 +79,8 @@ class GenericSensor_MOOSApp : public AppCastingMOOSApp
   std::map<std::string, NodeRecord>     m_map_node_records;
   // Map from vehicle name to latest node report timestamp;
   std::map<std::string, double>         m_map_last_node_update;
+
+
   // Map from vehicle name to latest sensor request from the vehicle;
   std::map<std::string, double>         m_map_last_sensor_req;
 

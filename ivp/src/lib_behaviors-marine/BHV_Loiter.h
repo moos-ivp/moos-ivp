@@ -93,10 +93,6 @@ private:  // State Variables
   double       m_eta_to_poly;      // Curr ownship eta to poly (mtrs)
   double       m_ptx;              // Curr waypt   x/lon (mtrs)
   double       m_pty;              // Curr waypt   y/lat (mtrs)
-  double       m_osx;              // Curr owhship x/lon (mtrs)
-  double       m_osy;              // Curr ownship y/lat (mtrs)
-  double       m_osh;              // Curr ownship Heading (degs)
-  double       m_osv;              // Curr ownship Speed (m/s)
 
   double       m_patience;         // [1,99]
   

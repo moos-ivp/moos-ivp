@@ -53,6 +53,9 @@ std::vector<std::string> mergeVectors(std::vector<std::string>,
 				      std::vector<std::string>);
 std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 
+std::set<std::string> mergeSets(const std::set<std::string>,
+				const std::set<std::string>);
+
 bool vectorContains(const std::vector<std::string>&, 
 		    const std::string&,
 		    bool case_sensitive=true);
@@ -128,6 +131,8 @@ std::string tokStringParse(const std::string&, const std::string&,
 			   char gsep=',', char lsep='=');
 double tokDoubleParse(const std::string&, const std::string&, 
 		      char gsep=',', char lsep='=');
+std::set<std::string> tokStringAll(const std::string&,
+				   char gsep=',', char lsep='=');
 
 double minElement(const std::vector<double>&);
 double maxElement(const std::vector<double>&);
@@ -208,9 +213,13 @@ std::string stringSetToString(std::set<std::string>, char sep_char=',');
 std::string stringVectorToString(std::vector<std::string>, char sep_char=',');
 std::string uintVectorToString(std::vector<unsigned int>, char sep_char=',');
 
+std::vector<std::string> stringSetToVector(std::set<std::string>);
+
 std::string intToMonth(int, bool brief=false);
 
 bool isValidTurn(const std::string&);
+
+std::string digitsOnly(const std::string&);
 
 #endif
 

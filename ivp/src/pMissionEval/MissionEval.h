@@ -28,8 +28,6 @@
 #include <vector>
 #include <string>
 #include "VarDataPair.h"
-#include "VCheckSet.h"
-#include "LogicAspect.h"
 #include "MailFlagSet.h"
 #include "InfoBuffer.h"
 #include "LogicTestSequence.h"
@@ -51,6 +49,9 @@ class MissionEval : public AppCastingMOOSApp
   bool buildReport();
 
 protected: // Utility functions
+  void handleMailMissionHash(std::string, double msg_time);
+  bool handleConfigColumnFormat(std::string);
+  
   void postResults();
   void postFlags(const std::vector<VarDataPair>&);
 
@@ -70,19 +71,27 @@ protected: // Utility functions
   std::vector<VarDataPair> m_pass_flags;
   std::vector<VarDataPair> m_fail_flags;
 
-  bool        m_result_flags_posted;
-  std::string m_mission_result;
-
   std::vector<std::string> m_report_columns;
   std::string m_report_file;
+  std::string m_report_line_format;
+
+  std::string m_mission_form; // e.g. alpha,berta,legrun,joust   
+  std::string m_mission_mod; // e.g. alpha,berta,legrun,joust   
   
  private: // State variables 
   LogicTestSequence m_logic_tests;
   std::string       m_logic_tests_status_prev;
-  
-  VCheckSet   m_vcheck_set;
-  std::string m_vcheck_status_prev;
 
+  bool        m_result_flags_posted;
+  std::string m_mission_result;
+
+  std::string m_report_latest_line;
+  
+  std::string m_mission_hash;
+  std::string m_mhash_short;
+  double      m_mhash_utc;
+  double      m_db_uptime;
+  
   std::set<std::string> m_macro_vars;
   
   InfoBuffer *m_info_buffer;

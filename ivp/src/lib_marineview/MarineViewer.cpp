@@ -44,6 +44,7 @@
 #include "Shape_Kayak.h"
 #include "Shape_WAMV.h"
 #include "Shape_Heron.h"
+#include "Shape_SMR.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
 #include "Shape_MOKAI.h"
@@ -829,6 +830,21 @@ bool MarineViewer::coordInViewX(double x, double y)
 //-------------------------------------------------------------
 // Procedure: drawCommonVehicle()
 
+void MarineViewer::drawCommonVehicle(const NodeRecord& record, 
+				     const ColorPack& body_color,
+				     const ColorPack& vname_color,
+				     bool  vname_draw, 
+				     unsigned int outer_line,
+				     double transparency)
+{
+  BearingLine bline;
+  drawCommonVehicle(record, bline, body_color, vname_color, vname_draw,
+		    outer_line, transparency);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawCommonVehicle()
+
 void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb, 
 				     const BearingLine& bng_line, 
 				     const ColorPack& body_color,
@@ -918,6 +934,34 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     glTranslatef(-cx, 0, 0);
     drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
     drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
+  }
+  else if(vehibody == "smr") {
+    //ColorPack dk_gray(0.4, 0.4, 0.6);
+    ColorPack dk_gray(0.3, 0.3, 0.3);
+    ColorPack lt_gray(0.6, 0.6, 0.6);
+    ColorPack yellow(1, 1, 0);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_SMR_Length);
+      factor_y *= (vlength / g_SMR_Length);
+    }
+    double cx = g_SMR_CtrX * factor_x;
+    double cy = g_SMR_CtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    drawGLPoly(g_SMR_Body, g_SMR_BodySize, body_color, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_IBody, g_SMR_IBodySize, dk_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_IMBody, g_SMR_IMBodySize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_MotorA, g_SMR_MotorASize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_MotorB, g_SMR_MotorBSize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
+
+
+    glTranslatef(cx, cy, 0);
+    //glTranslatef(2*cx, 0, 0);
+    //drawGLPoly(g_heronBody, g_heronBodySize, dk_gray, 0, factor_x, transparency);
+    //glTranslatef(-cx, 0, 0);
+    //drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
+    //drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
   }
   else if(vehibody == "mokai") {
     if(vlength > 0) {
@@ -1133,6 +1177,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     gl_draw_aux(vname);
   }
 
+#if 0
   if(bng_line.isValid() && m_vehi_settings.isViewableBearingLines()) {
     double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
     double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
@@ -1158,6 +1203,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     glEnd();
     glLineWidth(1);
   }
+#endif
 
   glPopMatrix();
 }
@@ -1554,9 +1600,12 @@ bool MarineViewer::initGeodesy(double lat, double lon)
     return(false);
 
   bool initialized = m_geodesy.Initialise(lat, lon);
-  if(initialized)
+  if(initialized) {
+    m_datum_lat = lat;
+    m_datum_lon = lon;
     m_geodesy_initialized = true;
-
+  }
+    
   return(initialized);
 }
 
@@ -1583,11 +1632,7 @@ bool MarineViewer::initGeodesy(const string& str)
   double dlat = atof(slat.c_str());
   double dlon = atof(slon.c_str());
 
-  bool initialized = m_geodesy.Initialise(dlat, dlon);
-  if(initialized)
-    m_geodesy_initialized = true;
-
-  return(initialized);
+  return(initGeodesy(dlat, dlon));
 }
 
 //-------------------------------------------------------------
@@ -2076,17 +2121,21 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   // the publisher of the seglist requested it not to be viewed, by
   // setting the color to be "invisible".
   bool draw_labels = m_geo_settings.viewable("seglist_viewable_labels");
+
   if(draw_labels && labl_c.visible()) {
     string plabel = segl.get_msg();
     if(plabel == "")
       plabel = segl.get_label();
     if(plabel != "") {
-      double cx = segl.get_avg_x() * m_back_img.get_pix_per_mtr_x();
-      //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-      double my = segl.get_max_y() * m_back_img.get_pix_per_mtr_y();
+      double cx = segl.get_avg_x();
+      double cy = segl.get_max_y();
+
+      double px = cx * m_back_img.get_pix_per_mtr_x();
+      double py = cy * m_back_img.get_pix_per_mtr_y();
       
-      if(coordInView(cx,my)) {
-	glTranslatef(cx, my, 0);
+      if(coordInView(cx,cy)) {
+	//glTranslatef(cx, cy, 0);
+	glTranslatef(px, py, 0);
 	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
 	gl_font(1, 10);
 	glRasterPos3f(0, 0, 0);
@@ -2688,6 +2737,8 @@ void MarineViewer::drawCircle(XYCircle circle, double timestamp)
   if(circle.expired(timestamp) || !circle.active())
     return;
 
+  //cout << circle.get_duration();
+  
   ColorPack edge_c("blue");
   ColorPack labl_c("white");
   ColorPack fill_c("invisible");

@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeReporter.cpp                                     */
-/*    DATE: Feb 13th 2006 (TransponderAIS)                       */
+/*    BORN: Feb 13th 2006 (TransponderAIS)                       */
+/*    DATE: Oct 3rd 2024                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -27,10 +28,12 @@
 #include <algorithm>
 #include "NodeReporter.h"
 #include "MBUtils.h"
+#include "JsonUtils.h"
 #include "AngleUtils.h"
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
 #include "ACBlock.h"
+#include "LogUtils.h"
 
 // As of Release 15.4 this is now set in CMake, defaulting to be defined
 // #define USE_UTM 
@@ -75,6 +78,9 @@ NodeReporter::NodeReporter()
 
   m_crossfill_policy = "literal";
 
+  // Post 24.8: Node reports contain just LAT/LON
+  m_coord_policy_global = false; 
+  
   m_allow_color_change = false;
   
   // Timestamps used for executing the "use-latest" crossfill policy 
@@ -369,6 +375,7 @@ bool NodeReporter::OnStartUp()
     if((param == "platform_type") ||           // Preferred
        (param == "vessel_type")) {             // Deprecated
       m_record.setType(value);
+      m_record_gt.setType(value);
       handled = true;
     }
     else if((param == "platform_color") && isColor(value)) { 
@@ -380,13 +387,38 @@ bool NodeReporter::OnStartUp()
 	    (param =="vessel_length")) {       // Deprecated
       if(isNumber(value) && (dval >= 0)) {
 	m_record.setLength(dval);
+	m_record_gt.setLength(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_beam") {
+      if(isNumber(value) && (dval >= 0)) {
+	m_record.setBeam(dval);
+	m_record_gt.setBeam(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_aspect") {
+      string pair = value;
+      string left = biteStringX(pair, '=');
+      string right = pair;
+      if((left != "") && (right != "") && !strContains(right, '=')) {
+	m_record.setProperty(left, right);
+	m_record_gt.setProperty(left, right);
 	handled = true;
       }
     }
     else if((param == "platform_transparency") && isNumber(value)) { 
       m_record.setTransparency(atof(value.c_str()));
+      m_record_gt.setTransparency(atof(value.c_str()));
       handled = true;
     }
+    else if(param == "platform_aspect") { 
+      handled = true;
+    }
+
+    else if(param == "coord_policy_global") 
+      handled = setBooleanOnString(m_coord_policy_global, value);
 
     else if(param == "allow_color_change") 
       handled = setBooleanOnString(m_allow_color_change, value);
@@ -457,10 +489,20 @@ bool NodeReporter::OnStartUp()
       handled = setNonNegDoubleOnString(m_extrap_hdg_thresh, value);
     else if(param =="extrap_max_gap") 
       handled = setNonNegDoubleOnString(m_extrap_max_gap, value);
+    else if(param =="json_report") 
+      handled = setNonWhiteVarOnString(m_json_report, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
+
+  // interpret json_report=false to be the same as if not specified. This
+  // is the default, no reason user should set to false, but handle anyway.
+  if(tolower(m_json_report == "true"))
+    m_json_report = "true";
+  if(tolower(m_json_report == "false"))
+    m_json_report = "";
+  
   
   registerVariables();
   unsigned int k, ksize = m_plat_vars.size();
@@ -498,6 +540,8 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(3); // meters
     else if(vtype == "buoy")
       m_record.setLength(3); // meters
+    else if(vtype == "smr")
+      m_record.setLength(6); // meters
     else
       reportConfigWarning("Unrecognized platform type: " + vtype);
   }
@@ -549,7 +593,7 @@ bool NodeReporter::Iterate()
     ok_nav_to_post = true;
   else {
     double elapsed_since_start = m_curr_time - m_start_time;
-    if((m_nav_grace_period > 0) && (elapsed_since_start > m_nav_grace_period))
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
       ok_nav_to_post = true;
   }
   m_record.setTimeStamp(m_curr_time); 
@@ -604,6 +648,14 @@ bool NodeReporter::Iterate()
     if(!pruned_due_to_extrap)
       post_report = true;
   }
+
+  // If we still dont have x/y or lat/lon and we're still in the grace period
+  // don't post reports w/out nav info.
+  if(!m_record.isSetXY() && !m_record.isSetLatLon()) {
+    double elapsed_since_start = m_curr_time - m_start_time;
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
+      post_report = false;
+  }
   
   //==============================================================
   // Part 5: Post NodeReport if conditions met
@@ -613,12 +665,40 @@ bool NodeReporter::Iterate()
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
     
     m_record.setIndex(m_reports_posted);
-    string report = assembleNodeReport(m_record);    
+    string report = assembleNodeReport(m_record);
 
     if(!m_paused) {
-      if(m_reports_posted == 0) 
-	Notify(m_node_report_var+"_FIRST", report);
-      Notify(m_node_report_var, report);
+
+      string json_report;
+      if(m_json_report != "")
+	json_report = cspToJson(report);
+
+      if(m_reports_posted == 0) {
+	// Case 1 Only CSP posted (normal)
+	if(m_json_report == "") 
+	  Notify(m_node_report_var+"_FIRST", report);
+	// Case 2 Only JSON posted
+	else if(tolower(m_json_report) == "true")
+	  Notify(m_node_report_var+"_FIRST", json_report);
+	// Case 3 Both CSP and JSON posted
+	else {
+	  Notify(m_json_report+"_FIRST", json_report);
+	  Notify(m_node_report_var+"_FIRST", report);
+	}
+      }
+      
+      // Case 1 Only CSP posted (normal)
+      if(m_json_report == "") 
+	Notify(m_node_report_var, report);
+      // Case 2 Only JSON posted
+      else if(tolower(m_json_report) == "true")
+	Notify(m_node_report_var, json_report);
+      // Case 3 Both CSP and JSON posted
+      else {
+	Notify(m_json_report, json_report);
+	Notify(m_node_report_var, report);
+      }
+      
       Notify("PNR_POST_GAP", delta_time);
       m_reports_posted++;
       cout << "Posted:" << m_record.getSpec(true) << endl;
@@ -792,7 +872,7 @@ string NodeReporter::assemblePlatformReport()
 
 
 //------------------------------------------------------------------
-// Procedure: assembleNodeReport
+// Procedure: assembleNodeReport()
 //   Purpose: Assemble the node report from member variables.
 
 string NodeReporter::assembleNodeReport(NodeRecord record)
@@ -832,6 +912,10 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
   record.setMode(mode);
   record.setAllStop(m_helm_allstop_mode);
 
+  // Added Post 24.8
+  if(m_coord_policy_global)
+    record.setCoordPolicyGlobal();
+  
   string summary = record.getSpec(m_terse_reports);
 
   string rider_reports = m_riderset.getRiderReports(m_curr_time);
@@ -842,7 +926,7 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
 }
 
 //------------------------------------------------------------------
-// Procedure: setCrossFillPolicy
+// Procedure: setCrossFillPolicy()
 //      Note: Determines how or whether the local and global coords
 //            are updated from one another.
 
@@ -852,7 +936,7 @@ bool NodeReporter::setCrossFillPolicy(string policy)
   policy = findReplace(policy, '_', '-');
   if((policy=="literal") || (policy=="fill-empty") ||
      (policy=="global")  || (policy=="use-latest") ||
-     (policy=="local")) {
+     (policy=="local")   || (policy=="global-terse")) {
     m_crossfill_policy = policy;
     return(true);
   }
@@ -862,14 +946,15 @@ bool NodeReporter::setCrossFillPolicy(string policy)
 
 
 //------------------------------------------------------------------
-// Procedure: crossFillCoords
+// Procedure: crossFillCoords()
 //   Purpose: Potentially update NAV_X/Y from NAV_LAT/LON or v.versa.
 
 void NodeReporter::crossFillCoords(NodeRecord& record, 
 				   double nav_xy_updated,
 				   double nav_latlon_updated)
 {
-  if(m_crossfill_policy == "global") {
+  if((m_crossfill_policy == "global") ||
+     (m_crossfill_policy == "global-terse")) {
     if(record.valid("lat") && record.valid("lon"))
       crossFillGlobalToLocal(record);
   }
@@ -906,7 +991,7 @@ void NodeReporter::crossFillCoords(NodeRecord& record,
 
 
 //------------------------------------------------------------------
-// Procedure: crossFillLocalToGlobal
+// Procedure: crossFillLocalToGlobal()
 //   Purpose: Update the Global coordinates based on the Local coords.
 
 void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
@@ -927,7 +1012,7 @@ void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
 }
 
 //------------------------------------------------------------------
-// Procedure: crossFillGlobalToLocal
+// Procedure: crossFillGlobalToLocal()
 //   Purpose: Update the Local coordinates based on the Global coords.
 
 void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
@@ -949,7 +1034,7 @@ void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
 
 
 //------------------------------------------------------------------
-// Procedure: handleHelmSwitch
+// Procedure: handleHelmSwitch()
 //   Purpose: When or if a helm switch has been noted, reset some
 //            locally held information that may have been due to the
 //            the disabled helm, and let them be repopulated by the
@@ -972,11 +1057,7 @@ void NodeReporter::handleHelmSwitch()
 bool NodeReporter::handleMailRiderVars(string var, string sval,
 				       double dval)
 {
-  string update_str = sval;
-  if(sval == "")
-    update_str = doubleToStringX(dval, 4);
-
-  bool ok = m_riderset.updateRider(var, update_str, m_curr_time);
+  bool ok = m_riderset.updateRider(var, sval, dval, m_curr_time);
   return(ok);
 }
 
@@ -1031,7 +1112,7 @@ void NodeReporter::updateMHashOdo()
 // ---------------------------------
 // Vehicle name:    henry
 // Platform type:   uuv
-// Platform length: 4.2
+// Platform lenactgth: 4.2
 // 
 // BLACKOUT_INTERVAL  = 0
 //

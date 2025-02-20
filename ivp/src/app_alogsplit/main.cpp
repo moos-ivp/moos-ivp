@@ -72,8 +72,11 @@ int main(int argc, char *argv[])
     cout << "  --max_fptrs=N  Set max number of OS file pointers allowed" << endl;
     cout << "                 to be open during splitting. Default 125. " << endl;
     cout << "                                                           " << endl;
+    cout << "  --detached=var      Split out all keys from complex var post " << endl;
+    cout << "  --detached=var:key  Split out key from complex var post " << endl;
+    cout << "                                                           " << endl;
     cout << "  --web,-w   Open browser to:                              " << endl;
-    cout << "             https://oceanai.mit.edu/ivpman/apps/alogiter  " << endl;
+    cout << "             https://oceanai.mit.edu/ivpman/apps/alogsplit " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The order of arguments is irrelevant.                " << endl;
@@ -86,6 +89,7 @@ int main(int argc, char *argv[])
   string alogfile_in;
   string given_dir;
   string max_fptrs;
+  vector<string> detached_pairs;
   
   bool verbose = false;
   for(int i=1; i<argc; i++) {
@@ -102,6 +106,8 @@ int main(int argc, char *argv[])
       verbose = true;
     else if(strBegins(sarg, "--max_fptrs="))
       max_fptrs = sarg.substr(12);
+    else if(strBegins(sarg, "--detached="))
+      detached_pairs.push_back(sarg.substr(11));
     else if(strBegins(sarg, "--dir=")) 
       given_dir = sarg.substr(6);
   }
@@ -115,6 +121,14 @@ int main(int argc, char *argv[])
   handler.setVerbose(verbose);
   handler.setDirectory(given_dir);
 
+  for(unsigned int i=0; i<detached_pairs.size(); i++) {
+    bool ok = handler.addDetachedPair(detached_pairs[i]);
+    if(!ok) {
+      cout << "Bad Detached Pair: " << detached_pairs[i] << endl;
+      exit(1);
+    }
+  }
+  
   if(isNumber(max_fptrs)) {
     int int_max_fptrs = atoi(max_fptrs.c_str());
     handler.setMaxFilePtrCache((unsigned int)(int_max_fptrs));

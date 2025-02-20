@@ -57,6 +57,7 @@ public:
   double m_osh_orig;
   bool   m_osh_orig_set;
 
+  bool   m_pts_port_turns_ok; // Added Oct1124
 };
 #endif
 

@@ -226,11 +226,12 @@ ProcessConfig = pMarineViewer
   // Appcast configuration
   appcast_height       = 75
   appcast_width        = 30
+  appcast_nodes_width  = 300
   appcast_viewable     = true
-  appcast_color_scheme = indigo
-  nodes_font_size      = xlarge
-  procs_font_size      = xlarge
-  appcast_font_size    = large
+  appcast_color_scheme = deep_indigo
+  nodes_font_size      = large
+  procs_font_size      = large
+  appcast_font_size    = medium
   
   scope = PHELMIVP_PID
   scope = DB_UPTIME

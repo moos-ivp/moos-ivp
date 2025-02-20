@@ -74,9 +74,9 @@ ProcessConfig = uFldCollisionDetect
   AppTick       = 4
   CommsTick     = 4
 
-  encounter_range = 30
-  collision_range = 8
-  near_miss_range = 12
+  encounter_range = 25
+  collision_range = 4
+  near_miss_range = 8
 
   // condition = COLLISION_DETECT=true
   condition = DEPLOY_ALL=true

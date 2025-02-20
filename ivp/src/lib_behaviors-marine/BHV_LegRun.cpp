@@ -571,6 +571,11 @@ void BHV_LegRun::onIdleState()
 
 bool BHV_LegRun::updateInfoIn()
 {
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
+    return(false);
+  
+#if 0
   // ==========================================================
   // Part 1: Update Ownship position and speed from the buffer
   // ==========================================================
@@ -580,9 +585,6 @@ bool BHV_LegRun::updateInfoIn()
   m_osv = getBufferDoubleVal("NAV_SPEED", ok3);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok4);
 
-  m_odometer.updateDistance(m_osx, m_osy);
-  m_wrap_detector.updatePosition(m_osx, m_osy);
-  
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");
@@ -596,6 +598,12 @@ bool BHV_LegRun::updateInfoIn()
     postWMessage(warning_msg);
   else 
     postRetractWMessage(warning_msg);
+#endif
+
+
+  m_odometer.updateDistance(m_osx, m_osy);
+  m_wrap_detector.updatePosition(m_osx, m_osy);
+
   
   return(true);
 }

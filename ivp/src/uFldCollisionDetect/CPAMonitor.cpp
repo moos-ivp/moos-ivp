@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CPAMonitor.cpp                                       */
 /*    DATE: Dec 20th 2015                                        */
+/*    DATE: Dec 30th 2024 Integrated ContactLedger               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -32,7 +33,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 CPAMonitor::CPAMonitor()
 {
@@ -45,8 +46,24 @@ CPAMonitor::CPAMonitor()
   m_closest_range_ever = -1;
 }
 
+//---------------------------------------------------------------
+// Procedure: setGeodesy()
+
+void CPAMonitor::setGeodesy(CMOOSGeodesy geodesy)
+{
+  m_ledger.setGeodesy(geodesy);
+}
+
+//---------------------------------------------------------------
+// procedure: setGeodesy()
+
+bool CPAMonitor::setGeodesy(double dlat, double dlon)
+{
+  return(m_ledger.setGeodesy(dlat, dlon));
+}
+
 //---------------------------------------------------------
-// Procedure: setIgnoreRange
+// Procedure: setIgnoreRange()
 //      Note: Enforce report_range <= ignore_range
 
 void CPAMonitor::setIgnoreRange(double val)
@@ -58,7 +75,7 @@ void CPAMonitor::setIgnoreRange(double val)
 
 
 //---------------------------------------------------------
-// Procedure: setReportRange
+// Procedure: setReportRange()
 //      Note: Enforce ignore_range >= reportRange
 
 void CPAMonitor::setReportRange(double val)
@@ -70,7 +87,7 @@ void CPAMonitor::setReportRange(double val)
 
 
 //---------------------------------------------------------
-// Procedure: setSwingRange
+// Procedure: setSwingRange()
 //      Note: The amount of noted changed needed before declaring
 //            a swing from opening to closing mode. To avoid
 //            spurious events due to jitter in range measurements.
@@ -166,22 +183,16 @@ CPAEvent CPAMonitor::getEvent(unsigned int ix) const
 //    Return: false if syntactically invalid node report
 //            true otherwise
 
-bool CPAMonitor::handleNodeReport(string node_report)
+bool CPAMonitor::handleNodeReport(string report, string& whynot)
 {
-  NodeRecord record = string2NodeRecord(node_report);
-  if(!record.valid())
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(whynot != "")
     return(false);
-  string vname = record.getName();
-  string group = tolower(record.getGroup());
-  if(vectorContains(m_reject_groups, group))
-    return(true);
 
-  m_map_vgroup[vname] = group;
-  
-  // Part 1: Update the node record list for this vehicle
-  m_map_vrecords[vname].push_front(record);
-  if(m_map_vrecords[vname].size() > 2)
-    m_map_vrecords[vname].pop_back();
+  string group = tolower(m_ledger.getGroup(vname));
+  if(vectorContains(m_reject_groups, group))
+   m_ledger.clearNode(vname);
+
   m_map_updated[vname] = true;
 
   return(true);
@@ -227,18 +238,18 @@ bool CPAMonitor::examineAndReport(string vname)
 bool CPAMonitor::examineAndReport(string vname, string contact)
 {
   // Part 1: Sanity check
-  if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact))
-    return(false);
 
+  if(!m_ledger.hasVName(vname) || !m_ledger.hasVName(contact))
+    return(false);
+  
   // Part 1B: Check ignore groups. If both vehicles have a group on
   // the list of ignore groups, then just consider ourselves done now.  
-  string vname_group   = m_map_vgroup[vname];
-  string contact_group = m_map_vgroup[contact];
+  string vname_group   = m_ledger.getGroup(vname);
+  string contact_group = m_ledger.getGroup(contact);
   if(vectorContains(m_ignore_groups, vname_group) &&
      vectorContains(m_ignore_groups, contact_group))
     return(true);
 
-  
   // Part 2: Create a unique "pairtag" so an event betweeen two
   //         vehicles is singular and not treated twice
   string tag = pairTag(vname, contact);
@@ -248,7 +259,6 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
   }
   if(m_map_pair_examined[tag])
     return(true);
-
 
   // Part 3: Update range and rate
   double prev_dist    = m_map_pair_dist[tag];
@@ -300,33 +310,34 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
 bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
 {
   // Sanity check - make sure we have node records for each
-  if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact))
+  if(!m_ledger.hasVName(vname) || !m_ledger.hasVName(contact)) {
+    if(m_verbose)
+      cout << "fault1" << endl;
     return(false);
+  }
+  
+  double osx  = m_ledger.getX(vname);
+  double osy  = m_ledger.getY(vname);
+  double cnx  = m_ledger.getX(contact);
+  double cny  = m_ledger.getY(contact);
 
-  // Part 1: get the vehicle info and calculate range
-  NodeRecord os_record = m_map_vrecords[vname].front();
-  NodeRecord cn_record = m_map_vrecords[contact].front();
-  double osx  = os_record.getX();
-  double osy  = os_record.getY();
-  double cnx  = cn_record.getX();
-  double cny  = cn_record.getY();
   double midx = (osx + ((cnx-osx)/2));
   double midy = (osy + ((cny-osy)/2));
   double dist = hypot(osx-cnx, osy-cny);
   string tag  = pairTag(vname, contact);
-
+  
   if((m_closest_range < 0) || (dist < m_closest_range))
     m_closest_range = dist;
   
   if((m_closest_range_ever < 0) || (dist < m_closest_range_ever))
     m_closest_range_ever = dist;
   
-  // Note that this pair has been examined on this round. This is cleared
-  // for all pairs at the end of a round.
+  // Note that this pair has been examined on this round. This is
+  // cleared for all pairs at the end of a round.
   m_map_pair_examined[tag] = true; 
   
-  // If the distance is really large (greater than the ignore_range) then
-  // remove all data for this tag and return. 
+  // If the distance is really large (greater than the ignore_range)
+  // then remove all data for this tag and return.
   if(dist > m_ignore_range) {
     m_map_pair_dist.erase(tag);
     m_map_pair_closing[tag] = false;
@@ -415,19 +426,25 @@ string CPAMonitor::pairTag(string a, string b)
 double CPAMonitor::relBng(string vname1, string vname2)
 {
   // Sanity Check - Need position information for both vehicles
-  if((m_map_vrecords.count(vname1) == 0) ||
-     (m_map_vrecords.count(vname2) == 0))
+  if(!m_ledger.hasVName(vname1) || !m_ledger.hasVName(vname2))
     return(0);
   
-  NodeRecord record1 = m_map_vrecords[vname1].front();
-  NodeRecord record2 = m_map_vrecords[vname2].front();
+  //NodeRecord record1 = m_map_vrecords[vname1];
+  //NodeRecord record2 = m_map_vrecords[vname2];
 
-  double osx = record1.getX();
-  double osy = record1.getY();
-  double osh = record1.getHeading();
+  //double osx = record1.getX();
+  //double osy = record1.getY();
+  //double osh = record1.getHeading();
 
-  double cnx = record2.getX();
-  double cny = record2.getY();
+  //double cnx = record2.getX();
+  //double cny = record2.getY();
+
+  double osx = m_ledger.getX(vname1);
+  double osy = m_ledger.getY(vname1);
+  double osh = m_ledger.getHeading(vname1);
+
+  double cnx = m_ledger.getX(vname2);
+  double cny = m_ledger.getY(vname2);
 
   return(relBearing(osx, osy, osh, cnx, cny));
 }
@@ -436,15 +453,9 @@ double CPAMonitor::relBng(string vname1, string vname2)
 //---------------------------------------------------------
 // Procedure: getVNames()
 
-set<string> CPAMonitor::getVNames() const
+vector<string> CPAMonitor::getVNames() const
 {
-  set<string> vnames;
-
-  map<string, string>::const_iterator p;
-  for(p=m_map_vgroup.begin(); p!=m_map_vgroup.end(); p++)
-    vnames.insert(p->first);
-
-  return(vnames);
+  return(m_ledger.getVNames());
 }
 
 //---------------------------------------------------------
@@ -454,54 +465,49 @@ NodeRecord CPAMonitor::getVRecord(string vname)
 {
   NodeRecord null_record;
   
-  if(m_map_vrecords.count(vname) == 0)
+  if(!m_ledger.hasVName(vname))
     return(null_record);
-
-  if(m_map_vrecords[vname].size() == 0)
-    return(null_record);
-
-  return(m_map_vrecords[vname].back());
+  
+  return(m_ledger.getRecord(vname));
 }
-
 
 //---------------------------------------------------------
 // Procedure: getContactDensity()
 
-unsigned int CPAMonitor::getContactDensity(string vname, double range) const
+unsigned int CPAMonitor::getContactDensity(string vname,
+					   double range) const
 {
-  // Sanity checks
+  // Sanity check 1
   if((vname == "") || (range <= 0))
     return(0);
-
-  if(m_map_vrecords.count(vname) == 0)
-    return(0);
-  if(m_map_vrecords.at(vname).size() == 0)
+  
+  // Sanity check 2
+  if(!m_ledger.hasVName(vname))
     return(0);
   
   // Part 1: Get ownship position
-  NodeRecord os_record = m_map_vrecords.at(vname).front();
-  double osx = os_record.getX();
-  double osy = os_record.getY();
+
+  // NodeRecord os_record = m_map_vrecords.at(vname);
+  // double osx = os_record.getX();
+  // double osy = os_record.getY();
+  double osx = m_ledger.getX(vname);
+  double osy = m_ledger.getY(vname);
   
   // Part 2: Examine contact ranges, maybe increment counter
   unsigned int counter = 0;
-
-  map<string, list<NodeRecord> >::const_iterator p;
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string contact = p->first;
-    NodeRecord record = p->second.back();
-
+  
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string contact = vnames[i];
+    
     if(vname != contact) {
-      double cnx = record.getX();
-      double cny = record.getY();
+      double cnx = m_ledger.getX(contact);
+      double cny = m_ledger.getY(contact);
       double cn_range = hypot(osx-cnx, osy-cny);
       if(cn_range <= range)
 	counter++;
     }
   }
-      
+  
   return(counter);
 }
-
-
-

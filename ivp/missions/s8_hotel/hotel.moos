@@ -4,21 +4,27 @@ Community  = hotel
 
 MOOSTimeWarp = 1
 
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+// Forest Lake
+// LatOrigin  = 43.825300 
+// LongOrigin = -70.330400 
+
+// MIT Sailing Pavilion (use this one)
+LatOrigin  = 42.358456 
+LongOrigin = -71.087589
+
 
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 500
+  MSBetweenLaunches = 200
 
   Run = MOOSDB                @ NewConsole = false
   Run = pMarineViewer         @ NewConsole = false
   Run = pLogger               @ NewConsole = false
-  Run = uSimMarine            @ NewConsole = false
   Run = pNodeReporter         @ NewConsole = false
-  Run = pMarinePID            @ NewConsole = false
+  Run = uSimMarineV22         @ NewConsole = false
+  Run = pMarinePIDV22         @ NewConsole = false
   Run = pHelmIvP              @ NewConsole = false
   Run = uTimerScript          @ NewConsole = false
   Run = uFldBeaconRangeSensor @ NewConsole = false
@@ -76,26 +82,13 @@ ProcessConfig = uFldBeaconRangeSensor
 
 ProcessConfig = uTimerScript
 {
-  AppTick	= 4
-  CommsTick	= 4
+  AppTick	   = 4
+  CommsTick	 = 4
 
   paused     = false
   reset_max  = 5000
   reset_time = end
   condition  = (NAV_SPEED > 0)
-
-  randvar = varname=UVAR, min=0, max=359, key=at_post
-  randvar = varname=GVAR, type=gaussian, min=0, max=400, mu=200, sigma=20, key=at_post
-  randvar = varname=LGVAR, type=gaussian, min=0, max=400, mu=80, sigma=10, key=at_post
-
-  //event = var=GAUSS_TEST_VAL, val=$(GVAR), time=4  
-  //event = var=GAUSS_TEST_VAL, val=$(GVAR), time=0:40
-
-  //event = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=5  
-  //event = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0:20
-
-  //event = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0  
-  //event = var=UNIFORM_TEST_VAL, val=$(UVAR), time=15:20
 
   reset_max  = nolimit
   reset_time = all-posted
@@ -132,23 +125,18 @@ ProcessConfig = pLogger
 
 
 //------------------------------------------
-// uSimMarine config block
+// uSimMarineV22 config block
 
-ProcessConfig = uSimMarine
+ProcessConfig = uSimMarineV22
 {
-  AppTick	= 10
+  AppTick	  = 10
   CommsTick	= 10
 
-  start_x       = 0
-  start_y       = 0
-  start_speed   = 0
-  start_heading = 180
-
+  start_pos     = x=0, y=-20, heading=180, speed=0
   prefix        = NAV
-
-  turn_rate     = 40
+  turn_rate     = 90
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
-
+	turn_spd_loss = 0.4
 }
 
 //------------------------------------------
@@ -168,7 +156,7 @@ ProcessConfig = pHelmIvP
 //------------------------------------------
 // pMarinePID config block
 
-ProcessConfig = pMarinePID
+ProcessConfig = pMarinePIDV22
 {
   AppTick    = 20
   CommsTick  = 20
@@ -207,13 +195,13 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = AerialMIT.tif
-  set_pan_x            = -60
-  set_pan_y            = 160
-  zoom                 = 1.25
-  vehicle_shape_scale  = 1.5
-  hash_delta           = 50
-  hash_shade           = 0.25
+  tiff_file           = MIT_SP.tif
+  set_pan_x           = -90
+  set_pan_y           = 180
+  zoom                = 0.55
+  vehicle_shape_scale = 1.5
+  hash_delta          = 50
+  hash_shade          = 0.25
 
   // Appcast configuration
   appcast_height       = 75
@@ -242,13 +230,6 @@ ProcessConfig = pMarineViewer
   action  = HSLINE=off
   action  = HSLINE=on
   action  = UPDATES_RETURN=speed=1.4
-
-  // MIT OP-AREA
-  op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=-100, y=-430,lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=380, y=-240,lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=254, y=46,lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=112, y=21,lwidth=1,lcolor=yellow,looped=true,group=moa
 }
 
 //------------------------------------------
@@ -259,6 +240,8 @@ ProcessConfig = pNodeReporter
   AppTick	= 2
   CommsTick	= 2
 
-  vessel_type   = KAYAK
+  platform_type   = kayak
+  platform_color  = yellow
+  platform_length = 4
 }
 

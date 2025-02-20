@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollObDetect.cpp                                     */
 /*    DATE: September 2nd, 2019                                  */
+/*    DATE: December 30th, 2024 Added ContactLedger              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -29,7 +30,6 @@
 #include "FileBuffer.h"
 #include "ColorParse.h"
 #include "XYFormatUtilsPoly.h"
-#include "NodeRecordUtils.h"
 #include "VarDataPairUtils.h"
 
 using namespace std;
@@ -78,22 +78,23 @@ bool CollObDetect::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-    if(key == "KNOWN_OBSTACLE") {
-      bool ok = handleMailKnownObstacle(sval);
-      if(!ok) 
-	reportRunWarning("Unhandled KNOWN_OBSTACLE:" + sval);    
-    }
-    
+    bool   handled = true;
+    string whynot;
+    if(key == "KNOWN_OBSTACLE")
+      handled = handleMailKnownObstacle(sval);
     else if(key == "KNOWN_OBSTACLE_CLEAR")
-      handleMailKnownObstacleClear(sval);
-    
-    else if(key=="NODE_REPORT") {
-      bool ok = handleMailNodeReport(sval);
-      if(!ok) 
-	reportRunWarning("Unhandled Node Report:" + sval);    
-    }
+      handleMailKnownObstacleClear(sval);    
+    else if(key=="NODE_REPORT")
+      handled = handleMailNodeReport(sval, whynot);
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
-      reportRunWarning("Unhandled Mail: " + key);
+      handled = false;
+    
+    if(!handled) {
+      string warning = "Bad Mail: " + key;
+      if(whynot != "")
+	warning += " " + whynot;
+      reportRunWarning(warning);
+    }
   }
 	
   return(true);
@@ -129,6 +130,17 @@ bool CollObDetect::Iterate()
 bool CollObDetect::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -312,15 +324,12 @@ double CollObDetect::getMinDist(string vname, string label)
 //------------------------------------------------------------
 // Procedure: handleMailNodeReport()
 
-bool CollObDetect::handleMailNodeReport(string node_report)
+bool CollObDetect::handleMailNodeReport(string report, string& whynot)
 {
-  NodeRecord record = string2NodeRecord(node_report);
-  if(!record.valid())
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(whynot != "")
     return(false);
-  string vname = record.getName();
 
-  // Update the node record list for this vehicle
-  m_map_vrecords[vname] = record;
   return(true);
 }
 
@@ -333,14 +342,14 @@ void CollObDetect::updateVehiDists()
   m_map_vdist_prev = m_map_vdist;
 
   // Part 2: Update current distance to obstacles for all vehicles 
-  map<string, NodeRecord>::iterator p;
-  map<string, XYPolygon>::iterator q;
 
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname = p->first;
-    NodeRecord record = p->second;
-    double vx = record.getX(); 
-    double vy = record.getY(); 
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
+    double vx = m_ledger.getX(vname);
+    double vy = m_ledger.getY(vname);
+
+    map<string, XYPolygon>::iterator q;
     for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
       string obstacle_label = q->first;
       XYPolygon poly = q->second;
@@ -364,15 +373,15 @@ void CollObDetect::updateVehiDists()
 
 void CollObDetect::updateVehiMinDists()
 {
-  // Part 1: Update the min_dist for each vname/obstacle_label if the
-  // current distance is less than the previously noted min distance.
-  // Note: A min_dist of -1 indicates that min_dist is virgin.
+  // Update the min_dist for each vname/obstacle_label if the current
+  // distance is less than the previously noted min distance.  Note: A
+  // min_dist of -1 indicates that min_dist is virgin.
   
-  map<string, NodeRecord>::iterator p;
-  map<string, XYPolygon>::iterator q;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
 
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname = p->first;
+    map<string, XYPolygon>::iterator q;
     for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
       string label = q->first;
       double curr_dist = getCurrDist(vname, label);
@@ -399,11 +408,11 @@ void CollObDetect::updateVehiMinDists()
 
 void CollObDetect::updateVehiEncounters()
 {
-  map<string, NodeRecord>::iterator p;
-  map<string, XYPolygon>::iterator q;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
 
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname = p->first;
+    map<string, XYPolygon>::iterator q;
     for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
       string label = q->first;
       double prev_dist = getPrevDist(vname, label);
@@ -613,15 +622,15 @@ bool CollObDetect::buildReport()
   // ==============================================================
   // Part 3: Build a table of min distances to obstacles
   // ==============================================================
-  unsigned int vcount = m_map_vrecords.size();
-  ACTable actab2(vcount);
+#if 0
+  vector<string> vnames = m_ledger.getVNames();
+  ACTable actab2(vnames.size());
 
   // Build header string, e.g., "abe | ben | cal | deb"
   string header_str;
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname = p->first;
-    if(p==m_map_vrecords.begin())
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
+    if(i == 0)
       header_str = vname;
     else
       header_str += " | " + vname;
@@ -632,8 +641,9 @@ bool CollObDetect::buildReport()
   map<string, XYPolygon>::iterator q;
   for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
     string label = q->first;
-    for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-      string vname = p->first;
+
+    for(unsigned int i=0; i<vnames.size(); i++) {
+      string vname = vnames[i];
       string sdist = "-";
       if(m_map_vdist_min.count(vname)) {
 	if(m_map_vdist_min[vname].count(label)) {
@@ -645,5 +655,7 @@ bool CollObDetect::buildReport()
     }
   }
   m_msgs << actab2.getFormattedString();
+#endif
+
   return(true);
 }

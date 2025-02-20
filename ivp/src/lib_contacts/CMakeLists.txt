@@ -8,15 +8,13 @@ SET(SRC
   NodeRecordUtils.cpp
   NodeRider.cpp
   NodeRiderSet.cpp
-  ContactLedger.cpp
 )
 
 SET(HEADERS
   NodeRecord.h
   NodeRecordUtils.h
   NodeRider.h
-  ContactLedger.h
-  ContactLedger.h
+  NodeRiderSet.h
 )
 
 # Build Library

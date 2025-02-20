@@ -33,7 +33,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 MessageHandler::MessageHandler()
 {
@@ -54,7 +54,7 @@ MessageHandler::MessageHandler()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool MessageHandler::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -79,7 +79,7 @@ bool MessageHandler::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool MessageHandler::OnConnectToServer()
 {
@@ -153,7 +153,7 @@ bool MessageHandler::OnStartUp()
 
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void MessageHandler::registerVariables()
 {
@@ -163,7 +163,7 @@ void MessageHandler::registerVariables()
 
 
 //------------------------------------------------------------
-// Procedure: handleMailNodeMessage
+// Procedure: handleMailNodeMessage()
 
 bool MessageHandler::handleMailNodeMessage(const string& msg)
 {
@@ -278,7 +278,7 @@ void MessageHandler::postFlags(const vector<VarDataPair>& flags)
 
 
 //------------------------------------------------------------
-// Procedure: postMsgSummary
+// Procedure: postMsgSummary()
 //   Purpose: Post a totals summary of all messages receive so far.
 //            UMH_SUMMARY_MSGS = total=14,valid=12,rejected=2
 
@@ -293,7 +293,7 @@ void MessageHandler::postMsgSummary()
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
 //            conditionally invoked if either a terminal or appcast 
 //            report is needed.

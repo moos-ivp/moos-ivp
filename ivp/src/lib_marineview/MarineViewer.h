@@ -134,6 +134,13 @@ protected:
 			   unsigned int line=0,
 			   double transparency=1);
 
+  void   drawCommonVehicle(const NodeRecord&,
+			   const ColorPack& body_color,
+			   const ColorPack& vname_color,
+			   bool vname_draw, 
+			   unsigned int line=0,
+			   double transparency=1);
+
   void  drawMarkers(const std::map<std::string, XYMarker>&, double tstamp=0);
   void  drawMarker(const XYMarker&, double tstamp=0);
 
@@ -225,6 +232,10 @@ protected:
   double    m_vshift_y; 
   double    m_x_origin;
   double    m_y_origin;
+
+  double    m_datum_lat;
+  double    m_datum_lon;
+  
   bool      m_texture_init;
   GLuint*   m_textures;
   int       m_texture_set;
@@ -245,13 +256,6 @@ protected:
 };
 
 #endif 
-
-
-
-
-
-
-
 
 
 

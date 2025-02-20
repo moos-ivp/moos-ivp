@@ -166,9 +166,23 @@ HelmReport string2HelmReport(const string& str,
       }
     }
 
+    else if(left == "disabled_bhvs") {
+      report.clearDisabledBHVs();
+      vector<string> bhvs = parseString(right, ':');
+      for(unsigned int j=0; j<bhvs.size(); j++) {
+	string bhv = bhvs[j];
+	
+	string descriptor = biteStringX(bhv, '$');
+	string time = biteStringX(bhv, '$');
+	string upds = biteStringX(bhv, '$');
+	double d_time = atof(time.c_str());
+	report.addDisabledBHV(descriptor, d_time, upds);
+      }
+    }
+
     else if(left == "completed_bhvs") {
-      if(strContains(report.getCompletedBehaviors(), "none"))
-	report.clearCompletedBHVs();
+      //if(strContains(report.getCompletedBehaviors(), "none"))
+      report.clearCompletedBHVs();
 
       vector<string> bhvs = parseString(right, ':');
       for(unsigned int j=0; j<bhvs.size(); j++) {

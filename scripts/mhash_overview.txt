@@ -1,0 +1,69 @@
+
+
+mhash_tag.sh     Runs in an alog folder, will create an .mhash file
+
+
+
+ZBATCH
+ 
+
+
+
+
+mhash_tagall.sh
+  |-> mhash_tag.sh
+
+
+mhash_archive.sh
+mhash_archive_all.sh
+mhash_archive_dir.sh
+
+
+LOG_ABE/
+LOG_BEN/
+XLOG_SHORE/
+
+
+241101-NW-SENEGAL/   (this is a zbatch)
+  results.log	
+  241101-2213B-WARY-CRAB.tar
+    241101-2213B-WARY-CRAB-ABE-150S-103M.tgz
+    241101-2213B-WARY-CRAB-BEN-130S-105M.tgz
+    241101-2213B-WARY-CRAB-SHORE-108S-000M.tgz
+
+
+mhash_archive_dir.sh post-options
+
+1. Remove original log files
+2. Remove tar folders
+
+Only tar files remain:
+4. Do nothing
+5. Remove tar files if sending and successfully sent
+6. Move tar files into group folder
+
+
+---------------------------------------
+mhash_archive_all.sh will process the current directory or given 
+  directory, and recursively archive any folders  
+  containining an alog file.
+
+---------------------------------------
+mhash_archive_dir.sh will archive log folders in the current dir 
+  creating common folder based on mission hash for
+  each folder. Usually N vehicles plus shoreside. 
+                                                  
+  For each mission a single folder and tar file   
+  of that folder will be created.                 
+                                                  
+  The tar file can optionally be sent to a server 
+  for archiving. The directory on that server may 
+  be specified.                                   
+                                                  
+  Optionally the tar file can be removed upon a   
+  successful send.                                
+                                                  
+  NOTE: This tool is used in mission folders where
+        where the whole N-vehicle simulation took 
+        place, unlike on a vehicle or PABLO where 
+        the log file(s) represent a single node.  

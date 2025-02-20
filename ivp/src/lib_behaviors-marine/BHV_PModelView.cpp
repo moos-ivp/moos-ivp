@@ -67,6 +67,7 @@ void BHV_PModelView::onSetParamComplete()
 IvPFunction *BHV_PModelView::onRunState() 
 {
   updateInfoIn();
+
   drawTurnPath();
   return(0);
 }
@@ -87,18 +88,10 @@ void BHV_PModelView::onRunToIdleState()
 
 bool BHV_PModelView::updateInfoIn()
 {
-  // =================================================
-  // Part 1: Update ownship current heading and speed
-  // =================================================
-  if(!getBufferDoubleValX("NAV_X", m_osx))
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
-  if(!getBufferDoubleValX("NAV_Y", m_osy))
-    return(false);
-  if(!getBufferDoubleValX("NAV_SPEED", m_osv))
-    return(false);
-  if(!getBufferDoubleValX("NAV_HEADING", m_osh))
-    return(false);
-  
+
   m_des_hdg = getBufferDoubleVal("DESIRED_HEADING");  
   m_des_spd = getBufferDoubleVal("DESIRED_SPEED");  
   

@@ -31,6 +31,12 @@
 
 std::string missionHash();
 std::string missionHashShort(std::string);
+std::string missionHashLShort(std::string);
+
+double  missionHashUTC(std::string);
+
+std::string zHash();
+std::string zHashShort();
 
 std::string hashAlphaNum(unsigned int len=6);
 std::string hashAlphaUpper(unsigned int len=6);
@@ -45,12 +51,17 @@ std::string getCurrMinute();
 std::string getCurrSeconds();
 std::string getCurrSecsUTC();
 double      getCurrTimeUTC();
+std::string getCurrDate();
+std::string getCurrTime();
 
 std::string randomWord(const std::vector<std::string>& );
 
 std::vector<std::string> adjectives4();
 std::vector<std::string> nouns4();
 std::vector<std::string> names4();
+std::vector<std::string> us_cities7();
+std::vector<std::string> countries7();
+std::vector<std::string> intcities7();
 
 #endif
 

@@ -643,14 +643,14 @@ BoxSet* makeUniformDistro(const IvPBox& outer_box,
     unifPieces = unifPieces * dimVal;
   }
   
-  int  currix = 0;
+  //int  currix = 0;
   bool unif_done = false;
   while(!unif_done) {
     IvPBox* newbox = new IvPBox(dim, degree);
     for(d=0; d<dim; d++)
       newbox->setPTS(d, ulow[d], min((ulow[d]+uval[d]-1), uhgh[d]));
     boxset->addBox(newbox);
-    currix++;
+    //currix++;
     
     unif_done = true;
     for(d=0; d<dim; d++)
@@ -1605,7 +1605,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
   std::sort(boxes.begin(), boxes.end(), greater_than_key());
 
   // Part 4: Set up initial state
-  bool changed = true;
+  //bool changed = true;
 
   vector<IvPBox> majors;
   majors.push_back(boxes[0]);
@@ -1624,7 +1624,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
     bool restart = false;
     for(unsigned int i=0; (i<majors.size() && !restart); i++) {
       if(majors[i].intersect(&minor)) { 
-	changed = true;
+	//	changed = true;
 	restart = true;
 	BoxSet *bs = subtractBox(minor, majors[i]);
 	while(bs->size() > 0) {

@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BRS_App.h                                            */
 /*    DATE: Feb 1st, 2011                                        */
+/*    DATE: Dec 30th, 2024 Contact Ledger integrated             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -26,11 +27,10 @@
 
 #include <vector>
 #include <string>
-#include <list>
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "BeaconBuoy.h"
-#include "NodeRecord.h"
+#include "ContactLedger.h"
 
 class BRS_App : public AppCastingMOOSApp
 {
@@ -55,7 +55,7 @@ class BRS_App : public AppCastingMOOSApp
   bool   addBeaconBuoy(const std::string&);
 
  protected: // Incoming mail utility
-  bool   handleNodeReport(const std::string&);
+  bool   handleNodeReport(std::string, std::string& whynot);
   bool   handleRangeRequest(const std::string&);
 
  protected: // Outgoing mail utility
@@ -80,12 +80,12 @@ class BRS_App : public AppCastingMOOSApp
   bool   pingTrans(double push, double pull, double actual);
 
  protected: // State variables
-  // Vector of N beacons 
-  std::vector<BeaconBuoy>  m_beacons;
+
+  std::vector<BeaconBuoy> m_beacons;
+
+  ContactLedger m_ledger;
 
   // Map is keyed on the name of the vehicle
-  std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, unsigned int> m_map_node_reps_recd;
   std::map<std::string, unsigned int> m_map_node_pings_usol;
   std::map<std::string, unsigned int> m_map_node_pings_gend;
   std::map<std::string, unsigned int> m_map_node_pings_repl;
@@ -93,7 +93,6 @@ class BRS_App : public AppCastingMOOSApp
   std::map<std::string, unsigned int> m_map_node_xping_dist;
   std::map<std::string, double>       m_map_node_last_ping;
 
-  std::list<std::string> m_event_messages;
 
  protected: // Configuration variables
   double      m_default_node_push_dist;  

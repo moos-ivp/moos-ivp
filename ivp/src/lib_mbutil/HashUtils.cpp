@@ -67,12 +67,91 @@ string missionHashShort(string full)
 {
   string mhash = full;
   if(strContains(full, "mhash="))
-    mhash = tokStringParse(full, mhash, ',', '=');
+    mhash = tokStringParse(full, "mhash", ',', '=');
   
   biteString(mhash, '-');
   biteString(mhash, '-');
   
   return(mhash);
+}
+
+
+//---------------------------------------------------------
+// Procedure: missionHashLShort(string)
+//   Example: 221103-0834K-FOXY-WEED  ==> K-FOXY-WEED
+//   Example: mhash=240121-1540N-LIVE-GULL,utc=170528.23 ==> N-LIVE-GULL 
+
+string missionHashLShort(string full)
+{
+  string mhash = full;
+  if(strContains(full, "mhash="))
+    mhash = tokStringParse(full, "mhash", ',', '=');
+
+  string lchar;
+  if(mhash.length() > 12)
+    lchar = mhash.at(11);
+  
+  biteString(mhash, '-');
+  biteString(mhash, '-');
+
+  mhash = lchar + "-" + mhash;
+  
+  return(mhash);
+}
+
+
+//---------------------------------------------------------
+// Procedure: missionHashUTC(string)
+//   Example: mhash=250121-1122S-GLAD-ARLO,utc=1737476534.76 ==> 1737476534.76
+
+double missionHashUTC(string full)
+{
+  string utc_str = tokStringParse(full, "utc", ',', '=');
+  double utc_dbl = atof(utc_str.c_str());
+
+  return(utc_dbl);
+}
+
+
+//---------------------------------------------------------
+// Procedure: zHash()
+//   Example: 241103-0834-SANIBEL-88
+
+string zHash()
+{
+  string zhash = getCurrYear();
+  zhash += getCurrMonth();
+  zhash += getCurrDay();
+  zhash += "-";
+  zhash += getCurrHour();
+  zhash += getCurrMinute();
+  zhash += "-";
+  zhash += toupper(randomWord(us_cities7()));
+  zhash += "-";
+
+  string two_digits_00_99 = intToString(rand() % 100);
+  if(two_digits_00_99.length() == 1)
+    two_digits_00_99 = "0" + two_digits_00_99;
+  zhash += two_digits_00_99;
+  
+  return(zhash);
+}
+
+//---------------------------------------------------------
+// Procedure: zHashShort()
+//   Example: 241103-0834-SANIBEL-88  --> SANIBEL-88
+
+string zHash(string full)
+{
+  string two_digits_00_99 = rbiteString(full, '-');
+  string city = rbiteString(full, '-');
+  
+  if((two_digits_00_99 == "") || (city == ""))
+    return("");
+      
+  string zhash_short = city + "-" + two_digits_00_99;
+  
+  return(zhash_short);
 }
 
 
@@ -266,6 +345,31 @@ double getCurrTimeUTC()
     dfT = TimeVal.tv_sec+TimeVal.tv_usec/1000000.0;
   }
   return(dfT);
+}
+
+
+//---------------------------------------------------------
+// Procedure: getCurrTime()
+
+string getCurrTime()
+{
+  string time = getCurrHour();
+  time += ":" + getCurrMinute();
+  time += ":" + getCurrSeconds();
+
+  return(time);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrDate()
+
+string getCurrDate()
+{
+  string date = getCurrYear(true);
+  date += ":" + getCurrMonth();
+  date += ":" + getCurrDay();
+
+  return(date);
 }
 
 
@@ -778,3 +882,272 @@ vector<string> names4()
   return(names);
 }
 
+//----------------------------------------------------------------
+// Procedure: intcountries7()
+
+vector<string> intcountries7()
+{
+  vector<string> countries;
+
+  countries.push_back("Albania");  countries.push_back("Algeria");
+  countries.push_back("Anahola");  countries.push_back("Andorra");
+  countries.push_back("Antwerp");  countries.push_back("Armenia");
+  countries.push_back("Austria");  countries.push_back("Bahamas");
+  countries.push_back("Bahrain");  countries.push_back("Belarus");
+  countries.push_back("Belgium");  countries.push_back("Bolivia");
+  countries.push_back("Bonifay");  countries.push_back("Burundi");
+  countries.push_back("Chimayo");  countries.push_back("Comoros");
+  countries.push_back("Croatia");  countries.push_back("Denmark");
+  countries.push_back("Dixmore");  countries.push_back("Dresden");
+  countries.push_back("Ecuador");  countries.push_back("Eritrea");
+  countries.push_back("Estonia");  countries.push_back("Finland");
+  countries.push_back("Georgia");  countries.push_back("Germany");
+  countries.push_back("Grenada");  countries.push_back("Hungary");
+  countries.push_back("Iceland");  countries.push_back("Ireland");
+  countries.push_back("Jamaica");  countries.push_back("Lebanon");
+  countries.push_back("Lesotho");  countries.push_back("Liberia");
+  countries.push_back("Moldova");  countries.push_back("Morocco");
+  countries.push_back("Namibia");  countries.push_back("Nigeria");
+  countries.push_back("Romania");  countries.push_back("Senegal");
+  countries.push_back("Somalia");  countries.push_back("Tunisia");
+  countries.push_back("Ukraine");  countries.push_back("Uruguay");
+  countries.push_back("Vanuatu");  countries.push_back("Vietnam");
+
+  return(countries);
+}
+  
+//----------------------------------------------------------------
+// Procedure: us_cities7()
+
+vector<string> us_cities7()
+{
+  vector<string> cities;
+
+  cities.push_back("Airmont");  cities.push_back("Alabama");
+  cities.push_back("Alachua");  cities.push_back("Almedia");
+  cities.push_back("Amherst");  cities.push_back("Andover");
+  cities.push_back("Andrews");  cities.push_back("Antlers");
+  cities.push_back("Arcadia");  cities.push_back("Ardmore");
+  cities.push_back("Arizona");  cities.push_back("Ashburn");
+  cities.push_back("Ashland");  cities.push_back("Atlanta");
+  cities.push_back("Attalla");  cities.push_back("Atwater");
+  cities.push_back("Augusta");  cities.push_back("Aviston");
+  cities.push_back("Babbitt");  cities.push_back("Babylon");
+  cities.push_back("Baldwin");  cities.push_back("Baraboo");
+  cities.push_back("Batavia");  cities.push_back("Bayport");
+  cities.push_back("Baywood");  cities.push_back("Beckett");
+  cities.push_back("Bedford");  cities.push_back("Beecher");
+  cities.push_back("Belding");  cities.push_back("Belfair");
+  cities.push_back("Belford");  cities.push_back("Belmont");
+  cities.push_back("Belview");  cities.push_back("Belzoni");
+  cities.push_back("Berkley");  cities.push_back("Berwick");
+  cities.push_back("Beverly");  cities.push_back("Bigwell");
+  cities.push_back("Bigfoot");  cities.push_back("Bigfork");
+  cities.push_back("Blakley");  cities.push_back("Blawnox");
+  cities.push_back("Bristol");  cities.push_back("Bolivar");
+  cities.push_back("Bodfish");  cities.push_back("Bolinas");
+  cities.push_back("Bolivar");  cities.push_back("Bonanza");
+  cities.push_back("Boswell");  cities.push_back("Boulder");
+  cities.push_back("Bourbon");  cities.push_back("Buffalo");
+  cities.push_back("Bullard");  cities.push_back("Burbank");
+  cities.push_back("Byhalia");  cities.push_back("Calhoun");
+  cities.push_back("Califon");  cities.push_back("Calumet");
+  cities.push_back("Cambria");  cities.push_back("Carlton");
+  cities.push_back("Carlyle");  cities.push_back("citieson");
+  cities.push_back("Carabou");  cities.push_back("Cascade");
+  cities.push_back("Celeron");  cities.push_back("Chaplin");
+  cities.push_back("Chapman");  cities.push_back("Chatham");
+  cities.push_back("Chelsea");  cities.push_back("Chester");
+  cities.push_back("Chicago");  cities.push_back("Chinook");
+  cities.push_back("Cibecue");  cities.push_back("Clarion");
+  cities.push_back("Clayton");  cities.push_back("Clemson");
+  cities.push_back("Clifton");  cities.push_back("Cochran");
+  cities.push_back("Colbert");  cities.push_back("Collins");
+  cities.push_back("Colwich");  cities.push_back("Compton");
+  cities.push_back("Concord");  cities.push_back("Cookson");
+  cities.push_back("Coosada");  cities.push_back("Cordova");
+  cities.push_back("Corydon");  cities.push_back("Cowpens");
+  cities.push_back("Corinth");  cities.push_back("Corning");
+  cities.push_back("Cornell");  cities.push_back("Cresson");
+  cities.push_back("Crivitz");  cities.push_back("Crocker");
+  cities.push_back("Crystal");  cities.push_back("Cushing");
+  cities.push_back("Cypress");  cities.push_back("Dalhart");
+  cities.push_back("Danbury");  cities.push_back("Danvers");
+  cities.push_back("Davison");  cities.push_back("Delevan");
+  cities.push_back("Deltona");  cities.push_back("Derwood");
+  cities.push_back("Detroit");  cities.push_back("Dickson");
+  cities.push_back("Dotsero");  cities.push_back("Drayton");
+  cities.push_back("Dubuque");  cities.push_back("Dunkirk");
+  cities.push_back("Eastman");  cities.push_back("Electra");
+  cities.push_back("Elkhart");  cities.push_back("Elkhorn");
+  cities.push_back("Elkland");  cities.push_back("Emerson");
+  cities.push_back("Emporia");  cities.push_back("Eustace");
+  cities.push_back("Everett");  cities.push_back("Fairfax");
+  cities.push_back("Fairlea");  cities.push_back("Farwell");
+  cities.push_back("Fayette");  cities.push_back("Flippin");
+  cities.push_back("Florala");  cities.push_back("Florida");
+  cities.push_back("Fontana");  cities.push_back("Forrest");
+  cities.push_back("Forsyth");  cities.push_back("Fordyce");
+  cities.push_back("Fosston");  cities.push_back("Foxfire");
+  cities.push_back("Fremont");  cities.push_back("Gadsden");
+  cities.push_back("Gallant");  cities.push_back("Gambier");
+  cities.push_back("Gardena");  cities.push_back("Gardner");
+  cities.push_back("Garwood");  cities.push_back("Garland");
+  cities.push_back("Gateway");  cities.push_back("Genesee");
+  cities.push_back("Gholson");  cities.push_back("Gifford");
+  cities.push_back("Gilbert");  cities.push_back("Gillett");
+  cities.push_back("Glasgow");  cities.push_back("Glencoe");
+  cities.push_back("Glidden");  cities.push_back("Glyndon");
+  cities.push_back("Goodhue");  cities.push_back("Goodman");
+  cities.push_back("Grafton");  cities.push_back("Grabill");
+  cities.push_back("Granger");  cities.push_back("Grayson");
+  cities.push_back("Greenup");  cities.push_back("Gridley");
+  cities.push_back("Guntown");  cities.push_back("Guthrie");
+  cities.push_back("Hageman");  cities.push_back("Hamburg");
+  cities.push_back("Hampton");  cities.push_back("Hanover");
+  cities.push_back("Hancock");  cities.push_back("Hammond");
+  cities.push_back("Harmony");  cities.push_back("Haskins");
+  cities.push_back("Hatboro");  cities.push_back("Hayward");
+  cities.push_back("Hemlock");  cities.push_back("Herlong");
+  cities.push_back("Hickman");  cities.push_back("Hideout");
+  cities.push_back("Hilbert");  cities.push_back("Hildale");
+  cities.push_back("Hoboken");  cities.push_back("Holgate");
+  cities.push_back("Honaker");  cities.push_back("Hopkins");
+  cities.push_back("Houston");  cities.push_back("Hubbard");
+  cities.push_back("Huguley");  cities.push_back("Ipswich");
+  cities.push_back("Indiana");  cities.push_back("Ironton");
+  cities.push_back("Irrigon");  cities.push_back("Jackpot");
+  cities.push_back("Jackson");  cities.push_back("Jarrell");
+  cities.push_back("Jellico");  cities.push_back("Jenison");
+  cities.push_back("Jericho");  cities.push_back("Jolivue");
+  cities.push_back("Justice");  cities.push_back("Keasbey");
+  cities.push_back("Kellogg");  cities.push_back("Kempner");
+  cities.push_back("Kendall");  cities.push_back("Killian");
+  cities.push_back("Kimball");  cities.push_back("Kincaid");
+  cities.push_back("Kindred");  cities.push_back("Kingman");
+  cities.push_back("Kraemer");  cities.push_back("LaBelle");
+  cities.push_back("Lacombe");  cities.push_back("Ladonia");
+  cities.push_back("Lambert");  cities.push_back("Lansing");
+  cities.push_back("Langley");  cities.push_back("Langdon");
+  cities.push_back("Laporte");  cities.push_back("Laverne");
+  cities.push_back("Layhill");  cities.push_back("Lathrop");
+  cities.push_back("Leipsic");  cities.push_back("Lepanto");
+  cities.push_back("Liberty");  cities.push_back("Lindale");
+  cities.push_back("Lindsay");  cities.push_back("Livonia");
+  cities.push_back("Loretto");  cities.push_back("Macopin");
+  cities.push_back("Madison");  cities.push_back("Magalia");
+  cities.push_back("Mallory");  cities.push_back("Malvern");
+  cities.push_back("Mammoth");  cities.push_back("Manheim");
+  cities.push_back("Mansura");  cities.push_back("Moravia");
+  cities.push_back("Markham");  cities.push_back("Mayfair");
+  cities.push_back("Maynard");  cities.push_back("Maywood");
+  cities.push_back("Maytown");  cities.push_back("Medford");
+  cities.push_back("Melrose");  cities.push_back("Memphis");
+  cities.push_back("Menahga");  cities.push_back("Merengo");
+  cities.push_back("Midland");  cities.push_back("Milford");
+  cities.push_back("Mincora");  cities.push_back("Mission");
+  cities.push_back("Moville");  cities.push_back("Montana");
+  cities.push_back("Munhall");  cities.push_back("Munford");
+  cities.push_back("Muscoda");  cities.push_back("Mustang");
+  cities.push_back("Nahunta");  cities.push_back("Narrows");
+  cities.push_back("Natalia");  cities.push_back("Navassa");
+  cities.push_back("Needham");  cities.push_back("Needles");
+  cities.push_back("Nekoosa");  cities.push_back("Newaygo");
+  cities.push_back("Newport");  cities.push_back("Newkirk");
+  cities.push_back("Norvelt");  cities.push_back("Norwood");
+  cities.push_back("NewYork");  cities.push_back("Niantic");
+  cities.push_back("Niagara");  cities.push_back("Nokomis");
+  cities.push_back("Norfolk");  cities.push_back("Norwalk");
+  cities.push_back("Norwich");  cities.push_back("Oakboro");
+  cities.push_back("Oakdale");  cities.push_back("Oakland");
+  cities.push_back("Oakwood");  cities.push_back("Oberlin");
+  cities.push_back("Ontario");  cities.push_back("Oolitic");
+  cities.push_back("Oologah");  cities.push_back("Orlando");
+  cities.push_back("Orlinda");  cities.push_back("Orleans");
+  cities.push_back("Osborne");  cities.push_back("Othello");
+  cities.push_back("Pacheco");  cities.push_back("Palatka");
+  cities.push_back("Palmero");  cities.push_back("Palouse");
+  cities.push_back("Panacea");  cities.push_back("Pandora");
+  cities.push_back("Parsons");  cities.push_back("Pawling");
+  cities.push_back("Payette");  cities.push_back("Peabody");
+  cities.push_back("Pearson");  cities.push_back("Peebles");
+  cities.push_back("Pendell");  cities.push_back("Penhook");
+  cities.push_back("Penrose");  cities.push_back("Peralta");
+  cities.push_back("Phoenix");  cities.push_back("Pickett");
+  cities.push_back("Piketon");  cities.push_back("Plummer");
+  cities.push_back("Polkton");  cities.push_back("Pomeroy");
+  cities.push_back("Pontiac");  cities.push_back("Portage");
+  cities.push_back("Portola");  cities.push_back("Potsdam");
+  cities.push_back("Preston");  cities.push_back("Primera");
+  cities.push_back("Proctor");  cities.push_back("Quinlan");
+  cities.push_back("Quitman");  cities.push_back("Ragland");
+  cities.push_back("Raleigh");  cities.push_back("Rainier");
+  cities.push_back("Ralston");  cities.push_back("Rangley");
+  cities.push_back("Ravenna");  cities.push_back("Raymond");
+  cities.push_back("Raymore");  cities.push_back("Reading");
+  cities.push_back("Redland");  cities.push_back("Redmond");
+  cities.push_back("Roanoke");  cities.push_back("Robbins");
+  cities.push_back("Rosebud");  cities.push_back("Roswell");
+  cities.push_back("Roxboro");  cities.push_back("Roxbury");
+  cities.push_back("Salinas");  cities.push_back("Sanibel");
+  cities.push_back("Sanborn");  cities.push_back("Saranac");
+  cities.push_back("Satanta");  cities.push_back("Scandia");
+  cities.push_back("Scanlon");  cities.push_back("Seaford");
+  cities.push_back("Seattle");  cities.push_back("Sebring");
+  cities.push_back("Seville");  cities.push_back("Seymour");
+  cities.push_back("Shawnee");  cities.push_back("Shelton");
+  cities.push_back("Skagway");  cities.push_back("Slinger");
+  cities.push_back("Slocumb");  cities.push_back("Soledad");
+  cities.push_back("Spencer");  cities.push_back("Spokane");
+  cities.push_back("Spooner");  cities.push_back("Stayton");
+  cities.push_back("Stepney");  cities.push_back("Sturgis");
+  cities.push_back("Stryker");  cities.push_back("Sultana");
+  cities.push_back("Suncook");  cities.push_back("Sundown");
+  cities.push_back("Swansea");  cities.push_back("Suffolk");
+  cities.push_back("Talmage");  cities.push_back("Tangent");
+  cities.push_back("Tarboro");  cities.push_back("Taunton");
+  cities.push_back("Telford");  cities.push_back("Temelec");
+  cities.push_back("Tesuque");  cities.push_back("Thermal");
+  cities.push_back("Topanga");  cities.push_back("Tonopah");
+  cities.push_back("Toppers");  cities.push_back("Tornado");
+  cities.push_back("Toronto");  cities.push_back("Towanda");
+  cities.push_back("Tremont");  cities.push_back("Trenton");
+  cities.push_back("Trinity");  cities.push_back("Tyndall");
+  cities.push_back("Wabasso");  cities.push_back("Wakeman");
+  cities.push_back("Waldorf");  cities.push_back("Wallace");
+  cities.push_back("Walpole");  cities.push_back("Waltham");
+  cities.push_back("Wapello");  cities.push_back("Warwick");
+  cities.push_back("Wathena");  cities.push_back("Watkins");
+  cities.push_back("Wautoma");  cities.push_back("Waverly");
+  cities.push_back("Wayland");  cities.push_back("Webster");
+  cities.push_back("Weidman");  cities.push_back("Wendell");
+  cities.push_back("Wetumka");  cities.push_back("Wiggins");
+  cities.push_back("Wilhoit");  cities.push_back("Willard");
+  cities.push_back("Windsor");  cities.push_back("Winsted");
+  cities.push_back("Wingate");  cities.push_back("Winlock");
+  cities.push_back("Winslow");  cities.push_back("Woodway");
+  cities.push_back("Woodall");  cities.push_back("Wooster");
+  cities.push_back("Wyoming");  cities.push_back("Ulysses");
+  cities.push_back("Valdese");  cities.push_back("Varnell");
+  cities.push_back("Yachats");  cities.push_back("Yamhill");
+  cities.push_back("Yardley");  cities.push_back("Yonkers");
+  cities.push_back("Zebulon");  cities.push_back("Zeigler");
+
+  return(cities);
+}
+//----------------------------------------------------------------
+// Procedure: intcities7()
+
+vector<string> intcities7()
+{
+  vector<string> cities;
+
+  cities.push_back("Belfast");  cities.push_back("Beijing");
+  cities.push_back("Jakarta");  cities.push_back("Kampala");
+  cities.push_back("Karachi");  cities.push_back("Marigot");
+  cities.push_back("Nairobi");  cities.push_back("SanJose");
+  cities.push_back("SanJuan");  cities.push_back("TelAviv");
+  cities.push_back("Tripoli");  cities.push_back("Vilnius");
+
+  return(cities);
+}

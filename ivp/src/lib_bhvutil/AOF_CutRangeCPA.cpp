@@ -215,8 +215,12 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
 
   // Calculate a valuation based on the ROC and CPA
   double pct = m_patience / 100.0;
-  if(pct > 0.85)
-    pct = 0.85;
+
+  // The below clipping disabled Nov 7th 2024. The max patience
+  // of 85 is now in the CutRange Behavior. Behvior users can 
+  // override the max patience to be 100 with max_patience=100
+  // if(pct > 0.85)
+  //   pct = 0.85;
   double compromise = ((1.0-pct) * nroc) + (pct * metric_eval);
 
   return(compromise);

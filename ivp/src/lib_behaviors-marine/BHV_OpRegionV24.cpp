@@ -438,6 +438,11 @@ bool BHV_OpRegionV24::haltPolyVerify()
 
 bool BHV_OpRegionV24::updateInfoIn()
 {
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
+    return(false);
+  
+#if 0
   bool ok1, ok2, ok3, ok4;
   double osx = getBufferDoubleVal("NAV_X", ok1);
   double osy = getBufferDoubleVal("NAV_Y", ok2);
@@ -464,7 +469,8 @@ bool BHV_OpRegionV24::updateInfoIn()
   m_osy = osy;
   m_osv = osv;
   m_osh = osh;
-
+#endif
+  
   if(getBufferVarUpdated(m_dynamic_region_var)) {
     bool ok;
     string new_poly_core = getBufferStringVal(m_dynamic_region_var, ok);

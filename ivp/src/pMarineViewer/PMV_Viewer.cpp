@@ -55,6 +55,9 @@ my_isnan(const T x)
 
 using namespace std;
 
+//-------------------------------------------------------------
+// Constructor()
+
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
@@ -79,6 +82,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_bclick_ix = 0;
 
   m_config_complete = false;
+
+  m_ledger.setHistorySize(500); // max history
   
   m_extrapolate = 5; // default extrapolate 5 secs for stale reps
   
@@ -175,16 +180,16 @@ void PMV_Viewer::draw()
   // End Draw Mouse position
 
   if(m_vehi_settings.isViewableVehicles()) {
-    vector<string> svector = m_vehiset.getVehiNames();
+    vector<string> svector = m_ledger.getVNames();
     unsigned int i, vsize = svector.size();
     for(i=0; i<vsize; i++) {
       string vehiname = svector[i];
-      bool   isactive = (vehiname == m_vehiset.getActiveVehicle());
-      string vehibody = m_vehiset.getStringInfo(vehiname, "body");
+      bool   isactive = (vehiname == m_ledger.getActiveVName());
+      string vehibody = m_ledger.getType(vehiname);
       
       // Perhaps draw the history points for each vehicle.
       if(m_vehi_settings.isViewableTrails()) {
-	CPList point_list = m_vehiset.getVehiHist(vehiname);
+	CPList point_list = m_ledger.getVHist(vehiname);
 	unsigned int trails_length = m_vehi_settings.getTrailsLength();
 	drawTrailPoints(point_list, trails_length);
       }
@@ -230,7 +235,7 @@ int PMV_Viewer::handle(int event)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool PMV_Viewer::setParam(string param, string value)
 {
@@ -256,24 +261,9 @@ bool PMV_Viewer::setParam(string param, string value)
   else if((param == "filter_out_tag") || (param == "trail_reset")) {
     handled = true;
     m_geoshapes_map.clear(value);
-    m_vehiset.clear(value);
+    m_ledger.clearNode(value);
     VarDataPair new_pair("HELM_MAP_CLEAR", 0); 
     m_var_data_pairs_non_mouse.push_back(new_pair);
-  }
-  else if(param == "reference_tag") {
-    handled = true;
-    if(value == "bearing-absolute")
-      m_reference_bearing = "absolute";
-    else if(value == "bearing-relative")
-      m_reference_bearing = "relative";
-    else if(value == "datum")
-      m_reference_point = "datum";
-    else if(!strContainsWhite(value)) {
-      m_vehiset.setParam("center_vehicle_name", value);
-      m_reference_point = value;
-    }
-    else
-      handled = false;
   }
   else if(param == "vcolor") {
     string vname  = biteStringX(value, '=');
@@ -283,23 +273,24 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
-  else if(param == "new_report_variable") {
-    handled = m_vehiset.setParam(param, value);
-  }
-  else if((param == "lclick_ix_start") && isNumber(value)) {
-    m_lclick_ix = atoi(value.c_str());
-    handled = true;
-  }
-  else if((param == "rclick_ix_start") && isNumber(value)) {
-    m_rclick_ix = atoi(value.c_str());
-    handled = true;
-  }
-  else if((param == "view_marker") || (param == "marker")) {
+  else if(param == "lclick_ix_start") 
+    handled = setIntOnString(m_lclick_ix, value);
+  else if(param == "rclick_ix_start")
+    handled = setIntOnString(m_rclick_ix, value);
+  else if((param == "view_marker") || (param == "marker"))
     handled = m_geoshapes_map.addGeoShape(toupper(param), value, "shoreside");
+
+  else if(param == "active_vehicle_name") {
+    m_ledger.setActiveVName(value);
+    handled = true;
   }
+  else if(param == "cycle_active") {
+    m_ledger.setActiveVName("cycle_active");
+    handled = true;
+  }
+
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
-    handled = handled || m_vehiset.setParam(param, value);
     handled = handled || m_op_area.setParam(param, value);
   }
 
@@ -315,11 +306,13 @@ bool PMV_Viewer::setParam(string param, string value)
 
 bool PMV_Viewer::handleNodeReport(string report_str, string& whynot)
 {
-  bool handled = m_vehiset.handleNodeReport(report_str, whynot);
-  if(handled && (m_centric_view != "") && m_centric_view_sticky) 
+  string vname = m_ledger.processNodeReport(report_str, whynot);
+  if((vname != "") && (m_centric_view != "") && m_centric_view_sticky) 
     setWeightedCenterView();
 
-  return(handled);
+  if(vname == "")
+    return(false);
+  return(true);
 }
 
 
@@ -345,7 +338,7 @@ bool PMV_Viewer::setParam(string param, double value)
   }
   else if(param == "curr_time") {
     m_curr_time = value;
-    m_vehiset.setParam(param, value);
+    m_ledger.setCurrTimeUTC(m_curr_time);
     m_geoshapes_map.manageMemory(m_curr_time);
     return(true);
   }
@@ -361,7 +354,6 @@ bool PMV_Viewer::setParam(string param, double value)
   bool handled = MarineViewer::setParam(param, value);
 
   handled = handled || m_vehi_settings.setParam(param, value);
-  handled = handled || m_vehiset.setParam(param, value);
 
   return(handled);
 }
@@ -373,13 +365,10 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 {
   vector<string> rvector;
 
-  vector<string> vnames = m_vehiset.getVehiNames();
+  vector<string> vnames = m_ledger.getVNames();
   for(unsigned int i=0; i<vnames.size(); i++) {
     string vname = vnames[i];
-
-    NodeRecord record = m_vehiset.getNodeRecord(vname);
-    
-    double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
+    double age_report = m_ledger.getUTCAgeReceived(vname);
 
     if(age_report > thresh)
       rvector.push_back(vname);
@@ -393,15 +382,12 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
-  NodeRecord record = m_vehiset.getNodeRecord(vname);
+  NodeRecord record = m_ledger.getRecord(vname);
   if(!record.valid())  // FIXME more rigorous test
     return;
 
   double transp = record.getTransparency();
-  
-  double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
-
-  BearingLine bng_line = m_vehiset.getBearingLine(vname);
+  double age_report = m_ledger.getUTCAgeReceived(vname);
 
   // If there has been no explicit mapping of color to the given vehicle
   // name then the "inactive_vehicle_color" will be returned below.
@@ -424,7 +410,6 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   
   double shape_scale  = m_vehi_settings.getVehiclesShapeScale();
 
-  //  double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
   record.setLength(record.getLength() * shape_scale);
 
   string vname_aug = vname;
@@ -432,16 +417,16 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(vnames_mode == "off")
     vname_draw = false;
   else if(vnames_mode == "names+mode") {
-    string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
-    string helm_amode = m_vehiset.getStringInfo(vname, "helm_allstop_mode");
+    string helm_mode  = record.getMode();
+    string helm_amode = record.getAllStop();
     if((helm_mode != "none") && (helm_mode != "unknown-mode"))
       vname_aug += " (" + helm_mode + ")";
     if(helm_amode != "clear") 
       vname_aug += " (" + helm_amode + ")";
   }
   else if(vnames_mode == "names+shortmode") {
-    string helm_mode  = m_vehiset.getStringInfo(vname, "helm_mode");
-    string helm_amode = m_vehiset.getStringInfo(vname, "helm_allstop_mode");
+    string helm_mode  = record.getMode();
+    string helm_amode = record.getAllStop();
     if((helm_mode != "none") && (helm_mode != "unknown-mode")) {
       helm_mode = modeShorten(helm_mode);
       vname_aug += " (" + helm_mode + ")";
@@ -450,7 +435,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
       vname_aug += " (" + helm_amode + ")";
   }
   else if(vnames_mode == "names+auxmode") {
-    string helm_mode_aux = m_vehiset.getStringInfo(vname, "helm_auxmode");
+    string helm_mode_aux = record.getModeAux();
     if(helm_mode_aux != "")
       vname_aug += " (" + helm_mode_aux + ")";
     else
@@ -474,7 +459,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(m_extrapolate > 0)
     record = extrapolateRecord(record, m_curr_time, m_extrapolate);
   
-  drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1, transp);
+  drawCommonVehicle(record, vehi_color, vname_color, vname_draw, 1, transp);
 }
 
 //-------------------------------------------------------------
@@ -566,9 +551,11 @@ void PMV_Viewer::handleMouse(int vx, int vy, string button_side)
   double sy = snapToStep(my, 0.1);
 
   // Part 3: Get Context info based on mouse and/or active vehicle
-  string vname_closest = m_vehiset.getClosestVehicle(sx, sy);
+
+  string vname_closest = m_ledger.getClosestVehicle(sx, sy);
   string up_vname_closest = toupper(vname_closest);
-  string active_vname = getStringInfo("active_vehicle_name");
+  //string active_vname = getStringInfo("active_vehicle_name");
+  string active_vname = m_ledger.getActiveVName();
   string up_active_vname = toupper(active_vname);
 
   // Part 4: Get lat/lon info related to mouse click
@@ -664,7 +651,7 @@ void PMV_Viewer::handleMouse(int vx, int vy, string button_side)
       str = macroExpand(str, "VNAME", active_vname);
       str = macroExpand(str, "UP_VNAME", up_active_vname);
       
-      NodeRecord rec = m_vehiset.getNodeRecord(active_vname);
+      NodeRecord rec = m_ledger.getRecord(active_vname);
       double heading = relAng(rec.getX(),rec.getY(),sx,sy);
       str = macroExpand(str, "HDG", doubleToString(heading,2));
       
@@ -697,16 +684,13 @@ void PMV_Viewer::setWeightedCenterView()
   bool ok1 = false;
   bool ok2 = false;
   if(m_centric_view == "average") {
-    ok1 = m_vehiset.getWeightedCenter(pos_x, pos_y);
+    ok1 = m_ledger.getWeightedCenter(pos_x, pos_y);
     ok2 = true;
   }
   else if(m_centric_view == "active") {
-    ok1 = m_vehiset.getDoubleInfo("active", "xpos", pos_x);
-    ok2 = m_vehiset.getDoubleInfo("active", "ypos", pos_y);
-  }
-  else if(m_centric_view == "reference") {
-    ok1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", pos_x);
-    ok2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", pos_y);
+    string active_vname = m_ledger.getActiveVName();
+    ok1 = m_ledger.getX(active_vname);
+    ok1 = m_ledger.getY(active_vname);
   }
 
   if(!ok1 || !ok2)
@@ -721,12 +705,11 @@ void PMV_Viewer::setWeightedCenterView()
 
 void PMV_Viewer::setCenterView(string vname)
 {
-  double pos_x, pos_y;
-  bool ok1 = m_vehiset.getDoubleInfo(vname, "xpos", pos_x);
-  bool ok2 = m_vehiset.getDoubleInfo(vname, "ypos", pos_y);
+  string active_vname = m_ledger.getActiveVName();
 
-  if(!ok1 || !ok2) 
-    return;
+  double pos_x, pos_y;
+  pos_x = m_ledger.getX(active_vname);
+  pos_y = m_ledger.getY(active_vname);
 
   setCenterView(pos_x, pos_y);
 }
@@ -802,7 +785,6 @@ bool PMV_Viewer::updateScopeVariable(string varname, string value,
 
 //-------------------------------------------------------------
 // Procedure: setActiveScope
-//      Note: 
 
 void PMV_Viewer::setActiveScope(string varname)
 {
@@ -861,98 +843,41 @@ void PMV_Viewer::addMousePoke(string side, string key, string vardata_pair)
 // ----------------------------------------------------------
 // Procedure: getStringInfo()
 
-string PMV_Viewer::getStringInfo(const string& info_type, int precision)
+string PMV_Viewer::getStringInfo(string info_type, int precision)
 {
-  string result = "error";
-
-  if(info_type == "scope_var") {
-    if(m_scoping)
-      return(m_var_names[m_var_index]);
-    else
-      return("n/a");
-  }
-  else if(info_type == "scope_val") {
-    if(m_scoping)
-      return(m_var_vals[m_var_index]);
-    else
-      return("To add Scope Variables: SCOPE=VARNAME in the MOOS config block");
-  }
-  else if(info_type == "scope_time") {
-    if(m_scoping)
-      return(m_var_time[m_var_index]);
-    else
-      return("n/a");
-  }
-  else if(info_type == "scope_source") {
-    if(m_scoping)
-      return(m_var_source[m_var_index]);
-    else
-      return("n/a");
-  }
-  else if(info_type == "range") {
-    double xpos, ypos;
-    bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
-    bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
-    if(dhandled1 && dhandled2) {
-      double x_center = 0;
-      double y_center = 0;
-      if(m_reference_point != "datum") {
-	double cxpos, cypos;
-	dhandled1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", cxpos);
-	dhandled2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", cypos);
-	if(dhandled1 && dhandled2) {
-	  x_center = cxpos;
-	  y_center = cypos;
-	}
-      }
-      double range = hypot((xpos-x_center), (ypos-y_center));
-      result = doubleToString(range, precision);
-    }
-  }
-  else if(info_type == "bearing") {
-    double xpos, ypos;
-    bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
-    bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
-    if(dhandled1 && dhandled2) {
-      double x_center = 0;
-      double y_center = 0;
-      double h_heading = 0;
-      if(m_reference_point != "datum") {
-	double cxpos, cypos, heading;
-	bool ok1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", cxpos);
-	bool ok2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", cypos);
-	bool ok3 = m_vehiset.getDoubleInfo("center_vehicle", "heading", heading);
-	if(ok1 && ok2 && ok3) {
-	  x_center = cxpos;
-	  y_center = cypos;
-	  h_heading = heading;
-	}
-      }
-      double bearing = 0;
-      if((m_reference_bearing == "absolute") || (m_reference_point == "datum"))
-	bearing = relAng(x_center, y_center, xpos, ypos);
-      else if(m_reference_bearing == "relative") {
-	bearing = relAng(x_center, y_center, xpos, ypos);
-	bearing = angle360(bearing - h_heading);
-      }
-      result = doubleToString(bearing, precision);
-    }
-  }
-  else {
-    string sresult;
-    bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);
-    if(shandled) {
-      result = sresult;
-    }
-    else {
-      double dresult;
-      bool   dhandled = m_vehiset.getDoubleInfo("active", info_type, dresult);
-      if(dhandled)
-	result = doubleToString(dresult, precision);
-    }
-  }
+  string active_vname = m_ledger.getActiveVName();
   
-  return(result);
+  if((info_type == "scope_var") && m_scoping)
+    return(m_var_names[m_var_index]);
+  if((info_type == "scope_val") && m_scoping)
+    return(m_var_vals[m_var_index]);
+  if((info_type == "scope_time") && m_scoping)
+    return(m_var_time[m_var_index]);
+  if((info_type == "scope_source") && m_scoping)
+    return(m_var_source[m_var_index]);
+  if(info_type == "active_vehicle_name")
+    return(active_vname);
+
+  double dresult = 0;
+  if(info_type == "xpos")
+    dresult = m_ledger.getX(active_vname);
+  else if(info_type == "ypos")
+    dresult = m_ledger.getY(active_vname);
+  else if(info_type == "lat")
+    dresult = m_ledger.getLat(active_vname);
+  else if(info_type == "lon")
+    dresult = m_ledger.getLon(active_vname);
+  else if((info_type == "course") || (info_type == "heading"))
+    dresult = m_ledger.getHeading(active_vname);
+  else if(info_type == "speed")
+    dresult = m_ledger.getSpeed(active_vname);
+  else if(info_type == "depth")
+    dresult = m_ledger.getDepth(active_vname);
+  else
+    return("n/a");
+  
+  string sresult = doubleToString(dresult, precision);
+  return(sresult);
 }
   
 // ----------------------------------------------------------

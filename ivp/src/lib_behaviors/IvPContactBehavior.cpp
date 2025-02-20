@@ -93,7 +93,8 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(true);
   
   if(param == "contact") {
-    string new_contact_name = toupper(param_val);
+    //string new_contact_name = toupper(param_val);  // mikerb_jan_25
+    string new_contact_name = param_val;
     if(m_contact != new_contact_name)
       onParamUpdate("contact");
     m_contact = new_contact_name;
@@ -322,6 +323,14 @@ void IvPContactBehavior::onEveryState(string new_state)
 }
 
 //-----------------------------------------------------------
+// Procedure: onHelmStart()
+
+void IvPContactBehavior::onHelmStart()
+{
+  addInfoVars("BHV_ABLE_FILTER", "no_warning");
+}
+
+//-----------------------------------------------------------
 // Procedure: handleContactFlags()
 //   Purpose: Go through all the contact flags and send to
 //            appropriate handler
@@ -433,7 +442,7 @@ string IvPContactBehavior::expandMacros(string sdata)
 }
 
 //-----------------------------------------------------------
-// Procedure: updatePlatformInfo
+// Procedure: updatePlatformInfo()
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
 //             m_osy: Current ownship y position (meters) 
@@ -447,26 +456,15 @@ string IvPContactBehavior::expandMacros(string sdata)
 
 bool IvPContactBehavior::updatePlatformInfo()
 {
+  // Part 1A: Set m_osx, m_osy, m_osh, m_osv.
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
+    return(false);
+
   // Sanity check - skip if update already successfully done
   if(m_cnos.helm_iter() == m_helm_iter)
     return(true);
 
-  bool ok = true;
-
-  //==============================================================
-  // Part 1: Update ownship and contact positions
-  // Part 1A: Ascertain the current ownship position and trajectory.
-  if(ok) m_osx = getBufferDoubleVal("NAV_X", ok);
-  if(ok) m_osy = getBufferDoubleVal("NAV_Y", ok);
-  if(ok) m_osh = getBufferDoubleVal("NAV_HEADING", ok);
-  if(ok) m_osv = getBufferDoubleVal("NAV_SPEED", ok);
-  if(!ok) {
-    postEMessage("ownship x,y,heading, or speed info not found.");
-    return(false);
-  }
-  m_osh = angle360(m_osh);
-
-  m_cnos.set_update_ok(false);
   if(m_contact == "") {
     if(m_on_no_contact_ok)
       return(true);
@@ -474,10 +472,28 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
   }
   
-
   if(tolower(m_contact) == "unset_ok")
     return(ok);
   
+  // Part 1B: ascertain current contact position and trajectory.
+  bool ok1, ok2, ok3, ok4, ok5;
+  m_cnx = getLedgerInfoDbl(m_contact, "x", ok1);
+  m_cny = getLedgerInfoDbl(m_contact, "y", ok2);
+  m_cnh = getLedgerInfoDbl(m_contact, "hdg", ok3);
+  m_cnv = getLedgerInfoDbl(m_contact, "spd", ok4);
+
+  double cnutc = getLedgerInfoDbl(m_contact, "utc", ok5);
+  
+  if(!ok1 || !ok2 || !ok3 || !ok4) {    
+    string msg = m_contact + " x/y/heading/speed info not found";
+    if(m_on_no_contact_ok)
+      postWMessage(msg);
+    else
+      postEMessage(msg);
+    return(false);
+  }
+
+#if 0
   // Part 1B: ascertain current contact position and trajectory.
   double cnutc = 0;
   if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
@@ -494,21 +510,28 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
   }
   m_cnh = angle360(m_cnh);
-
+#endif
+  
   // Part 1C: At this point we know this update will be a success, i.e.,
   // it will return with true. So now is the time to invoke archive
   // on the ContactStateSet, moving the previously current cnos into the
   // cnos history and letting the newly current cnos hold current info.
 
+  m_cnos.set_update_ok(false);
   m_cnos.archiveCurrent();
   
   m_cnos.set_cnutc(cnutc);
-  m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
-  m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
 
+  //m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
+  //m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
+  
+  m_cn_group = getLedgerInfoStr(m_contact, "grp");
+  m_cn_vtype = getLedgerInfoStr(m_contact, "type");  
+  
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
 
+#if 0 
   // If extrapolation is turned off, we're done with the update.
   if(m_extrapolate) {
     // Even if mark_time is zero and thus "fresh", still derive the 
@@ -531,7 +554,8 @@ bool IvPContactBehavior::updatePlatformInfo()
       postWMessage("Incomplete Linear Extrapolation: " + failure_reason);
     }
   }
-
+#endif
+  
   //==================================================================
   // Part 3: Update the useful relative vehicle information
   
@@ -631,7 +655,7 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
   if(m_bearing_line_label_show)
     m_bearing_line.set_color("label", "white");
   else
-    m_bearing_line.set_color("label", "pink");
+    m_bearing_line.set_color("label", "off");
   m_bearing_line.set_color("edge", color);
   m_bearing_line.set_duration(100);
   m_bearing_line.set_time(getBufferCurrTime());
@@ -643,3 +667,86 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
   postMessage("VIEW_SEGLIST", segl_spec);
 }
 
+//-----------------------------------------------------------
+// Procedure: applyAbleFilter()
+//   Example: action=disable, contact=345, gen_type=safety,
+//            bhv_type=AvdColregs
+//    Fields: action=disable/able  (mandatory)
+//            contact=345          (one of these three)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+
+bool IvPContactBehavior::applyAbleFilter(string str)
+{
+  // If this behavior is configured to be immune to disable
+  // actions, then just ignore and return true, even if the
+  // passed argument is not proper.
+  if(!m_can_disable)
+    return(true);
+
+  // ======================================================
+  // Part 1: Parse the filter string. Must be one of the
+  //         supported fields, no field more than once.
+  // ======================================================
+  string action, contact, gen_type, bhv_type;
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = tolower(svector[i]);
+
+    if((param == "action") && (action == ""))
+      action = value;
+    else if((param == "contact") && (contact == ""))
+      contact = value;
+    else if((param == "gen_type") && (gen_type == ""))
+      gen_type = value;
+    else if((param == "bhv_type") && (bhv_type == ""))
+      bhv_type = value;
+    else
+      return(false);
+  }
+
+  // ======================================================
+  // Part 2: Check for proper format.
+  // ======================================================
+
+  // action must be specified and only disable or enable
+  if((action != "disable") && (action != "enable"))
+    return(false);
+
+  // gen_type can only be empty or safety
+  if((gen_type != "") && (gen_type != "safety"))
+    return(false);
+
+  // At least one of contact, gen_type, or bhv_type must be given
+  if((contact == "") && (gen_type == "") && (bhv_type == ""))
+    return(false);
+
+  // ======================================================
+  // Part 3: At this pt syntax checking has passed, now
+  // check if this filter message applies to this behavior.
+  // ======================================================
+
+  // Check 1: If the gen_type has been set to safety, then
+  // then it MUST be a safety(constraint) behavior,
+  // regardless of other filter factors
+  if((gen_type == "safety") && !isConstraint())
+    return(true);  // Return true since syntax if fine
+
+  // Check 2: If the bhv_type has been set then it MUST
+  // match, regardless of other filter factors
+  if((bhv_type != "") && (bhv_type != tolower(getBehaviorType())))
+    return(true);  // Return true since syntax if fine
+
+  // Check 3: If contact name has been set then MUST 
+  // match, regardless of other filter factors
+  if((contact != "") && (contact != tolower(m_contact)))
+    return(true);  // Return true since syntax if fine
+
+  if(action == "disable")
+    m_disabled = true;
+  else
+    m_disabled = false;
+
+  return(true);
+}

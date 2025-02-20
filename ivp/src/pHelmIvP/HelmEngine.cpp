@@ -40,10 +40,12 @@ using namespace std;
 // Procedure: Constructor
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
-		       InfoBuffer *g_info_buffer)
+		       InfoBuffer *g_info_buffer,
+		       LedgerSnap *g_lsnap)
 {
   m_ivp_domain  = g_ivp_domain;
   m_info_buffer = g_info_buffer;
+  m_ledger_snap = g_lsnap;
   m_iteration   = 0;
   m_bhv_set     = 0;
   m_curr_time   = 0;
@@ -95,7 +97,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_curr_time   = curr_time;
   m_helm_report.clear();
   m_map_ipfs.clear();
-  
+
   vector<string> templating_summary = m_bhv_set->getTemplatingSummary();
   m_helm_report.setTemplatingSummary(templating_summary);
   
@@ -116,9 +118,52 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   handled = handled && part5_FreeMemoryIPFs();
   handled = handled && part6_FinishHelmReport();
 
-
   return(m_helm_report);
 }
+
+//------------------------------------------------------------------
+// Procedure: addAbleFilterMsg()
+
+bool HelmEngine::addAbleFilterMsg(string msg)
+{
+  if(!m_bhv_set)
+    return(false);
+
+  // Oldest in front, newest in back
+  m_able_filter_msgs.push_back(msg);
+
+  // More aggressive pruning will happen directly after applying
+  // the messages, but less agressive pruning is done here to
+  // be super conservative in gaurding against unbounded growth.
+  if(m_able_filter_msgs.size() > 1000)
+    m_able_filter_msgs.pop_front();
+
+  return(true);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: applyAbleFilterMsgs()
+
+bool HelmEngine::applyAbleFilterMsgs()
+{
+  if(!m_bhv_set)
+    return(false);
+  
+  bool last_msg_ok = true;
+  list<string>::iterator p;
+  for(p=m_able_filter_msgs.begin(); p!=m_able_filter_msgs.end(); p++) {
+    string msg = *p;
+    last_msg_ok = m_bhv_set->applyAbleFilterMsg(msg);
+  }
+
+  // Prune the oldest if needed
+  if(m_able_filter_msgs.size() > 100)
+    m_able_filter_msgs.pop_front();
+
+  return(last_msg_ok);
+}
+
 
 //------------------------------------------------------------------
 // Procedure: part1_PreliminaryBehaviorSetHandling()
@@ -141,9 +186,16 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   m_bhv_set->setCurrTime(m_curr_time);
 
   bool new_behaviors = m_bhv_set->handlePossibleSpawnings();
-  if(new_behaviors)
+  if(new_behaviors) {
     m_bhv_set->connectInfoBuffer(m_info_buffer);
-
+    m_bhv_set->connectLedgerSnap(m_ledger_snap);
+  }
+  
+  //cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
+  
+  // bhv_set is stable w/ possible new bhvs, apply filter msgs
+  applyAbleFilterMsgs();
+  
   // Update the PlatModel for each behavior including newly
   // spawned behaviors.
   m_bhv_set->setPlatModel(m_pmodel);
@@ -181,9 +233,9 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string bhv_state;
       bool   ipf_reuse = false;
       m_ipf_timer.start();
+
       IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
 						bhv_state, ipf_reuse);
-
       
       //cout << "********************************************" << endl;
       //string bname = m_bhv_set->getDescriptor(bhv_ix);
@@ -267,6 +319,9 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	m_map_ipfs[descriptor] = newof;
       }
 
+      if(bhv_state=="disabled")
+	m_helm_report.addDisabledBHV(descriptor, state_time_entered, 
+				    upd_summary);
       if(bhv_state=="running")
 	m_helm_report.addRunningBHV(descriptor, state_time_entered, 
 				    upd_summary);
@@ -276,6 +331,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       if(bhv_state=="completed") {
 	m_helm_report.addCompletedBHV(descriptor, state_time_entered,
 				      upd_summary);
+	//cout << "****** completed: " << descriptor << endl;
+	//cout << "****** hr_cbhvs: " << m_helm_report.getCompletedCnt() << endl;
 	m_helm_report.addMsg("executing setCompletedPending:true");
 	m_bhv_set->setCompletedPending(true);
       }
@@ -401,27 +458,6 @@ bool HelmEngine::part3_VerifyFunctionDomains()
 
 bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
 {
-#if 0
-  unsigned int i, ipfs = m_ivp_functions.size(); 
-  m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
-  m_helm_report.setOFNUM(ipfs);
-  if(ipfs == 0) {
-    m_helm_report.addMsg("No Decision due to zero IvP functions");
-    return(false);
-  }
-
-  // Create, Prepare, and Solve the IvP problem
-  m_ivp_problem = new IvPProblem;
-  m_solve_timer.start();
-  for(i=0; i<ipfs; i++)
-      m_ivp_problem->addOF(m_ivp_functions[i]);
-  m_ivp_problem->setDomain(m_sub_domain);
-  m_ivp_problem->alignOFs();
-  m_ivp_problem->solve();
-  m_solve_timer.stop();
-#endif
-
-#if 1
   unsigned int ipfs = m_map_ipfs.size(); 
   m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
   m_helm_report.setOFNUM(ipfs);
@@ -443,7 +479,6 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
   m_ivp_problem->alignOFs();
   m_ivp_problem->solve();
   m_solve_timer.stop();
-#endif
   
   unsigned int dsize = m_sub_domain.size();
   for(unsigned int i=0; i<dsize; i++) {

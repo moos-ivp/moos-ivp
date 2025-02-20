@@ -28,7 +28,7 @@
 using namespace std;
 
 //--------------------------------------------------------------------
-// Procedure: setBehaviorKind
+// Procedure: setBehaviorKind()
 
 BehaviorSpec::BehaviorSpec()
 {
@@ -36,10 +36,11 @@ BehaviorSpec::BehaviorSpec()
   m_templating_enabled = false;
   m_spawns_made = 0;
   m_spawns_tried = 0;
+  m_max_spawnings = 0; // zero means no limit
 }
 
 //--------------------------------------------------------------------
-// Procedure: setBehaviorKind
+// Procedure: setBehaviorKind()
 
 void BehaviorSpec::setBehaviorKind(string kind, unsigned int line_num)
 {
@@ -48,7 +49,7 @@ void BehaviorSpec::setBehaviorKind(string kind, unsigned int line_num)
 }
 
 //--------------------------------------------------------------------
-// Procedure: addBehaviorConfig
+// Procedure: addBehaviorConfig()
 //      Note: For the most part we are just accepting the config line 
 //            to be handled by something processing this behavior spec. 
 //      Note: We note the line number from the original behavior file 
@@ -67,22 +68,24 @@ void BehaviorSpec::addBehaviorConfig(string config_line,
   string right = cline;
   if((left == "updates") && !strContainsWhite(right))
     m_updates_var = right;
-  if(left == "templating")
+  else if(left == "templating")
     setTemplatingType(right);
-  if(left == "name")
+  else if(left == "name")
     m_name_prefix = right;
+  else if(left == "max_spawnings")
+    setUIntOnString(m_max_spawnings, right);
 
-  // The templating information applies only to the template and is not
-  // a behavior configuration. Therefore dont add the templating line
-  // to the behavior specs as a configuration parameter.
-  if(left != "templating") {
+  // The templating and max_spawnings info applies only to the
+  // template and is not a behavior configuration. So dont add
+  // templating line to behavior specs as a config parameter.
+  if((left != "templating") && (left != "max_spawnings")) {
     m_config_lines.push_back(config_line);
     m_config_line_num.push_back(line_num);
   }
 }
 
 //--------------------------------------------------------------------
-// Procedure: checkForSpawningStrings
+// Procedure: checkForSpawningStrings()
 //      Note: Checks the info_buffer to see if new info has been posted
 //            in this template's UPDATES variable that would indicate
 //            that a spawning has been requested.

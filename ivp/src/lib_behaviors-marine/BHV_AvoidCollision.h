@@ -35,6 +35,7 @@ public:
   void         onHelmStart();
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onDisabledState();
   void         onIdleState();
   void         onInactiveState();
   bool         isConstraint() {return(true);}

@@ -47,9 +47,9 @@ protected: // configuration parameters
   std::string m_ipf_type;
 
 protected: // intermediate or object global variables.
-  double    m_osv;  // Ownship velocity
-  double    m_osx;  // Ownship x position
-  double    m_osy;  // Ownship y position
+  //double    m_osv;  // Ownship velocity
+  //double    m_osx;  // Ownship x position
+  //double    m_osy;  // Ownship y position
   double    m_abort_x;
   double    m_abort_y;
   
@@ -64,23 +64,3 @@ protected: // intermediate or object global variables.
   
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

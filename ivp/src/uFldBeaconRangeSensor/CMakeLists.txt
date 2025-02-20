@@ -24,8 +24,10 @@ ADD_EXECUTABLE(uFldBeaconRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldBeaconRangeSensor
   ${MOOS_LIBRARIES}
+  ${MOOSGeodesy_LIBRARIES}
   mbutil
   apputil
+  geodaid
   contacts
   geometry 
   ${SYSTEM_LIBS}

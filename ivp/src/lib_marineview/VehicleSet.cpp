@@ -40,11 +40,6 @@ VehicleSet::VehicleSet()
 {
   m_curr_time    = 0;
   m_history_size = 1000;
-
-  m_xmin = 0;
-  m_xmax = 0;
-  m_ymin = 0;
-  m_ymax = 0;
 }
 
 //-------------------------------------------------------------
@@ -61,9 +56,7 @@ bool VehicleSet::setParam(string param, string value)
   param = tolower(param);
   value = stripBlankEnds(value);
 
-  if(param == "bearing_line")
-    handled = updateVehicleBearingLine(value);
-  else if((param == "active_vehicle_name") || 
+  if((param == "active_vehicle_name") || 
 	  (param == "vehicles_active_name")) {
     if(m_rec_map.count(value)) {
       handled = true;
@@ -121,17 +114,11 @@ void VehicleSet::clear(const string& vname)
   if((vname == "all") || (vname == "")) {
     m_rec_map.clear();
     m_hist_map.clear();
-    m_bearing_map.clear();
   }
   else {
     m_rec_map.erase(vname);
     m_hist_map.erase(vname);
-    m_bearing_map.erase(vname);
   }
-  m_xmin = 0;
-  m_xmax = 0;
-  m_ymin = 0;
-  m_ymax = 0;
 }
 
 // ----------------------------------------------------------
@@ -148,7 +135,7 @@ NodeRecord VehicleSet::getNodeRecord(const string& vname) const
 }
 
 // ----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 //   Purpose: Return the double info associated with the given
 //            vehicle name and info_type. The result is placed
 //            in the given double reference, and a boolean is 
@@ -323,7 +310,7 @@ string VehicleSet::getStringInfo(const string& info_type) const
 }
 
 // ----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 //   Purpose: Return the numerical (double) info associated with
 //            the "active" vehicle and info_type. This is a 
 //            convenience function when the caller does not care
@@ -337,14 +324,6 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
     return(val);
   else
     return(0);
-}
-
-// ----------------------------------------------------------
-// Procedure: hasVehiName
-
-bool VehicleSet::hasVehiName(const string& vname) const
-{  
-  return(m_rec_map.count(vname));
 }
 
 //-------------------------------------------------------------
@@ -361,6 +340,7 @@ vector<string> VehicleSet::getVehiNames() const
   return(rvect);
 }
 
+
 //-------------------------------------------------------------
 // Procedure: print()
 
@@ -376,36 +356,6 @@ void VehicleSet::print() const
     cout << "[" << index << "]" << p->first << endl;
     cout << "Spec:" << p->second.getSpec() << endl;
   }
-}
-
-//-------------------------------------------------------------
-// Procedure: getBearingLine
-
-BearingLine VehicleSet::getBearingLine(const string& given_vname) const
-{
-  string vname = given_vname;
-  if(vname == "active")
-    vname = m_vehicles_active_name;
-
-  BearingLine bearing_line;
-  BearingLine invalid_line;
-  map<string, BearingLine>::const_iterator p;
-  p = m_bearing_map.find(vname);
-  if(p != m_bearing_map.end())
-    bearing_line = p->second;
-
-  if(!bearing_line.isValid())
-    return(invalid_line);
-
-  double time_limit = bearing_line.getTimeLimit();
-  if(time_limit == -1)
-    return(bearing_line);
-
-  double time_stamp = bearing_line.getTimeStamp();
-  if((m_curr_time - time_stamp) > time_limit)
-    return(invalid_line);
-  else
-    return(bearing_line);
 }
 
 //-------------------------------------------------------------
@@ -480,7 +430,7 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
 
 
 //-------------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 
 bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
 {
@@ -489,7 +439,7 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
 
 
 //-------------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 
 bool VehicleSet::handleNodeReport(double local_time, 
 				  string node_report_str, 
@@ -503,7 +453,30 @@ bool VehicleSet::handleNodeReport(double local_time,
   }
   if(!new_record.valid("name,type,speed,heading,time", whynot))
     return(false);
-  
+
+  // Oct 3rd, 2024: Since PMV needs to have node records with x/y
+  // coordinates, and since we're shifting away from having local/x/y
+  // coordinates in NODE_REPORT msgs, we need to check if x/y is
+  // present inside this message, and if not, calculate with a
+  // local MOOSGeodesy. Eventually PMV will be modified to deal
+  // solely with lat/lon, ...
+  if(new_record.isSetLatitude() && new_record.isSetLongitude()) { 
+    if(!new_record.isSetX() || !new_record.isSetX()) {
+
+      double nav_lat = new_record.getLat();
+      double nav_lon = new_record.getLon();
+      double nav_x, nav_y;
+      
+#ifdef USE_UTM
+      m_geodesy.LatLong2LocalUTM(nav_lat, nav_lon, nav_y, nav_x);
+#else
+      m_geodesy.LatLong2LocalGrid(nav_lat, nav_lon, nav_y, nav_x);
+#endif      
+      new_record.setX(nav_x);
+      new_record.setY(nav_y);
+    }
+  }
+
   // Do some "Type-Fixing". Known types: kayak, auv, glider, ship
   string vtype = tolower(new_record.getType());
   if(vtype == "uuv")
@@ -534,6 +507,8 @@ bool VehicleSet::handleNodeReport(double local_time,
       vlen = 10; // meters
     else if(vtype=="longship")
       vlen = 10; // meters
+    else if(vtype=="smr")
+      vlen = 6; // meters
   }
   
   new_record.setType(vtype);
@@ -565,79 +540,6 @@ bool VehicleSet::handleNodeReport(double local_time,
     m_hist_map[vname] = newlist;
   }
 
-  // Update the maximum boundaries
-  if(pos_x < m_xmin)
-    m_xmin = pos_x;
-  if(pos_x > m_xmax)
-    m_xmax = pos_x;
-  if(pos_y < m_ymin)
-    m_ymin = pos_y;
-  if(pos_y > m_ymax)
-    m_ymax = pos_y;
-
   return(true);
 }
-
-//-------------------------------------------------------------
-// Procedure: updateVehicleBearingLine
-//
-//     BEARING_LINE = "vname=alpha, bearing=124, vector_length=40, 
-//         vector_color=red, vector_time=nolimit" 
-
-
-bool VehicleSet::updateVehicleBearingLine(const string& str) 
-{
-  BearingLine bearing_line;
-  bearing_line.setTimeStamp(m_curr_time);
-
-  string vname;
-
-  vector<string> svector = parseString(str, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
-    string left  = tolower(biteStringX(svector[i], '='));
-    string right = svector[i];
-    if(left == "vname")
-      vname = right;
-    else if((left == "bearing") && isNumber(right))
-      bearing_line.setBearing(atof(right.c_str()));
-    else if((left == "range") && isNumber(right))
-      bearing_line.setRange(atof(right.c_str()));
-    else if((left == "vector_width") && isNumber(right))
-      bearing_line.setVectorWidth(atof(right.c_str()));
-    else if((left == "time_stamp") && isNumber(right))
-      bearing_line.setTimeStamp(atof(right.c_str()));
-    else if((left == "time_limit") && isNumber(right))
-      bearing_line.setTimeLimit(atof(right.c_str()));
-    else if((left == "vector_color") && isColor(right))
-      bearing_line.setVectorColor(right);
-    else if(left == "label")
-      bearing_line.setLabel(right);
-    else if(left == "bearing_absolute") {
-      if(tolower(right) == "true")
-	bearing_line.setBearingAbsolute(true);
-      else if(tolower(right) == "false")
-	bearing_line.setBearingAbsolute(false);
-    }
-  }
-
-  if(vname == "")
-    return(false);
-
-  if(!bearing_line.isValid())
-    return(false);
-    
-  m_bearing_map[vname] = bearing_line; 
-  return(true);
-}
-
-
-
-
-
-
-
-
-
-
 

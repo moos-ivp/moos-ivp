@@ -62,6 +62,7 @@ protected: // Utility function(s)
   
  protected:
   // SIM variables
+  bool         m_post_navpos_summary;
   std::string  m_sim_prefix;
   USM_Model    m_model;
   bool         m_enabled;
@@ -76,6 +77,7 @@ protected: // Utility function(s)
   double  m_report_interval;
   double  m_pitch_tolerance;
   double  m_max_speed;
+  bool    m_obstacle_hit;
   
   WormHoleSet  m_wormset;
 
@@ -96,9 +98,3 @@ protected: // Utility function(s)
 };
 
 #endif
-
-
-
-
-
-

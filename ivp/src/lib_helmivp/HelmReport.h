@@ -56,6 +56,10 @@ public:
   void  addIdleBHV(const std::string& descriptor, double time,
 		   const std::string& updated_summary);
 
+  void  clearDisabledBHVs();
+  void  addDisabledBHV(const std::string& descriptor, double time,
+		       const std::string& update_summary);
+
   void  clearCompletedBHVs();
   void  addCompletedBHV(const std::string& descriptor, double time,
 			const std::string& update_summary);
@@ -114,7 +118,9 @@ public:
   std::string  getActiveBehaviors(bool full=true)    const;
   std::string  getRunningBehaviors(bool full=true)   const;
   std::string  getIdleBehaviors(bool full=true)      const;
+  std::string  getDisabledBehaviors(bool full=true)  const;
   std::string  getCompletedBehaviors(bool full=true) const;
+  std::string  getCompletedBehaviorsTerse() const;
   std::string  getDomainString()       const;
   std::string  timeInState(double, double) const;
 
@@ -128,6 +134,7 @@ public:
   // Debugging
   void print() const;
 
+  unsigned int getCompletedCnt() const {return(m_bhvs_completed_desc.size());}
 protected:
 
   std::vector<std::string>  m_bhvs_running_desc;   // Running Behaviors
@@ -141,6 +148,10 @@ protected:
   std::deque<std::string>   m_bhvs_completed_desc; // Completed Behaviors
   std::deque<double>        m_bhvs_completed_time;
   std::deque<std::string>   m_bhvs_completed_upds;
+  
+  std::deque<std::string>   m_bhvs_disabled_desc; // Disabled Behaviors
+  std::deque<double>        m_bhvs_disabled_time;
+  std::deque<std::string>   m_bhvs_disabled_upds;
   
   std::vector<std::string>  m_bhvs_active_desc;    // Active Behaviors
   std::vector<double>       m_bhvs_active_time;

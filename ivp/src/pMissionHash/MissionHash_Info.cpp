@@ -66,6 +66,9 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of pMissionHash.              ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to:                                          ");
+  blk("      https://oceanai.mit.edu/ivpman/apps/pMissionHash          ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -89,6 +92,7 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  mission_hash_var = MISSION_HASH  // default                   ");
+  blk("  mhash_short_var  = MHASH_SHORT   // default is disabled       ");
   blk("                                                                ");
   blk("  // Note: If a config block is NOT provided in the mission     ");
   blk("  //       file, NO config warning will be generated.           ");

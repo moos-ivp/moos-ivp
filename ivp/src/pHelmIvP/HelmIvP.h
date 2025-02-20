@@ -29,6 +29,8 @@
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "InfoBuffer.h"
+#include "ContactLedger.h"
+#include "LedgerSnap.h"
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
@@ -85,18 +87,23 @@ public:
 
   void postAllStop(std::string msg="");
   bool processNodeReport(const std::string &);
+  bool processNodeReportLocal(const std::string &);
 
   std::string helmStatus() const {return(m_helm_status);}
   void        helmStatusUpdate(const std::string& val="");
   bool        helmStatusEnabled() const;
   void        seedRandom();
   void        updatePlatModel();
+  void        updateLedgerSnap();
+  bool        holdForNavSolution();
   
 protected:
   InfoBuffer*   m_info_buffer;
+  LedgerSnap*   m_ledger_snap;
+  ContactLedger m_ledger;
   std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED,MALCONFIG
   bool          m_has_control;
-
+  
   bool          m_allow_override;
   bool          m_park_on_allstop;
   std::string   m_allstop_msg;
@@ -197,6 +204,10 @@ protected:
   bool                     m_hold_apps_all_seen;
   bool                     m_helm_start_posted;
 
+  // Set of apps that ALL must be present before posting start posts
+  bool         m_nav_started;
+  double       m_nav_grace;
+  
   bool         m_seed_random;
   
   std::string  m_helm_prefix;
@@ -204,8 +215,3 @@ protected:
   PlatModelGenerator m_pmgen;
 };
 #endif 
-
-
-
-
-

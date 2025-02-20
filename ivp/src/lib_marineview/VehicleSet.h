@@ -27,10 +27,10 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 #include "ColoredPoint.h"
 #include "ColorPack.h"
-#include "BearingLine.h"
 #include "ContactLedger.h"
 
 class VehicleSet
@@ -39,6 +39,8 @@ class VehicleSet
   VehicleSet();
   ~VehicleSet() {}
     
+  void   setMOOSGeodesy(CMOOSGeodesy geo) {m_geodesy=geo;}
+  
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
 
@@ -46,10 +48,6 @@ class VehicleSet
   bool   handleNodeReport(std::string report_str, std::string& whynot);
 
   void   clear(const std::string& vname="");
-  double getXMin() const {return(m_xmin);}
-  double getXMax() const {return(m_xmax);}
-  double getYMin() const {return(m_ymin);}
-  double getYMax() const {return(m_ymax);}
 
   NodeRecord getNodeRecord(const std::string& vname) const;
 
@@ -80,7 +78,6 @@ class VehicleSet
   std::string getClosestVehicle(double x, double y) const;
   
   CPList      getVehiHist(const std::string&   s="active") const;   
-  BearingLine getBearingLine(const std::string& s="active") const;
 
   bool  hasVehiName(const std::string&) const;
   bool  getWeightedCenter(double& x, double&y) const;
@@ -88,11 +85,10 @@ class VehicleSet
   void  print() const;
 
  private:
-  bool  updateVehicleBearingLine(const std::string& bearing_line); 
-
- private:
-  ContactLedger m_ledger;
+  //ContactLedger m_ledger;
   
+  CMOOSGeodesy m_geodesy;
+
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, NodeRecord>   m_rec_map;
   // Mapping from Vehicle Name to Local Receive time
@@ -100,19 +96,11 @@ class VehicleSet
   // Mapping from Vehicle Name to Vehicle Position History
   std::map<std::string, CPList>       m_hist_map;
 
-  // Mapping from Vehicle Name to Bearing Lines
-  std::map<std::string, BearingLine> m_bearing_map;
-
   std::string m_vehicles_active_name;
   std::string m_vehicles_center_name;
 
   unsigned int m_history_size;
   double       m_curr_time;
-
-  double  m_xmin;
-  double  m_xmax;
-  double  m_ymin;
-  double  m_ymax;
 };
 
 #endif 
