@@ -212,6 +212,6 @@ protected:
   
   std::string  m_helm_prefix;
 
-  PlatModelGenerator m_pmgen;
+  PlatModelGenerator m_plat_model_generator;
 };
 #endif 

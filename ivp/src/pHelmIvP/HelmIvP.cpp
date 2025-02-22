@@ -1530,7 +1530,7 @@ bool HelmIvP::handleConfigHoldOnApp(string applist)
 
 bool HelmIvP::handleConfigPMGen(string str)
 {
-  return(m_pmgen.setParams(str));
+  return(m_plat_model_generator.setParams(str));
 }
 
 //--------------------------------------------------------------------
@@ -1879,10 +1879,10 @@ void HelmIvP::updatePlatModel()
     return;
 
   // pmgen needs utc stamp to calculate hdg history
-  m_pmgen.setCurrTime(m_info_buffer->getCurrTime());
+  m_plat_model_generator.setCurrTime(m_info_buffer->getCurrTime());
 
-  PlatModel pmodel = m_pmgen.generate(osx, osy, osh, osv);
-  Notify("TURN_RATE", m_pmgen.getTurnRate());
+  PlatModel pmodel = m_plat_model_generator.generate(osx, osy, osh, osv);
+  Notify("TURN_RATE", m_plat_model_generator.getTurnRate());
 
   m_hengine->setPlatModel(pmodel);
 }

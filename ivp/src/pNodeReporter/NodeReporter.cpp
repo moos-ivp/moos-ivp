@@ -737,7 +737,7 @@ bool NodeReporter::Iterate()
 
   // Update the last_posted record
   // m_record_last_posted = m_record;
-  
+
   //==============================================================
   // Part 5: Handle the Platform Report
   //==============================================================
