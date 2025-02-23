@@ -173,6 +173,12 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       ${IVP_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
 
+if [ $? -ne 0 ] ; then
+  echo "ERROR! Failed to execute CMake command."
+  cd ${INVOC_ABS_DIR}
+  exit 1
+fi
+
 #---------------------------------------------------------
 # Part 8: Invoke Make
 #---------------------------------------------------------
@@ -204,4 +210,4 @@ fi
 
 cd "${INVOC_ABS_DIR}"
 
-exit $RESULT
+exit ${RESULT}
