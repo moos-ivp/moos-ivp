@@ -540,6 +540,10 @@ string Expander::containsMacro(string line)
 string Expander::findFileInPath(string filename)
 {
   unsigned int i, vsize = m_path.size();
+  // override relative pathing when an absolute path is detected
+  if(filename[0] == '/')
+    return filename;
+
   if(vsize == 0)
     return(filename);
 
