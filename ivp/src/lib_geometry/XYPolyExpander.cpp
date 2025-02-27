@@ -107,7 +107,7 @@ XYPolygon XYPolyExpander::getBufferPoly(double buff)
     ok = buildCorners();
   if(ok)
     ok = buildNewPoly();
-  
+
   return(m_poly_buff);
 }
 

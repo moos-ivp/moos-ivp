@@ -507,6 +507,8 @@ bool VehicleSet::handleNodeReport(double local_time,
       vlen = 10; // meters
     else if(vtype=="longship")
       vlen = 10; // meters
+    else if(vtype=="smr")
+      vlen = 6; // meters
   }
   
   new_record.setType(vtype);

@@ -23,5 +23,9 @@ PlatModel PMGen_Holonomic::generate(double osx, double osy,
 				    double osh, double osv)
 {
   PlatModel pmodel("holo");
+
+  pmodel.setPose(osx, osy, osh, osv);
+  pmodel.setModelType("holo");
+  
   return(pmodel);
 }

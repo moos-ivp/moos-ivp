@@ -176,6 +176,8 @@ string ContactLedger::processNodeRecord(NodeRecord record,
       vlen = 15; // meters
     else if(vtype == "wamv")
       vlen = 6; // meters
+    else if(vtype == "smr")
+      vlen = 6; // meters
   }
   record.setLength(vlen);
   

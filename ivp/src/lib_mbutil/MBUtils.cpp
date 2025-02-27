@@ -2611,7 +2611,7 @@ bool isKnownVehicleType(const string& vehicle_type)
      (vtype == "ship") || (vtype == "mokai")  || (vtype == "longship") ||
      (vtype == "buoy") || (vtype == "heron")  || (vtype == "swimmer") ||
      (vtype == "cray") || (vtype == "bcray")  || (vtype == "crayx") ||
-     (vtype == "wamv") || (vtype == "bcrayx")) {
+     (vtype == "wamv") || (vtype == "bcrayx") || (vtype == "smr")) {
     return(true);
   }
   

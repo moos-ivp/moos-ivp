@@ -55,7 +55,9 @@ PlatModel::PlatModel(double osx, double osy, double osh, double osv)
   setOSY(osy);
   setOSH(osh);
   setOSV(osv);
+
   m_spoke_degs = 0;
+  m_id = 0;
 }
 
 //----------------------------------------------------------------
@@ -166,8 +168,9 @@ void PlatModel::setCacheStemCPA(bool port, unsigned int ix,
 
 bool PlatModel::valid() const
 {
-  if(!m_osx_set || !m_osy_set || !m_osh_set || !m_osv_set)
+  if(!m_osx_set || !m_osy_set || !m_osh_set || !m_osv_set) {
     return(false);
+  }
     
   return(true);
 }
@@ -178,7 +181,10 @@ bool PlatModel::valid() const
 
 XYSeglr PlatModel::getTurnSeglr(double hdg) const
 {
-  XYSeglr seglr;
+  // Default seglr is a single ray originating from ownship current
+  // position in the direction of the given heading. Essentially a
+  // holonomic instantaneous turn.
+  XYSeglr seglr(m_osx, m_osy, hdg);
 
   // Sanity checks
   if(m_star_spoke_vx.size() != m_star_spoke_vy.size())
