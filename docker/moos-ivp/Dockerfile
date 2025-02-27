@@ -17,7 +17,7 @@ RUN useradd -m -p "moos" moos && usermod -a -G sudo moos
 # Set the default user
 USER moos
 
-# Set the default entry dirctory to the moos user's home
+# Set the default entry directory to the moos user's home
 WORKDIR "/home/moos"
 
 # Copy in our files
