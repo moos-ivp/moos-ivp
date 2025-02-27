@@ -3,13 +3,6 @@ name: Docker
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-    tags:
-      - 'v*'
-  pull_request_target:
-    branches:
-      - 'main'
 
 jobs:
   prepare:
