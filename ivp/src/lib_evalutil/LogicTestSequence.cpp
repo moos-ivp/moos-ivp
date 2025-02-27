@@ -170,6 +170,36 @@ void LogicTestSequence::update()
 }
 
 //------------------------------------------------------------
+// Procedure: leadConditions()
+
+unsigned int LogicTestSequence::leadConditions(unsigned int ix) const
+{
+  if(ix >= size())
+    return(0);
+  return(m_aspects[ix].leadConditions());
+}
+
+//------------------------------------------------------------
+// Procedure: passConditions()
+
+unsigned int LogicTestSequence::passConditions(unsigned int ix) const
+{
+  if(ix >= size())
+    return(0);
+  return(m_aspects[ix].passConditions());
+}
+
+//------------------------------------------------------------
+// Procedure: failConditions()
+
+unsigned int LogicTestSequence::failConditions(unsigned int ix) const
+{
+  if(ix >= size())
+    return(0);
+  return(m_aspects[ix].failConditions());
+}
+
+//------------------------------------------------------------
 // Procedure: getLogicVars()
 
 set<string> LogicTestSequence::getLogicVars() const

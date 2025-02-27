@@ -69,7 +69,3 @@ double  g_heronBase = 12.0;
 
 #endif
 
-
-
-
-

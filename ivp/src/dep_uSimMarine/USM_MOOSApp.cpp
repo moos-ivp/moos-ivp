@@ -454,8 +454,9 @@ bool USM_MOOSApp::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  if(!m_obstacle_hit)
-    m_model.propagate(m_curr_time);
+  if(m_obstacle_hit)
+    return(true);
+  m_model.propagate(m_curr_time);
 
   if(!m_enabled) {
     AppCastingMOOSApp::PostReport();

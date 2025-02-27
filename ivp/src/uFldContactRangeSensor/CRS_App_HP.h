@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CRS_App.h                                            */
 /*    DATE: June 25th, 2011                                      */
+/*    DATE: Jan 1st, 2025 Integrated Contact Ledger              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -28,10 +29,9 @@
 #include <string>
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "VarDataPair.h"
-#include "NodeRecord.h"
 #include "XYRangePulse.h"
 #include "XYArc.h"
+#include "ContactLedger.h"
 
 class CRS_App : public AppCastingMOOSApp
 {
@@ -48,13 +48,13 @@ class CRS_App : public AppCastingMOOSApp
   bool  buildReport();
 
  protected: // Incoming mail utility
-  bool    handleNodeReport(const std::string&);
-  bool    handleRangeRequest(const std::string&);
+  bool    handleNodeReport(std::string, std::string&);
+  bool    handleRangeRequest(std::string);
 
  protected: // Outgoing mail utility
-  void    postNodeRangeReport(const std::string&, const std::string&, double rng); 
-  void    postRangePulse(const std::string&, const std::string& color,
-			 const std::string& label, double dur, double radius);
+  void    postNodeRangeReport(std::string, std::string, double rng); 
+  void    postRangePulse(std::string vname, std::string color,
+			 std::string label, double dur, double radius);
 
  protected: // Utilities
   double  getTrueNodeNodeRange(const std::string&, const std::string&);
@@ -73,8 +73,10 @@ class CRS_App : public AppCastingMOOSApp
  protected: // State variables
 
   // Map is keyed on the name of the vehicle
-  std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, unsigned int> m_map_node_reps_recd;
+
+  ContactLedger m_ledger;
+
+  // Maps keyed on vehicle name (vname)
   std::map<std::string, unsigned int> m_map_node_pings_gend;
   std::map<std::string, unsigned int> m_map_node_echos_recd;
   std::map<std::string, unsigned int> m_map_node_echos_sent;
@@ -104,19 +106,10 @@ class CRS_App : public AppCastingMOOSApp
   std::string m_rn_algorithm;   // Empty string = no random noise
   double      m_rn_uniform_pct;
   double      m_rn_gaussian_sigma;
-
   std::string m_ignore_group;
-  
   bool        m_display_range_pulse;
+
+  unsigned int m_total_reports;
 };
 
 #endif 
-
-
-
-
-
-
-
-
-

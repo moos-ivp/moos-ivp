@@ -58,9 +58,6 @@ BHV_AbortToPoint::BHV_AbortToPoint(IvPDomain gdomain) :
   // but we initialize here just to be safe and clear.
   m_completed = false; 
 
-  m_osx     = -1;
-  m_osy     = -1;
-  m_osv     = -1;
   m_abort_x = -1;
   m_abort_y = -1;
 
@@ -164,6 +161,8 @@ IvPFunction *BHV_AbortToPoint::onRunState()
 
 bool BHV_AbortToPoint::updateInfoIn()
 {
+  return(IvPBehavior::updatePlatformInfo());
+#if 0
   bool ok1, ok2, ok3;
   m_osx = getBufferDoubleVal("NAV_X",     ok1);
   m_osy = getBufferDoubleVal("NAV_Y",     ok2);
@@ -183,6 +182,7 @@ bool BHV_AbortToPoint::updateInfoIn()
   }
 
   return(true);
+#endif
 }
 
 //-----------------------------------------------------------

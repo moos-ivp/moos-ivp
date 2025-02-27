@@ -27,8 +27,8 @@
 #include <string>
 #include <map>
 #include <list>
-#include <set>
-#include "NodeRecord.h"
+#include "ContactLedger.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "CPAEvent.h"
 
 class CPAMonitor
@@ -37,12 +37,16 @@ class CPAMonitor
   CPAMonitor();
   ~CPAMonitor() {};
 
-  bool handleNodeReport(std::string);
+  void setGeodesy(CMOOSGeodesy geodesy);
+  bool setGeodesy(double dlat, double dlon);
+
+  bool handleNodeReport(std::string, std::string& whynot);
   bool examineAndReport();
   void clear(); 
   void setIgnoreRange(double);
   void setReportRange(double);
   void setSwingRange(double);
+  void setVerbose(bool bval=true)   {m_verbose = bval;}
   void resetClosestRangeEver()      {m_closest_range_ever=-1;}
   
   void setIteration(unsigned int v) {m_iteration = v;}
@@ -61,18 +65,20 @@ class CPAMonitor
   double getClosestRangeEver() const {return(m_closest_range_ever);}
 
   unsigned int getContactDensity(std::string vname, double rng) const;
+  std::string getLedgerSummary() const {return(m_ledger.getSummary());}
 
-  std::set<std::string> getVNames() const;
+  std::vector<std::string> getVNames() const;
 
   NodeRecord getVRecord(std::string vname);
-  
+
  protected: // Local utility functions
   std::string pairTag(std::string, std::string);
-  bool        examineAndReport(std::string);
-  bool        examineAndReport(std::string, std::string);
-  bool        updatePairRangeAndRate(std::string, std::string); 
 
-  double      relBng(std::string vname1, std::string vname2);
+  bool   examineAndReport(std::string);
+  bool   examineAndReport(std::string, std::string);
+  bool   updatePairRangeAndRate(std::string, std::string); 
+
+  double relBng(std::string vname1, std::string vname2);
   
  protected: // Configuration parameters
   double  m_ignore_range;
@@ -85,23 +91,24 @@ class CPAMonitor
   // NodeReports from a reject group are rejected on arrival
   std::vector<std::string>  m_reject_groups;
   
+ protected: 
+  ContactLedger m_ledger;
+  
  protected: // map keyed on vname
-  std::map<std::string, std::list<NodeRecord> > m_map_vrecords;
-  std::map<std::string, bool>                   m_map_updated;
-  std::map<std::string, std::string>            m_map_vgroup;
+  std::map<std::string, bool>   m_map_updated;
   
  protected: // map keyed on coupled vname#contact, abe#bob
-  std::map<std::string, double>     m_map_pair_dist;
-  std::map<std::string, double>     m_map_pair_min_dist_running;
-  std::map<std::string, double>     m_map_pair_max_dist_running;
-  std::map<std::string, double>     m_map_pair_midx;
-  std::map<std::string, double>     m_map_pair_midy;
-  std::map<std::string, bool>       m_map_pair_closing;
-  std::map<std::string, bool>       m_map_pair_valid;
-  std::map<std::string, bool>       m_map_pair_examined;
+  std::map<std::string, double> m_map_pair_dist;
+  std::map<std::string, double> m_map_pair_min_dist_running;
+  std::map<std::string, double> m_map_pair_max_dist_running;
+  std::map<std::string, double> m_map_pair_midx;
+  std::map<std::string, double> m_map_pair_midy;
+  std::map<std::string, bool>   m_map_pair_closing;
+  std::map<std::string, bool>   m_map_pair_valid;
+  std::map<std::string, bool>   m_map_pair_examined;
   
  protected: // Indexed on event (cpa occurrence)
-  std::vector<CPAEvent>    m_events;
+  std::vector<CPAEvent>  m_events;
 
  protected: // Overall state
 

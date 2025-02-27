@@ -11,6 +11,7 @@ SET(SRC
   MBTimer.cpp
   MBUtils.cpp
   VQuals.cpp
+  JsonUtils.cpp
   HashUtils.cpp
   MacroUtils.cpp
   TermUtils.cpp
@@ -39,6 +40,7 @@ SET(HEADERS
   MBTimer.h
   MBUtils.h
   VQuals.h
+  JsonUtils.h
   HashUtils.h
   MacroUtils.h
   StringNode.h

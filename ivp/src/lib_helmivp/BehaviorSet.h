@@ -50,12 +50,14 @@ public:
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
+  void       connectLedgerSnap(LedgerSnap*);
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="",
 				   bool on_startup=false);
   bool       handlePossibleSpawnings();
   bool       refreshMapUpdateVars();
-  
+
+  bool   applyAbleFilterMsg(std::string);
   void   addBehavior(IvPBehavior *b);
   void   clearBehaviors();
   void   setOwnship(std::string s)      {m_ownship=s;}
@@ -100,6 +102,8 @@ public:
   std::vector<std::string> getSpecUpdateVars();
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
+  std::vector<std::string> getContactNames();
+  
   void                     clearUpdateResults() {m_update_results.clear();}
   void                     addWarning(const std::string&);
   std::vector<std::string> getWarnings()     {return(m_warnings);}
@@ -134,6 +138,8 @@ public:
   void print();
 
   unsigned long int size() const;
+
+  unsigned int bhvStateCount(std::string) const;
   
 protected:
   std::vector<BehaviorSetEntry> m_bhv_entry;
@@ -171,8 +177,3 @@ protected:
 };
 
 #endif 
-
-
-
-
-

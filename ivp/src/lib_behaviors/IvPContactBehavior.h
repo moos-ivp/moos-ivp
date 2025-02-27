@@ -44,9 +44,11 @@ public:
   
  public: // Override virtual funcions 
   bool  setParam(std::string, std::string);
+  void  onHelmStart();
   void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
   void  onEveryState(std::string new_state);
   std::string expandMacros(std::string);
+  //std::vector<std::string> getInfoVars();
   
  protected:
   bool  updatePlatformInfo();
@@ -64,6 +66,7 @@ public:
 
   void  handleContactFlags();
   void  handleContactFlagRange(VarDataPair);
+  bool  applyAbleFilter(std::string);
   
  protected: // Configuration Parameters
   
@@ -111,4 +114,3 @@ private:
 };
 
 #endif
-

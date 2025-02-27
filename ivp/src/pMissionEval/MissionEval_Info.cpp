@@ -104,6 +104,13 @@ void showExampleConfigAndExit()
   blk("  pass_flag   = SAY_MOOS=pass                                   ");
   blk("  fail_flag   = SAY_MOOS=fail                                   ");
   blk("                                                                ");
+  blk("  report_file = results.txt                                     ");
+  blk("  report_column = grade=$[PFAIL]                                ");
+  blk("  report_column = score=$[SCORE]                                ");
+  blk("  report_column = mhash=$[MHASH_SHORT]                          ");
+  blk("                                                                ");
+  blk("  report_line_format = white    // white (def) or csp           ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");

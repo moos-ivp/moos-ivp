@@ -23,8 +23,10 @@ ADD_EXECUTABLE(uFldContactRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldContactRangeSensor
   ${MOOS_LIBRARIES}
+  ${MOOSGeodesy_LIBRARIES}
   apputil
   mbutil
+  geodaid
   contacts
   geometry 
   ${SYSTEM_LIBS}

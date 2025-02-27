@@ -205,7 +205,7 @@ void showHelpAndExit()
   cout << "  --csw,-csw        Columns separated with white space     " << endl;
   cout << "  --csc,-csc        Columns separated with a comma         " << endl;
   cout << "  --cso,-cso        Columns separated with a colon         " << endl;
-  cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
+  cout << "  --css,-css        Columns separated with a semi-colon    " << endl;
   cout << "                    (Default separator is white space )    " << endl;
   cout << "                                                           " << endl;
   cout << "  --subpat=pattern[:pattern:pattern]                       " << endl;

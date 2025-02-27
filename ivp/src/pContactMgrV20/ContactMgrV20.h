@@ -26,12 +26,13 @@
 
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+#include "ContactLedger.h"
 #include "NodeRecord.h"
 #include "XYPolygon.h"
 #include "PlatformAlertRecord.h"
 #include "CMAlert.h"
 #include "ExFilterSet.h"
+#include "VarDataPair.h"
 
 class ContactMgrV20 : public AppCastingMOOSApp
 {
@@ -54,16 +55,14 @@ class ContactMgrV20 : public AppCastingMOOSApp
   bool handleConfigDecay(std::string);
 
   bool handleConfigMaxRetHist(std::string);
-  bool handleConfigCoords(std::string);
   bool handleConfigRecapInterval(std::string);
   bool handleConfigRejectRange(std::string);
 
   std::string handleConfigDeprecations(std::string);
 
-  void handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string&);
   void handleMailReportRequest(std::string, std::string);
   void handleMailAlertRequest(std::string, std::string);
-  void handleMailDisplayRadii(std::string);
   void handleMailHelmState(std::string);
 
   void updateRanges();
@@ -85,18 +84,37 @@ class ContactMgrV20 : public AppCastingMOOSApp
   
   void pruneRangeReports();
   
+  // New 24.8.x dis/enabling behaviors
+  void handleMailDisableContact(std::string);
+  void handleMailEnableContact(std::string);
+  // New 24.8.x early warnings
+  void checkForEarlyWarnings();
+  void checkForCeaseWarnings();
+  void postWarningFlags(const std::vector<VarDataPair>&,
+			std::string contact);
+  void postEarlyWarningRadii();
+  // New 24.8.x retire flags
+  void postRetireFlags(const std::vector<VarDataPair>&,
+		       std::string);
   
- protected: // Alert Getters
+protected: // Alert Getters
   double      getAlertRange(std::string id) const;
   double      getAlertRangeCPA(std::string id) const;
-
+  double      getMaxAlertRange() const;
+  
   std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
 
- private: // main record of alerts, each keyed on the alert_id
+protected:
+  void addDisabledContact(std::string id);
+  void addEnabledContact(std::string id);
+  void postFlags(const std::vector<VarDataPair>&);
+  std::string expandMacros(std::string) const;
+
+private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
   
- protected: // Configuration parameters
+protected: // Configuration parameters
 
   // Global Exclusion filters
   double       m_reject_range;
@@ -106,9 +124,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   // Other configuration parameters
   std::string  m_ownship;
   bool         m_display_radii;
-  std::string  m_display_radii_id;
   std::string  m_alert_rng_color;
-  std::string  m_alert_rng_cpa_color;
 
   bool         m_post_closest_range;
   bool         m_post_closest_relbng;
@@ -118,7 +134,6 @@ class ContactMgrV20 : public AppCastingMOOSApp
   double       m_range_report_timeout;
   unsigned int m_range_report_maxsize;
   
-  std::string  m_contact_local_coords;
   bool         m_alert_verbose;
   double       m_decay_start;
   double       m_decay_end;
@@ -142,7 +157,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
 
   std::set<std::string> m_filtered_vnames;
 
-  // Optional requested range reports all keyed on varname
+  // Main Record #1 Optional req range reports all keyed on varname
   std::map<std::string, double>      m_map_rep_range;
   std::map<std::string, double>      m_map_rep_reqtime;
   std::map<std::string, std::string> m_map_rep_group;
@@ -150,11 +165,14 @@ class ContactMgrV20 : public AppCastingMOOSApp
   std::map<std::string, std::string> m_map_rep_contacts;
   std::map<std::string, bool>        m_map_rep_refresh;
   
-  // Main Record #2: The Vehicles (contacts) and position info
-  std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, double>       m_map_node_ranges_actual;
-  std::map<std::string, double>       m_map_node_ranges_extrap;
-  std::map<std::string, double>       m_map_node_ranges_cpa;
+  // Main Record #2: Ledger and other attributes keyed on contact vname
+  ContactLedger m_ledger;
+
+  // Keyed on vname (contact name)
+  std::map<std::string, double> m_map_node_ranges_actual;
+  std::map<std::string, double> m_map_node_ranges_extrap;
+  std::map<std::string, double> m_map_node_cpa;
+  std::map<std::string, double> m_map_node_roc;
 
   std::string m_closest_name;
 
@@ -171,20 +189,44 @@ class ContactMgrV20 : public AppCastingMOOSApp
   double  m_prev_closest_relbng;  // relbng of closest contact
   double  m_prev_closest_contact_val;
 
-  // A matrix: vehicle_name X alert_id. Cell val is Boolean
-  // indicating if the alert is active or resolved, for
-  // the given vehicle.
+  // A matrix: vehicle_name X alert_id. Cell val is Boolean indicating
+  // if the alert is active or resolved, for the given vehicle.
   PlatformAlertRecord  m_par;
 
   std::list<std::string> m_contacts_retired;
 
   bool  m_hold_alerts_for_helm;
   bool  m_helm_in_drive_noted;
-  
-private:
-  bool         m_use_geodesy;
-  CMOOSGeodesy m_geodesy;
 
+protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
+ 
+  std::string  m_disable_var;
+  std::string  m_enable_var;
+  std::list<std::string> m_disabled_contacts;
+  std::list<std::string> m_enabled_contacts;
+
+  std::vector<VarDataPair> m_able_flags;
+  std::vector<VarDataPair> m_disable_flags;
+  std::vector<VarDataPair> m_enable_flags;
+
+protected: // Rel 24.8.x For users wanting early warning system
+
+  double      m_early_warning_time;  // Config param by default -1/off
+  bool        m_early_warning_radii; // true if rendering ranges
+  std::string m_ewarn_radii_color;   // default is yellow
+  
+  // Key is contact name. To range at which warning was generated
+  std::map<std::string, double> m_map_range_will_warn; 
+  std::map<std::string, double> m_map_range_was_warned; 
+  std::map<std::string, double> m_map_utc_was_warned; 
+
+  std::vector<VarDataPair>  m_early_warning_flags;
+  std::vector<VarDataPair>  m_cease_warning_flags;
+
+  // Rel 24.8.x Support flags on event of retired contact 
+  std::vector<VarDataPair> m_retire_flags;
+  
+protected:
   unsigned int m_alert_requests_received;
 };
 

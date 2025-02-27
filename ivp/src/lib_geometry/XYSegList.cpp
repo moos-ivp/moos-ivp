@@ -963,7 +963,7 @@ string XYSegList::get_spec(unsigned int precision, string param) const
 	spec += "}";
     }
   }
-
+  
   // Handle EdgeTags if any
   if(m_edge_tags.size() > 0) {
     string tag_str = m_edge_tags.getSpec();

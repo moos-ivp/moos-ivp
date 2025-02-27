@@ -36,6 +36,7 @@ public:
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onSetParamComplete();
   void         onHelmStart();
 
  protected:
@@ -51,6 +52,8 @@ public:
   double  m_giveup_thresh;
   double  m_patience;
 
+  double  m_max_patience;
+  
   bool    m_no_alert_request;
 
 private: // State vars

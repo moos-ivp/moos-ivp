@@ -428,7 +428,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_waypoint_engine.setCaptureLine(false);
     return(true);
   }
-  else if(param == "crs_spd_zaic_ratio") {
+  else if((param == "crs_spd_zaic_ratio") ||
+	  (param == "patience")) {
     // require dval such that course and speed pcts are each in [1,99]
     // and sum to 100.
     if((dval < 1) || (dval > 99))
@@ -611,23 +612,9 @@ void BHV_Waypoint::onIdleState()
 
 bool BHV_Waypoint::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4;
-  m_osx = getBufferDoubleVal("NAV_X",       ok1);
-  m_osy = getBufferDoubleVal("NAV_Y",       ok2);
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED",   ok4);
-
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2) {
-    postEMessage("No ownship X/Y info in info_buffer.");
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
-  }
-
-  // Must get ownship heading from InfoBuffer
-  if(!ok3) {
-    postEMessage("No ownship heading info in info_buffer.");
-    return(false);
-  }
 
   if(m_greedy_tour_pending) {
     m_greedy_tour_pending = false;
@@ -635,11 +622,6 @@ bool BHV_Waypoint::updateInfoIn()
     XYSegList shtour_segl = greedyPath(original_segl, m_osx, m_osy);
     m_waypoint_engine.setSegList(shtour_segl);
   }
-
-  // If NAV_SPEED info is not found in the info_buffer, its
-  // not a show-stopper. A warning will be posted.
-  if(!ok4)
-    postWMessage("No ownship speed info in info_buffer");
 
   return(true);
 }
@@ -828,7 +810,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
     if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
-    
+
     OF_Coupler coupler;
     ipf = coupler.couple(crs_ipf, spd_ipf, m_course_pct, m_speed_pct);
     if(!ipf)
@@ -897,8 +879,8 @@ void BHV_Waypoint::postViewableSegList()
       postMessage("VIEW_POLYGON", poly.get_spec());
     }
   }
-  
-  postMessage("VIEW_SEGLIST", segl.get_spec());
+
+  postMessage("VIEW_SEGLIST", segl.get_spec(3));
 }
 
 //-----------------------------------------------------------

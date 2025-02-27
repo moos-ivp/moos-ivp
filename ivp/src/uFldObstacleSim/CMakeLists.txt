@@ -13,8 +13,10 @@ ADD_EXECUTABLE(uFldObstacleSim ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldObstacleSim
    ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    apputil
    obstacles
+   geodaid
    contacts
    geometry
    mbutil

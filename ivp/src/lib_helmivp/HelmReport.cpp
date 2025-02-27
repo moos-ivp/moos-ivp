@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <algorithm>
 #include "HelmReport.h"
 #include "BuildUtils.h"
 #include "MBUtils.h"
@@ -29,7 +30,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 HelmReport::HelmReport() 
 { 
@@ -37,7 +38,7 @@ HelmReport::HelmReport()
 }
 
 //-----------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 void HelmReport::initialize()
 {
@@ -58,7 +59,7 @@ void HelmReport::initialize()
 }
 
 //-----------------------------------------------------------
-// Procedure: clear
+// Procedure: clear()
 
 void HelmReport::clear(bool clear_completed)
 {
@@ -71,6 +72,10 @@ void HelmReport::clear(bool clear_completed)
   m_bhvs_idle_desc.clear();
   m_bhvs_idle_time.clear();
   m_bhvs_idle_upds.clear();
+  
+  m_bhvs_disabled_desc.clear();
+  m_bhvs_disabled_time.clear();
+  m_bhvs_disabled_upds.clear();
   
   if(clear_completed) {
     m_bhvs_completed_desc.clear();
@@ -153,7 +158,7 @@ bool HelmReport::hasDecision(const string& var) const
 }
 
 //-----------------------------------------------------------
-// Procedure: changedBehaviors
+// Procedure: changedBehaviors()
 
 bool HelmReport::changedBehaviors(const HelmReport& report) const
 {
@@ -161,11 +166,13 @@ bool HelmReport::changedBehaviors(const HelmReport& report) const
   // of behaviors which includes timestamps etc.
   bool full=false;  
   
-  if(getActiveBehaviors(full)  != report.getActiveBehaviors(full))
+  if(getActiveBehaviors(full)   != report.getActiveBehaviors(full))
     return(true);
-  if(getRunningBehaviors(full) != report.getRunningBehaviors(full))
+  if(getRunningBehaviors(full)  != report.getRunningBehaviors(full))
     return(true);
-  if(getIdleBehaviors(full)    != report.getIdleBehaviors(full))
+  if(getIdleBehaviors(full)     != report.getIdleBehaviors(full))
+    return(true);
+  if(getDisabledBehaviors(full) != report.getDisabledBehaviors(full))
     return(true);
   if(getCompletedBehaviors(full) != report.getCompletedBehaviors(full))
     return(true);
@@ -196,7 +203,7 @@ string HelmReport::getDecisionSummary() const
 
 
 //-----------------------------------------------------------
-// Procedure: addActiveBHV
+// Procedure: addActiveBHV()
 
 void HelmReport::addActiveBHV(const string& descriptor, double time, 
 			      double pwt, int pcs, double cpu_time, 
@@ -213,7 +220,7 @@ void HelmReport::addActiveBHV(const string& descriptor, double time,
 }
   
 //-----------------------------------------------------------
-// Procedure: getActiveBehaviors
+// Procedure: getActiveBehaviors()
 
 string HelmReport::getActiveBehaviors(bool full_report) const
 {
@@ -244,7 +251,7 @@ string HelmReport::getActiveBehaviors(bool full_report) const
 }
 
 //-----------------------------------------------------------
-// Procedure: clearActiveBHVs
+// Procedure: clearActiveBHVs()
 
 void HelmReport::clearActiveBHVs() 
 {
@@ -258,7 +265,7 @@ void HelmReport::clearActiveBHVs()
 }
 
 //-----------------------------------------------------------
-// Procedure: addRunningBHV
+// Procedure: addRunningBHV()
 
 void HelmReport::addRunningBHV(const string& descriptor, double time, 
 			       const string& update_summary)
@@ -269,7 +276,18 @@ void HelmReport::addRunningBHV(const string& descriptor, double time,
 }
 
 //-----------------------------------------------------------
-// Procedure: getRunningBehaviors
+// Procedure: addDisabledBHV()
+
+void HelmReport::addDisabledBHV(const string& descriptor, double time, 
+				const string& update_summary)
+{
+  m_bhvs_disabled_desc.push_back(descriptor);
+  m_bhvs_disabled_time.push_back(time);
+  m_bhvs_disabled_upds.push_back(update_summary);
+}
+
+//-----------------------------------------------------------
+// Procedure: getRunningBehaviors()
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
 string HelmReport::getRunningBehaviors(bool full_report) const
@@ -296,7 +314,7 @@ string HelmReport::getRunningBehaviors(bool full_report) const
 }
 
 //-----------------------------------------------------------
-// Procedure: clearRunningBHVs
+// Procedure: clearRunningBHVs()
 
 void HelmReport::clearRunningBHVs() 
 {
@@ -307,8 +325,7 @@ void HelmReport::clearRunningBHVs()
 
 
 //-----------------------------------------------------------
-// Procedure: addIdleBHV
-//            getIdleBehaviors
+// Procedure: addIdleBHV()
 
 void HelmReport::addIdleBHV(const string& descriptor, double time,
 			    const string& update_summary)
@@ -319,7 +336,7 @@ void HelmReport::addIdleBHV(const string& descriptor, double time,
 }
 
 //-----------------------------------------------------------
-// Procedure: getIdleBehaviors
+// Procedure: getIdleBehaviors()
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
 string HelmReport::getIdleBehaviors(bool full_report) const
@@ -346,7 +363,35 @@ string HelmReport::getIdleBehaviors(bool full_report) const
 }
 
 //-----------------------------------------------------------
-// Procedure: clearIdleBHVs
+// Procedure: getDisabledBehaviors()
+//   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
+
+string HelmReport::getDisabledBehaviors(bool full_report) const
+{
+  string return_str;
+
+  for(unsigned int i=0; i<m_bhvs_disabled_desc.size(); i++) {
+    if(full_report) {
+      if(i>0)
+	return_str += ":";
+      return_str += m_bhvs_disabled_desc[i];
+      return_str += "$" + doubleToString(m_bhvs_disabled_time[i],2);
+      return_str += "$" + m_bhvs_disabled_upds[i];
+    }
+    else {
+      if(i>0)
+	return_str += ",";
+      return_str += m_bhvs_disabled_desc[i];
+    }
+  }
+
+  if(return_str == "none")
+    return_str = "";
+  return(return_str);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearIdleBHVs()
 
 void HelmReport::clearIdleBHVs() 
 {
@@ -356,7 +401,17 @@ void HelmReport::clearIdleBHVs()
 }
 
 //-----------------------------------------------------------
-// Procedure: addCompletedBHV
+// Procedure: clearDisabledBHVs()
+
+void HelmReport::clearDisabledBHVs() 
+{
+  m_bhvs_disabled_desc.clear();
+  m_bhvs_disabled_time.clear();
+  m_bhvs_disabled_upds.clear();
+}
+
+//-----------------------------------------------------------
+// Procedure: addCompletedBHV()
 
 void HelmReport::addCompletedBHV(const string& descriptor, double time,
 				 const string& update_summary)
@@ -377,7 +432,7 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
 }
 
 //-----------------------------------------------------------
-// Procedure: getCompletedBehaviors
+// Procedure: getCompletedBehaviors()
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
 string HelmReport::getCompletedBehaviors(bool full_report) const
@@ -406,7 +461,60 @@ string HelmReport::getCompletedBehaviors(bool full_report) const
 
 
 //-----------------------------------------------------------
-// Procedure: clearCompletedBHVs
+// Procedure: getCompletedBehaviorsTerse()
+
+string HelmReport::getCompletedBehaviorsTerse() const
+{
+  string return_str;
+
+  map<string, unsigned int> map_bhv_name;
+  map<string, double>       map_bhv_time;
+
+  for(unsigned int i=0; i<m_bhvs_completed_desc.size(); i++) {
+    string bhv = m_bhvs_completed_desc[i];
+    double utc = m_bhvs_completed_time[i];
+
+    map_bhv_name[bhv]++;
+    if(utc > map_bhv_time[bhv])
+      map_bhv_time[bhv] = utc;
+  }
+
+  vector<pair<double, string> > pairs;
+  map<string, double>::iterator p;
+  for(p=map_bhv_time.begin(); p!=map_bhv_time.end(); p++) {
+    string name = p->first;
+    double time = p->second;
+    pair<double,string> pair;
+    pair.first = time;
+    pair.second = name;
+    pairs.push_back(pair);    
+  }    
+
+  sort(pairs.rbegin(), pairs.rend());
+
+  for(unsigned int i=0; i<pairs.size(); i++) {
+    if(i != 0)
+      return_str += ",";
+    pair<double,string> pair = pairs[i];
+    double bhv_time = pair.first;
+    string bhv_name = pair.second;
+    return_str += bhv_name;
+
+    unsigned int count = map_bhv_name[bhv_name];
+    if(count > 1)
+      return_str += "(" + uintToString(count) + ")";
+
+    string time_in_state = timeInState(m_time_utc, bhv_time);
+    
+    return_str += "[" + time_in_state + "]";
+  }
+  
+  return(return_str);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: clearCompletedBHVs()
 
 void HelmReport::clearCompletedBHVs() 
 {
@@ -517,6 +625,15 @@ string HelmReport::getReportAsString(const HelmReport& prep, bool full) const
       report += "none";
     else
       report += active_bhvs;
+  }
+
+  string disabled_bhvs = getDisabledBehaviors();
+  if(full || (disabled_bhvs != prep.getDisabledBehaviors())) {
+    report += ",disabled_bhvs=";
+    if(disabled_bhvs == "")
+      report += "none";
+    else
+      report += disabled_bhvs;
   }
 
   string idle_bhvs = getIdleBehaviors();
@@ -646,6 +763,7 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
   
   string active_bhvs    = uintToString(m_bhvs_active_desc.size());
   string running_bhvs   = uintToString(m_bhvs_running_desc.size());
+  string disabled_bhvs  = uintToString(m_bhvs_disabled_desc.size());
   string idle_bhvs      = uintToString(m_bhvs_idle_desc.size());
   string completed_bhvs = uintToString(m_bhvs_completed_desc.size());
 
@@ -679,6 +797,15 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
     rlist.push_back(str);
   }
 
+  rlist.push_back("Behaviors Disabled: --------- (" + disabled_bhvs + ")");
+  vsize = m_bhvs_disabled_desc.size();
+  for(i=0; i<vsize; i++) {
+    str = "  " + m_bhvs_disabled_desc[i];
+    string time_in_state = timeInState(curr_time, m_bhvs_disabled_time[i]);
+    str += " [" + time_in_state + "]";
+    rlist.push_back(str);
+  }
+
   rlist.push_back("Behaviors Idle: ------------ (" + idle_bhvs + ")");
   vsize = m_bhvs_idle_desc.size();
   if(verbose) {
@@ -702,28 +829,7 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
   }
 
   rlist.push_back("Behaviors Completed: ------- (" + completed_bhvs + ")");
-  vsize = m_bhvs_completed_desc.size();
-  if(verbose) {
-    for(i=0; i<vsize; i++) {
-      str = "  {" + m_bhvs_completed_desc[i] + "}";
-      string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
-      str += " [" + time_in_state + "]";
-      rlist.push_back(str);
-    }
-  }
-  else {
-    if(vsize > 0) {
-      str = "  ";
-      for(i=0; i<vsize; i++) {
-	if(i>0) 
-	  str += ", ";
-	str += m_bhvs_completed_desc[i];
-	string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
-	str += "[" + time_in_state + "]";
-      }
-      rlist.push_back(str);
-    }
-  }
+  rlist.push_back(getCompletedBehaviorsTerse());
   
   return(rlist);
 }
@@ -740,13 +846,3 @@ string HelmReport::timeInState(double curr_time, double mark_time) const
   }
   return(s_time_in_state);
 }
-
-
-
-
-
-
-
-
-
-

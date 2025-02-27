@@ -5,10 +5,13 @@
 #   Author: M.Benjamin
 #   LastEd: May 2024
 #------------------------------------------------------------
-#  Part 1: A convenience function for producing terminal
-#          debugging/status output depending on verbosity.
+#  Part 1: Set convenience functions for producing terminal
+#          debugging output, and catching SIGINT (ctrl-c).
 #------------------------------------------------------------
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "$ME: Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
+trap on_exit SIGTERM
 
 #------------------------------------------------------------
 #  Part 2: Set global variable default values
@@ -23,6 +26,7 @@ VAMT="2"
 MAX_VAMT="2"
 RAND_VPOS=""
 MAX_SPD="2"
+MMOD=""
 
 # Monte
 XLAUNCHED="no"
@@ -46,6 +50,7 @@ for ARGI; do
 	echo "  --amt=N            Num vehicles to launch    "
 	echo "  --rand, -r         Rand vehicle positions    "
 	echo "  --max_spd=N        Max helm/sim speed        "
+        echo "  --mmod=<mod>       Mission variation/mod     "
 	echo "                                               "
 	echo "Options (monte):                               "
 	echo "  --xlaunched, -x    Launched by xlaunch       "
@@ -72,6 +77,8 @@ for ARGI; do
         RAND_VPOS=$ARGI
     elif [ "${ARGI:0:10}" = "--max_spd=" ]; then
         MAX_SPD="${ARGI#--max_spd=*}"
+    elif [ "${ARGI:0:7}" = "--mmod=" ]; then
+        MMOD=$ARGI
 
     elif [ "${ARGI}" = "--xlaunched" -o "${ARGI}" = "-x" ]; then
 	XLAUNCHED="yes"
@@ -113,6 +120,7 @@ if [ "${VERBOSE}" != "" ]; then
     echo "MAX_VAMT =      [${MAX_VAMT}]               "
     echo "RAND_VPOS =     [${RAND_VPOS}]              "
     echo "MAX_SPD =       [${MAX_SPD}]                "
+    echo "MMOD =          [${MMOD}]                   "
     echo "--------------------------------(VProps)----"
     echo "VNAMES =        [${VNAMES[*]}]              "
     echo "VCOLORS =       [${VCOLOR[*]}]              "
@@ -130,7 +138,7 @@ fi
 #------------------------------------------------------------
 #  Part 6: Launch the Vehicles
 #------------------------------------------------------------
-VARGS=" --sim --auto --max_spd=$MAX_SPD "
+VARGS=" --sim --auto --max_spd=$MAX_SPD $MMOD "
 VARGS+=" $TIME_WARP $JUST_MAKE $VERBOSE "
 for IX in `seq 1 $VAMT`;
 do
@@ -153,6 +161,7 @@ done
 #------------------------------------------------------------
 SARGS=" --auto --mport=9000 --pshare=9200 $NOGUI --vnames=abe:ben "
 SARGS+=" $TIME_WARP $JUST_MAKE $VERBOSE "
+SARGS+=" $MMOD "
 vecho "Launching shoreside: $SARGS"
 ./launch_shoreside.sh $SARGS 
 
@@ -166,6 +175,8 @@ fi
 #------------------------------------------------------------
 if [ "${XLAUNCHED}" != "yes" ]; then
     uMAC --paused targ_shoreside.moos
+    trap "" SIGINT
+    echo; echo "$ME: Halting all apps"
     kill -- -$$
 fi
 

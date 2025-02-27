@@ -130,8 +130,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  turn_spd_loss        = 0.7      // [0,1] Default is 0.85      ");
   blk("                                                                ");
-  blk("  prefix               = NAV_  ","// default is USM_            ");
-  blk("                                                                ");
+  blk("  prefix               = NAV_     // Default is USM_            ");
+  blk("  post_navpos_summary  = true     // Default is false           ");
   blk("                                                                ");
   blk("  // In Embedded PID mode, may want to publish DES_RUDDER/THRUST");
   blk("  // Any MOOS vars ok but not DESIRED_RUDDER and DESIRED_THRUST ");
@@ -233,6 +233,9 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  VIEW_POLYGON (when using a wormhole)                          ");
   blk("  VIEW_ARROW   (when simulating wind)                           ");
+  blk("                                                                ");
+  blk("  USM_NAVPOS_SUMMARY      = x=68.932,y=-60.32,lat=43.824767,    ");
+  blk("                            lon=-70.3295309                     ");
   exit(0);
 }
 

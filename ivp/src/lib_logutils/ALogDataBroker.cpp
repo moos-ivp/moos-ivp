@@ -80,7 +80,17 @@ bool ALogDataBroker::checkALogFiles()
   for(unsigned int i=0; i<m_alog_files.size(); i++) 
     all_ok = all_ok && m_splitters[i].handlePreCheckALogFile();
 
-  return(all_ok);
+  if(!all_ok)
+    return(false);
+
+  // Add detached pairs if provided (New Jan 11, 2025)
+  for(unsigned int i=0; i<m_alog_files.size(); i++) {
+    for(unsigned int j=0; j<m_detached_pairs.size(); j++) {
+      m_splitters[i].addDetachedPair(m_detached_pairs[j]);
+    }
+  }
+
+  return(true);
 }
 
 //----------------------------------------------------------------

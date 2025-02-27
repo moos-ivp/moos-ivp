@@ -33,8 +33,8 @@
 
 using namespace std;
 
-//------------------------------------------------------------------------
-// Constructor
+//------------------------------------------------------------------
+// Constructor()
 
 USM_MOOSApp::USM_MOOSApp() 
 {
@@ -48,9 +48,11 @@ USM_MOOSApp::USM_MOOSApp()
   m_last_report     = 0;
   m_report_interval = 5;
   m_pitch_tolerance = 5;
+  m_obstacle_hit = false;
   m_max_speed = 5;
   m_enabled = true;
-
+  m_post_navpos_summary = false;
+  
   // Init PID variables
   m_pid_allstop_posted = false;
   m_pid_ignore_nav_yaw = false;
@@ -62,8 +64,8 @@ USM_MOOSApp::USM_MOOSApp()
   m_nav_modulo  = 2;
 }
 
-//------------------------------------------------------------------------
-// Procedure: OnNewMail
+//------------------------------------------------------------------
+// Procedure: OnNewMail()
 
 bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -150,8 +152,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.magDriftVector(dval, src);
     else if(key == "WATER_DEPTH")
       m_model.setParam("water_depth", dval);    
-    else if(key == "OBSTACLE_HIT") 
-      m_model.setObstacleHit(tolower(sval) == "true");
+    //else if(key == "OBSTACLE_HIT") 
+    //  m_model.setObstacleHit(tolower(sval) == "true");
     else if(key == "USM_RESET") {
       m_model.initPosition(sval);
       Notify("USM_RESET_COUNT", m_model.getResetCount());
@@ -160,7 +162,9 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setParam("turn_rate", dval);
     else if(key == "USM_ENABLED")
       setBooleanOnString(m_enabled, sval);
-
+    else if(key == "OBSTACLE_HIT")
+      setBooleanOnString(m_obstacle_hit, sval);
+    
     // When sim is disabled, presumably another sim is temporarily running
     // and updating the vehicle position. In the meanwhile we just inform
     // the model of the update nav info so it has accurate ownship info
@@ -188,6 +192,17 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 bool USM_MOOSApp::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+
+  if(m_obstacle_hit) {
+    NodeRecord record = m_model.getNodeRecord();
+    NodeRecord record_gt = m_model.getNodeRecord();
+    record.setSpeed(0);
+    record_gt.setSpeed(0);
+    postNodeRecordUpdate(m_sim_prefix, record);
+    postNodeRecordUpdate(m_sim_prefix, record_gt);
+    return(true);
+  }
+
   if(!m_enabled) {
     m_model.resetTime(m_curr_time);
     AppCastingMOOSApp::PostReport();
@@ -374,6 +389,8 @@ bool USM_MOOSApp::OnStartUp()
       handled = setNonWhiteVarOnString(m_post_des_thrust, value);
     else if((param == "post_des_rudder") && (value != "DESIRED_RUDDER"))
       handled = setNonWhiteVarOnString(m_post_des_rudder, value);
+    else if(param == "post_navpos_summary")
+      handled = setBooleanOnString(m_post_navpos_summary, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -463,9 +480,9 @@ void USM_MOOSApp::registerVariables()
   Register("NAV_Y",0);
   Register("NAV_HEADING",0);
 
-  
   Register("USM_ENABLED",0);
   Register("USM_TURN_RATE",0);
+  Register("OBSTACLE_HIT", 0);
 
   Register("WIND_CONDITIONS");
   Register("BUOYANCY_RATE", 0);
@@ -560,7 +577,7 @@ void USM_MOOSApp::handleBuoyancyAndTrim(NodeRecord record)
 }  
 
 //------------------------------------------------------------------------
-// Procedure: postNodeRecordUpdate
+// Procedure: postNodeRecordUpdate()
 
 void USM_MOOSApp::postNodeRecordUpdate(string prefix, 
 				       const NodeRecord &record)
@@ -573,14 +590,26 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
 
   Notify(prefix+"_X", nav_x, m_curr_time);
   Notify(prefix+"_Y", nav_y, m_curr_time);
-
+  
+  double nav_lat = 0;
+  double nav_lon = 0;
   if(m_model.geoOK()) {
-    double nav_lat = record.getLat();
-    double nav_lon = record.getLon();
+    nav_lat = record.getLat();
+    nav_lon = record.getLon();
     Notify(prefix+"_LAT", nav_lat, m_curr_time);
     Notify(prefix+"_LONG", nav_lon, m_curr_time);
   }
 
+  if(m_post_navpos_summary) {
+    string str = "x=" + doubleToStringX(nav_x,3);
+    str += ",y=" + doubleToStringX(nav_y,3);
+    if((nav_lat != 0) && (nav_lon != 0)) {
+      str += ",lat=" + doubleToStringX(nav_lat,7);
+      str += ",lon=" + doubleToStringX(nav_lon,7);
+    }
+    Notify("USM_NAVPOS_SUMMARY", str);
+  }
+      
   double new_speed = record.getSpeed();
   new_speed = snapToStep(new_speed, 0.01);
   if(new_speed > m_max_speed)

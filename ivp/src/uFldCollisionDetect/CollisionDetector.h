@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionDetector.h                                  */
-/*    DATE: 21 May 2013                                          */
+/*    DATE: May 21st 2013                                        */
+/*    DATE: Dec 30st 2024 Added ContactLedger in CPAMonitor      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -24,10 +25,9 @@
 #ifndef COLLISION_DETECTOR_HEADER
 #define COLLISION_DETECTOR_HEADER
 
-#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-
 #include <string>
 #include <map>
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "CPAMonitor.h"
 #include "CPAEvent.h"
 #include "VarDataPair.h"
@@ -47,7 +47,7 @@ class CollisionDetector : public AppCastingMOOSApp
   bool OnStartUp();
   
  protected: 
-  void handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string& whynot);
   bool buildReport();
   void registerVariables();
   void handleCPAEvent(CPAEvent);
@@ -75,6 +75,7 @@ class CollisionDetector : public AppCastingMOOSApp
   bool   m_post_closest_range_ever;
 
   bool   m_encounter_rings;
+  bool   m_verbose;
   
   std::vector<VarDataPair> m_collision_flags;
   std::vector<VarDataPair> m_near_miss_flags;
@@ -98,7 +99,8 @@ class CollisionDetector : public AppCastingMOOSApp
   unsigned int m_total_collisions;
   unsigned int m_total_near_misses;
   unsigned int m_total_encounters;
-
+  unsigned int m_total_node_reports;
+  
   std::string m_param_summary;
   std::vector<std::string> m_notified_vehicles;
 
@@ -106,9 +108,3 @@ class CollisionDetector : public AppCastingMOOSApp
 };
 
 #endif
-
-
-
-
-
-

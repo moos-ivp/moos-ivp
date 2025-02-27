@@ -31,7 +31,12 @@ using namespace std;
 
 NodeRider::NodeRider()
 {
+  // Init config vars
   m_frequency = 0;
+  m_precision = 4;
+  m_policy    = "always";
+
+  // Init state vars
   m_last_utc  = 0;
   m_fresh     = false;
 
@@ -57,7 +62,7 @@ bool NodeRider::setVar(std::string var)
 }
 
 //------------------------------------------------------------
-// Procedure: setRiderField()
+// Procedure: setRiderFld()
 
 bool NodeRider::setRiderFld(string fld)
 {
@@ -65,6 +70,17 @@ bool NodeRider::setRiderFld(string fld)
     return(false);
 
   m_rider_fld = fld;
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setPrecision()
+
+bool NodeRider::setPrecision(unsigned int prec)
+{
+  m_precision = prec;
+  if(m_precision > 10)
+    m_precision = 10;
   return(true);
 }
 

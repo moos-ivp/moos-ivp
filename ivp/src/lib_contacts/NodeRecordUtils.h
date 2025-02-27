@@ -26,7 +26,11 @@
 
 #include "NodeRecord.h"
 
-NodeRecord string2NodeRecord(const std::string&, bool retPartialResult=false);
+NodeRecord string2NodeRecord(const std::string&);
+
+NodeRecord string2NodeRecordCSP(const std::string&);
+
+NodeRecord string2NodeRecordJSON(std::string);
 
 NodeRecord extrapolateRecord(const NodeRecord&, double curr_time,
 			     double max_delta=3600);

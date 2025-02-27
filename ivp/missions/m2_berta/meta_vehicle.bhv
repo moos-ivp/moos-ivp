@@ -52,7 +52,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregsV19
+Behavior = BHV_AvdColregsV22
 {
   name       = avdcol_
   pwt        = 150
@@ -67,19 +67,27 @@ Behavior = BHV_AvdColregsV19
          extrapolate = true
                decay = 30,60
 
+            runxflag = STATUS={"TargetId":"$[CN_NAME]", "Priority":"$[APWT]", "Mode":"$[FULL_MODE]", "ModeId":"$[MODE_ID]"}
+	
 	       //match_group = alpha
         //  match_type = mokai
 
+	can_disable = true
+	
 	exit_on_filter_group = true
 	
 	post_per_contact_info = true
 	
   use_refinery = true
 
+   //     pwt_outer_dist = 15
+   //     pwt_inner_dist = 5
+   //     completed_dist = 20
         pwt_outer_dist = 80
         pwt_inner_dist = 50
         completed_dist = 85
-     min_util_cpa_dist = 10
+
+  min_util_cpa_dist = 10
      max_util_cpa_dist = 18
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0

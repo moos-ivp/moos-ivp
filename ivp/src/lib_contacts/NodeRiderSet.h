@@ -38,6 +38,9 @@ public:
   bool addNodeRider(std::string);
 
   bool updateRider(std::string var, std::string val, double utc);
+
+  bool updateRider(std::string var, std::string sval,
+		   double dval, double utc);
   
   std::vector<std::string> getVars() const;
   std::vector<std::string> getRiderSpecs() const;

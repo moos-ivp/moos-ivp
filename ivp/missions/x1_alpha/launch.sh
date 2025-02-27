@@ -1,11 +1,16 @@
-#!/bin/bash 
+  #!/bin/bash 
 #----------------------------------------------------------
 #  Script: launch.sh
 #  Author: Michael Benjamin
 #  LastEd: May 20th 2019
 #----------------------------------------------------------
-#  Part 1: Set global var defaults
+#  Part 1: Set convenience functions for producing terminal
+#          debugging output, and catching SIGINT (ctrl-c).
 #----------------------------------------------------------
+vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
+
 TIME_WARP=1
 COMMUNITY="alpha"
 
@@ -13,7 +18,7 @@ COMMUNITY="alpha"
 #  Part 1: Check for and handle command-line arguments
 TIME_WARP=1
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch.sh [SWITCHES] [time_warp]     "
 	echo "  --help, -h                         " 
 	exit 0;
@@ -25,7 +30,6 @@ for ARGI; do
     fi
 done
 
-
 #----------------------------------------------------------
 #  Part 3: Launch the processes
 #----------------------------------------------------------
@@ -34,4 +38,5 @@ pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 
 uMAC  $COMMUNITY.moos
 
-kill -- -$$
+echo; echo "Halting all apps"
+kill -- -$$ 

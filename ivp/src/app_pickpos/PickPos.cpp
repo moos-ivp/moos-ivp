@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -556,7 +557,7 @@ void PickPos::pickPosByFile()
     cout << "File(s) only had " << choices << " lines." << endl;
     exit(1);
   }
-  srand(time(NULL));
+  srand(time(NULL) + getpid());
 
   // Create an array of Booleans the same size as num of file choices
   vector<bool> bool_positions(choices, false);
@@ -588,7 +589,7 @@ void PickPos::pickPosByPoly()
     cout << "No polygons have been specified." << endl;
     exit(1);
   }
-  srand(time(NULL));
+  srand(time(NULL) + getpid());
 
   m_fld_generator.setSnap(m_pt_snap);
   m_fld_generator.setBufferDist(m_buffer_dist);
@@ -667,7 +668,7 @@ void PickPos::pickHeadingVals()
   if(m_hdg_type == "none")
     return;
   
-  srand(time(NULL));
+  srand(time(NULL) + getpid());
 
   // Sanity check
   if((m_pick_positions.size() != m_pick_amt) && (m_hdg_type == "rbng")) {
@@ -720,7 +721,7 @@ void PickPos::pickSpeedVals()
   if(m_spd_type == "none")
     return;
   
-  srand(time(NULL));
+  srand(time(NULL) + getpid());
 
   // Part 2: Handle making random speeds from a range of speeds
   if(m_spd_type == "rand") {
@@ -749,7 +750,7 @@ void PickPos::pickGroupNames()
   if(choices == 0)
     return;
   
-  srand(time(NULL));
+  srand(time(NULL) + getpid());
 
   // Part 2: Select random group names from configured set
   if(m_grp_type == "random") {

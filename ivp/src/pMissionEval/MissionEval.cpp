@@ -22,14 +22,16 @@
 /*****************************************************************/
 
 #include "MBUtils.h"
+#include "ACTable.h"
 #include "MissionEval.h"
 #include "VarDataPairUtils.h"
 #include "MacroUtils.h"
+#include "HashUtils.h"
 
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 MissionEval::MissionEval()
 {
@@ -37,6 +39,13 @@ MissionEval::MissionEval()
 
   m_info_buffer = new InfoBuffer;
   m_logic_tests.setInfoBuffer(m_info_buffer);
+
+  m_db_uptime = 0;
+  m_mhash_utc = 0;
+
+  m_mission_result = "un-started";
+  m_mission_form   = "mission";
+  m_report_line_format = "white";
 }
 
 //---------------------------------------------------------
@@ -65,8 +74,11 @@ bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(msg.IsString())
       m_info_buffer->setValue(key, sval, mtime);
       
-    // Pass mail to VCheckSet
-    m_vcheck_set.handleMail(key, sval, dval, mtime);
+    if(key == "MISSION_HASH")
+      handleMailMissionHash(sval, mtime);
+
+    else if(key == "DB_UPTIME")
+      m_db_uptime = dval;
   }
 
   // After MailFlagSet has handled all mail from this iteration,
@@ -95,22 +107,15 @@ bool MissionEval::Iterate()
   m_info_buffer->setCurrTime(m_curr_time);
   
   m_logic_tests.update();
-  m_vcheck_set.update(m_curr_time);
 
-  // If both logic_aspect and vcheck_set evaluated, post results
-  if(m_logic_tests.isEvaluated() && m_vcheck_set.isEvaluated())
+  // If both logic_aspect evaluated, post results
+  if(m_logic_tests.isEvaluated())
     postResults();
   
   string aspect_status = m_logic_tests.getStatus();
   if(aspect_status != m_logic_tests_status_prev) {
     Notify("MISSION_LCHECK_STAT", aspect_status);
     m_logic_tests_status_prev = aspect_status;
-  }
-  
-  string vcheck_status = m_vcheck_set.getStatus();
-  if(vcheck_status != m_vcheck_status_prev) {
-    Notify("MISSION_VCHECK_STAT", vcheck_status);
-    m_vcheck_status_prev = vcheck_status;
   }
   
   AppCastingMOOSApp::PostReport();
@@ -159,14 +164,14 @@ bool MissionEval::OnStartUp()
     else if(param == "fail_flag")
       handled = addVarDataPairOnString(m_fail_flags, value);
 
-    else if(param == "vcheck_start")
-      handled = m_vcheck_set.setStartTrigger(value);
-    else if(param == "vcheck")
-      handled = m_vcheck_set.addVCheck(value);
-    else if(param == "fail_on_first")
-      handled = m_vcheck_set.setFailOnFirst(value);
-    else if(param == "vcheck_max_report")
-      handled = m_vcheck_set.setMaxReportSize(value);
+    else if(param == "mission_form")
+      handled = setNonWhiteVarOnString(m_mission_form, value);
+    else if(param == "mission_mod")
+      handled = setNonWhiteVarOnString(m_mission_mod, value);
+    
+    else if(param == "report_line_format")
+      handled = handleConfigColumnFormat(value);
+    
     else if(param == "mailflag") 
       handled = m_mfset.addFlag(value);
 
@@ -182,14 +187,9 @@ bool MissionEval::OnStartUp()
   if(aspect_warning != "")
     reportConfigWarning(aspect_warning);
 
-  // Part 2: Check VCheck proper config
-  string vcheck_warning = m_vcheck_set.checkConfig();
-  if(vcheck_warning != "")
-    reportConfigWarning(vcheck_warning);
-
   // Part 3: MUST be using either logic-based or time-based checks!
-  if(!m_logic_tests.enabled() && !m_vcheck_set.enabled()) 
-    reportConfigWarning("MUST provide either logic or time-based checks");
+  if(!m_logic_tests.enabled()) 
+    reportConfigWarning("MUST provide either logic based checks");
   
   m_mission_result = "pending";
   Notify("MISSION_RESULT", "pending");
@@ -198,10 +198,42 @@ bool MissionEval::OnStartUp()
   
   registerVariables();	
 
+  m_info_buffer->setValue("MISSION_FORM", m_mission_form);
+  
   vector<string> spec = m_logic_tests.getSpec();
   for(unsigned int i=0; i<spec.size(); i++)
     cout << spec[i] << endl;
 
+  return(true);
+}
+
+    
+//---------------------------------------------------------
+// Procedure: handleMailMissionHash()
+
+void MissionEval::handleMailMissionHash(string sval, double msg_time)
+{
+  m_mission_hash = sval;
+
+  // Values stored both in local member variables
+  m_mhash_short  = missionHashShort(m_mission_hash);
+  m_mhash_utc    = missionHashUTC(m_mission_hash);
+
+  // And stored in the info_buffer
+  m_info_buffer->setValue("MHASH_SHORT", m_mhash_short, msg_time);
+  m_info_buffer->setValue("MHASH_UTC", m_mhash_utc, msg_time);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfiguColumnFormat()
+
+bool MissionEval::handleConfigColumnFormat(string sval)
+{
+  sval = tolower(sval);
+  if((sval != "csp") && (sval != "white"))
+    return(false);
+  
+  m_report_line_format = sval;
   return(true);
 }
 
@@ -249,11 +281,6 @@ void MissionEval::registerVariables()
 
   // Register for variables used in logic_aspect
   set<string> aspect_vars = m_logic_tests.getLogicVars();
-  // Register for variables used in vcheck_set
-  set<string> vcheck_vars = m_vcheck_set.getVars();
-
-  // Make one set
-  aspect_vars.insert(vcheck_vars.begin(), vcheck_vars.end());
 
   // Now register for all unique vars
   set<string>::iterator p;
@@ -264,8 +291,15 @@ void MissionEval::registerVariables()
 
   // Now register for all flag macros
   for(p=m_macro_vars.begin(); p!=m_macro_vars.end(); p++) {
-    string moos_var = *p;
-    Register(moos_var, 0);
+    string var = *p;
+
+    // Some vars available as macros are "internal", they are not MOOS
+    // variables and we don't want to needless register for them.
+    if((var == "MHASH_SHORT")  || (var == "MHASH_UTC") ||
+       (var == "MISSION_FORM") || (var == "WALL_TIME"))
+      continue;
+    
+    Register(var, 0);
   }
 
   // Register for any variables involved in the MailFlagSet
@@ -273,6 +307,8 @@ void MissionEval::registerVariables()
   for(unsigned int i=0; i<mflag_vars.size(); i++)
     Register(mflag_vars[i], 0);
 
+  Register("MISSION_HASH");  
+  Register("DB_UPTIME");  
 }
 
 
@@ -295,7 +331,7 @@ void MissionEval::postResults()
   // =========================================================
   // Part 2: If eval conditions met, post pass_flags, otherwise
   // fail_flags
-  if(m_logic_tests.isSatisfied() && m_vcheck_set.isSatisfied()) {
+  if(m_logic_tests.isSatisfied()) {
     m_mission_result = "pass";
     Notify("MISSION_RESULT", "pass");
     postFlags(m_pass_flags);
@@ -317,15 +353,32 @@ void MissionEval::postResults()
     return;
   }
 
+  string line;
   for(unsigned int i=0; i<m_report_columns.size(); i++) {
     string column = expandMacros(m_report_columns[i]);
-    if(i != 0)
+    if(i != 0) {
+      if(m_report_line_format == "csp")
+	line += ", ";
+      else
+	line += "  ";
+    }
+    line += column;
+  }
+  fprintf(f, "%s\n", line.c_str());
+  fclose(f);
+  m_report_latest_line = line;
+  
+
+#if 0
+  for(unsigned int i=0; i<m_report_columns.size(); i++) {
+    string column = expandMacros(m_report_columns[i]);
+    if(i != 0) {
       column = "  " + column;
-    fprintf(f, "%s", column.c_str());
+      fprintf(f, "%s", column.c_str());
   }
   fprintf(f, "\n");
   fclose(f);
-  
+#endif
 }
 
 
@@ -364,17 +417,60 @@ void MissionEval::postFlags(const vector<VarDataPair>& flags)
 
 string MissionEval::expandMacros(string sdata) const
 {
-  unsigned int vcheck_pass = m_vcheck_set.getTotalPassed();
-  unsigned int vcheck_fail = m_vcheck_set.getTotalFailed();
-  double  vcheck_pass_rate = m_vcheck_set.getPassRate();
-  string   vcheck_fail_rpt = m_vcheck_set.getFailReport();
-  if(vcheck_fail_rpt == "")
-    vcheck_fail_rpt = "none";
+  if(strContains(sdata, "$[MHASH_SHORT]")) {
+    string mhash_short = "[" + missionHashShort(m_mission_hash) + "]";
+    sdata = macroExpand(sdata, "MHASH_SHORT", mhash_short);
+  }
   
-  sdata = macroExpand(sdata, "VCHK_PASS", vcheck_pass);
-  sdata = macroExpand(sdata, "VCHK_FAIL", vcheck_fail);
-  sdata = macroExpand(sdata, "VCHK_PASS_RATE", vcheck_pass_rate);
-  sdata = macroExpand(sdata, "VCHK_FAIL_RPT", vcheck_fail_rpt);
+  if(strContains(sdata, "$[MHASH]"))
+    sdata = macroExpand(sdata, "MHASH", m_mission_hash);
+  
+  if(strContains(sdata, "$[MISSION_HASH]"))
+    sdata = macroExpand(sdata, "MISSION_HASH", m_mission_hash);
+  
+  if(strContains(sdata, "$[MHASH_LSHORT]")) {
+    string mhash_lshort = missionHashLShort(m_mission_hash);
+    sdata = macroExpand(sdata, "MHASH_LSHORT", mhash_lshort);
+  }
+  
+  if(strContains(sdata, "$[MISSION_FORM]")) 
+    sdata = macroExpand(sdata, "MISSION_FORM", m_mission_form);
+  
+  if(strContains(sdata, "$[MMOD]")) 
+    sdata = macroExpand(sdata, "MMOD", m_mission_mod);
+  
+  if(strContains(sdata, "$[GRADE]")) 
+    sdata = macroExpand(sdata, "GRADE", m_mission_result);
+  
+  if(strContains(sdata, "$[MHASH_UTC]")) {
+    string mhash_utc = tokStringParse(m_mission_hash, "utc", ',', '=');
+    sdata = macroExpand(sdata, "MHASH_UTC", mhash_utc);
+  }
+  
+  if(strContains(sdata, "$[YEAR]")) 
+    sdata = macroExpand(sdata, "MONTH", getCurrYear());
+  if(strContains(sdata, "$[MONTH]")) 
+    sdata = macroExpand(sdata, "MONTH", getCurrMonth());
+  if(strContains(sdata, "$[DAY]")) 
+    sdata = macroExpand(sdata, "DAY", getCurrDay());
+  if(strContains(sdata, "$[HOUR]")) 
+    sdata = macroExpand(sdata, "HOUR", getCurrHour());
+  if(strContains(sdata, "$[MIN]")) 
+    sdata = macroExpand(sdata, "MIN", getCurrMinute());
+  if(strContains(sdata, "$[SEC]")) 
+    sdata = macroExpand(sdata, "SEC", getCurrSeconds());
+  if(strContains(sdata, "$[DATE]")) 
+    sdata = macroExpand(sdata, "DATE", getCurrDate());
+  if(strContains(sdata, "$[TIME]")) 
+    sdata = macroExpand(sdata, "TIME", getCurrTime());
+  
+  if(strContains(sdata, "$[WALL_TIME]")) {
+    if(m_time_warp > 0) {
+      double wall_time = m_db_uptime / m_time_warp;
+      string wall_str = doubleToString(wall_time,2); 
+      sdata = macroExpand(sdata, "WALL_TIME", wall_str);
+    }
+  }
 
   set<string>::iterator p;
   for(p=m_macro_vars.begin(); p!=m_macro_vars.end(); p++) {
@@ -404,18 +500,25 @@ bool MissionEval::buildReport()
   string pflag_count_str = uintToString(m_pass_flags.size());
   string fflag_count_str = uintToString(m_fail_flags.size());  
   m_msgs << "Overall State: " << m_mission_result << endl;
-  m_msgs << "============================================ " << endl;
+  m_msgs << "============================================== " << endl;
   m_msgs << " logic_tests_stat: " << m_logic_tests.getStatus() << endl;
-  m_msgs << "  time_check_stat: " << m_vcheck_set.getStatus() << endl;
   m_msgs << "     result flags: " << rflag_count_str << endl;
   m_msgs << "       pass flags: " << pflag_count_str << endl;
-  m_msgs << "       fail flags: " << fflag_count_str << endl << endl;
-  m_msgs << "       curr_index: " << m_logic_tests.currIndex() << endl << endl;
+  m_msgs << "       fail flags: " << fflag_count_str << endl;
+  m_msgs << "       curr_index: " << m_logic_tests.currIndex() << endl;
   //  m_msgs << "      report_line: [" << m_report_line << "]" << endl;
   m_msgs << "      report_file: " << m_report_file << endl << endl;
 
-  m_msgs << "FlagMacrosVars: " << m_macro_vars.size() << endl;
-  m_msgs << "============================================ " << endl;
+
+  m_msgs << "==============================================" << endl;
+  m_msgs << "Supported Macros: " << endl;
+  m_msgs << "==============================================" << endl;
+  m_msgs << endl;
+  
+  ACTable actab(2,2);
+  actab << "Macro | CurrVal \n";
+  actab.addHeaderLines();
+
   set<string>::iterator q;
   for(q=m_macro_vars.begin(); q!=m_macro_vars.end(); q++) {
     string var = *q;
@@ -424,10 +527,49 @@ bool MissionEval::buildReport()
     double dval = m_info_buffer->dQuery(var, ok);
     if(sval == "")
       sval = doubleToStringX(dval,2);
-    m_msgs << " macro:" << *q << "=" << sval << endl;
+    actab << var << sval;
   }
+  m_msgs << actab.getFormattedString();
+  m_msgs << endl << endl;
+  
+
+  m_msgs << "==============================================" << endl;
+  m_msgs << "Logic Sequence: " << endl;
+  m_msgs << "==============================================" << endl;
   m_msgs << endl;
   
+  ACTable actab2(5,2);
+  actab2 << "Index | Status | Conds | Pass Flags | Fail FLags \n";
+  actab2.addHeaderLines();
+
+  unsigned int currix = m_logic_tests.currIndex();
+  unsigned int lsize = m_logic_tests.size();
+  for(unsigned int i=0; i<lsize; i++) {
+    string stat = "pending";
+    if(i == currix)
+      stat = "current";
+    else if(i < currix)
+      stat = "Done";
+    unsigned int lcond = m_logic_tests.leadConditions(i);
+    unsigned int pflag = m_logic_tests.passConditions(i);
+    unsigned int fflag = m_logic_tests.failConditions(i);
+    actab2 << i << stat << lcond << pflag << fflag;
+  }
+  m_msgs << actab2.getFormattedString();
+  m_msgs << endl;
+  m_msgs << endl;
+
+  m_msgs << "==============================================" << endl;
+  m_msgs << "Reporting: " << endl;
+  m_msgs << "==============================================" << endl;
+  m_msgs << "  report_file: " << m_report_file << endl;
+  for(unsigned int i=0; i<m_report_columns.size(); i++)
+    m_msgs << "   report_col: " << m_report_columns[i] << endl;
+  m_msgs << "  latest_line: " << m_report_latest_line << endl;
+  m_msgs << endl;
+
+
+#if 0
   list<string>::iterator p;
   // Part 2: LogicAspect Info
   if(m_logic_tests.enabled()) {
@@ -438,15 +580,7 @@ bool MissionEval::buildReport()
     }
     m_msgs << endl;
   }
-
-  // Part 3: VCheck Info
-  if(m_vcheck_set.enabled()) {
-    list<string> summary_lines2 = m_vcheck_set.getReport();
-    for(p=summary_lines2.begin(); p!=summary_lines2.end(); p++) {
-      string line = *p;
-      m_msgs << line << endl;
-    }
-  }
+#endif
 
   return(true);
 }

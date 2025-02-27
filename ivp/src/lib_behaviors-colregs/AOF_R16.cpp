@@ -29,7 +29,7 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 AOF_R16::AOF_R16(IvPDomain gdomain) : AOF_Contact(gdomain)
 {
@@ -48,10 +48,19 @@ AOF_R16::AOF_R16(IvPDomain gdomain) : AOF_Contact(gdomain)
   
   m_osh = 0;
   m_osh_set = false;
+
+  // Added Oct 11th, 2024. By default, when passing to stern, port
+  // port turns allowed if trajectory still results in passing to
+  // the stern. By setting false, a more conservative policy is
+  // enforced where no port turns are allowed at all. This may not
+  // be advisable in high contact density situations since it may
+  // be too inflexible if there are other contacts where a port
+  // turn could be useful. 
+  m_pts_port_turns_ok = true;
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R16::setParam(const string& param, double param_val)
 {
@@ -74,7 +83,7 @@ bool AOF_R16::setParam(const string& param, double param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R16::setParam(const string& param, const string& param_val)
 {
@@ -106,6 +115,14 @@ bool AOF_R16::setParam(const string& param, const string& param_val)
     }
     return(ok);
   }
+  else if(param == "pts_port_turns_ok") {
+    bool ok = setBooleanOnString(m_pts_port_turns_ok, param_val);
+    if(!ok) {
+      string msg = "bad param[" + param + "], value[" + param_val + "]";
+      postMsgAOF(msg);
+    }
+    return(ok);
+  }
   else {
     string msg = "bad param[" + param + "], value[" + param_val + "]";
     postMsgAOF(msg);    
@@ -116,7 +133,7 @@ bool AOF_R16::setParam(const string& param, const string& param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_R16::initialize()
 {
@@ -149,7 +166,7 @@ bool AOF_R16::initialize()
 }
 
 //----------------------------------------------------------------
-// Procedure: evalbox
+// Procedure: evalbox()
 //   Purpose: Evaluates a given <Course, Speed> tuple 
 //               given by a 3D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -167,15 +184,26 @@ double AOF_R16::evalBox(const IvPBox *b) const
   // If we're passing to stern, penalize for crossing the bow
   if(m_pass_to_stern) {
 
-    // Rule out turns that cross the bow, plain and simple
-    if(m_cpa_engine.crossesBow(eval_crs, eval_spd))
-      return(0);
-
-    // If a left-hand turn, only allow turns that still cross cn stern
-    bool os_turns_rgt = m_cpa_engine.turnsRight(m_osh, eval_crs);
-    if(!os_turns_rgt) {
-      if(!m_cpa_engine.crossesStern(eval_crs, eval_spd))
+    // The pts_port_turns_ok option added Oct 11, 2024
+    
+    if(m_pts_port_turns_ok) { // The DEFAULT
+      // Rule out turns that cross the bow, plain and simple
+      if(m_cpa_engine.crossesBow(eval_crs, eval_spd))
 	return(0);
+      
+      // If a left-hand turn, only allow turns that still cross cn stern
+      bool os_turns_rgt = m_cpa_engine.turnsRight(m_osh, eval_crs);
+      if(!os_turns_rgt) {
+	if(!m_cpa_engine.crossesStern(eval_crs, eval_spd))
+	  return(0);
+      }
+    }
+    // Added Oct1124 Not: the default, prehaps preferred by some
+    // conservative users in 1-1 situations with no other contacts
+    else { 
+      if (!m_cpa_engine.crossesStern(eval_crs, eval_spd) ||
+         m_cpa_engine.turnsLeft(m_osh, eval_crs))
+      return(0);
     }
   }
     

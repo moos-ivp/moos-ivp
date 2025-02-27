@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include "InfoBuffer.h"
+#include "LedgerSnap.h"
 #include "IvPBehavior.h"
 
 class BehaviorSpec {
@@ -42,6 +43,7 @@ class BehaviorSpec {
 
   void setFileName(std::string filename)  {m_filename = filename;}
   void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;}
+  void setLedgerSnap(LedgerSnap *b)       {m_ledger_snap=b;}
 
   bool setTemplatingType(std::string s);
 
@@ -66,11 +68,13 @@ class BehaviorSpec {
 
   unsigned int  getSpawnsMade() const  {return(m_spawns_made);}
   unsigned int  getSpawnsTried() const {return(m_spawns_tried);}
+  unsigned int  getMaxSpawnings() const {return(m_max_spawnings);}
   
  private: // State Variables
   std::string   m_templating;
   std::string   m_updates_var;
   std::string   m_name_prefix;
+  unsigned int  m_max_spawnings; // zero means no limit
 
   std::string   m_filename;
   std::string   m_behavior_kind;
@@ -82,7 +86,8 @@ class BehaviorSpec {
   unsigned int  m_spawns_tried;
   unsigned int  m_spawns_made;
     
-  InfoBuffer   *m_info_buffer;
+  InfoBuffer*   m_info_buffer;
+  LedgerSnap*   m_ledger_snap;
   bool          m_templating_enabled;
 };
 

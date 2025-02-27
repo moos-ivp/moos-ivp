@@ -42,6 +42,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   bool         onRunStatePrior();
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onDisabledState();
   void         onRunToIdleState();
   void         onIdleState();
   void         onInactiveState();
@@ -49,6 +50,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   std::string  getInfo(std::string);
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
+  std::string  expandMacros(std::string);
 
  protected:
   void         updateAvoidMode();
@@ -77,6 +79,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   bool         getHeadingRate(double&, double min_secs=4);
   bool         getRelBngRate(double&);
 
+  void         setAvoidModeIndex();
   void         postStatusInfo();
 
  private: // Configuration Parameters
@@ -94,6 +97,9 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   std::string  m_pwt_grade;
   std::string  m_contact_type_required;
 
+  bool         m_post_status_info_on_idle;
+  bool         m_pts_port_turns_ok;
+  
   bool         m_headon_only;
 
   VelocityFilter m_vfilter;
@@ -102,7 +108,8 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   std::string  m_avoid_mode;
   double       m_avoid_mode_elaps_time;
   double       m_avoid_mode_start_time;
-
+  unsigned int m_avoid_mode_ix;
+  
   std::string  m_avoid_submode;
   double       m_avoid_submode_elaps_time;
   double       m_avoid_submode_start_time;

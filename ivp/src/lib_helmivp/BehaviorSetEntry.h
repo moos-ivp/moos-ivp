@@ -54,7 +54,7 @@ public:
   }
 
   IvPBehavior* getBehavior()         {return(m_behavior);}
-  std::string  getState()            {return(m_state);}
+  std::string  getState() const      {return(m_state);}
   double       getStateTimeEntered() {return(m_state_time_entered);}
   double       getStateTimeElapsed() {return(m_state_time_elapsed);}
 

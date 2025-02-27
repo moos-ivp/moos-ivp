@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 #include "MacroUtils.h"
 #include "BuildUtils.h"
 #include "BehaviorReport.h"
@@ -49,6 +50,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
   m_domain       = g_domain;
   m_info_buffer  = 0;
+  m_ledger_snap  = 0;
   m_priority_wt  = 100.0;  // Default Priority Weight
   m_descriptor   = "???";  // Default descriptor
   m_bhv_state_ok = true;
@@ -84,6 +86,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osy = 0;
   m_osh = 0;
   m_osv = 0;
+  m_osd = 0;
   m_max_osv = -1; // According to IvPDomain
 
   m_time_of_creation  = 0;
@@ -96,6 +99,9 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_macro_ctr_03 = 0;
   m_macro_ctr_04 = 0;
   m_macro_ctr_05 = 0;
+
+  m_disabled = false;
+  m_can_disable = false;
   
   m_config_posted = false;
 
@@ -334,6 +340,9 @@ string IvPBehavior::isRunnable()
   if(m_completed)
     return("completed");
 
+  if(m_disabled)
+    return("disabled");
+
   if(!checkConditions()) {
     //if(m_duration_idle_decay && m_duration_reset_pending)
     //  durationReset();
@@ -374,6 +383,60 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
   m_info_buffer = ib;
   m_time_of_creation = getBufferCurrTime();
 }
+
+//-----------------------------------------------------------
+// Procedure: setLedgerSnap()
+
+void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
+{
+  m_ledger_snap = cl;
+}
+
+//-----------------------------------------------------------
+// Procedure: updatePlatformInfo()
+//   Purpose: Update the following member variables:
+//             m_osx: Current ownship x position (meters) 
+//             m_osy: Current ownship y position (meters) 
+//             m_osh: Current ownship heading (degrees 0-359)
+//             m_osv: Current ownship speed (meters) 
+//             m_osv: Current ownship speed (meters) 
+
+bool IvPBehavior::updatePlatformInfo()
+{
+  bool ok1, ok2, ok3, ok4, ok5;
+
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
+  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
+  m_osd = getBufferDoubleVal("NAV_DEPTH", ok5);
+
+  // Must get ownship position
+  if(!ok1 || !ok2) {
+    postEMessage("No ownship X/Y info in info_buffer.");
+    return(false);
+  }
+
+  // Must get ownship heading
+  if(!ok3) {
+    postEMessage("No ownship heading info in info_buffer.");
+    return(false);
+  }
+
+  // If speed info is not found, its not a show-stopper.
+  // A warning will be posted.
+  if(!ok4)
+    postWMessage("No ownship speed info in info_buffer");
+  
+  m_osh = angle360(m_osh);
+
+  if(!ok5 && (m_domain.hasDomain("depth")))
+    postWMessage("No ownship depth info in info_buffer");
+
+  
+  return(true);
+}
+  
 
 //-----------------------------------------------------------
 // Procedure: postMessage()
@@ -661,6 +724,39 @@ string IvPBehavior::getOwnGroup()
   string group = getBufferStringVal(buffer_var);
 
   return(group);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnType()
+
+string IvPBehavior::getOwnType() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_TYPE";
+  string group = getBufferStringVal(buffer_var);
+
+  return(group);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnColor()
+
+string IvPBehavior::getOwnColor() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_COLOR";
+  string color = getBufferStringVal(buffer_var);
+
+  return(color);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnLength()
+
+double IvPBehavior::getOwnLength() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_LENGTH";
+  double length = getBufferDoubleVal(buffer_var);
+
+  return(length);
 }
 
 //-----------------------------------------------------------
@@ -1278,7 +1374,7 @@ void IvPBehavior::postDurationStatus()
 
 
 //-----------------------------------------------------------
-// Procedure: updateStateDurations
+// Procedure: updateStateDurations()
 //      Note: Update the two variables representing how long
 //            the behavior has been in the "idle" state and 
 //            how long in the "running" state.
@@ -1346,41 +1442,6 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags,
 {
   for(unsigned int i=0; i<flags.size(); i++) 
     postFlag(flags[i], repeatable);
-
-#if 0
-  string key;
-  if(repeatable)
-    key = "repeatable";
-  
-  for(unsigned int i=0; i<flags.size(); i++) {
-    string var = flags[i].get_var();
-
-    if(flags[i].is_solo_macro()) {
-      string sdata = flags[i].get_sdata();
-      sdata = expandMacros(sdata);
-
-      if(isNumber(sdata)) {
-	double ddata = atof(sdata.c_str());
-	postMessage(var, ddata, key);
-      }
-      else 
-	postMessage(var, sdata, key);
-    }
-
-
-    // Handle String postings
-    else if(flags[i].is_string()) {
-      string sdata = flags[i].get_sdata();
-      sdata = expandMacros(sdata);
-      postMessage(var, sdata, key);
-    }
-    // Handle Double postings
-    else {
-      double ddata = flags[i].get_ddata();
-      postMessage(var, ddata, key);
-    }	
-  }    
-#endif
 }
 
 
@@ -1564,6 +1625,19 @@ bool IvPBehavior::getBufferVarUpdated(string varname) const
   if(elapsed == 0)
     return(true);
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferIsKnown()
+
+bool IvPBehavior::getBufferIsKnown(string varname) const
+{
+  if(!m_info_buffer)
+    return(false);
+  if(varname == "")
+    return(false);
+
+  return(m_info_buffer->isKnown(varname));
 }
 
 //-----------------------------------------------------------
@@ -1840,4 +1914,56 @@ bool IvPBehavior::addFlagOnString(vector<VarDataPair>& pairs,
   // Part 2: Proceed with normal adding of a flag
   return(addVarDataPairOnString(pairs, str));
 }
+
+//-----------------------------------------------------------
+// Procedure: getLedgerInfoDbl()
+
+double IvPBehavior::getLedgerInfoDbl(string vname,
+				     string field)
+{
+  bool ok_not_used;
+  return(getLedgerInfoDbl(vname, field, ok_not_used));
+}
+
+//-----------------------------------------------------------
+// Procedure: getLedgerInfoDbl()
+
+double IvPBehavior::getLedgerInfoDbl(string vname,
+				     string field,
+				     bool& ok)
+{ 
+  if(!m_ledger_snap) {
+    ok = false;
+    return(0);
+  }
+
+  return(m_ledger_snap->getInfoDouble(vname, field, ok));
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getLedgerInfoStr()
+
+string IvPBehavior::getLedgerInfoStr(string vname,
+				     string field)
+{
+  bool ok_not_used;
+  return(getLedgerInfoStr(vname, field, ok_not_used));
+}
+
+//-----------------------------------------------------------
+// Procedure: getLedgerInfoStr()
+
+string IvPBehavior::getLedgerInfoStr(string vname,
+				     string field,
+				     bool& ok)
+{
+  if(!m_ledger_snap) {
+    ok = false;
+    return("");
+  }
+
+  return(m_ledger_snap->getInfoString(vname, field, ok));
+}
+
 

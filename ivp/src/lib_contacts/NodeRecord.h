@@ -45,6 +45,7 @@ class NodeRecord
   void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;}
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;}
   void setLength(double v)    {m_length=v;     m_length_set=true;}
+  void setBeam(double v)      {m_beam=v;       m_beam_set=true;}
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;}
   void setTransparency(double v) {m_transparency=v; m_transparency_set=true;}
   void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;}
@@ -63,9 +64,10 @@ class NodeRecord
   void setLoadWarning(std::string s) {m_load_warning=s;}
 
   void setProperty(std::string, std::string);
+  void setCoordPolicyGlobal(bool bval=true);
 
   void setIndex(int i)         {m_index=i;}
-
+  
   int    getIndex() const      {return(m_index);}
   double getX() const          {return(m_x);}
   double getY() const          {return(m_y);}
@@ -80,14 +82,17 @@ class NodeRecord
   double getDepth() const      {return(m_depth);}
   double getAltitude() const   {return(m_altitude);}
   double getLength() const     {return(m_length);}
+  double getBeam() const       {return(m_beam);}
   double getTimeStamp() const  {return(m_timestamp);}
   double getTransparency() const {return(m_transparency);}
   std::string getTrajectory() const {return(m_trajectory);}
 
   bool   isSetX() const        {return(m_x_set);}
   bool   isSetY() const        {return(m_y_set);}
+  bool   isSetXY() const       {return(m_x_set && m_y_set);}
   bool   isSetLatitude() const {return(m_lat_set);}
   bool   isSetLongitude() const {return(m_lon_set);}
+  bool   isSetLatLon() const   {return(m_lon_set && m_lon_set);}
   bool   isSetSpeed() const     {return(m_speed_set);}
   bool   isSetSpeedOG() const   {return(m_speed_og_set);}
   bool   isSetHeading() const   {return(m_heading_set);}
@@ -97,6 +102,7 @@ class NodeRecord
   bool   isSetDepth() const     {return(m_depth_set);}
   bool   isSetAltitude() const  {return(m_altitude_set);}
   bool   isSetLength() const    {return(m_length_set);}
+  bool   isSetBeam() const      {return(m_beam_set);}
   bool   isSetTimeStamp() const {return(m_timestamp_set);}
   bool   isSetTransparency() const {return(m_transparency_set);}
   bool   isSetTrajectory() const {return(m_trajectory_set);}
@@ -119,6 +125,7 @@ class NodeRecord
   std::string getLoadWarning(std::string s="") const;
 
   std::string getSpec(bool terse=false) const;
+  std::string getSpecJSON(bool terse=false) const;
 
   std::string getStringValue(std::string) const;
 
@@ -136,6 +143,7 @@ class NodeRecord
   double m_lat;
   double m_lon;
   double m_length;
+  double m_beam;
   double m_timestamp;
   double m_transparency;
   std::string  m_trajectory;
@@ -147,6 +155,7 @@ class NodeRecord
   std::string  m_mode_aux;
   std::string  m_allstop;
   std::string  m_load_warning;
+  bool m_coord_policy_global; // default false
   
   bool m_x_set;
   bool m_y_set;
@@ -161,6 +170,7 @@ class NodeRecord
   bool m_depth_set;
   bool m_altitude_set;
   bool m_length_set;
+  bool m_beam_set;
   bool m_timestamp_set;
   bool m_transparency_set;
   bool m_thrust_mode_reverse;

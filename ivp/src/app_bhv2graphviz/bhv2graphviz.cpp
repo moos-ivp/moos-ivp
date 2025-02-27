@@ -1,5 +1,6 @@
 #include "BehaviorSet.h"
 #include "InfoBuffer.h"
+#include "LedgerSnap.h"
 #include "Populator_BehaviorSet.h"
 #include "IvPDomain.h"
 #include "StringTree.h"
@@ -21,11 +22,13 @@ int main(int argc, char* argv[])
   
     
   InfoBuffer* m_info_buffer = new InfoBuffer;
+  LedgerSnap* m_ledger_snap = new LedgerSnap;
   IvPDomain m_ivp_domain;
   m_ivp_domain.addDomain("placeholder-domain", 0, 100, 100);
   
   Populator_BehaviorSet *p_bset;
-  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
+  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer,
+				     m_ledger_snap);
   
   std::set<std::string> m_bhv_files;
   m_bhv_files.insert(argv[1]);

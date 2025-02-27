@@ -87,11 +87,6 @@ class BHV_OpRegionRecover : public IvPBehavior {
 
   bool    m_previously_in_poly;
 
-  double  m_osx; 
-  double  m_osy; 
-  double  m_osv; 
-  double  m_osh;   
-
   std::string m_committed_turn;
   bool        m_heading_to_poly;
 

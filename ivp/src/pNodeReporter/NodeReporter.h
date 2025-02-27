@@ -112,6 +112,9 @@ public:
   bool         m_thrust_mode_reverse;
   bool         m_paused;
   bool         m_node_info_posted;
+
+  // Post 24.8: Allow node reports to contain just LAT/LON
+  bool    m_coord_policy_global; 
   
  protected: // Config and State Vars (Blackout Interval)
   double  m_blackout_interval;
@@ -132,14 +135,16 @@ public:
   LinearExtrapolator m_extrapolator;
   NodeRecord         m_record_last_posted;
 
-protected: //MissionHash support
-  Odometer                      m_odometer;
-  std::string                   m_curr_mhash;
-  double                        m_max_extent;
-  double                        m_max_extent_prev;
+protected: // MissionHash support
+  Odometer     m_odometer;
+  std::string  m_curr_mhash;
+  double       m_max_extent;
+  double       m_max_extent_prev;
   
  protected: // NodeRider support
   NodeRiderSet m_riderset;
+
+  std::string  m_json_report;
 };
 
 #endif

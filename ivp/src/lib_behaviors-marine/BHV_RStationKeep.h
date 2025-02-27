@@ -65,8 +65,6 @@ private:  // Configuration Parameters
 private:  // State Variables
   bool         m_center_pending;
   std::string  m_center_assign;
-  double       m_osx;
-  double       m_osy;
   //double       m_angle;
   //double       m_range;
   double       m_station_x;

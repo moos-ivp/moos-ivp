@@ -1,0 +1,15 @@
+
+
+(1) string vname  processNodeReport(string report, string& whynot)
+
+   record = string2NodeRecord(report)
+   preCheckNodeRecord(record, whynot
+   processNodeRecord(record)
+
+(2) string vname processNodeRecord(NodeRecord record, string& whynot)
+
+   where the action happens
+   ignore_vnames and ignore_vgroups are examined. Are they required?
+
+(3) NodeRecord preCheckNodeReport(string report, string& whynot)
+

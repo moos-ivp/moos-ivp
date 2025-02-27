@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     showHelpAndExit();
 
   cout << termColor("green");
-  cout << "pBasicContactMgrV20 launching as " << run_command << endl;
+  cout << "pContactMgrV20 launching as " << run_command << endl;
   cout << termColor() << endl;
 
   ContactMgrV20 ContactMgr;

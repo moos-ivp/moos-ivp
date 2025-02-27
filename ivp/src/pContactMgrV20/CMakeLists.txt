@@ -30,6 +30,7 @@ TARGET_LINK_LIBRARIES(pContactMgrV20
    bhvutil
    apputil
    geometry
+   geodaid
    contacts
    ${SYSTEM_LIBS}
 )

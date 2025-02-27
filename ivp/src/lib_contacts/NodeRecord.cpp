@@ -32,7 +32,7 @@ using namespace std;
 #endif
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 NodeRecord::NodeRecord(string vname, string vtype)
 {
@@ -47,6 +47,7 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_depth      = 0;
   m_altitude   = 0;
   m_length     = 0;
+  m_beam       = 0;
   m_timestamp  = 0;
   m_transparency = 1;  // render fully opaque
   m_name       = vname;
@@ -65,15 +66,20 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_depth_set      = false;
   m_altitude_set   = false;
   m_length_set     = false;
+  m_beam_set       = false;
   m_timestamp_set  = false;
   m_transparency_set = false;
   m_trajectory_set = false;
 
   m_thrust_mode_reverse = false;
+
+  // Set to false for backward compatibility, but moving forward
+  // should be true in all cases (no X/Y in node reports)
+  m_coord_policy_global = false;
 }
 
 //---------------------------------------------------------------
-// Procedure: getStringValue
+// Procedure: getStringValue()
 
 string NodeRecord::getStringValue(string key) const
 {
@@ -102,6 +108,8 @@ string NodeRecord::getStringValue(string key) const
     return(doubleToStringX(m_altitude, 2));
   else if((key == "length") || (key == "len"))
     return(doubleToStringX(m_length, 2));
+  else if(key == "beam")
+    return(doubleToStringX(m_beam, 2));
   else if((key == "timestamp") || (key == "time") || (key == "utime"))
     return(doubleToStringX(m_timestamp, 2));
   else if(key == "transparency")
@@ -127,7 +135,7 @@ double NodeRecord::getElapsedTime(double curr_time) const
 
 
 //------------------------------------------------------------
-// Procedure: setProperty
+// Procedure: setProperty()
 
 void NodeRecord::setProperty(string key, string value)
 {
@@ -135,7 +143,7 @@ void NodeRecord::setProperty(string key, string value)
 }
 
 //------------------------------------------------------------
-// Procedure: getProperty
+// Procedure: getProperty()
 
 string NodeRecord::getProperty(string key) const
 {
@@ -147,7 +155,7 @@ string NodeRecord::getProperty(string key) const
 }
 
 //------------------------------------------------------------
-// Procedure: hasProperty
+// Procedure: hasProperty()
 
 bool NodeRecord::hasProperty(string key) const
 {
@@ -156,17 +164,25 @@ bool NodeRecord::hasProperty(string key) const
   return (false);
 }
 
-
 //------------------------------------------------------------
 // Procedure: getSpec()
 
 string NodeRecord::getSpec(bool terse) const
 {
   string str = "NAME=" + m_name;
-  if(m_x_set)
-    str += ",X="    + doubleToStringX(m_x,2);
-  if(m_y_set)
-    str += ",Y="    + doubleToStringX(m_y,2);
+
+  // Change post 24.8: if m_coord_policy_global, then do not
+  // post local x/y coordinates. Post 24.8, we would like to
+  // move away from using local coordinates, especially for
+  // inter-vehicle messaging like node reports.
+  if(!m_coord_policy_global) {
+    if(m_x_set)
+      str += ",X=" + doubleToStringX(m_x,2);
+    if(m_y_set)
+      str += ",Y=" + doubleToStringX(m_y,2);
+  }
+
+  // Remains unchange Post 24.8
   if(m_speed_set)
     str += ",SPD="  + doubleToStringX(m_speed,2);
   if(m_heading_set)
@@ -174,10 +190,21 @@ string NodeRecord::getSpec(bool terse) const
   if(m_depth_set && !terse)
     str += ",DEP="  + doubleToStringX(m_depth,2);
 
-  if(m_lat_set && !terse)
-    str += ",LAT=" + doubleToStringX(m_lat, 8);
-  if(m_lon_set && !terse)
-    str += ",LON=" + doubleToStringX(m_lon, 8);
+  // Change post 24.8: Always include lat/lon (global) coords
+  // unless m_coord_policy global is false or terse mode is true
+  // While this is the default case, it is default primarily to
+  // be backward compatible. The intention, especially for
+  // vessels in large open water spaces, is to always enable
+  // m_coor_policy_global.
+  if(m_coord_policy_global || !terse) {
+    if(m_lat_set)
+      str += ",LAT=" + doubleToStringX(m_lat, 8);
+    if(m_lon_set)
+      str += ",LON=" + doubleToStringX(m_lon, 8);
+  }
+
+
+  // Remains unchange Post 24.8
   if(m_type != "")
     str += ",TYPE=" + m_type;
   if(m_color != "")
@@ -217,6 +244,8 @@ string NodeRecord::getSpec(bool terse) const
     str += ",TRANSPARENCY=" + doubleToStringX(m_transparency,2);
   if(m_length_set)
     str += ",LENGTH=" + doubleToStringX(m_length,2);
+  if(m_beam_set)
+    str += ",BEAM=" + doubleToStringX(m_beam,2);
 
   if(m_trajectory_set)
     str += ",TRAJECTORY={" + m_trajectory + "}";
@@ -231,7 +260,7 @@ string NodeRecord::getSpec(bool terse) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getName
+// Procedure: getName()
 
 string NodeRecord::getName(string default_name) const
 {
@@ -241,7 +270,7 @@ string NodeRecord::getName(string default_name) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getGroup
+// Procedure: getGroup()
 
 string NodeRecord::getGroup(string default_group) const
 {
@@ -251,7 +280,7 @@ string NodeRecord::getGroup(string default_group) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getType
+// Procedure: getType()
 
 string NodeRecord::getType(string default_type) const
 {
@@ -261,7 +290,7 @@ string NodeRecord::getType(string default_type) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getColor
+// Procedure: getColor()
 
 string NodeRecord::getColor(string default_color) const
 {
@@ -271,7 +300,7 @@ string NodeRecord::getColor(string default_color) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getMode
+// Procedure: getMode()
 
 string NodeRecord::getMode(string default_mode) const
 {
@@ -281,7 +310,7 @@ string NodeRecord::getMode(string default_mode) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getModeAux
+// Procedure: getModeAux()
 
 string NodeRecord::getModeAux(string default_mode_aux) const
 {
@@ -291,7 +320,7 @@ string NodeRecord::getModeAux(string default_mode_aux) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getAllStop
+// Procedure: getAllStop()
 
 string NodeRecord::getAllStop(string default_allstop) const
 {
@@ -301,7 +330,7 @@ string NodeRecord::getAllStop(string default_allstop) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getLoadWarning
+// Procedure: getLoadWarning()
 
 string NodeRecord::getLoadWarning(string default_warning) const
 {
@@ -324,7 +353,7 @@ bool NodeRecord::valid() const
 }
 
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //      Note: Determines if all the required fields have been set
 
 bool NodeRecord::valid(string check) const
@@ -334,7 +363,7 @@ bool NodeRecord::valid(string check) const
 }
 
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //      Note: Determines if all the required fields have been set
 
 bool NodeRecord::valid(string check, string& why) const
@@ -373,6 +402,8 @@ bool NodeRecord::valid(string check, string& why) const
       missing += "transparency,";
     if((field == "length") && !m_length_set) 
       missing += "length,";
+    if((field == "beam") && !m_beam_set) 
+      missing += "beam,";
     if((field == "yaw") && !m_yaw_set) 
       missing += "yaw,";
     if((field == "lat") && !m_lat_set) 
@@ -393,4 +424,14 @@ bool NodeRecord::valid(string check, string& why) const
 }
 
 
+//---------------------------------------------------------------
+// Procedure: setCoordPolicyGlobal()
+//   Purpose: Setting m_coord_policy="global", serialization will 
+//            use LAT/LON and not X/Y when getting a string spec
+//            in terse mode.
+//      Note: Added post Rel 24.8
 
+void NodeRecord::setCoordPolicyGlobal(bool bval)
+{
+  m_coord_policy_global = bval;
+}
