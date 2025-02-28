@@ -40,3 +40,10 @@ jobs:
 
     - name: Check build
       run: ./build-check.sh
+
+    - name: Build Tests
+      run: ./build-utests.sh 
+
+    - name: Run Tests
+      working-directory: ./ivp/src_unit_tests/
+      run: ./alltest.sh
