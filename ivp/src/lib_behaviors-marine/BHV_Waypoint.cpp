@@ -641,8 +641,6 @@ bool BHV_Waypoint::setNextWaypoint()
   // Returns either: empty_seglist, completed, cycled, advanced, or in-transit
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
-  cout << "feedback_msg = " << feedback_msg << endl;
-  
   if((feedback_msg == "completed") || (feedback_msg == "cycled") ||
      (feedback_msg == "advanced"))
     m_waypt_hit = true;
