@@ -35,6 +35,9 @@ jobs:
          brew install fltk libtiff autoconf automake
       shell: bash
 
+    - name: Add moos-ivp to PATH
+      run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
     - name: Build
       run: ./build.sh
 
@@ -47,3 +50,4 @@ jobs:
     - name: Run Tests
       working-directory: ./ivp/src_unit_tests/
       run: ./alltest.sh
+
