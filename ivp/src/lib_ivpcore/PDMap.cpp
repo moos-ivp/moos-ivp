@@ -52,7 +52,7 @@ my_isnan(const T x)
 using namespace std;
 
 //-------------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 PDMap::PDMap(int g_boxCount, const IvPDomain& g_domain, int g_degree)
 {
@@ -75,7 +75,7 @@ PDMap::PDMap(int g_boxCount, const IvPDomain& g_domain, int g_degree)
 }
 
 //-------------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 PDMap::PDMap(const PDMap *pdmap)
 {
@@ -96,7 +96,7 @@ PDMap::PDMap(const PDMap *pdmap)
 }
 
 //-------------------------------------------------------------
-// Procedure: Destructor
+// Procedure: Destructor()
 
 PDMap::~PDMap()
 {
@@ -112,7 +112,7 @@ PDMap::~PDMap()
 }
 
 //-------------------------------------------------------------
-// Procedure: getIX
+// Procedure: getIX()
 //   Purpose: o Given a box lying somewhere in domain, return
 //              a box in the "boxes" array that intersects it.
 //            o Typically the given box is a point box, chosen
@@ -133,7 +133,7 @@ int PDMap::getIX(const IvPBox *gbox)
 }
 
 //-------------------------------------------------------------
-// Procedure: applyWeight
+// Procedure: applyWeight()
 //   Purpose: Multiply the given "weight" to the interior function
 //            of each piece/box in the pdmap. And to the upper
 //            bound values set inside the grid.
@@ -150,7 +150,7 @@ void PDMap::applyWeight(double weight)
 }
 
 //-------------------------------------------------------------
-// Procedure: applyScalar
+// Procedure: applyScalar()
 //   Purpose: Add the given "scalar_val" to the interior function
 //            of each piece/box in the pdmap. And to the upper
 //            bound values set inside the grid.
@@ -164,8 +164,7 @@ void PDMap::applyScalar(double scalar_val)
 }
 
 //-------------------------------------------------------------
-// Procedure: normalize
-//   Purpose: 
+// Procedure: normalize()
 
 void PDMap::normalize(double target_base, double target_range)
 {
@@ -184,8 +183,7 @@ void PDMap::normalize(double target_base, double target_range)
 }
 
 //-------------------------------------------------------------
-// Procedure: getBS
-//   Purpose: 
+// Procedure: getBS()
 
 BoxSet* PDMap::getBS(const IvPBox *qbox)
 {
@@ -202,8 +200,7 @@ BoxSet* PDMap::getBS(const IvPBox *qbox)
 }
 
 //-------------------------------------------------------------
-// Procedure: getUniverse
-//   Purpose: 
+// Procedure: getUniverse()
 
 IvPBox PDMap::getUniverse() const
 {
@@ -217,7 +214,7 @@ IvPBox PDMap::getUniverse() const
 }
 
 //---------------------------------------------------------------------
-// Procedure: getMinWT
+// Procedure: getMinWT()
 //   Purpose: Return the minimum value of all points in the domain
 //            as evaluated by the individual interior functions for
 //            each piece in the pdmap.
@@ -237,7 +234,7 @@ double PDMap::getMinWT() const
 }
 
 //---------------------------------------------------------------------
-// Procedure: getMaxWT
+// Procedure: getMaxWT()
 //   Purpose: Return the maximum value of all points in the domain
 //            as evaluated by the individual interior functions for
 //            each piece in the pdmap.
@@ -257,7 +254,7 @@ double PDMap::getMaxWT() const
 }
 
 //---------------------------------------------------------------------
-// Procedure: setGelBox
+// Procedure: setGelBox()
 //     Notes: The gelbox is used when initiating the grid. 
 //            The given box is checked to make sure that it is the 
 //              same dimension as the domain, and that its at
@@ -304,7 +301,7 @@ bool PDMap::setGelBox(const IvPBox& b)
 }
 
 //---------------------------------------------------------------------
-// Procedure: setGelBox
+// Procedure: setGelBox()
 //   Purpose: A default way of setting the gelbox, if no way has been
 //            adopted. Tries to set the number of gels to 1/4 the number
 //            of boxes in this PDMap, with a ceiling of 40K.
@@ -344,7 +341,7 @@ void PDMap::setGelBox()
 }
 
 //---------------------------------------------------------------------
-// Procedure: getGridConfig
+// Procedure: getGridConfig()
 //      Note: Added mikerb 12/19/15 for further performance analysis
 
 string PDMap::getGridConfig() const
@@ -355,7 +352,7 @@ string PDMap::getGridConfig() const
 }
 
 //---------------------------------------------------------------------
-// Procedure: evalPoint
+// Procedure: evalPoint()
 //     Notes: o Evaluate the value (based on the pieces) of given box.
 //            o The given box should be a point box.
 //            o If grid is "filled" use it. Else iterate thru boxes.
@@ -423,7 +420,7 @@ double PDMap::evalPoint(const IvPBox *gbox, bool* covered) const
 }
 
 //-------------------------------------------------------------
-// Procedure: updateGrid
+// Procedure: updateGrid()
 //   Purpose: 1) As the grid grows significantly, the number
 //               of gridsquares becomes less appropriate.
 //            2) While creating new boxes, when a new box is
@@ -454,7 +451,7 @@ void PDMap::updateGrid(bool BX, bool UB)
 }
 
 //-------------------------------------------------------------
-// Procedure: Print
+// Procedure: print()
 
 void PDMap::print(bool full) const
 {
@@ -466,7 +463,7 @@ void PDMap::print(bool full) const
 }
 
 //-------------------------------------------------------------
-// Procedure: growBoxArray
+// Procedure: growBoxArray()
 
 void PDMap::growBoxArray(int amt)
 {
@@ -481,8 +478,7 @@ void PDMap::growBoxArray(int amt)
 }
 
 //---------------------------------------------------------------------
-// Procedure: transDomain
-//   Purpose:
+// Procedure: transDomain()
 
 bool PDMap::transDomain(const IvPDomain& gdomain,
 			const int newPlacement[])
@@ -530,7 +526,7 @@ bool PDMap::transDomain(const IvPDomain& gdomain,
 }
 
 //---------------------------------------------------------------------
-// Procedure: removeNULLs
+// Procedure: removeNULLs()
 //   Purpose: Remove all NULL entries in the boxes[] array. Useful
 //            for situations where several boxes are removed from
 //            the OF after it was made, but before being involved
@@ -565,7 +561,7 @@ void PDMap::removeNULLs()
 }
 
 //---------------------------------------------------------------------
-// Procedure: freeOfNan
+// Procedure: freeOfNan()
 //   Purpose: Confirm that none of the weights comprising the interior
 //            function are set to NAN, non-a-number, possibly through an
 //            error introduced during regression if the underlying 
@@ -585,7 +581,7 @@ bool PDMap::freeOfNan() const
 }
 
 //---------------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //   Purpose: Confirm that each point in the IvPDomain is contained in
 //            exactly one box
 

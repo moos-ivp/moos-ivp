@@ -48,6 +48,8 @@ public:
   std::string getContextStr()  {return(m_context_string);}
   std::string getVarName(int); 
   std::string getGridConfig() const;
+  double      getValMaxUtil() const;
+  double      getValMinUtil() const;
   
   IvPFunction *copy() const;
 
@@ -57,13 +59,3 @@ protected:
   std::string m_context_string;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
