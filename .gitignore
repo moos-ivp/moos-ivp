@@ -1,4 +1,14 @@
-build/*
+.svn/
+.git/
+.DS_Store
+build/
+**/logs/
+cmake-build-debug/
+.idea
+CMakeFiles
+#.moos++
+**/*.swp
+**/.vagrant*
 include/
 lib/*
 bin/*
