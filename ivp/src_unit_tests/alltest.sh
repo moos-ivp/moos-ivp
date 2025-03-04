@@ -34,6 +34,7 @@ fi
 #-------------------------------------------------------
 
 ALL_OK=0
+FAILED_TESTS=""
 
 for file in *; do
    if [ -d $file ]; then
@@ -44,7 +45,10 @@ for file in *; do
 	   echo "==========================================="
 	   utest cases.utf -v
 	   if [ $? != 0 ]; then
-	       ALL_OK=1
+	       FAILED_TESTS="$file ${FAILED_TESTS}"
+	       if [ ! -f .skip_test ] ; then
+	           ALL_OK=1
+	       fi
 	   fi
        else
 	   echo "==========================================="
@@ -55,4 +59,12 @@ for file in *; do
    fi
 done
 
-exit $ALL_OK
+if [ -n "${FAILED_TESTS}" ]; then
+    echo "==========================================="
+    echo "Failed Tests: "
+    for F in ${FAILED_TESTS} ; do
+       echo "    ${F}"
+    done
+fi
+
+exit ${ALL_OK}
