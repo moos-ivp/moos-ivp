@@ -107,9 +107,9 @@ void showExampleConfigAndExit()
   blk("  domain           =  depth:0:1000:1001                         ");
   blk("                                                                ");
   blk("  // Configure Helm Engagement policies                         ");
-  blk("  start_engaged        = false     // or {true}                 ");
-  blk("  allow_disengaged     = true      // or {false}                ");
-  blk("  disengage_on_allstop = false     // or {true}                 ");
+  blk("  start_engaged    = false     // or {true}                     ");
+  blk("  allow_park       = true      // or {false}                    ");
+  blk("  park_on_allstop  = false     // or {true}                     ");
   blk("                                                                ");
   blk("  // Provide alternative to MOOS_MANUAL_OVERRIDE directive      ");
   blk("  other_override_var   = AUTONOMY_OVERRIDE                      ");
