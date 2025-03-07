@@ -413,6 +413,17 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
     return(0);
 
   IvPFunction *ipf = buildOF();
+
+  // If the IvP function has no decisions with positive utility
+  // then this means a collision with an obstacle is not avoidable.
+  // More possible when using platform model with non-zero turn
+  // radius.
+  if(ipf->getValMaxUtil() == 0) {
+    postEMessage("Allstop: obstacle unavoidable");
+    delete(ipf);
+    return(0);
+  }
+
   return(ipf);
 }
 

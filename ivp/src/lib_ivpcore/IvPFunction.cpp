@@ -121,7 +121,7 @@ string IvPFunction::getGridConfig() const
 
 
 //-------------------------------------------------------------
-// Procedure: copy
+// Procedure: copy()
 //   Purpose: Make a deep copy of the IvP function
 
 IvPFunction *IvPFunction::copy() const
@@ -133,6 +133,28 @@ IvPFunction *IvPFunction::copy() const
   ipf->setContextStr(m_context_string);
 
   return(ipf);
+}
+
+//-------------------------------------------------------------
+// Procedure: getValMaxUtil()
+
+double IvPFunction::getValMaxUtil() const
+{
+  if(!m_pdmap)
+    return(0);
+
+  return(m_pdmap->getMaxWT());
+}
+
+//-------------------------------------------------------------
+// Procedure: getValMinUtil()
+
+double IvPFunction::getValMinUtil() const
+{
+  if(!m_pdmap)
+    return(0);
+
+  return(m_pdmap->getMinWT());
 }
 
 
