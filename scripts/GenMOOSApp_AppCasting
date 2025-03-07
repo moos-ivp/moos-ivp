@@ -16,7 +16,8 @@ if [ -z "$2" ] ; then
 fi
 
 if [ -z "$3" ] ; then
-    name_pad=$(printf '%-48s' "YOUR-NAME-HERE")
+    # name_pad=$(printf '%-48s' "YOUR-NAME-HERE")
+    name_pad=$(printf '%-48s' " ")
 else
     name_pad=$(printf '%-48s' "$3")
 fi
@@ -298,7 +299,7 @@ filename_pad=$(printf '%-48s' "${1}_Info.h")
 cat >> ${1}_Info.h <<EOF
 /************************************************************/
 /*    NAME: $name_pad*/
-/*   ORGN: MIT, Cambridge MA                                */
+/*    ORGN: MIT, Cambridge MA                               */
 /*    FILE: $filename_pad*/
 /*    DATE: $date_out*/
 /************************************************************/
@@ -319,7 +320,7 @@ filename_pad=$(printf '%-48s' "${1}_Info.cpp")
 cat >> ${1}_Info.cpp <<EOF
 /************************************************************/
 /*    NAME: $name_pad*/
-/*   ORGN: MIT, Cambridge MA                                */
+/*    ORGN: MIT, Cambridge MA                               */
 /*    FILE: $filename_pad*/
 /*    DATE: $date_out*/
 /************************************************************/
