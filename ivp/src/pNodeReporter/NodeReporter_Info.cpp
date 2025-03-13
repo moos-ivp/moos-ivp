@@ -47,7 +47,6 @@ void showSynopsis()
 
 void showHelpAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("Usage: pNodeReporter file.moos [OPTIONS]                        ");
   blu("=============================================================== ");
@@ -158,11 +157,10 @@ void showExampleConfigAndExit()
 
 
 //----------------------------------------------------------------
-// Procedure: showInterfaceAndExit
+// Procedure: showInterfaceAndExit()
 
 void showInterfaceAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pNodeReporter INTERFACE                                         ");
   blu("=============================================================== ");
