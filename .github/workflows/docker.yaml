@@ -85,7 +85,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-          push: true
+          push: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
 
       - name: Set digest output
         id: set_digest
@@ -102,7 +102,6 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     needs:
       - prepare
-      - build-minrobot
     env:
       FLAVOR: "-gui"
       SOURCE_DATE_EPOCH: ${{ needs.prepare.outputs.commit_time }}
@@ -137,13 +136,12 @@ jobs:
           platforms: linux/${{ matrix.platform }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs[format('{0}_digest', matrix.platform)] }}
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-          push: true
+          push: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
 
       - name: Set digest output
         id: set_digest
