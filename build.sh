@@ -54,6 +54,7 @@ SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
 
 cd "${SCRIPT_ABS_DIR}"
 
+RESULT=0
 if [ ${CLEAN} = "yes" ] ; then
     echo "=========================================" 
     echo "CLEANING both MOOS and IVP               " 
@@ -63,15 +64,16 @@ elif [ ${BUILD_BOT_CODE_ONLY} = "ON" ] ; then
     echo "===========================================================" 
     echo "BUILDING MOOS and IvP code in min-robot mode (no GUI Apps) " 
     echo "===========================================================" 
-    ./build-moos.sh -m
-    ./build-ivp.sh -m
+    ./build-moos.sh -m && ./build-ivp.sh -m
+    RESULT=$?
 else 
     echo "=========================================" 
     echo "BUILDING All MOOS and IvP code           " 
     echo "=========================================" 
-    ./build-moos.sh -mx
-    ./build-ivp.sh -mx 
+    ./build-moos.sh -mx && ./build-ivp.sh -mx 
+    RESULT=$?
 fi
 
 cd "${INVOC_ABS_DIR}"
 
+exit ${RESULT}

@@ -1,0 +1,53 @@
+name: CMake Build
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+        include:
+          - os: ubuntu-24.04
+            os-type: debian
+          # Mac OS X - 13 runs on intel
+          - os: macos-13
+            os-type: darwin
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies - Debian/Ubuntu
+      if: matrix.os-type == 'debian'
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y cmake build-essential git libtiff5-dev libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxinerama-dev libxft-dev
+
+    - name: Install Dependencies - Mac OS X
+      if: matrix.os-type == 'darwin'
+      run: |
+         brew install fltk libtiff autoconf automake
+      shell: bash
+
+    - name: Add moos-ivp to PATH
+      run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+    - name: Build
+      run: ./build.sh
+
+    - name: Check build
+      run: ./build-check.sh
+
+    - name: Build Tests
+      run: ./build-utests.sh 
+
+    - name: Run Tests
+      working-directory: ./ivp/src_unit_tests/
+      run: ./alltest.sh
+
