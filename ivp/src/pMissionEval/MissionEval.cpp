@@ -36,7 +36,8 @@ using namespace std;
 MissionEval::MissionEval()
 {
   m_result_flags_posted = false;
-
+  m_prereport_posted = false;
+  
   m_info_buffer = new InfoBuffer;
   m_logic_tests.setInfoBuffer(m_info_buffer);
 
@@ -106,11 +107,23 @@ bool MissionEval::Iterate()
 
   m_info_buffer->setCurrTime(m_curr_time);
   
+  if(!m_prereport_posted) {
+    if(m_mission_hash != "") {
+      postPreResults();
+      m_prereport_posted = true;
+    }
+  }
+  
   m_logic_tests.update();
 
   // If both logic_aspect evaluated, post results
-  if(m_logic_tests.isEvaluated())
+  if(m_logic_tests.isEvaluated()) {
+    if(!m_prereport_posted) {
+      postPreResults();
+      m_prereport_posted = true;
+    }
     postResults();
+  }
   
   string aspect_status = m_logic_tests.getStatus();
   if(aspect_status != m_logic_tests_status_prev) {
@@ -151,6 +164,8 @@ bool MissionEval::OnStartUp()
     
     else if(param == "report_column")
       m_report_columns.push_back(value);
+    else if(param == "prereport_column")
+      m_prereport_columns.push_back(value);
     else if(param == "report_file") {
       handled = okFileToWrite(value);
       m_report_file = value;
@@ -269,6 +284,15 @@ void MissionEval::findMacroVars()
       m_macro_vars.insert(report_vars[j]);
     }
   }
+
+  // Discover macros in the report line
+  for(unsigned int i=0; i<m_prereport_columns.size(); i++) {
+    string column = m_prereport_columns[i];
+    vector<string> report_vars = getMacrosFromString(column);
+    for(unsigned int j=0; j<report_vars.size(); j++) {
+      m_macro_vars.insert(report_vars[j]);
+    }
+  }
 }
 
 
@@ -379,6 +403,37 @@ void MissionEval::postResults()
   fprintf(f, "\n");
   fclose(f);
 #endif
+}
+
+
+//------------------------------------------------------------
+// Procedure: postPreResults()
+
+void MissionEval::postPreResults()
+{
+  if(m_report_file == "")
+    return;
+
+  FILE *f = fopen(m_report_file.c_str(), "a");
+  if(!f) {
+    reportRunWarning("Unable to write to file: " + m_report_file);
+    return;
+  }
+
+  string line;
+  for(unsigned int i=0; i<m_prereport_columns.size(); i++) {
+    string column = expandMacros(m_prereport_columns[i]);
+    if(i != 0) {
+      if(m_report_line_format == "csp")
+	line += ", ";
+      else
+	line += "  ";
+    }
+    line += column;
+  }
+  fprintf(f, "%s  ", line.c_str());
+  fclose(f);
+  m_report_latest_line = line;
 }
 
 

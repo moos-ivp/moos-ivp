@@ -149,7 +149,8 @@ void MayFinish::registerVariables()
     Register(m_finish_var);
 
   // Only register for DB_UPTIME if max_db_uptime is set.
-  // Register("DB_UPTIME");
+  if(m_max_db_uptime > 0)
+    Register("DB_UPTIME");
 } 
 
 
