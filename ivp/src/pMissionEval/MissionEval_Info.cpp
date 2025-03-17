@@ -105,15 +105,20 @@ void showExampleConfigAndExit()
   blk("  fail_flag   = SAY_MOOS=fail                                   ");
   blk("                                                                ");
   blk("  report_file = results.txt                                     ");
-  blk("  report_column = grade=$[PFAIL]                                ");
+  blk("                                                                ");
+  blk("  mission_form  = alpha_tsp                                     ");
+  blk("  mission_mod   = mod1                                          ");
+  blk("                                                                ");
+  blk("  prereport_column = form=$[MISSION_FORM]                       ");
+  blk("  prereport_column = mhash=$[MHASH_SHORT]                       ");
+  blk("                                                                ");
+  blk("  report_column = grade=$[GRADE]                                ");
   blk("  report_column = score=$[SCORE]                                ");
-  blk("  report_column = mhash=$[MHASH_SHORT]                          ");
   blk("                                                                ");
   blk("  report_line_format = white    // white (def) or csp           ");
   blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
-  blk("                                                                ");
   exit(0);
 }
 

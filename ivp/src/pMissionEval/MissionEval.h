@@ -52,6 +52,7 @@ protected: // Utility functions
   void handleMailMissionHash(std::string, double msg_time);
   bool handleConfigColumnFormat(std::string);
   
+  void postPreResults();
   void postResults();
   void postFlags(const std::vector<VarDataPair>&);
 
@@ -71,6 +72,7 @@ protected: // Utility functions
   std::vector<VarDataPair> m_pass_flags;
   std::vector<VarDataPair> m_fail_flags;
 
+  std::vector<std::string> m_prereport_columns;
   std::vector<std::string> m_report_columns;
   std::string m_report_file;
   std::string m_report_line_format;
@@ -82,6 +84,7 @@ protected: // Utility functions
   LogicTestSequence m_logic_tests;
   std::string       m_logic_tests_status_prev;
 
+  bool        m_prereport_posted;
   bool        m_result_flags_posted;
   std::string m_mission_result;
 
@@ -91,7 +94,7 @@ protected: // Utility functions
   std::string m_mhash_short;
   double      m_mhash_utc;
   double      m_db_uptime;
-  
+
   std::set<std::string> m_macro_vars;
   
   InfoBuffer *m_info_buffer;
