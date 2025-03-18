@@ -1,6 +1,8 @@
 build/*
+build-utests/*
 include/
 lib/*
+!/bin/ipaddrs.sh
 bin/*
 *~
 */*~

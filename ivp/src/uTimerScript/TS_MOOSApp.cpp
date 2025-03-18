@@ -751,10 +751,17 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     return;
   }
 
-  // Handle special case where UTC_TIME *is* the post
+  // Handle special case where UTC TIME *is* the post
   if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
-    Notify(variable, db_uptime);
-    addLogEvent(variable, uintToString(db_uptime), db_uptime);
+    Notify(variable, m_curr_time);
+    addLogEvent(variable, uintToString(m_curr_time), db_uptime);
+    return;
+  }
+
+  // Handle special case where UTC TIME *is* the post
+  if((sval == "$(UTC)") || (sval == "$[UTC]")) {
+    Notify(variable, m_curr_time);
+    addLogEvent(variable, uintToString(m_curr_time), db_uptime);
     return;
   }
 
@@ -774,6 +781,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   
   sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_curr_time, 2));
+  sval = findReplace(sval, "$(UTC)", doubleToString(m_curr_time, 2));
   sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_count_total));
   sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count_local));
   sval = findReplace(sval, "$(NAV_X)", doubleToString(m_nav_x,2));
@@ -782,6 +790,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$[VNAME]", m_host_community);
   sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_curr_time, 2));
+  sval = findReplace(sval, "$[UTC]", doubleToString(m_curr_time, 2));
   sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_count_total));
   sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count_local));
   sval = findReplace(sval, "$[NAV_X]", doubleToString(m_nav_x,2));
