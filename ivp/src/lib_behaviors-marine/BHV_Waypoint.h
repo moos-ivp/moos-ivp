@@ -41,6 +41,7 @@ public:
   void           onIdleToRunState();
   BehaviorReport onRunState(std::string);
   void           onRunToIdleState();
+  void           onEveryState(std::string s="");
   void           onSetParamComplete();
   void           onCompleteState() {postErasables();}
   void           postConfigStatus();
@@ -77,6 +78,8 @@ protected: // configuration parameters
   std::string m_efficiency_measure;
   std::string m_ipf_type;
 
+  std::string m_waypts_init;
+  
   // Configurable names of MOOS variables for reports
   std::string m_var_report;
   std::string m_var_index;

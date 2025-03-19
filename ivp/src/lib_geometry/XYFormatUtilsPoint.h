@@ -58,13 +58,3 @@ XYPoint stringStandard2Point(const std::string&);
 XYPoint stringAbbreviated2Point(const std::string&);
 
 #endif
-
-
-
-
-
-
-
-
-
-
