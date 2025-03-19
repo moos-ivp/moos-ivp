@@ -65,10 +65,10 @@ XYPoint stringStandard2Point(const string& str)
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
   
-  string x,y,z,trans;
+  string x,y,z,trans,shiftx,shifty,shiftz;
   string hdg; // Allow for heading spec to be just ignored
   for(i=0; i<vsize; i++) {
-    string param = biteStringX(mvector[i], '=');
+    string param = tolower(biteStringX(mvector[i], '='));
     string value = mvector[i];
 
     if(param == "x")
@@ -77,8 +77,14 @@ XYPoint stringStandard2Point(const string& str)
       y = value;
     else if(param == "z")
       z = value;
-    else if(param == "heading")
+    else if((param == "heading") || (param == "hdg"))
       hdg = value;
+    else if(param == "shiftx")
+      shiftx = value;
+    else if(param == "shifty")
+      shifty = value;
+    else if(param == "shiftz")
+      shiftz = value;
     else if((param == "trans") && isNumber(value))
       trans = value;
     else
@@ -90,8 +96,19 @@ XYPoint stringStandard2Point(const string& str)
 
   if(trans != "")
     new_point.set_transparency(atof(trans.c_str()));
+
+  double dx = atof(x.c_str());
+  double dy = atof(y.c_str());
+  double dz = atof(x.c_str());
+
+  if((shiftx != "") && isNumber(shiftx))
+    dx += atof(shiftx.c_str());
+  if((shifty != "") && isNumber(shifty))
+    dy += atof(shifty.c_str());
+  if((shiftz != "") && isNumber(shiftz))
+    dz += atof(shiftz.c_str());
   
-  new_point.set_vertex(atof(x.c_str()), atof(y.c_str()), atof(z.c_str()));
+  new_point.set_vertex(dx, dy, dz);
   
   return(new_point);
 }
