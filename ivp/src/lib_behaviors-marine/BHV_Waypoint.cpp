@@ -170,8 +170,11 @@ void BHV_Waypoint::onSetParamComplete()
   if((wpts == 1) && (repeats > 0))
     postWMessage("cycles/repeats not supported with single waypt");
   
-  if((m_waypoint_engine.size() == 0) && (m_waypts_init != "empty"))
-    postWMessage("No waypts given. Set val to empty if intentional");
+  if(m_waypoint_engine.size() == 0) {
+    if((m_waypts_init != "empty") && (m_waypts_init != "start")) {
+      postWMessage("No waypts given. Set val to empty if intentional");
+    }
+  }
   else
     postRetractWMessage("No waypts given. Set val to empty if intentional");
   
@@ -191,8 +194,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   string param_val_lower = tolower(param_val);
 
   if((param == "polygon") || (param == "points") || (param == "xpoints")) {
-    if(param_val_lower == "empty") {
-      m_waypts_init = "empty";
+    if((param_val_lower == "empty") || (param_val_lower == "start")) {
+      m_waypts_init = param_val_lower;
       return(true);
     }
       

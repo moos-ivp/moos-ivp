@@ -17,9 +17,9 @@ NOGUI=""
 #  Part 2: Check for and handle command-line arguments
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "ylaunch.sh [OPTIONS] [time_warp]     "
+	echo "xlaunch.sh [OPTIONS] [time_warp]     "
 	echo "Synopsis:                                              " 
-	echo "  Launch a mission, auto-started with pAutoPokke, run  "
+	echo "  Launch a mission, auto-started with pAutoPoke, run   "
 	echo "  uMayFinish, wait for exit, bring the mission down.   " 
 	echo "                                                       " 
 	echo "Options:                                               " 
