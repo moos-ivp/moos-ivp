@@ -235,9 +235,8 @@ string NodeRecord::getSpec(bool terse) const
   if(m_thrust_mode_reverse)
     str += ",THRUST_MODE_REVERSE=true";
 
-  if(m_yaw_set && !terse) 
-    str += ",YAW=" + doubleToStringX(headingToRadians(m_heading),7);
-    //str += ",YAW="  + doubleToStringX(m_heading,2);
+  if(!terse) 
+    str += ",YAW=" + doubleToStringX(m_yaw_set ? m_yaw : headingToRadians(m_heading),7); 
   if(m_timestamp_set)
     str += ",TIME=" + doubleToStringX(m_timestamp,2);
   if(m_transparency_set)
