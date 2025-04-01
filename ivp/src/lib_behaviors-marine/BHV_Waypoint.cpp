@@ -165,10 +165,18 @@ void BHV_Waypoint::onSetParamComplete()
   unsigned int repeats = m_waypoint_engine.getRepeats(); 
 
   cout << "wpts: " << wpts << endl;
-  cout << "repeatss: " << repeats << endl;
+  cout << "repeats: " << repeats << endl;
   
   if((wpts == 1) && (repeats > 0))
     postWMessage("cycles/repeats not supported with single waypt");
+  
+  if(m_waypoint_engine.size() == 0) {
+    if((m_waypts_init != "empty") && (m_waypts_init != "start")) {
+      postWMessage("No waypts given. Set val to empty if intentional");
+    }
+  }
+  else
+    postRetractWMessage("No waypts given. Set val to empty if intentional");
   
   postConfigStatus();
 }
@@ -186,6 +194,11 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   string param_val_lower = tolower(param_val);
 
   if((param == "polygon") || (param == "points") || (param == "xpoints")) {
+    if((param_val_lower == "empty") || (param_val_lower == "start")) {
+      m_waypts_init = param_val_lower;
+      return(true);
+    }
+      
     XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = string2Poly(param_val);
@@ -221,6 +234,14 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_prev_cycle_index = prev_cycle_ix;
     }
     
+    return(true);
+  }
+  else if((param == "point") && (param_val_lower == "start")) {
+    m_waypts_init = "start";
+    return(true);
+  }
+  else if((param == "point") && (param_val_lower == "empty")) {
+    m_waypts_init = "empty";
     return(true);
   }
   else if(param == "point") {
@@ -502,6 +523,11 @@ BehaviorReport BHV_Waypoint::onRunState(string input)
 
 IvPFunction *BHV_Waypoint::onRunState() 
 {
+  // Added by mikerb Mar1825. Allow a behavior w/ empty set of 
+  // points to be in idle state until an updates is received
+  if(m_waypoint_engine.size() == 0)
+    return(0);
+  
   m_waypoint_engine.setPerpetual(m_perpetual);
 
   // Set m_osx, m_osy, m_osv, osh
@@ -598,6 +624,29 @@ void BHV_Waypoint::onIdleState()
 {
   if(!updateInfoIn()) 
     return;
+}
+
+//-----------------------------------------------------------
+// Procedure: onEveryState()
+
+void BHV_Waypoint::onEveryState(string str) 
+{
+  if(m_waypoint_engine.size() == 0) {
+    if(m_waypts_init == "start") {
+      if(getBufferIsKnown("NAV_X") && getBufferIsKnown("NAV_Y")) {
+	double dbl_navx = getBufferDoubleVal("NAV_X");
+	double dbl_navy = getBufferDoubleVal("NAV_Y");
+	string str_navx = doubleToStringX(dbl_navx,3);
+	string str_navy = doubleToStringX(dbl_navy,3);
+	string param_val = "x=" + str_navx + ",y=" + str_navy;
+	setParam("point", param_val);
+      }
+    }
+    
+    if(m_waypts_init == "end") {
+      setParam("point", "x=0,y=40");
+    }
+  }
 }
 
 //-----------------------------------------------------------
