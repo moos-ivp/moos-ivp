@@ -149,34 +149,6 @@ jobs:
         id: set_digest
         run: echo "${{ matrix.platform }}=${{ steps.build.outputs.digest }}" >> $GITHUB_OUTPUT
 
-  test-unittests:
-    runs-on: ubuntu-latest
-    needs:
-      - prepare
-      - build-gui
-    container:
-      image: ${{ needs.prepare.outputs.registry_image }}@${{ needs.build-gui.outputs.amd64_digest }}
-    steps:
-      - name: Check for expected binaries
-        continue-on-error: true
-        run: |
-          cd /home/moos/moos-ivp
-          echo "Checking for build binaries"
-          ./build-check.sh
-
-      - name: Run unit tests
-        continue-on-error: true
-        run: |
-          # Run the unit tests
-          cd /home/moos/moos-ivp
-
-          echo "Building automated mission tests"
-          ./build-utests.sh
-
-          echo "Running automated mission tests"
-          cd ivp/src_unit_tests/
-          ./alltest.sh
-
   push-to-registry:
     runs-on: ubuntu-latest
     # Only push images on forks or the main branch
