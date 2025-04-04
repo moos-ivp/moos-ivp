@@ -48,6 +48,9 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     needs:
       - prepare
+    permissions:
+      contents: read
+      packages: write
     env:
       SOURCE_DATE_EPOCH: ${{ needs.prepare.outputs.commit_time }}
       REGISTRY_IMAGE: ${{ needs.prepare.outputs.registry_image }}
@@ -102,6 +105,9 @@ jobs:
           - runs-on: ubuntu-24.04-arm
             platform: arm64
     runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: read
+      packages: write
     needs:
       - prepare
     env:
@@ -157,6 +163,9 @@ jobs:
       - prepare
       - build-minrobot
       - build-gui
+    permissions:
+      contents: read
+      packages: write
     env:
       REGISTRY_IMAGE: ${{ needs.prepare.outputs.registry_image }}
     strategy:
