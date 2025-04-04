@@ -1,7 +1,6 @@
 .svn/
 .git/
 .DS_Store
-build/
 **/logs/
 cmake-build-debug/
 .idea
@@ -9,8 +8,11 @@ CMakeFiles
 #.moos++
 **/*.swp
 **/.vagrant*
+build/*
+build-utests/*
 include/
 lib/*
+!/bin/ipaddrs.sh
 bin/*
 *~
 */*~

@@ -38,6 +38,7 @@ protected:
   
 private: // Config vars
   std::string m_alg;
+
   double m_hdg_hist_length;  // seconds
   
 private: // State vars

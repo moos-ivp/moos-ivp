@@ -92,17 +92,27 @@ cmake -DUTX_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
       ${UTX_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
 
+if [ $? -ne 0 ] ; then
+  echo "ERROR! Failed to execute CMake command."
+  cd ${INVOC_ABS_DIR}
+  exit 1
+fi
+
 ################################################################################
 printf "Invoking make ${CMD_ARGS}\n"
 
+RESULT=0
 if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     printf "CLEANING....\n"
     make clean
+    RESULT=$?
     cd ${INVOCATION_ABS_DIR}
     rm -rf build-utests/*
 else
   make ${CMD_ARGS}
+  RESULT=$?
 fi
 
 cd ${INVOC_ABS_DIR}
 
+exit ${RESULT}

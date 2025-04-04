@@ -24,11 +24,14 @@ PlatModelGenerator::PlatModelGenerator()
 {
   m_hdg_hist_length = 5;
   
-  m_pmgen = 0;
   m_count = 0;
 
   m_stale_pmodel = true;
   m_curr_utc = 0;
+
+  // By default the algorithm is holonomic
+  m_alg   = "holo";
+  m_pmgen = new PMGen_Holonomic;
 }
 
 //----------------------------------------------------------------
@@ -160,21 +163,18 @@ double PlatModelGenerator::getTurnRate()
 
 void PlatModelGenerator::updateHdgHist(double osh)
 {
-  cout << "updateHdgHist(): " << osh << endl;
   if(m_curr_utc == 0)
     return;
 
   m_recent_val_osh.push_front(osh);
   m_recent_utc_osh.push_front(m_curr_utc);
 
-  cout << "size(1): " << m_recent_val_osh.size() << endl;
   bool pruned = false;
   while(!pruned) {
     if(m_recent_utc_osh.size() == 0)
       pruned = true;
     else {
       double elapsed = m_curr_utc - m_recent_utc_osh.back();
-      cout << "elapsed: " << elapsed << endl;
       if(elapsed > m_hdg_hist_length) {
 	m_recent_val_osh.pop_back();
 	m_recent_utc_osh.pop_back();
@@ -183,6 +183,5 @@ void PlatModelGenerator::updateHdgHist(double osh)
 	pruned = true;
     }
   }
-  cout << "size(2): " << m_recent_val_osh.size() << endl;
 }
 

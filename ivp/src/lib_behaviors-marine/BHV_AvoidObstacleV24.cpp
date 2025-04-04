@@ -75,6 +75,8 @@ BHV_AvoidObstacleV24::BHV_AvoidObstacleV24(IvPDomain gdomain) :
   m_cpa_rng_ever = -1;
   m_closing = false;
 
+  m_holonomic_ok = false;
+  
   initVisualHints();
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
   addInfoVars(m_resolved_obstacle_var);
@@ -141,6 +143,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   else if((param == "completed_dist") && non_neg_number) 
     config_result = m_obship_model.setCompletedDist(dval);
 
+  else if(param == "holonomic_ok") 
+    return(setBooleanOnString(m_holonomic_ok, val));
   else if(param == "draw_buff_min_poly") 
     return(setBooleanOnString(m_draw_buff_min_poly, val));
   else if(param == "draw_buff_max_poly") 
@@ -351,9 +355,14 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // Part 5: Check for completion based on range
   // =================================================================
   if(os_range_to_poly > m_obship_model.getCompletedDist()) {
-    cout << "os_range_to_poly:" << os_range_to_poly << endl;
-    cout << "complet_dist: " << m_obship_model.getCompletedDist() << endl;
+    //cout << "os_range_to_poly:" << os_range_to_poly << endl;
+    //cout << "complet_dist: " << m_obship_model.getCompletedDist() << endl;
     m_resolved_pending = true;
+  }
+
+  if(!m_holonomic_ok) {
+    if(m_plat_model.getModelType() == "holo")
+      postWMessage("holo plat_model not best. Set holonomic_ok=true to silence");
   }
 }
 
@@ -404,6 +413,17 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
     return(0);
 
   IvPFunction *ipf = buildOF();
+
+  // If the IvP function has no decisions with positive utility
+  // then this means a collision with an obstacle is not avoidable.
+  // More possible when using platform model with non-zero turn
+  // radius.
+  if(ipf->getValMaxUtil() == 0) {
+    postEMessage("Allstop: obstacle unavoidable");
+    delete(ipf);
+    return(0);
+  }
+
   return(ipf);
 }
 
