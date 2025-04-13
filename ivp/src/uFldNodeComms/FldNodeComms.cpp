@@ -674,7 +674,7 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
   string msg_color = m_msg_color;
   if(message.getColor() != "")
     msg_color = message.getColor();
-  
+
   // Part 1: Begin determining the list of destinations
   // Examples: dest=ben, dest=abe:ben, dest=all, 
   set<string> dest_names;
@@ -684,6 +684,8 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
   string dest_name  = message.getDestNode();
   string dest_group = message.getDestGroup();
   if((dest_name == "ALL") || (dest_group == "ALL"))
+    all = true;
+  if((dest_name == "all") || (dest_group == "all"))
     all = true;
 
   if(all)
