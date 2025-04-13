@@ -737,6 +737,11 @@ CPList ContactLedger::getVHist(string vname) const
 set<string> ContactLedger::getVNamesByGroup(string group) const
 {
   set<string> rset;
+
+  // Apr 13th, 2025: Group match MUST be matching non-empty strings
+  group = stripBlankEnds(group);
+  if(group == "")
+    return(rset);
   
   map<string,NodeRecord>::const_iterator p;
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
