@@ -149,7 +149,7 @@ bool HelmEngine::applyAbleFilterMsgs()
 {
   if(!m_bhv_set)
     return(false);
-  
+
   bool last_msg_ok = true;
   list<string>::iterator p;
   for(p=m_able_filter_msgs.begin(); p!=m_able_filter_msgs.end(); p++) {

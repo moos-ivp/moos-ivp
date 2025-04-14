@@ -84,6 +84,11 @@ bool ExFilterSet::setStrictIgnore(string str)
   return(setBooleanOnString(m_strict_ignore, str));
 }
 
+
+//===========================================================
+//                                                       NAME
+//===========================================================
+
 // ----------------------------------------------------------
 // Procedure: addIgnoreName()
 //   Example: "hal" or "hal,abe" or "{hal,abe}"
@@ -131,6 +136,32 @@ bool ExFilterSet::addMatchName(string str)
   return(all_ok);
 }
 
+// ----------------------------------------------------------
+// Procedure: removeIgnoreName()
+
+bool ExFilterSet::removeIgnoreName(string vname)
+{
+  m_ignore_names.erase(vname);
+  m_ignore_names.erase(tolower(vname));
+  return(true);
+}
+
+// ----------------------------------------------------------
+// Procedure: removeMatchName()
+
+bool ExFilterSet::removeMatchName(string vname)
+{
+  m_match_names.erase(vname);
+  m_match_names.erase(tolower(vname));
+  return(true);
+}
+
+
+
+
+//===========================================================
+//                                                      GROUP
+//===========================================================
 
 // ----------------------------------------------------------
 // Procedure: addIgnoreGroup()
@@ -181,6 +212,30 @@ bool ExFilterSet::addMatchGroup(string str)
 
 
 // ----------------------------------------------------------
+// Procedure: removeIgnoreGroup()
+
+bool ExFilterSet::removeIgnoreGroup(string group)
+{
+  m_ignore_groups.erase(group);
+  m_ignore_groups.erase(tolower(group));
+  return(true);
+}
+
+// ----------------------------------------------------------
+// Procedure: removeMatchGroup()
+
+bool ExFilterSet::removeMatchGroup(string group)
+{
+  m_match_groups.erase(group);
+  m_match_groups.erase(tolower(group));
+  return(true);
+}
+
+//===========================================================
+//                                                       TYPE
+//===========================================================
+
+// ----------------------------------------------------------
 // Procedure: addIgnoreType()
 //   Example: "uuv" or "uuv,usv" or "{uuv,usv}"
 //   Returns: false if a given type is already a match type
@@ -225,6 +280,104 @@ bool ExFilterSet::addMatchType(string str)
   }
   return(all_ok);
 }
+
+// ----------------------------------------------------------
+// Procedure: removeIgnoreType()
+
+bool ExFilterSet::removeIgnoreType(string vtype)
+{
+  m_ignore_types.erase(vtype);
+  m_ignore_types.erase(tolower(vtype));
+  return(true);
+}
+
+// ----------------------------------------------------------
+// Procedure: removeMatchType()
+
+bool ExFilterSet::removeMatchType(string vtype)
+{
+  m_match_types.erase(vtype);
+  m_match_types.erase(tolower(vtype));
+  return(true);
+}
+
+
+//===========================================================
+//                                                     SOURCE
+//===========================================================
+
+// ----------------------------------------------------------
+// Procedure: addIgnoreSource()
+//   Example: "ais" or "ais,camera" or "{ais,camera}" or "ownship"
+//   Returns: false if a given type is already a match source
+//            (cannot be both on the match list and ignore list)
+
+bool ExFilterSet::addIgnoreSource(string str)
+{
+  // All sources are treated as case insensitive
+  str = stripBraces(stripBlankEnds(tolower(str)));
+
+  bool all_ok = true;
+
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string vsource = svector[i];
+    if(m_match_sources.count(vsource))
+      all_ok = false;
+    else
+      m_ignore_sources.insert(vsource);
+  }
+  return(all_ok);
+}
+
+// ----------------------------------------------------------
+// Procedure: addMatchSource()
+//   Example: "ais" or "ais,camera" or "{ais,camera}" or "ownship"
+//   Returns: false if a given type is already an ignore source
+//            (cannot be both on the match list and ignore list)
+
+bool ExFilterSet::addMatchSource(string str)
+{
+  // All sources are treated case insensitive
+  str = stripBraces(stripBlankEnds(tolower(str)));
+  
+  bool all_ok = true;
+
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string vsource = svector[i];
+    if(m_ignore_sources.count(vsource))
+      all_ok = false;
+    else
+      m_match_sources.insert(vsource);
+  }
+  return(all_ok);
+}
+
+// ----------------------------------------------------------
+// Procedure: removeIgnoreSource()
+
+bool ExFilterSet::removeIgnoreSource(string vsource)
+{
+  m_ignore_sources.erase(vsource);
+  m_ignore_sources.erase(tolower(vsource));
+  return(true);
+}
+
+// ----------------------------------------------------------
+// Procedure: removeMatchSource()
+
+bool ExFilterSet::removeMatchSource(string vsource)
+{
+  m_match_sources.erase(vsource);
+  m_match_sources.erase(tolower(vsource));
+  return(true);
+}
+
+
+//===========================================================
+//                                                     REGION
+//===========================================================
 
 // ----------------------------------------------------------
 // Procedure: addIgnoreRegion()

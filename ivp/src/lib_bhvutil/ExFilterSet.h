@@ -39,15 +39,35 @@ class ExFilterSet
 
  public: // setters
 
+  // NAME
   bool addIgnoreName(std::string);
   bool addMatchName(std::string);
+  bool removeIgnoreName(std::string);   // Added Apr1025
+  bool removeMatchName(std::string);    // Added Apr1025
+
+  // GROUP
   bool addIgnoreGroup(std::string);
   bool addMatchGroup(std::string);
+  bool removeIgnoreGroup(std::string);  // Added Apr1025
+  bool removeMatchGroup(std::string);   // Added Apr1025
+
+  // TYPE
   bool addIgnoreType(std::string);
   bool addMatchType(std::string);
+  bool removeIgnoreType(std::string);   // Added Apr1025
+  bool removeMatchType(std::string);    // Added Apr1025
+
+  // SOURCE
+  bool addIgnoreSource(std::string);    // Added Apr1025
+  bool addMatchSource(std::string);     // Added Apr1025
+  bool removeIgnoreSource(std::string); // Added Apr1025
+  bool removeMatchSource(std::string);  // Added Apr1025
+  
+  // REGION
   bool addIgnoreRegion(std::string);
   bool addMatchRegion(std::string);
-
+  
+ public:
   bool setOwnshipGroup(std::string);
   bool setOwnshipType(std::string);
   
@@ -63,6 +83,7 @@ class ExFilterSet
   bool filterCheckGroup(std::string group) const;
   bool filterCheckVType(std::string vtype) const;
   bool filterCheckVName(std::string vtype) const;
+  bool filterCheckVSource(std::string vsource) const;
   bool filterCheckRegion(double cnx, double cny) const;
   
  public: // Serialization
@@ -85,6 +106,9 @@ class ExFilterSet
 
   std::set<std::string> m_ignore_types;
   std::set<std::string> m_match_types;
+
+  std::set<std::string> m_ignore_sources;
+  std::set<std::string> m_match_sources;
 
   std::vector<XYPolygon>   m_ignore_regions;
   std::vector<XYPolygon>   m_match_regions;

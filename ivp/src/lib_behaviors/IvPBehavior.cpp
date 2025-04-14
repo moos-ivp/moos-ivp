@@ -1680,6 +1680,7 @@ double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
   }
   if((!ok) && !vectorContains(m_info_vars_no_warning, varname))     
     postWMessage(varname + " dbl info not found in helm info_buffer");
+  
   return(value);
 }
 

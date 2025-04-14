@@ -201,6 +201,14 @@ void showInterfaceAndExit()
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
   blk("                                                                ");
+  blk("         disable_var = XYZ_DISABLE_TARGET                       ");
+  blk("  XYZ_DISABLE_TARGET = 87933                                    ");
+  blk("  XYZ_DISABLE_TARGET = contact=87933, action=disable            ");
+  blk("                                                                ");
+  blk("          enable_var = XYZ_ENABLE_CONTACT                       ");
+  blk("  XYZ_EMABLE_CONTACT = 45902                                    ");
+  blk("  XYZ_ENABLE_CONTACT = contact=45902, action=enable             ");
+  blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  Alert publications configured by the user.                    ");
@@ -212,6 +220,8 @@ void showInterfaceAndExit()
   blk("                  config_alert_range_cpa=45.0,range_used=39.2,  ");
   blk("                  range_actual=40.8,range_extrap=40.8,          ");
   blk("                  range_cpa=13                                  ");
+  blk("                                                                ");
+  blk("  BHV_ABLE_FILTER        = contact=98732, action=disable        ");
   blk("                                                                ");
   blk("  CONTACT_CLOSEST        = charlie                              ");
   blk("  CONTACT_CLOSEST_TIME   = 17514261063.3                        ");

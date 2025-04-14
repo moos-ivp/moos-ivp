@@ -99,6 +99,7 @@ public:
 
   std::string m_cn_group;
   std::string m_cn_vtype;
+  std::string m_cn_vsource; // Added 4/11/25 contac info src, e.g., radar, ais
 
   double m_relevance;
 

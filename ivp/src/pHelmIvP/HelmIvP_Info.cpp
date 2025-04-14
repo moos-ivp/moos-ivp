@@ -155,11 +155,15 @@ void showInterfaceAndExit()
   blk("  the particular behaviors used in a given configuration, and   ");
   blk("  variables used in helm mode declarations.                     ");
   blk("  +                                                             ");
-  blk("  MOOS_MANUAL_OVERIDE                                           ");
+  blk("  DB_CLIENTS            = pLogger,pRealm,pHelmIvP,pMarinePIDV22 ");
+  blk("                          pNodeReporter,uSimMarineV22           ");
+  blk("  MOOS_MANUAL_OVERIDE   = false                                 ");
   blk("  MOOS_MANUAL_OVERRIDE                                          ");
   blk("  RESTART_HELM                                                  ");
-  blk("  IVPHELM_VERBOSE                                               ");
-  blk("  IVPHELM_REJOURNAL                                             ");
+  blk("  IVPHELM_REJOURNAL     = true                                  ");
+  blk("                                                                ");
+  blk("  BHV_ABLE_FILTER = contact=8745, action=disable                ");
+  blk("                                                                ");
   blk("  APPCAST_REQ  = node=all,app=uFldCollObDetect,duration=3.0     ");
   blk("                 key=pMarineViewer:alphaapp,thresh=run_warning  ");
   blk("                                                                ");
