@@ -51,6 +51,7 @@ public:
 
   void setGroup(std::string vname, std::string sval);
   void setType(std::string vname, std::string sval);
+  void setVSource(std::string vname, std::string sval);
 
   void setCurrTimeUTC(double v) {m_curr_time_utc=v;}
   
@@ -84,6 +85,7 @@ protected:
 
   std::map<std::string, std::string> m_map_group;
   std::map<std::string, std::string> m_map_type;
+  std::map<std::string, std::string> m_map_vsource;
 
   double m_curr_time_utc;
 };

@@ -182,7 +182,7 @@ void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 //            the same behaviors. The manner in which filter msgs
 //            are applied, repeated msgs make no difference.
 //   Example: action=disable, contact=345, gen_type=safety,
-//            bhv_type=AvdColregs
+//            bhv_type=AvdColregs, vsource=ais
 //    Fields: action=disable/able  (mandatory)
 //            contact=345          (one of these three)
 //            gen_type=safety

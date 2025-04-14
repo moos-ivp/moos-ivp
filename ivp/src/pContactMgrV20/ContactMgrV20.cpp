@@ -518,7 +518,9 @@ void ContactMgrV20::handleMailHelmState(string value)
 
 //---------------------------------------------------------
 // Procedure: handleMailDisableContact()
-//   Example: XYZ_DISABLE_TARGET = 87993
+//  Examples: XYZ_DISABLE_TARGET = 87993
+//            XYZ_DISABLE_TARGET = contact=87993, action=disable
+//            XYZ_DISABLE_TARGET = vsource=AIS, action=disable
 //
 // Notes: Disabling a behavior is a matter for the helm, by
 //        way of a message to the BHV_ABLE_FILTER variable.
@@ -527,24 +529,33 @@ void ContactMgrV20::handleMailHelmState(string value)
 
 void ContactMgrV20::handleMailDisableContact(string str)
 {
-  // ========================================================
-  // Part 1: identify the contact ID and prepare outgoing msg
-  // ========================================================
+  string msg = "action=disable";
 
-  // If format = "contact=id, action=disable"
-  string contact_id = tokStringParse(str, "contact");
-  string action = tokStringParse(str, "action");
-  string msg = str;
-
-  // If format = "contact=id, action=disable", insist action ok
-  if((action != "") && (action != "disable"))
-    return;
-
-  // Else assume format was just simply the contact id
-  if(contact_id == "") {
+  string contact_id;
+  
+  // Handled special case where value is just the contact ID and
+  // the implied action is to disable
+  if(!strContains(str,"=") && !strContains(str,",")) {
     contact_id = str;
-    msg = "action=disable, contact=" + contact_id;
+    msg += ",contact=" + contact_id;
   }
+  
+  else {
+    contact_id = tokStringParse(str, "contact");
+
+    string vsource = tokStringParse(str, "vsource");
+    string action  = tokStringParse(str, "action");
+    if((action != "") && (action != "disable"))
+      return;
+
+    // disabling us done by either by contact OR vsource
+    if((contact_id == "") && (vsource == ""))
+      return;    
+    if(contact_id != "")
+      msg += ",contact=" + contact_id;
+    else if(vsource != "")
+      msg += ",vsource=" + vsource;
+  }  
 
   Notify("BHV_ABLE_FILTER", msg);
 
@@ -567,24 +578,33 @@ void ContactMgrV20::handleMailDisableContact(string str)
 
 void ContactMgrV20::handleMailEnableContact(string str)
 {
-  // ========================================================
-  // Part 1: identify the contact ID and prepare outgoing msg
-  // ========================================================
+  string msg = "action=enable";
 
-  // If format = "contact=id, action=disable"
-  string contact_id = tokStringParse(str, "contact");
-  string action = tokStringParse(str, "action");
-  string msg = str;
-
-  // If format = "contact=id, action=disable", insist action ok
-  if((action != "") && (action != "enable"))
-    return;
-
-  // Else assume format was just simply the contact id
-  if(contact_id == "") {
+  string contact_id;
+  
+  // Handled special case where value is just the contact ID and
+  // the implied action is to disable
+  if(!strContains(str,"=") && !strContains(str,",")) {
     contact_id = str;
-    msg = "action=enable, contact=" + contact_id;
+    msg += ",contact=" + contact_id;
   }
+  
+  else {
+    contact_id = tokStringParse(str, "contact");
+
+    string vsource = tokStringParse(str, "vsource");
+    string action  = tokStringParse(str, "action");
+    if((action != "") && (action != "enable"))
+      return;
+
+    // disabling us done by either by contact OR vsource
+    if((contact_id == "") && (vsource == ""))
+      return;    
+    if(contact_id != "")
+      msg += ",contact=" + contact_id;
+    else if(vsource != "")
+      msg += ",vsource=" + vsource;
+  }  
 
   Notify("BHV_ABLE_FILTER", msg);
 
@@ -1416,6 +1436,7 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   string name_str = record.getName();
   string type_str = record.getType();
   string group_str = record.getGroup();
+  string vsource_str = record.getVSource();
   
   // Step 2: Get var to post, and expand macros if any
   string var = pair.get_var();

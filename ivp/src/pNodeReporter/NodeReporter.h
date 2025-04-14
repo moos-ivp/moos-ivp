@@ -71,6 +71,7 @@ public:
   std::string  m_node_report_var;
   double       m_nohelm_thresh;
   std::string  m_group_name;
+  std::string  m_vsource;
   bool         m_terse_reports;
   bool         m_allow_color_change;
 

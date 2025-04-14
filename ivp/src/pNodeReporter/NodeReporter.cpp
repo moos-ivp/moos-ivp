@@ -457,6 +457,11 @@ bool NodeReporter::OnStartUp()
       m_group_name = value;
       handled = true;
     }
+    else if((param == "platform_vsource") ||
+	    (param == "vsource")) {
+      m_vsource = value;
+      handled = true;
+    }
     else if(param == "paused")
       handled = setBooleanOnString(m_paused, value);
     else if(param == "nohelm_threshold") {
@@ -548,6 +553,7 @@ bool NodeReporter::OnStartUp()
   
   m_record.setName(m_vessel_name);
   m_record.setGroup(m_group_name);
+  m_record.setVSource(m_vsource);
 
   // To start with m_record_gt is just a copy of m_record.
   m_record_gt = m_record;       

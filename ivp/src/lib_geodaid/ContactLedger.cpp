@@ -676,6 +676,18 @@ string ContactLedger::getGroup(string vname) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getVSource()
+
+string ContactLedger::getVSource(string vname) const
+{
+  if(!hasVName(vname))
+    return("");
+
+  NodeRecord record = getRecord(vname, false);
+  return(record.getVSource());
+}
+
+//---------------------------------------------------------------
 // Procedure: getType()
 
 string ContactLedger::getType(string vname) const
