@@ -211,6 +211,8 @@ string NodeRecord::getSpec(bool terse) const
     str += ",COLOR=" + m_color;
   if(m_group != "")
     str += ",GROUP=" + m_group;
+  if(m_vsource != "")
+    str += ",VSOURCE=" + m_vsource;
   if(m_mode != "")
     str += ",MODE=" + m_mode;
   if(m_mode_aux != "")
@@ -277,6 +279,16 @@ string NodeRecord::getGroup(string default_group) const
   if(m_group == "")
     return(default_group);
   return(m_group);
+}
+
+//---------------------------------------------------------------
+// Procedure: getVSource()
+
+string NodeRecord::getVSource(string default_vsource) const
+{
+  if(m_vsource == "")
+    return(default_vsource);
+  return(m_vsource);
 }
 
 //---------------------------------------------------------------

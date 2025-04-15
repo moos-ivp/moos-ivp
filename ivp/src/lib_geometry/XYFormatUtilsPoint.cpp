@@ -99,7 +99,7 @@ XYPoint stringStandard2Point(const string& str)
 
   double dx = atof(x.c_str());
   double dy = atof(y.c_str());
-  double dz = atof(x.c_str());
+  double dz = atof(z.c_str());
 
   if((shiftx != "") && isNumber(shiftx))
     dx += atof(shiftx.c_str());

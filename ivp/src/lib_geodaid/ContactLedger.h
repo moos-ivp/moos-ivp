@@ -81,6 +81,7 @@ public: // Record Getters
   double getUTCAgeReceived(std::string vname) const;
 
   std::string getGroup(std::string vname) const;
+  std::string getVSource(std::string vname) const;
   std::string getType(std::string vname) const;
   std::string getColor(std::string vname) const;
   std::string getSpec(std::string vname) const;

@@ -91,6 +91,24 @@ void LedgerSnap::setUTCAgeReceived(string vname, double dval)
 
 
 //-----------------------------------------------------------
+// Procedure: setGroup(), setType(), setVSource()
+
+void LedgerSnap::setGroup(string vname, string sval)
+{
+  m_map_group[vname] = sval;
+}
+void LedgerSnap::setType(string vname, string sval)
+{
+  m_map_type[vname] = sval;
+}
+void LedgerSnap::setVSource(string vname, string sval)
+{
+  m_map_vsource[vname] = sval;
+}
+
+
+
+//-----------------------------------------------------------
 // Procedure: getInfoDouble()
 
 double LedgerSnap::getInfoDouble(std::string vname,
@@ -180,6 +198,11 @@ string LedgerSnap::getInfoString(std::string vname,
     p = m_map_type.find(vname);
     if(p != m_map_type.end())
       return(p->second);
+  }  
+  else if(fld == "vsource") {
+    p = m_map_vsource.find(vname);
+    if(p != m_map_vsource.end())
+      return(p->second);
   }
   
   ok = false;
@@ -245,6 +268,8 @@ unsigned int LedgerSnap::size() const
     max_size = m_map_group.size();
   if(m_map_type.size() > max_size)
     max_size = m_map_type.size();
+  if(m_map_vsource.size() > max_size)
+    max_size = m_map_vsource.size();
 
   return(max_size);
 }

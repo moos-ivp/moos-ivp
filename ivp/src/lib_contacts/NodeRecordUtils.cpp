@@ -83,13 +83,13 @@ NodeRecord extrapolateRecord(const NodeRecord& record, double curr_time,
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
-//            LENGTH=4.0,MODE=DRIVE,GROUP=A
+//            LENGTH=4.0,MODE=DRIVE,GROUP=A,VSOURCE=ais
 //   Or:
 //
 //   Example: {"NAME":"alpha","TYPE":"KAYAK","UTC_TIME":"1267294386.51",
 //            "X":"29.66","Y":"-23.49","LAT":"43.825089","LON"="-70.330030", 
 //            "SPD":"2.00","HDG":"119.06","YAW":"119.05677","DEPTH"="0.00",     
-//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A"}
+//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A","VSOURCE":"ais"}
 
 
 NodeRecord string2NodeRecord(const string& node_rep_string)
@@ -105,7 +105,7 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
-//            LENGTH=4.0,MODE=DRIVE,GROUP=A
+//            LENGTH=4.0,MODE=DRIVE,GROUP=A,VSOURCE=ais
 
 NodeRecord string2NodeRecordCSP(const string& node_rep_string)
 {
@@ -167,6 +167,8 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
       new_record.setColor(value);
     else if(param == "GROUP")
       new_record.setGroup(value);
+    else if(param == "VSOURCE")
+      new_record.setVSource(value);
     else if(param == "LOAD_WARNING")
       new_record.setLoadWarning(value);
     else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
@@ -186,7 +188,7 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
 //   Example: {"NAME":"alpha","TYPE":"KAYAK","UTC_TIME":"1267294386.51",
 //            "X":"29.66","Y":"-23.49","LAT":"43.825089","LON"="-70.330030", 
 //            "SPD":"2.00","HDG":"119.06","YAW":"119.05677","DEPTH"="0.00",     
-//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A"}
+//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A","VSOURCE":"ais"}
 
 NodeRecord string2NodeRecordJSON(string report)
 {
@@ -254,6 +256,8 @@ NodeRecord string2NodeRecordJSON(string report)
       new_record.setColor(value);
     else if(param == "GROUP")
       new_record.setGroup(value);
+    else if(param == "VSOURCE")
+      new_record.setVSource(value);
     else if(param == "LOAD_WARNING")
       new_record.setLoadWarning(value);
     else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 

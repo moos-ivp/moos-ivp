@@ -128,7 +128,7 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(setBooleanOnString(m_exit_on_filter_group, param_val));
   else if(param == "exit_on_filter_region")
     return(setBooleanOnString(m_exit_on_filter_region, param_val));
-      
+
   else if(param == "cnflag")
     return(addContactFlag(param_val));
 
@@ -527,6 +527,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   
   m_cn_group = getLedgerInfoStr(m_contact, "grp");
   m_cn_vtype = getLedgerInfoStr(m_contact, "type");  
+  m_cn_vsource = getLedgerInfoStr(m_contact, "vsource");  
   
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
@@ -672,9 +673,10 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
 //   Example: action=disable, contact=345, gen_type=safety,
 //            bhv_type=AvdColregs
 //    Fields: action=disable/able  (mandatory)
-//            contact=345          (one of these three)
+//            contact=345          (one of these four)
 //            gen_type=safety
 //            bhv_type=AvdColregs
+//            vsource=ais
 
 bool IvPContactBehavior::applyAbleFilter(string str)
 {
@@ -688,7 +690,7 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // Part 1: Parse the filter string. Must be one of the
   //         supported fields, no field more than once.
   // ======================================================
-  string action, contact, gen_type, bhv_type;
+  string action, contact, gen_type, bhv_type, vsource;
   vector<string> svector = parseString(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
@@ -702,6 +704,8 @@ bool IvPContactBehavior::applyAbleFilter(string str)
       gen_type = value;
     else if((param == "bhv_type") && (bhv_type == ""))
       bhv_type = value;
+    else if((param == "vsource") && (vsource == ""))
+      vsource = value;
     else
       return(false);
   }
@@ -718,12 +722,14 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   if((gen_type != "") && (gen_type != "safety"))
     return(false);
 
-  // At least one of contact, gen_type, or bhv_type must be given
-  if((contact == "") && (gen_type == "") && (bhv_type == ""))
+  // At least one of contact, gen_type, or bhv_type, or vsource
+  // must be given
+  if((contact == "") && (gen_type == "") &&
+     (bhv_type == "") && (vsource == ""))
     return(false);
 
   // ======================================================
-  // Part 3: At this pt syntax checking has passed, now
+  // Part 3: At this point syntax checking has passed, now
   // check if this filter message applies to this behavior.
   // ======================================================
 
@@ -732,7 +738,7 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // regardless of other filter factors
   if((gen_type == "safety") && !isConstraint())
     return(true);  // Return true since syntax if fine
-
+  
   // Check 2: If the bhv_type has been set then it MUST
   // match, regardless of other filter factors
   if((bhv_type != "") && (bhv_type != tolower(getBehaviorType())))
@@ -741,6 +747,11 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // Check 3: If contact name has been set then MUST 
   // match, regardless of other filter factors
   if((contact != "") && (contact != tolower(m_contact)))
+    return(true);  // Return true since syntax if fine
+
+  // Check 4: If contact vsource has been set then MUST 
+  // match, regardless of other filter factors
+  if((vsource != "") && (vsource != tolower(m_cn_vsource)))
     return(true);  // Return true since syntax if fine
 
   if(action == "disable")

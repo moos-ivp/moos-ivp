@@ -1,3 +1,13 @@
+.svn/
+.git/
+.DS_Store
+**/logs/
+cmake-build-debug/
+.idea
+CMakeFiles
+#.moos++
+**/*.swp
+**/.vagrant*
 build/*
 build-utests/*
 include/

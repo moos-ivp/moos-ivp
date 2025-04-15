@@ -676,6 +676,18 @@ string ContactLedger::getGroup(string vname) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getVSource()
+
+string ContactLedger::getVSource(string vname) const
+{
+  if(!hasVName(vname))
+    return("");
+
+  NodeRecord record = getRecord(vname, false);
+  return(record.getVSource());
+}
+
+//---------------------------------------------------------------
 // Procedure: getType()
 
 string ContactLedger::getType(string vname) const
@@ -737,6 +749,11 @@ CPList ContactLedger::getVHist(string vname) const
 set<string> ContactLedger::getVNamesByGroup(string group) const
 {
   set<string> rset;
+
+  // Apr 13th, 2025: Group match MUST be matching non-empty strings
+  group = stripBlankEnds(group);
+  if(group == "")
+    return(rset);
   
   map<string,NodeRecord>::const_iterator p;
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {

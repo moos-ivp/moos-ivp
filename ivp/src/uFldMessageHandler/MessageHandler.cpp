@@ -193,6 +193,10 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
   string var_sval   = message.getStringVal();
   if(isQuoted(var_sval))
     var_sval = stripQuotes(var_sval);
+
+  // Allow dest_node=ALL to be treated case insensitive 
+  if(dest_node == "ALL")
+    dest_node = "all";
   
   bool is_string = true;
   if(var_sval == "")

@@ -1911,6 +1911,10 @@ void HelmIvP::updateLedgerSnap()
     m_ledger_snap->setUTCAge(v, m_ledger.getUTCAge(v));
     m_ledger_snap->setUTCReceived(v, m_ledger.getUTCReceived(v));
     m_ledger_snap->setUTCAgeReceived(v, m_ledger.getUTCAgeReceived(v));
+
+    m_ledger_snap->setGroup(v, m_ledger.getGroup(v));
+    m_ledger_snap->setType(v, m_ledger.getType(v));
+    m_ledger_snap->setVSource(v, m_ledger.getVSource(v));
   }
   m_ledger_snap->setCurrTimeUTC(m_curr_time);
 }
