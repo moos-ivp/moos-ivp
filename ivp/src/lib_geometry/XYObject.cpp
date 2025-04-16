@@ -211,6 +211,8 @@ std::string XYObject::get_spec(string param) const
     aug_spec(spec, "msg=" + m_msg); 
   if(m_source != "")
     aug_spec(spec, "source=" + m_source); 
+  if(m_vsource != "")
+    aug_spec(spec, "vsource=" + m_vsource); 
   if(m_id != "")
     aug_spec(spec, "id=" + m_id); 
   if(color_set("label"))
@@ -282,8 +284,10 @@ bool XYObject::set_param(const string& param, const string& value)
   else if((param == "active") && isBoolean(value))
     set_active(tolower(value) == "true");
   
-  else if((param == "source") || (param == "vsource"))
+  else if(param == "source")
     set_source(value);
+  else if(param == "vsource")
+    set_vsource(value);
 
   // "type" is a deprecated field. We don't want to return false
   else if(param == "type")
