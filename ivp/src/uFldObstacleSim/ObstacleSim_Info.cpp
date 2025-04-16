@@ -152,7 +152,7 @@ void showInterfaceAndExit()
   blk("  VIEW_POLYGON                                                  ");
   blk("  KNOWN_OBSTACLE                                                ");
   blk("  GIVEN_OBSTACLE                                                ");
-  blk("  TRACKED_FEATURE                                               ");
+  blk("  TRACKED_FEATURE = x=-30.01,y=-49.7,key=ob_4                   ");
   exit(0);
 }
 

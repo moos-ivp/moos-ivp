@@ -209,6 +209,8 @@ std::string XYObject::get_spec(string param) const
     aug_spec(spec, "label=" + m_label); 
   if(m_msg != "")
     aug_spec(spec, "msg=" + m_msg); 
+  if(m_source != "")
+    aug_spec(spec, "source=" + m_source); 
   if(m_id != "")
     aug_spec(spec, "id=" + m_id); 
   if(color_set("label"))
@@ -279,10 +281,12 @@ bool XYObject::set_param(const string& param, const string& value)
 
   else if((param == "active") && isBoolean(value))
     set_active(tolower(value) == "true");
+  
+  else if((param == "source") || (param == "vsource"))
+    set_source(value);
 
-  // "source" and "type" are deprecated fields. We don't want to return false
-  // if we find one of these, so check here
-  else if((param == "source") || (param == "type"))
+  // "type" is a deprecated field. We don't want to return false
+  else if(param == "type")
     return(true);
 
   else

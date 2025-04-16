@@ -48,6 +48,7 @@ public:
   void         onIdleToRunState();
   void         onInactiveState()  {postErasablePolygons();}
   void         onEveryState(std::string);
+  bool         applyAbleFilter(std::string);
   void         postConfigStatus();
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}

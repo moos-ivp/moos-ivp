@@ -183,8 +183,12 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  APPCAST_REQ       = node=henry,app=pContactMgrV20,            ");
   blk("                      duration=6,key=uMAC_438                   ");
-  blk("  BCM_ALERT_REQUEST = id=avd, var=CONTACT_INFO,                 ");
-  blk("                      val=\"name=avd_$[VNAME] # contact=$[VNAME]\", ");
+  blk("  BCM_ALERT_REQUEST = id=avdcol, onflag==CONTACT_INFO                 ");
+  blk("                      onflag=CONTACT_INFO=name=$[VNAME] # contact=$[VNAME],");
+  blk("                      alert_range=80, cpa_range=84              ");
+  blk("                                                                ");
+  blk("  BCM_ALERT_REQUEST = id=avdcol, action=disable                 ");
+  blk("                                                                ");
   blk("  BCM_DISPLAY_RADII = 112.3                                     ");
   blk("                      range=80, alert_range_color=white,        ");
   blk("                      cpa_range=95, cpa_range_color=gray50      ");

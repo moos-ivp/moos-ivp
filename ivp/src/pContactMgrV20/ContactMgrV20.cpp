@@ -131,9 +131,9 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "IVPHELM_STATE")
       handleMailHelmState(sval);
     else if((m_disable_var != "") && (key == m_disable_var))
-      handleMailDisableContact(sval);
+      handleMailModEnableContact(sval, "disable");
     else if((m_enable_var != "") && (key == m_enable_var))
-      handleMailEnableContact(sval);
+      handleMailModEnableContact(sval, "enable");
     else
       handled = false;
 
@@ -491,9 +491,9 @@ void ContactMgrV20::handleMailReportRequest(string str, string src)
 
 //---------------------------------------------------------
 // Procedure: handleMailAlertRequest()
-//    Format: BCM_ALERT_REQUEST = 
-//            var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
-//            alert_range=80, cpa_range=95
+//    Format: BCM_ALERT_REQUEST = "id=avdcol_,
+//            on_flag=CONTACT_INFO=name=$[VNAME] # contact=$[VNAME], 
+//            alert_range=80, cpa_range=84
                   
 void ContactMgrV20::handleMailAlertRequest(string value, string src)
 {
@@ -517,58 +517,7 @@ void ContactMgrV20::handleMailHelmState(string value)
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailDisableContact()
-//  Examples: XYZ_DISABLE_TARGET = 87993
-//            XYZ_DISABLE_TARGET = contact=87993, action=disable
-//            XYZ_DISABLE_TARGET = vsource=AIS, action=disable
-//
-// Notes: Disabling a behavior is a matter for the helm, by
-//        way of a message to the BHV_ABLE_FILTER variable.
-//        The contact manager can facilitate.
-//        Assumed input is the ID of a contact.
-
-void ContactMgrV20::handleMailDisableContact(string str)
-{
-  string msg = "action=disable";
-
-  string contact_id;
-  
-  // Handled special case where value is just the contact ID and
-  // the implied action is to disable
-  if(!strContains(str,"=") && !strContains(str,",")) {
-    contact_id = str;
-    msg += ",contact=" + contact_id;
-  }
-  
-  else {
-    contact_id = tokStringParse(str, "contact");
-
-    string vsource = tokStringParse(str, "vsource");
-    string action  = tokStringParse(str, "action");
-    if((action != "") && (action != "disable"))
-      return;
-
-    // disabling us done by either by contact OR vsource
-    if((contact_id == "") && (vsource == ""))
-      return;    
-    if(contact_id != "")
-      msg += ",contact=" + contact_id;
-    else if(vsource != "")
-      msg += ",vsource=" + vsource;
-  }  
-
-  Notify("BHV_ABLE_FILTER", msg);
-
-  // ========================================================
-  // Part 2: Update list of disabled contacts and post flags
-  // ========================================================
-  addDisabledContact(contact_id);
-  postFlags(m_able_flags);
-  postFlags(m_disable_flags);
-}
-
-//---------------------------------------------------------
-// Procedure: handleMailEnableContact()
+// Procedure: handleMailModEnableContact()
 //   Example: XYZ_REENABLE_TARGET = 87993
 //
 // Notes: Re-enabling a behavior is a matter for the helm, by
@@ -576,44 +525,48 @@ void ContactMgrV20::handleMailDisableContact(string str)
 //        The contact manager can facilitate.
 //        Assumed input is the ID of a contact.
 
-void ContactMgrV20::handleMailEnableContact(string str)
+bool ContactMgrV20::handleMailModEnableContact(string str,
+					       string action)
 {
-  string msg = "action=enable";
+  if((action != "enable") && (action != "disable"))
+    return(false);
 
   string contact_id;
-  
-  // Handled special case where value is just the contact ID and
-  // the implied action is to disable
-  if(!strContains(str,"=") && !strContains(str,",")) {
-    contact_id = str;
-    msg += ",contact=" + contact_id;
-  }
-  
+  string msg;
+  // First, handle special case, the value is just contact ID
+  if(!strContains(str,"=") && !strContains(str,","))
+    msg = "contact=" + str;
   else {
     contact_id = tokStringParse(str, "contact");
-
-    string vsource = tokStringParse(str, "vsource");
-    string action  = tokStringParse(str, "action");
-    if((action != "") && (action != "enable"))
-      return;
-
-    // disabling us done by either by contact OR vsource
-    if((contact_id == "") && (vsource == ""))
-      return;    
     if(contact_id != "")
-      msg += ",contact=" + contact_id;
-    else if(vsource != "")
-      msg += ",vsource=" + vsource;
-  }  
+      msg = "contact=" + contact_id;
+    else { 
+      string vsource = tokStringParse(str, "vsource");
+      if(vsource != "")
+	msg = "vsource=" + vsource;
+    }
+  }
+  if(msg == "")
+    return(false);
 
+  msg += ",action=" + action;
+  
   Notify("BHV_ABLE_FILTER", msg);
 
-  // ========================================================
-  // Part 2: Update list of (re)enabled contacts and post flags
-  // ========================================================
-  addEnabledContact(contact_id);
-  postFlags(m_able_flags);
-  postFlags(m_enable_flags);
+  // Update list of (re)enabled contacts and post flags
+
+  if((action == "enable") && (contact_id != "")) {
+    addEnabledContact(contact_id);
+    postFlags(m_able_flags);
+    postFlags(m_enable_flags);
+  }
+  if((action == "enable") && (contact_id != "")) {
+    addDisabledContact(contact_id);
+    postFlags(m_able_flags);
+    postFlags(m_disable_flags);
+  }
+
+  return(true);
 }
 
 //--------------------------------------------------------------------
@@ -725,6 +678,17 @@ bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
   if(alert_id == "")
     alert_id = "no_id";
 
+  if(strContains(tolower(alert_str), "action=disable")) {
+    if(alert_id != "no_id")
+      m_alerts_disabled.insert(alert_id);
+    return(true);
+  }
+  if(strContains(tolower(alert_str), "action=enable")) {
+    if(alert_id != "no_id")
+      m_alerts_disabled.erase(alert_id);
+    return(true);
+  }
+  
   // Part 2: Add to the Platform Alert Record. If alert_id is
   // already known, it's just ignored.
   m_par.addAlertID(alert_id);
