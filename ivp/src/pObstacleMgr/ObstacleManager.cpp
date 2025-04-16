@@ -308,7 +308,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   string x_str;
   string y_str;
   string obstacle_key_str;
-  string source;
+  string vsource;
   
   vector<string> svector = parseString(point_str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -318,8 +318,8 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
       x_str = value;
     else if(param == "y")
       y_str = value;
-    else if(param == "source")
-      source = value;
+    else if(param == "vsource")
+      vsource = value;
     else if((param == "key") || (param == "label"))
       obstacle_key_str = value;
   }
@@ -327,7 +327,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   if((x_str == "") || (y_str == "") || (obstacle_key_str == ""))
     return(null_pt);
 
-  if(strContainsWhite(source))
+  if(strContainsWhite(vsource))
     return(null_pt);
   
   double x = atof(x_str.c_str());
@@ -335,7 +335,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   
   XYPoint new_pt(x,y);
   new_pt.set_msg(obstacle_key_str);
-  new_pt.set_source(source);
+  new_pt.set_vsource(vsource);
   
   return(new_pt);
 }
@@ -540,7 +540,7 @@ bool ObstacleManager::handleMailNewPoint(string value)
   m_map_obstacles[key].addPoint(newpt);
   m_map_obstacles[key].setChanged(true);
   m_map_obstacles[key].setMaxPts(m_max_pts_per_cluster);
-  m_map_obstacles[key].setSource(newpt.get_source());
+  m_map_obstacles[key].setVSource(newpt.get_vsource());
 
   onNewObstacle("points");  
 
@@ -794,9 +794,9 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
   //string source = poly.get_source();
-  string source = m_map_obstacles[key].getSource();
-  if(source != "")
-    update_str += ",source=" + source;
+  string vsource = m_map_obstacles[key].getVSource();
+  if(vsource != "")
+    update_str += ",vsource=" + vsource;
   
   m_alerts_posted++;  
   Notify(alert_var, update_str);

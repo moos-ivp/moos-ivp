@@ -42,7 +42,7 @@ public:
   
   void setRange(double);
   void setDuration(double v)     {m_duration=v;}
-  void setSource(std::string s)  {m_source=s;}
+  void setVSource(std::string s) {m_vsource=s;}
   void setTStamp(double v)       {m_tstamp=v;}
   void setMaxPts(unsigned int v) {m_max_points=v;}
   void setChanged(bool v=true)   {m_changed=v;}
@@ -58,7 +58,7 @@ public:
   unsigned int getUpdatesTotal() const {return(m_updates_total);}
   unsigned int getMaxPoints() const    {return(m_max_points);}
   double       getMinRange() const     {return(m_min_range);}
-  std::string  getSource() const       {return(m_source);}
+  std::string  getVSource() const      {return(m_vsource);}
   
   double       getTimeToLive(double curr_time) const;
 
@@ -75,7 +75,7 @@ protected: // set externally
   double             m_duration;
   double             m_tstamp;
   unsigned int       m_max_points;
-  std::string        m_source;
+  std::string        m_vsource;
   
 private:  // set internally
   unsigned int   m_pts_total;
