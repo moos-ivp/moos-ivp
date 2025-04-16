@@ -490,10 +490,13 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
     return(false);
   }
 
+  string vsource = new_poly.get_vsource();
+  
   m_map_obstacles[key].setPoly(new_poly);
   m_map_obstacles[key].setDuration(duration);
   m_map_obstacles[key].setTStamp(m_curr_time);
   m_map_obstacles[key].setChanged();
+  m_map_obstacles[key].setVSource(vsource);
   onNewObstacle("given");  
   
   reportEvent("new obstacle: " + m_map_obstacles[key].getInfo(m_curr_time)); 
