@@ -155,6 +155,9 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   //else if((param == "turn_model_degs") && non_neg_number)
   //  return(m_obship_model.setTurnModelDegs(dval));
 
+  else if(param == "can_disable")
+    return(setBooleanOnString(m_can_disable, val));
+
   else if(param == "rng_flag")
     return(handleParamRangeFlag(val));
   else if(param == "cpa_flag")
@@ -257,7 +260,7 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // then declare the resolution to be pending.
   for(unsigned int i=0; i<obstacles_resolved.size(); i++) {
     string obstacle_id = obstacles_resolved[i];
-    cout << "Resolved Obstacle: " << obstacle_id << endl;
+    //cout << "Resolved Obstacle: " << obstacle_id << endl;
     postMessage("NOTED_RESOLVED", obstacle_id);
 
     if(m_obstacle_id == obstacle_id)
@@ -281,7 +284,7 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
 
   m_valid_cn_obs_info = true;
   if(!m_obship_model.isValid()) {
-    cout << "invalid cn_ob_info2" << endl;
+    //cout << "invalid cn_ob_info2" << endl;
     m_valid_cn_obs_info = false;
   }
   if(!m_valid_cn_obs_info)
@@ -389,11 +392,10 @@ void BHV_AvoidObstacleV24::onIdleToRunState()
 // Procedure: onRunState()
 
 IvPFunction *BHV_AvoidObstacleV24::onRunState() 
-{
+{  
   // Part 1: Handle if obstacle has been resolved
   if(m_resolved_pending) {
     setComplete();
-    //cout << "reason1" << endl;
     return(0);
   }
   if(!m_valid_cn_obs_info)
@@ -403,7 +405,6 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
 
   // Part 2: No IvP function if obstacle is aft
   if(m_obship_model.isObstacleAft(20)) {
-    //cout << "reason3" << endl;
     return(0);
   }
   
@@ -439,7 +440,6 @@ IvPFunction *BHV_AvoidObstacleV24::buildOF()
   if(!ok_init) {
     string aof_msg = aof_avoid.getCatMsgsAOF();
     postWMessage("Unable to init AOF_AvoidObstacleV24:"+aof_msg);
-    //cout << "reason5" << endl;
     return(0);
   }
   
@@ -724,4 +724,82 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   sdata = macroExpand(sdata, "MAXU_CPA", max_util_cpa);
   
   return(sdata);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: applyAbleFilter()
+//   Example: action=disable, contact=345, gen_type=safety,
+//            bhv_type=AvdColregs
+//    Fields: action=disable/able  (mandatory)
+//            contact=345          (one of these four)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+//            vsource=ais
+
+bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
+{
+  // If this behavior is configured to be immune to disable
+  // actions, then just ignore and return true, even if the
+  // passed argument is not proper.
+  if(!m_can_disable)
+    return(true);
+
+  // ======================================================
+  // Part 1: Parse the filter string. Must be one of the
+  //         supported fields, no field more than once.
+  // ======================================================
+  string action, obid, vsource;
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = tolower(svector[i]);
+
+    if((param == "action") && (action == ""))
+      action = value;
+    else if((param == "obstacle_id") && (obid == ""))
+      obid = value;
+    else if((param == "vsource") && (vsource == ""))
+      vsource = value;
+    else
+      return(false);
+  }
+
+  // ======================================================
+  // Part 2: Check for proper format.
+  // ======================================================
+
+  // action must be specified and only disable or enable
+  if((action != "disable") && (action != "enable"))
+    return(false);
+
+  // At least one of obid or vsource must be given
+  if((obid == "") && (vsource == ""))
+    return(false);
+
+  // ======================================================
+  // Part 3: At this point syntax checking has passed, now
+  // check if this filter message applies to this behavior.
+  // ======================================================
+
+  // Check 3: If obstacle_id has been set then MUST 
+  // match, regardless of other filter factors
+  if((obid != "") && (obid != tolower(m_obstacle_id)))
+    return(true);  // Return true since syntax if fine
+  // Check 4: If contact vsource has been set then MUST 
+  // match, regardless of other filter factors
+  else if(vsource != "") {
+    string poly_vsource = m_obship_model.getVSource();
+    if(tolower(vsource) != tolower(poly_vsource))
+      return(true); // Return true since syntax if fine
+  }
+  else
+    return(false); // No criteria given (obid or vsource)
+
+  if(action == "disable")
+    m_disabled = true;
+  else
+    m_disabled = false;
+
+  return(true);
 }
