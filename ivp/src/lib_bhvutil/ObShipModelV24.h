@@ -143,7 +143,7 @@ class ObShipModelV24
 
   void   updateBngExtremes();
 
-  std::string getVSource() const {return(m_gut_poly.get_source());}
+  std::string getVSource() const {return(m_gut_poly.get_vsource());}
   
 protected:
   bool updateDynamic();

@@ -634,9 +634,9 @@ void ObstacleSim::postObstaclesRefresh()
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
     string spec = m_obstacles[i].get_spec_pts_label(2);
     string key  = m_obstacles[i].get_label();
-    string src  = m_obstacles[i].get_source();
+    string src  = m_obstacles[i].get_vsource();
     if(src != "")
-      spec += ",source=" + src;
+      spec += ",vsource=" + src;
     if(m_durations[i] >= 0) 
       spec += ",duration=" + doubleToStringX(m_durations[i]);
 
@@ -692,12 +692,12 @@ void ObstacleSim::postPoints()
 	  bool ok = randPointOnPoly(osx, osy, m_obstacles[i], x, y);
 	  if(ok) {
 	    string key = m_obstacles[i].get_label();
-	    string src = m_obstacles[i].get_source();
+	    string src = m_obstacles[i].get_vsource();
 	    string msg = "x=" + doubleToStringX(x,2);
 	    msg += ",y=" + doubleToStringX(y,2);
 	    msg += ",key=" + key;
 	    if(src != "")
-	      msg += ",source=" + src;
+	      msg += ",vsource=" + src;
 	    
 	    Notify("TRACKED_FEATURE_"+uvname, msg);
 	    m_map_pts_published[key]++;
