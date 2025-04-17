@@ -678,6 +678,7 @@ bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
   if(alert_id == "")
     alert_id = "no_id";
 
+  // Begin Apr 2025 mod to disable alerts after launch time
   if(strContains(tolower(alert_str), "action=disable")) {
     if(alert_id != "no_id")
       m_alerts_disabled.insert(alert_id);
@@ -688,6 +689,7 @@ bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
       m_alerts_disabled.erase(alert_id);
     return(true);
   }
+  // End Apr 2025 mod to disable alerts after launch time
   
   // Part 2: Add to the Platform Alert Record. If alert_id is
   // already known, it's just ignored.
@@ -1032,6 +1034,10 @@ void ContactMgrV20::checkForAlerts()
     for(q=m_map_alerts.begin(); q!=m_map_alerts.end(); q++) {
       string id = q->first;
 
+      // Apr1725 mikerb: return/continue here if this id is disabled
+      if(isAlertDisabled(id))
+	continue;
+      
       bool alert_applies = checkAlertApplies(contact, id);
 
       // If alert applies and currently not alerted, handle
@@ -1223,22 +1229,26 @@ void ContactMgrV20::checkForEarlyWarnings()
     // to be posted N seconds before the contact reaches this range. Where
     // N is m_early_warning_time.
     double max_alert_range = getMaxAlertRange();
-      
+
+    
     // Part 2: Determine Early warning range, based by rate_of_closure
     // and m_early_warning_time interval.
-    double rng_delta = roc * m_early_warning_time;
-    double early_warning_rng = max_alert_range + rng_delta;
-
-    m_map_range_will_warn[contact] = early_warning_rng;
-    
-    // Check 2: If contact inside warning range, warning warranted
-    if(contact_range < early_warning_rng) {
-      postWarningFlags(m_early_warning_flags, contact);
-      m_map_range_was_warned[contact] = contact_range;
-      m_map_utc_was_warned[contact] = m_curr_time;
-      m_map_range_will_warn[contact] = 0;
+    if(max_alert_range > 0) {
+      double rng_delta = roc * m_early_warning_time;
+      double early_warning_rng = max_alert_range + rng_delta;
+      m_map_range_will_warn[contact] = early_warning_rng;
+      
+      // Check 2: If contact inside warning range, warning warranted
+      if(contact_range < early_warning_rng) {
+	postWarningFlags(m_early_warning_flags, contact);
+	m_map_range_was_warned[contact] = contact_range;
+	m_map_utc_was_warned[contact] = m_curr_time;
+	m_map_range_will_warn[contact] = 0;
+      }
     }
-  }
+    else
+      m_map_range_will_warn[contact] = 0;
+  }    
 }
 
 //---------------------------------------------------------
@@ -1678,6 +1688,10 @@ double ContactMgrV20::getMaxAlertRange() const
 
   map<string, CMAlert>::const_iterator p;
   for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
+    string  alert_id = p->first;
+    if(isAlertDisabled(alert_id))
+      continue;
+    
     CMAlert alert = p->second;
     double range = alert.getAlertRangeFar();
     if(range > max_range)
@@ -1916,6 +1930,8 @@ bool ContactMgrV20::buildReport()
     m_msgs << "EarlyWarn Radii:    " << ew_radii << endl;
     m_msgs << "EarlyWarn EWFlags:  " << m_cease_warning_flags.size() << endl;
     m_msgs << "EarlyWarn CWFlags:  " << m_early_warning_flags.size() << endl;
+    m_msgs << "AlertsDisabled:     " << stringSetToString(m_alerts_disabled) << endl;
+    m_msgs << "max_alert_range:    " << doubleToStringX(getMaxAlertRange(),2) << endl;
   }
   
   if(m_disable_var != "")
@@ -2010,4 +2026,13 @@ bool ContactMgrV20::buildReport()
   m_msgs << actab2.getFormattedString();
   
   return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: isAlertDisabled()
+
+bool ContactMgrV20::isAlertDisabled(string alert_id) const
+{
+  return(m_alerts_disabled.count(alert_id) != 0);
 }
