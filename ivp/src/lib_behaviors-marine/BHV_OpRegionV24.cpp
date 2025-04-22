@@ -85,6 +85,9 @@ BHV_OpRegionV24::BHV_OpRegionV24(IvPDomain gdomain) :
 
   m_draw_save_status = true;
   m_draw_halt_status = true;
+
+  // default speed when recovering when core poly breach.
+  m_recover_spd = 0.8; // meters/sec
   
   // ==================================================
   // PART 2: Init state vars
@@ -137,6 +140,8 @@ bool BHV_OpRegionV24::setParam(string param, string val)
     return(setNonNegDoubleOnString(m_min_alt, val));
   else if(param == "max_time")
     return(setNonNegDoubleOnString(m_max_time, val));
+  else if((param == "recover_spd") || (param == "recover_speed"))
+    return(setPosDoubleOnString(m_recover_spd, val));
   else if(param == "reset")
     return(handleConfigReset(val));
   else if(param == "trigger_on_poly_entry") 
@@ -307,24 +312,9 @@ IvPFunction *BHV_OpRegionV24::buildOF()
   //=========================================================
   // Part 3: Create the SPEED ZAIC
   //=========================================================
-#if 1
   ZAIC_PEAK zaic_spd(m_domain, "speed");
-  double cruise_speed = 1.0;
-  double peak_width = cruise_speed / 2;
-  //  zaic_spd.setParams(cruise_speed, peak_width, 1.6, 20, 0, 100);
-  zaic_spd.setParams(cruise_speed, peak_width, 0.2, 20, 0, 100);
-#endif
-
-#if 0
-  ZAIC_SPD zaic_spd(m_domain, "speed");
-
-  zaic_spd.setMedSpeed(1.4);
-  zaic_spd.setLowSpeed(1.2);
-  zaic_spd.setHghSpeed(1.6);  
-  
-  zaic_spd.setMinMaxUtil(80, 30, 100);
-#endif
-
+  double peak_width = m_recover_spd / 2;
+  zaic_spd.setParams(m_recover_spd, peak_width, 0.2, 20, 0, 100);
 
   IvPFunction *ipf_spd = zaic_spd.extractIvPFunction();
   if(!ipf_spd) {
