@@ -489,6 +489,34 @@ bool PickPos::addPosFile(string filename)
 
 
 //---------------------------------------------------------
+// Procedure: addlineFile()
+//   Example: apples
+//            pears
+//            watermelons
+//            grapes
+//            mangos
+
+bool PickPos::addLineFile(string filename)
+{
+  if(!okFileToRead(filename))
+    return(false);
+
+  vector<string> lines = fileBuffer(filename);
+  for(unsigned int i=0; i<lines.size(); i++) {
+    string line = stripBlankEnds(lines[i]);
+    if(line == "")
+      continue;
+    if(strBegins(line, "//"))
+      continue;
+
+    m_file_lines.push_back(line);
+  }
+
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: pick()
 
 bool PickPos::pick()
@@ -498,6 +526,8 @@ bool PickPos::pick()
 
   if(m_file_positions.size() != 0)    
     pickPosByFile();
+  else if(m_file_lines.size() != 0)    
+    pickFileLines();
   else if(m_fld_generator.polygonCount() > 0)
     pickPosByPoly();
   else if(m_circ_set)
@@ -578,6 +608,44 @@ void PickPos::pickPosByFile()
     }
   }
 }
+
+
+//---------------------------------------------------------
+// Procedure: pickFileLines()
+
+void PickPos::pickFileLines()
+{
+  unsigned int choices = m_file_lines.size();
+  
+  if(m_pick_amt > choices) {
+    cout << "Cannot pick " << m_pick_amt << " lines." << endl;
+    cout << "File(s) only had " << choices << " lines." << endl;
+    exit(1);
+  }
+  srand(time(NULL) + getpid());
+
+  // Create an array of Booleans the same size as num of file choices
+  vector<bool> bool_lines(choices, false);
+   
+  for(unsigned int i=0; i<m_pick_amt; i++) {
+    int rval = rand() % ((int)(choices));
+
+    bool found = false;
+    while(!found) {
+      for(unsigned int i=(unsigned int)(rval); ((i<choices) && !found); i++) {
+	if(bool_lines[i] == false) {
+	  bool_lines[i] = true;
+	  found = true;
+	  m_pick_lines.push_back(m_file_lines[i]);
+	}
+      }
+      rval = 0;
+    }
+  }
+}
+
+
+
 
 //---------------------------------------------------------
 // Procedure: pickPosByPoly()
@@ -891,6 +959,12 @@ void PickPos::printChoices()
   if(m_pick_indices.size() > 0) {
     for(unsigned int i=0; i<m_pick_indices.size(); i++)
       cout << m_pick_indices[i] << endl;
+    return;
+  }
+
+  if(m_pick_lines.size() > 0) {
+    for(unsigned int i=0; i<m_pick_lines.size(); i++)
+      cout << m_pick_lines[i] << endl;
     return;
   }
 

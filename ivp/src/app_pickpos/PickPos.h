@@ -39,6 +39,7 @@ class PickPos
   bool   addPolygon(std::string s) {return(m_fld_generator.addPolygon(s));}
   
   bool   addPosFile(std::string);
+  bool   addLineFile(std::string);
   bool   setCircle(std::string);
   bool   setResultFile(std::string);
   bool   setReuse() {m_reuse=true; return(true);}
@@ -80,6 +81,7 @@ class PickPos
  protected:
   void setColorCache();
   void pickPosByFile();
+  void pickFileLine();
   void pickPosByPoly();
   bool pickPosByCircle(double minsep=-1);
   void pickHeadingVals();
@@ -88,6 +90,7 @@ class PickPos
   void pickGroupNames();
   void pickVehicleNames();
   void pickColors();
+  void pickFileLines();
   void printChoices();
   
  protected: // Config variables
@@ -146,6 +149,9 @@ protected: // State variables
   // The possible positions specified by file input
   std::vector<std::string>  m_file_positions;
 
+  // The lines if using the --lfile options
+  std::vector<std::string>  m_file_lines;
+
   // The chosen positions regardless of how chosen
   std::vector<std::string>  m_pick_positions;
   std::vector<double>       m_pick_headings;
@@ -154,6 +160,7 @@ protected: // State variables
   std::vector<std::string>  m_pick_groups;
   std::vector<std::string>  m_pick_colors;
   std::vector<int>          m_pick_indices;
+  std::vector<std::string>  m_pick_lines;
 
   // Nearest neighbor for each chosen position
   std::vector<double>       m_near_positions;
