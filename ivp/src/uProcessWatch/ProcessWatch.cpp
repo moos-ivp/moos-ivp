@@ -30,7 +30,7 @@
 using namespace std;
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 ProcessWatch::ProcessWatch()
 {
@@ -67,7 +67,7 @@ ProcessWatch::ProcessWatch()
 
 
 //------------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -93,7 +93,7 @@ bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //------------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool ProcessWatch::OnConnectToServer()
 {
@@ -102,7 +102,7 @@ bool ProcessWatch::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void ProcessWatch::registerVariables()
 {
@@ -113,7 +113,7 @@ void ProcessWatch::registerVariables()
 
 
 //------------------------------------------------------------
-// Procedure: Iterate
+// Procedure: Iterate()
 
 bool ProcessWatch::Iterate()
 {
@@ -151,7 +151,7 @@ bool ProcessWatch::Iterate()
 }
 
 //------------------------------------------------------------
-// Procedure: OnStartUp
+// Procedure: OnStartUp()
   
 bool ProcessWatch::OnStartUp()
 {
@@ -227,7 +227,7 @@ bool ProcessWatch::OnStartUp()
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //
 //  Summary: All Present
 //  Antler List: pHelmIvP, pLogger, uSimMarine, uFldShoreBroker
@@ -327,7 +327,7 @@ bool ProcessWatch::buildReport()
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailNewDBClients
+// Procedure: handleMailNewDBClients()
 
 void ProcessWatch::handleMailNewDBClients()
 {
@@ -379,7 +379,7 @@ void ProcessWatch::handleMailNewDBClients()
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailStatusUpdate
+// Procedure: handleMailStatusUpdate()
 
 void ProcessWatch::handleMailStatusUpdate(string status)
 {
@@ -404,7 +404,7 @@ void ProcessWatch::handleMailStatusUpdate(string status)
 }
 
 //-----------------------------------------------------------------
-// Procedure: isAlive
+// Procedure: isAlive()
 //   Purpose: Check the given process name against the current list
 //            of processes from DB_CLIENTS
 
@@ -413,18 +413,23 @@ bool ProcessWatch::isAlive(string procname)
   procname = stripBlankEnds(procname);
 
   vector<string> svector = parseString(m_db_clients, ',');
-  unsigned int i, vsize = svector.size();
 
-  for(i=0; i<vsize; i++)
-    if(procname == stripBlankEnds(svector[i]))
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string db_client = stripBlankEnds(svector[i]);
+    if(procname == db_client)
       return(true);
 
+    string procname_copy = procname;
+    if(rbiteString(procname_copy, '/') == db_client)
+      return(true);
+  }
+  
   return(false);
 }
   
 
 //-----------------------------------------------------------------
-// Procedure: handleConfigWatchList
+// Procedure: handleConfigWatchList()
 //   Purpose: Allow for handling a comma-separated list of names
 //            on a watchlist configuration
 
@@ -449,7 +454,7 @@ bool ProcessWatch::handleConfigWatchList(string pnames)
 
 
 //-----------------------------------------------------------------
-// Procedure: handleConfigWatchItem
+// Procedure: handleConfigWatchItem()
 //      Note: A step toward defining the watch policy. 
 //            A given procname may define a process or process prefix.
 //            If it's not a prefix, the process will immediately be 
@@ -512,7 +517,7 @@ bool ProcessWatch::handleConfigWatchItem(string procname)
 
 
 //-----------------------------------------------------------------
-// Procedure: handleConfigExcludeList
+// Procedure: handleConfigExcludeList()
 //   Purpose: Allow for handling a comma-separated list of names
 //            on a watchlist configuration
 
@@ -537,7 +542,7 @@ bool ProcessWatch::handleConfigExcludeList(string pnames)
 
 
 //-----------------------------------------------------------------
-// Procedure: handleConfigExcludeItem
+// Procedure: handleConfigExcludeItem()
 //      Note: A step toward defining the watch policy. Only relevant 
 //              when all processes are being watched by default. This is
 //              a way to exclude certain processes from that default.
@@ -579,7 +584,7 @@ bool ProcessWatch::handleConfigExcludeItem(string procname)
 
 
 //-----------------------------------------------------------------
-// Procedure: addToWatchList
+// Procedure: addToWatchList()
 //      Note: Given a proc name and the user config policy for whether 
 //            or not a process should be on the watch list, potentially
 //            add the process to the watch list.
@@ -612,8 +617,7 @@ bool ProcessWatch::addToWatchList(string procname)
 
 
 //-----------------------------------------------------------------
-// Procedure: checkForIndividualUpdates
-//      Note: 
+// Procedure: checkForIndividualUpdates()
 
 void ProcessWatch::checkForIndividualUpdates()
 {
@@ -630,8 +634,7 @@ void ProcessWatch::checkForIndividualUpdates()
 }
 
 //-----------------------------------------------------------------
-// Procedure: postFullSummary
-//      Note: 
+// Procedure: postFullSummary()
 
 void ProcessWatch::postFullSummary()
 {
@@ -660,7 +663,7 @@ void ProcessWatch::postFullSummary()
 
 
 //-----------------------------------------------------------------
-// Procedure: procNotedHere
+// Procedure: procNotedHere()
 
 void ProcessWatch::procNotedHere(string procname)
 {
@@ -697,7 +700,7 @@ void ProcessWatch::procNotedHere(string procname)
 }
 
 //-----------------------------------------------------------------
-// Procedure: procNotedGone
+// Procedure: procNotedGone()
 
 void ProcessWatch::procNotedGone(string procname)
 {
@@ -715,7 +718,7 @@ void ProcessWatch::procNotedGone(string procname)
 }
 
 //-----------------------------------------------------------------
-// Procedure: procNotedExcused
+// Procedure: procNotedExcused()
 
 void ProcessWatch::procNotedExcused(string procname)
 {
@@ -733,7 +736,7 @@ void ProcessWatch::procNotedExcused(string procname)
 
 
 //-----------------------------------------------------------------
-// Procedure: handlePostMapping
+// Procedure: handlePostMapping()
 
 void ProcessWatch::handlePostMapping(string mapping)
 {
@@ -745,7 +748,7 @@ void ProcessWatch::handlePostMapping(string mapping)
 }
 
 //-----------------------------------------------------------------
-// Procedure: postVar
+// Procedure: postVar()
 
 string ProcessWatch::postVar(string varname)
 {
@@ -757,7 +760,7 @@ string ProcessWatch::postVar(string varname)
 }
 
 //-----------------------------------------------------------------
-// Procedure: populateAntlerList
+// Procedure: populateAntlerList()
 
 void ProcessWatch::populateAntlerList()
 {
@@ -789,7 +792,7 @@ void ProcessWatch::populateAntlerList()
 }
 
 //-----------------------------------------------------------------
-// Procedure: processExcluded
+// Procedure: processExcluded()
 //   Purpose: Determine if this process is to be excluded based on 
 //            NOWATCH params. Either by an explicit match or by a
 //            pattern match.
@@ -810,7 +813,7 @@ bool ProcessWatch::processExcluded(const string& procname)
 }
 
 //-----------------------------------------------------------------
-// Procedure: processIncluded
+// Procedure: processIncluded()
 //   Purpose: Determine if this process is included based on the 
 //            WATCH params. Either by an explicit match or by a
 //            pattern match.
