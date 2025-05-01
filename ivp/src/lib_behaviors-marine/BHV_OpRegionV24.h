@@ -80,6 +80,8 @@ class BHV_OpRegionV24 : public IvPBehavior {
   bool      m_trigger_on_poly_entry;
 
   std::string m_dynamic_region_var;  
+
+  double m_recover_spd;
   
   // Allow for flags to be posted when/if a breach is made
   std::vector<VarDataPair>  m_breached_poly_flags;

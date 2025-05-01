@@ -57,6 +57,9 @@ protected:
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
 
+  // New 24.8.x dis/enabling behaviors
+  bool handleMailModEnableObstacle(std::string, std::string);
+  
   bool handleGivenObstacle(std::string, std::string src="mail");
   
   void postConvexHullUpdates();
@@ -74,6 +77,10 @@ protected:
   void manageMemory();
 
   void postFlags(const std::vector<VarDataPair>& flags);
+  std::string expandMacros(std::string) const;
+
+  void addDisabledObstacle(std::string id);
+  void addEnabledObstacle(std::string id);
   
   void onNewObstacle(std::string obs_type);
   
@@ -140,6 +147,18 @@ private: // State variables
   unsigned int m_obstacles_ever;
   
   std::map<std::string, Obstacle> m_map_obstacles;
+
+
+protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
+ 
+  std::string  m_disable_var;
+  std::string  m_enable_var;
+  std::list<std::string> m_disabled_obstacles;
+  std::list<std::string> m_enabled_obstacles;
+
+  std::vector<VarDataPair> m_able_flags;
+  std::vector<VarDataPair> m_disable_flags;
+  std::vector<VarDataPair> m_enable_flags;
 };
 
 #endif 

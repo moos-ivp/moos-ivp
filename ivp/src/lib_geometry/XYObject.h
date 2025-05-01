@@ -38,13 +38,14 @@ public:
   virtual void   clear();
   virtual bool   valid() const {return(true);}
   
-  void   set_label(const std::string& str)  {m_label=str;}
-  void   set_source(const std::string& str) {m_source=str;}
-  void   set_type(const std::string& str)   {m_type=str;}
-  void   set_msg(const std::string& str)    {m_msg=str;}
-  void   set_id(const std::string& str)     {m_id=str;}
-  void   set_active(bool val)               {m_active=val;}
-  void   set_time(double val)               {m_time=val;m_time_set=true;}
+  void   set_label(const std::string& str)   {m_label=str;}
+  void   set_source(const std::string& str)  {m_source=str;}
+  void   set_vsource(const std::string& str) {m_vsource=str;}
+  void   set_type(const std::string& str)    {m_type=str;}
+  void   set_msg(const std::string& str)     {m_msg=str;}
+  void   set_id(const std::string& str)      {m_id=str;}
+  void   set_active(bool val)                {m_active=val;}
+  void   set_time(double val)                {m_time=val;m_time_set=true;}
   void   set_vertex_size(double val);
   void   set_edge_size(double val);
   void   set_transparency(double);
@@ -52,8 +53,8 @@ public:
 
   void   set_vertex_color_size(std::string, double);
   
-  void   set_type()   {} // deprecated
-  void   set_source() {} // deprecated
+  void   set_type() {}    // deprecated
+  void   set_source() {}  // deprecated
 
   //-----Soon To Be Deprecated/Removed ----------------------------------- 
   void     set_vertex_color(const std::string& s) {set_color("vertex", s);}
@@ -85,6 +86,7 @@ public:
   std::string get_id()        const {return(m_id);}
   std::string get_type()      const {return(m_type);}
   std::string get_source()    const {return(m_source);}
+  std::string get_vsource()   const {return(m_vsource);}
   std::string get_spec(std::string s="") const;
 
   bool expired(double curr_time) const;
@@ -98,6 +100,7 @@ protected:
   std::string  m_label;
   std::string  m_type;
   std::string  m_source;  
+  std::string  m_vsource;  
   std::string  m_msg;
   std::string  m_id;
   bool         m_active;

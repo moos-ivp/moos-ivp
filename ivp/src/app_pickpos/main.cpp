@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
       handled = pickpos.setVNameStartIX(argi.substr(6));
     else if(strBegins(argi, "--posfile="))
       handled = pickpos.addPosFile(argi.substr(10));
+    else if(strBegins(argi, "--lfile="))
+      handled = pickpos.addLineFile(argi.substr(8));    
     else if(strBegins(argi, "--file="))
       handled = pickpos.setResultFile(argi.substr(7));
     else if(strBegins(argi, "--polygon="))

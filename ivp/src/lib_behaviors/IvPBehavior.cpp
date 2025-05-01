@@ -403,13 +403,12 @@ void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
 
 bool IvPBehavior::updatePlatformInfo()
 {
-  bool ok1, ok2, ok3, ok4, ok5;
+  bool ok1, ok2, ok3;
 
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
-  m_osd = getBufferDoubleVal("NAV_DEPTH", ok5);
+  m_osh = angle360(m_osh);
 
   // Must get ownship position
   if(!ok1 || !ok2) {
@@ -423,16 +422,12 @@ bool IvPBehavior::updatePlatformInfo()
     return(false);
   }
 
-  // If speed info is not found, its not a show-stopper.
-  // A warning will be posted.
-  if(!ok4)
-    postWMessage("No ownship speed info in info_buffer");
-  
-  m_osh = angle360(m_osh);
+  // If speed info not found, just post a warning
+  m_osv = getBufferDoubleVal("NAV_SPEED");
 
-  if(!ok5 && (m_domain.hasDomain("depth")))
-    postWMessage("No ownship depth info in info_buffer");
-
+  // Look for depth info only if in the IvP domain
+  if(m_domain.hasDomain("depth"))
+    m_osd = getBufferDoubleVal("NAV_DEPTH");
   
   return(true);
 }

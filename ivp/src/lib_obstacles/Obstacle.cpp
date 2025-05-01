@@ -27,7 +27,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 Obstacle::Obstacle()
 {
@@ -63,7 +63,7 @@ bool Obstacle::addPoint(XYPoint point)
 }
   
 //---------------------------------------------------------
-// Procedure: setPoly
+// Procedure: setPoly()
 //      Note: Sometimes the poly originates as a given poly,
 //            and sometimes from a source that has generated
 //            the poly from the obstacle points.

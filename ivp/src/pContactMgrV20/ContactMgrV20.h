@@ -85,8 +85,8 @@ class ContactMgrV20 : public AppCastingMOOSApp
   void pruneRangeReports();
   
   // New 24.8.x dis/enabling behaviors
-  void handleMailDisableContact(std::string);
-  void handleMailEnableContact(std::string);
+  bool handleMailModEnableContact(std::string, std::string);
+
   // New 24.8.x early warnings
   void checkForEarlyWarnings();
   void checkForCeaseWarnings();
@@ -111,8 +111,12 @@ protected:
   void postFlags(const std::vector<VarDataPair>&);
   std::string expandMacros(std::string) const;
 
+  bool isAlertDisabled(std::string alert_id) const;
+  
 private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
+
+  std::set<std::string> m_alerts_disabled;
   
 protected: // Configuration parameters
 

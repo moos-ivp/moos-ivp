@@ -131,9 +131,9 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "IVPHELM_STATE")
       handleMailHelmState(sval);
     else if((m_disable_var != "") && (key == m_disable_var))
-      handleMailDisableContact(sval);
+      handleMailModEnableContact(sval, "disable");
     else if((m_enable_var != "") && (key == m_enable_var))
-      handleMailEnableContact(sval);
+      handleMailModEnableContact(sval, "enable");
     else
       handled = false;
 
@@ -491,9 +491,9 @@ void ContactMgrV20::handleMailReportRequest(string str, string src)
 
 //---------------------------------------------------------
 // Procedure: handleMailAlertRequest()
-//    Format: BCM_ALERT_REQUEST = 
-//            var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
-//            alert_range=80, cpa_range=95
+//    Format: BCM_ALERT_REQUEST = "id=avdcol_,
+//            on_flag=CONTACT_INFO=name=$[VNAME] # contact=$[VNAME], 
+//            alert_range=80, cpa_range=84
                   
 void ContactMgrV20::handleMailAlertRequest(string value, string src)
 {
@@ -517,58 +517,7 @@ void ContactMgrV20::handleMailHelmState(string value)
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailDisableContact()
-//  Examples: XYZ_DISABLE_TARGET = 87993
-//            XYZ_DISABLE_TARGET = contact=87993, action=disable
-//            XYZ_DISABLE_TARGET = vsource=AIS, action=disable
-//
-// Notes: Disabling a behavior is a matter for the helm, by
-//        way of a message to the BHV_ABLE_FILTER variable.
-//        The contact manager can facilitate.
-//        Assumed input is the ID of a contact.
-
-void ContactMgrV20::handleMailDisableContact(string str)
-{
-  string msg = "action=disable";
-
-  string contact_id;
-  
-  // Handled special case where value is just the contact ID and
-  // the implied action is to disable
-  if(!strContains(str,"=") && !strContains(str,",")) {
-    contact_id = str;
-    msg += ",contact=" + contact_id;
-  }
-  
-  else {
-    contact_id = tokStringParse(str, "contact");
-
-    string vsource = tokStringParse(str, "vsource");
-    string action  = tokStringParse(str, "action");
-    if((action != "") && (action != "disable"))
-      return;
-
-    // disabling us done by either by contact OR vsource
-    if((contact_id == "") && (vsource == ""))
-      return;    
-    if(contact_id != "")
-      msg += ",contact=" + contact_id;
-    else if(vsource != "")
-      msg += ",vsource=" + vsource;
-  }  
-
-  Notify("BHV_ABLE_FILTER", msg);
-
-  // ========================================================
-  // Part 2: Update list of disabled contacts and post flags
-  // ========================================================
-  addDisabledContact(contact_id);
-  postFlags(m_able_flags);
-  postFlags(m_disable_flags);
-}
-
-//---------------------------------------------------------
-// Procedure: handleMailEnableContact()
+// Procedure: handleMailModEnableContact()
 //   Example: XYZ_REENABLE_TARGET = 87993
 //
 // Notes: Re-enabling a behavior is a matter for the helm, by
@@ -576,44 +525,48 @@ void ContactMgrV20::handleMailDisableContact(string str)
 //        The contact manager can facilitate.
 //        Assumed input is the ID of a contact.
 
-void ContactMgrV20::handleMailEnableContact(string str)
+bool ContactMgrV20::handleMailModEnableContact(string str,
+					       string action)
 {
-  string msg = "action=enable";
+  if((action != "enable") && (action != "disable"))
+    return(false);
 
   string contact_id;
-  
-  // Handled special case where value is just the contact ID and
-  // the implied action is to disable
-  if(!strContains(str,"=") && !strContains(str,",")) {
-    contact_id = str;
-    msg += ",contact=" + contact_id;
-  }
-  
+  string msg;
+  // First, handle special case, the value is just contact ID
+  if(!strContains(str,"=") && !strContains(str,","))
+    msg = "contact=" + str;
   else {
     contact_id = tokStringParse(str, "contact");
-
-    string vsource = tokStringParse(str, "vsource");
-    string action  = tokStringParse(str, "action");
-    if((action != "") && (action != "enable"))
-      return;
-
-    // disabling us done by either by contact OR vsource
-    if((contact_id == "") && (vsource == ""))
-      return;    
     if(contact_id != "")
-      msg += ",contact=" + contact_id;
-    else if(vsource != "")
-      msg += ",vsource=" + vsource;
-  }  
+      msg = "contact=" + contact_id;
+    else { 
+      string vsource = tokStringParse(str, "vsource");
+      if(vsource != "")
+	msg = "vsource=" + vsource;
+    }
+  }
+  if(msg == "")
+    return(false);
 
+  msg += ",action=" + action;
+  
   Notify("BHV_ABLE_FILTER", msg);
 
-  // ========================================================
-  // Part 2: Update list of (re)enabled contacts and post flags
-  // ========================================================
-  addEnabledContact(contact_id);
-  postFlags(m_able_flags);
-  postFlags(m_enable_flags);
+  // Update list of (re)enabled contacts and post flags
+
+  if((action == "enable") && (contact_id != "")) {
+    addEnabledContact(contact_id);
+    postFlags(m_able_flags);
+    postFlags(m_enable_flags);
+  }
+  if((action == "enable") && (contact_id != "")) {
+    addDisabledContact(contact_id);
+    postFlags(m_able_flags);
+    postFlags(m_disable_flags);
+  }
+
+  return(true);
 }
 
 //--------------------------------------------------------------------
@@ -725,6 +678,19 @@ bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
   if(alert_id == "")
     alert_id = "no_id";
 
+  // Begin Apr 2025 mod to disable alerts after launch time
+  if(strContains(tolower(alert_str), "action=disable")) {
+    if(alert_id != "no_id")
+      m_alerts_disabled.insert(alert_id);
+    return(true);
+  }
+  if(strContains(tolower(alert_str), "action=enable")) {
+    if(alert_id != "no_id")
+      m_alerts_disabled.erase(alert_id);
+    return(true);
+  }
+  // End Apr 2025 mod to disable alerts after launch time
+  
   // Part 2: Add to the Platform Alert Record. If alert_id is
   // already known, it's just ignored.
   m_par.addAlertID(alert_id);
@@ -1068,6 +1034,10 @@ void ContactMgrV20::checkForAlerts()
     for(q=m_map_alerts.begin(); q!=m_map_alerts.end(); q++) {
       string id = q->first;
 
+      // Apr1725 mikerb: return/continue here if this id is disabled
+      if(isAlertDisabled(id))
+	continue;
+      
       bool alert_applies = checkAlertApplies(contact, id);
 
       // If alert applies and currently not alerted, handle
@@ -1259,22 +1229,26 @@ void ContactMgrV20::checkForEarlyWarnings()
     // to be posted N seconds before the contact reaches this range. Where
     // N is m_early_warning_time.
     double max_alert_range = getMaxAlertRange();
-      
+
+    
     // Part 2: Determine Early warning range, based by rate_of_closure
     // and m_early_warning_time interval.
-    double rng_delta = roc * m_early_warning_time;
-    double early_warning_rng = max_alert_range + rng_delta;
-
-    m_map_range_will_warn[contact] = early_warning_rng;
-    
-    // Check 2: If contact inside warning range, warning warranted
-    if(contact_range < early_warning_rng) {
-      postWarningFlags(m_early_warning_flags, contact);
-      m_map_range_was_warned[contact] = contact_range;
-      m_map_utc_was_warned[contact] = m_curr_time;
-      m_map_range_will_warn[contact] = 0;
+    if(max_alert_range > 0) {
+      double rng_delta = roc * m_early_warning_time;
+      double early_warning_rng = max_alert_range + rng_delta;
+      m_map_range_will_warn[contact] = early_warning_rng;
+      
+      // Check 2: If contact inside warning range, warning warranted
+      if(contact_range < early_warning_rng) {
+	postWarningFlags(m_early_warning_flags, contact);
+	m_map_range_was_warned[contact] = contact_range;
+	m_map_utc_was_warned[contact] = m_curr_time;
+	m_map_range_will_warn[contact] = 0;
+      }
     }
-  }
+    else
+      m_map_range_will_warn[contact] = 0;
+  }    
 }
 
 //---------------------------------------------------------
@@ -1714,6 +1688,10 @@ double ContactMgrV20::getMaxAlertRange() const
 
   map<string, CMAlert>::const_iterator p;
   for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
+    string  alert_id = p->first;
+    if(isAlertDisabled(alert_id))
+      continue;
+    
     CMAlert alert = p->second;
     double range = alert.getAlertRangeFar();
     if(range > max_range)
@@ -1952,6 +1930,8 @@ bool ContactMgrV20::buildReport()
     m_msgs << "EarlyWarn Radii:    " << ew_radii << endl;
     m_msgs << "EarlyWarn EWFlags:  " << m_cease_warning_flags.size() << endl;
     m_msgs << "EarlyWarn CWFlags:  " << m_early_warning_flags.size() << endl;
+    m_msgs << "AlertsDisabled:     " << stringSetToString(m_alerts_disabled) << endl;
+    m_msgs << "max_alert_range:    " << doubleToStringX(getMaxAlertRange(),2) << endl;
   }
   
   if(m_disable_var != "")
@@ -2046,4 +2026,13 @@ bool ContactMgrV20::buildReport()
   m_msgs << actab2.getFormattedString();
   
   return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: isAlertDisabled()
+
+bool ContactMgrV20::isAlertDisabled(string alert_id) const
+{
+  return(m_alerts_disabled.count(alert_id) != 0);
 }

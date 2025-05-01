@@ -47,6 +47,7 @@ public:
   void  onHelmStart();
   void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
   void  onEveryState(std::string new_state);
+  bool  applyAbleFilter(std::string);
   std::string expandMacros(std::string);
   //std::vector<std::string> getInfoVars();
   
@@ -66,7 +67,6 @@ public:
 
   void  handleContactFlags();
   void  handleContactFlagRange(VarDataPair);
-  bool  applyAbleFilter(std::string);
   
  protected: // Configuration Parameters
   
