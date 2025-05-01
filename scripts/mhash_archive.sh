@@ -13,6 +13,7 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$BUF$ME: $1"; fi }
 #  Part 2: Set global var defaults
 #---------------------------------------------------------------
 ME=`basename "$0"`
+CMD_ARGS=""
 DIR=$(pwd)
 VERBOSE=""
 LEVEL=0
@@ -21,6 +22,7 @@ FORCE=""
 MAX_AGE=0
 MIN_ODO=0
 MIN_DUR=0
+GRP_DIR=""
 
 LANG=en_US.utf-8
 LC_ALL=en_US.utf-8
@@ -36,6 +38,7 @@ cyn=$(tput setaf 6)  # Cyan
 #  Part 3: Check for and handle command-line arguments
 #---------------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "$ME [OPTIONS]                                     "
 	echo "                                                  "
@@ -56,6 +59,8 @@ for ARGI; do
 	echo "  --force, -f        Re-send regardless           "
 	echo "  --max_age=<N>      Ingore logs  > N hours old   "
 	echo "  --today, -t        Same as --max_age=16         "
+	echo "                                                  "
+	echo "  --grp_dir=<str>    A group dir for archiving    "
 	echo "                                                  "
 	echo "  --min_odo=<N>      Ingore logs with odometry <N "
 	echo "  --odo_two, -o      Same as --min_odo=2          "
@@ -99,11 +104,15 @@ for ARGI; do
         MIN_DUR=5
         MIN_ODO=5
         MAX_AGE=16
+    elif [ "${ARGI:0:10}" = "--grp_dir=" ]; then
+        GRP_DIR="${ARGI#--grp_dir=*}"
     else
         echo "$ME: Bad arg:" $ARGI "Exit Code 1."
         exit 1
     fi
 done
+
+#echo "$ME: [$CMD_ARGS]"
 
 # create string of blanks with string length $LEVEL 
 BUF=`printf %${LEVEL}s`
@@ -205,7 +214,12 @@ fi
 #---------------------------------------------------------------
 #  Part 9: Send the file and report if unsuccessful
 #---------------------------------------------------------------
-mhash_send.sh $VERBOSE --dir="${MHASH}" "${FHASH}.tgz" 
+FULL_DIR="${MHASH}"
+if [ "${GRP_DIR}" != "" ]; then
+    FULL_DIR="${GRP_DIR}/${MHASH}"
+fi
+    
+mhash_send.sh $VERBOSE --dir="${FULL_DIR}" "${FHASH}.tgz" 
 SEND_OK=$?
 
 if [ $SEND_OK != 0 ]; then

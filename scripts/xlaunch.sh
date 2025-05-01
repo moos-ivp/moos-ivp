@@ -8,7 +8,9 @@
 trap "echo xlaunch.sh has received sigterm" SIGTERM
 
 #  Part 1: Declare global var defaults
+ME=`basename "$0"`
 ZBATCH=""
+CMD_ARGS=""
 ARCHIVE=""
 MAX_TIME="300"
 FLOW_DOWN_ARGS="-x "
@@ -16,6 +18,7 @@ NOGUI=""
 
 #  Part 2: Check for and handle command-line arguments
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "xlaunch.sh [OPTIONS] [time_warp]     "
 	echo "Synopsis:                                              " 
@@ -67,8 +70,11 @@ if [ -f "post_process.sh" ]; then
     echo "DONE Executing post_process.sh."
 fi
 
+if [ "${ZBATCH}" != "" ]; then
+    ZBATCH="--grp_dir=$ZBATCH"
+fi
 
 # Part 9: Archive the results
 if [ "${ARCHIVE}" != "" ]; then
-    mhash_archive_dir.sh --zbatch="${ZBATCH}" --rm_logs --rm_tgzs
+    mhash_archive_all.sh ${ZBATCH}
 fi

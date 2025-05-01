@@ -13,6 +13,7 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
 #  Part 2: Set Global variables
 #-------------------------------------------------------------- 
 ME=`basename "$0"`
+CMD_ARGS=""
 VERBOSE=""
 TARG_DIR=""
 TARG_GRP=""
@@ -36,6 +37,7 @@ vecho "======================================================"
 #  Part 3: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
         echo "$ME: [OPTIONS] file.tgz                         "
         echo "                                                "
@@ -73,6 +75,8 @@ for ARGI; do
         exit 1
     fi
 done
+
+echo "$ME: [$CMD_ARGS]"
 
 #-------------------------------------------------------
 #  Part 4: Ensure the proper SSH Key exists
