@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 # --------------------------------------------------------------
 # Indicate CMake 2.7 and above that we don't want to mix relative
