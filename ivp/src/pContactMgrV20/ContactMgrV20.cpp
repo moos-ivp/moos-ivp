@@ -134,6 +134,8 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailModEnableContact(sval, "disable");
     else if((m_enable_var != "") && (key == m_enable_var))
       handleMailModEnableContact(sval, "enable");
+    else if((m_expunge_var != "") && (key == m_expunge_var))
+      handleMailModEnableContact(sval, "expunge");
     else
       handled = false;
 
@@ -295,6 +297,8 @@ bool ContactMgrV20::OnStartUp()
       handled = setNonWhiteVarOnString(m_disable_var, value);
     else if(param == "enable_var")
       handled = setNonWhiteVarOnString(m_enable_var, value);
+    else if(param == "expunge_var")
+      handled = setNonWhiteVarOnString(m_expunge_var, value);
     else if(param == "able_flag")
       handled = addVarDataPairOnString(m_able_flags, value);
     else if(param == "disable_flag")
@@ -353,6 +357,8 @@ void ContactMgrV20::registerVariables()
     Register(m_disable_var, 0);
   if(m_enable_var != "")
     Register(m_enable_var, 0);
+  if(m_expunge_var != "")
+    Register(m_expunge_var, 0);
 }
 
 //---------------------------------------------------------
@@ -528,7 +534,9 @@ void ContactMgrV20::handleMailHelmState(string value)
 bool ContactMgrV20::handleMailModEnableContact(string str,
 					       string action)
 {
-  if((action != "enable") && (action != "disable"))
+  if((action != "enable") &&
+     (action != "disable") &&
+     (action != "expunge"))
     return(false);
 
   string contact_id;
@@ -560,7 +568,7 @@ bool ContactMgrV20::handleMailModEnableContact(string str,
     postFlags(m_able_flags);
     postFlags(m_enable_flags);
   }
-  if((action == "enable") && (contact_id != "")) {
+  if((action == "disable") && (contact_id != "")) {
     addDisabledContact(contact_id);
     postFlags(m_able_flags);
     postFlags(m_disable_flags);
@@ -1759,7 +1767,7 @@ list<string> ContactMgrV20::getRangeOrderedContacts() const
 //            its size can be used as a way of confirming that
 //            a disabled contact has been added.
 //      Note: We are always paranoid about memory growth, so
-//            this contact list is limited to 250 most recent
+//            this contact list is limited to 25 most recent
 //            contacts.
 
 void ContactMgrV20::addDisabledContact(string contact_id)
@@ -1772,7 +1780,7 @@ void ContactMgrV20::addDisabledContact(string contact_id)
   m_disabled_contacts.push_front(contact_id);
 
   // If list is too large, removed the oldest.
-  if(m_disabled_contacts.size() > 250)
+  if(m_disabled_contacts.size() > 25)
     m_disabled_contacts.pop_back();
 }
 

@@ -65,12 +65,15 @@ ObstacleManager::ObstacleManager()
   m_obstacles_color = "blue";
 
   m_given_max_duration = 60; // seconds
+
+  m_disable_var = "";  // e.g.  XYZ_DISABLE_TARGET
+  m_enable_var  = "";   // e.g. XYZ_ENABLE_TARGET
+  m_expunge_var = "";   // e.g. XYZ_EXPUNGE_TARGET
   
   // Init State Variables
   m_nav_x = 0;
   m_nav_y = 0;
 
-  // Init state variables
   m_points_total   = 0;
   m_points_ignored = 0;
   m_points_invalid = 0;
@@ -130,6 +133,8 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = handleMailAlertRequest(sval);
     else if((m_disable_var != "") && (key == m_disable_var))
       handled = handleMailModEnableObstacle(sval, "disable");
+    else if((m_expunge_var != "") && (key == m_expunge_var))
+      handled = handleMailModEnableObstacle(sval, "expunge");
     else if((m_enable_var != "") && (key == m_enable_var))
       handled = handleMailModEnableObstacle(sval, "enable");
     else if(key == "APPCAST_REQ") // handle by AppCastingMOOSApp
@@ -231,6 +236,8 @@ bool ObstacleManager::OnStartUp()
       handled = setNonWhiteVarOnString(m_disable_var, value);
     else if(param == "enable_var")
       handled = setNonWhiteVarOnString(m_enable_var, value);
+    else if(param == "expunge_var")
+      handled = setNonWhiteVarOnString(m_expunge_var, value);
 
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
@@ -344,7 +351,8 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 //---------------------------------------------------------
 // Procedure: handleMailModEnableObstacle()
 //   Example: XYZ_ENABLE_TARGET = 87993
-//   Example: XYZ_DISABLE_TARGET = contact=87993
+//   Example: XYZ_DISABLE_TARGET = obstacle=87993
+//   Example: XYZ_DISABLE_TARGET = vsource=radar
 //
 // Notes: Re-enabling a behavior is a matter for the helm, by
 //        way of a message to the BHV_ABLE_FILTER variable.
@@ -354,7 +362,8 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 bool ObstacleManager::handleMailModEnableObstacle(string str,
 						  string action)
 {
-  if((action != "enable") && (action != "disable"))
+  if((action != "enable") && (action != "disable") &&
+     (action != "expunge"))
     return(false);
 
   string obstacle_id;
@@ -381,17 +390,24 @@ bool ObstacleManager::handleMailModEnableObstacle(string str,
 
   // Update list of (re)enabled contacts and post flags
 
-  if((action == "enable") && (obstacle_id != "")) {
-    addEnabledObstacle(obstacle_id);
+  if(action == "enable") {
+    if(obstacle_id != "") 
+      addEnabledObstacle(obstacle_id);
     postFlags(m_able_flags);
     postFlags(m_enable_flags);
   }
-  if((action == "enable") && (obstacle_id != "")) {
-    addDisabledObstacle(obstacle_id);
+  if(action == "disable") {
+    if(obstacle_id != "")
+      addDisabledObstacle(obstacle_id);
     postFlags(m_able_flags);
     postFlags(m_disable_flags);
   }
-
+  if(action == "expunge") {
+    if(obstacle_id != "") 
+      addExpungedObstacle(obstacle_id);
+    postFlags(m_expunge_flags);
+  }
+  
   return(true);
 }
 
@@ -434,6 +450,21 @@ void ObstacleManager::addEnabledObstacle(string id)
   // If list is too large, removed the oldest.
   if(m_enabled_obstacles.size() > 250)
     m_enabled_obstacles.pop_back();
+}
+
+
+//---------------------------------------------------------
+// Procedure: addExpungedObstacle()
+
+void ObstacleManager::addExpungedObstacle(string id)
+{
+  // If obstacle already on list, remove so we can put at front
+  m_expunged_obstacles.remove(id);
+  m_expunged_obstacles.push_front(id);
+
+  // If list is too large, removed the oldest.
+  if(m_expunged_obstacles.size() > 250)
+    m_expunged_obstacles.pop_back();
 }
 
 
@@ -795,6 +826,9 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
 
   string update_str = "name=" + alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
+
+  // mikerb May1425
+  update_str += ",id=" + key;
 
   //string source = poly.get_source();
   string vsource = m_map_obstacles[key].getVSource();

@@ -36,7 +36,6 @@ public:
   ~LedgerSnap() {}
 
 public:
-
   void setX(std::string vname, double dval);
   void setY(std::string vname, double dval);
   void setHdg(std::string vname, double dval);
@@ -63,6 +62,8 @@ public:
 			    std::string field,
 			    bool& ok) const;
 
+  bool hasVName(std::string) const;
+  
   void clear();
   unsigned int size() const;
 

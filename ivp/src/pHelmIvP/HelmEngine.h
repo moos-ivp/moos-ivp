@@ -89,8 +89,6 @@ protected:
   MBTimer  m_create_timer;
   MBTimer  m_ipf_timer;
   MBTimer  m_solve_timer;
-
-  std::list<std::string> m_able_filter_msgs;
 };
 
 #endif

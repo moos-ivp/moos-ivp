@@ -424,7 +424,7 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
   m_bhvs_completed_upds.push_back(update_summary);
   
 
-  if(m_bhvs_completed_desc.size() > 50) {
+  if(m_bhvs_completed_desc.size() > 20) {
     m_bhvs_completed_desc.pop_front();
     m_bhvs_completed_time.pop_front();
     m_bhvs_completed_upds.pop_front();

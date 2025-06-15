@@ -288,18 +288,34 @@ void ContactLedger::clearStaleNodes()
 
 //---------------------------------------------------------------
 // Procedure: clearStaleNodes()
+//      Note: Items in the keep_vnames list may be spared. If the
+//            thresh_factor is -1 (default), then they will be
+//            spared absolutely. If the the factor is in the
+//            range [1,inf], then the factor will be multiplied
+//            by the m_stale_thresh parameter. For these named
+//            vehicles, they will stick around longer before they
+//            are considered too stale to keep.
 
-void ContactLedger::clearStaleNodes(vector<string> keep_vnames)
+void ContactLedger::clearStaleNodes(vector<string> keep_vnames,
+				    double thresh_factor)
 {
   vector<string> stale_vnames;
+
+  // The thresh factor can be -1 which means "off". Otherwise it
+  // must be >= 1. We don't want keep_names expunged earlier than
+  // m_stale_thresh
+  if((thresh_factor > 0) && (thresh_factor < 1))
+    thresh_factor = 1;
   
   map<string,NodeRecord>::iterator p;
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
     string vname = p->first;
-    if(vectorContains(keep_vnames, vname))
-      continue;
+    if(vectorContains(keep_vnames, vname)) {
+      if(thresh_factor < 0)
+	continue;
+    }
     double utc_age = getUTCAge(vname);
-    if(utc_age > m_stale_thresh)
+    if(utc_age > (m_stale_thresh * thresh_factor))
       stale_vnames.push_back(vname);
   }
 

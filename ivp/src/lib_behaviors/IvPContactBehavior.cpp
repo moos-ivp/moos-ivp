@@ -317,6 +317,9 @@ void IvPContactBehavior::onEveryState(string new_state)
 {
   IvPBehavior::onEveryState(new_state);
 
+  if(m_completed)
+    postViewableBearingLine(false);
+  
   updatePlatformInfo();
   if(new_state == "running")
     handleContactFlags();
@@ -465,6 +468,9 @@ bool IvPContactBehavior::updatePlatformInfo()
   if(m_cnos.helm_iter() == m_helm_iter)
     return(true);
 
+  if(m_completed)
+    return(true);
+  
   if(m_contact == "") {
     if(m_on_no_contact_ok)
       return(true);
@@ -690,7 +696,7 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // Part 1: Parse the filter string. Must be one of the
   //         supported fields, no field more than once.
   // ======================================================
-  string action, contact, gen_type, bhv_type, vsource;
+  string action, contact, bhv_type, vsource;
   vector<string> svector = parseString(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
@@ -700,8 +706,6 @@ bool IvPContactBehavior::applyAbleFilter(string str)
       action = value;
     else if((param == "contact") && (contact == ""))
       contact = value;
-    else if((param == "gen_type") && (gen_type == ""))
-      gen_type = value;
     else if((param == "bhv_type") && (bhv_type == ""))
       bhv_type = value;
     else if((param == "vsource") && (vsource == ""))
@@ -715,17 +719,13 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // ======================================================
 
   // action must be specified and only disable or enable
-  if((action != "disable") && (action != "enable"))
-    return(false);
-
-  // gen_type can only be empty or safety
-  if((gen_type != "") && (gen_type != "safety"))
+  if((action != "disable") && (action != "enable") &&
+     (action != "expunge"))
     return(false);
 
   // At least one of contact, gen_type, or bhv_type, or vsource
   // must be given
-  if((contact == "") && (gen_type == "") &&
-     (bhv_type == "") && (vsource == ""))
+  if((contact == "") && (bhv_type == "") && (vsource == ""))
     return(false);
 
   // ======================================================
@@ -733,28 +733,24 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // check if this filter message applies to this behavior.
   // ======================================================
 
-  // Check 1: If the gen_type has been set to safety, then
-  // then it MUST be a safety(constraint) behavior,
-  // regardless of other filter factors
-  if((gen_type == "safety") && !isConstraint())
-    return(true);  // Return true since syntax if fine
-  
-  // Check 2: If the bhv_type has been set then it MUST
+  // Check 1: If the bhv_type has been set then it MUST
   // match, regardless of other filter factors
   if((bhv_type != "") && (bhv_type != tolower(getBehaviorType())))
     return(true);  // Return true since syntax if fine
 
-  // Check 3: If contact name has been set then MUST 
+  // Check 2: If contact name has been set then MUST 
   // match, regardless of other filter factors
   if((contact != "") && (contact != tolower(m_contact)))
     return(true);  // Return true since syntax if fine
 
-  // Check 4: If contact vsource has been set then MUST 
+  // Check 3: If contact vsource has been set then MUST 
   // match, regardless of other filter factors
   if((vsource != "") && (vsource != tolower(m_cn_vsource)))
     return(true);  // Return true since syntax if fine
 
-  if(action == "disable")
+  if(action == "expunge")
+    setComplete();
+  else if(action == "disable")
     m_disabled = true;
   else
     m_disabled = false;

@@ -108,6 +108,7 @@ protected: // Alert Getters
 protected:
   void addDisabledContact(std::string id);
   void addEnabledContact(std::string id);
+
   void postFlags(const std::vector<VarDataPair>&);
   std::string expandMacros(std::string) const;
 
@@ -206,6 +207,7 @@ protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
  
   std::string  m_disable_var;
   std::string  m_enable_var;
+  std::string  m_expunge_var;
   std::list<std::string> m_disabled_contacts;
   std::list<std::string> m_enabled_contacts;
 

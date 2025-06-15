@@ -193,6 +193,7 @@ public:
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
 
+  bool    hasLedgerVName(std::string vname);
   double  getLedgerInfoDbl(std::string vname, std::string fld, bool&);
   string  getLedgerInfoStr(std::string, std::string, bool&);
   double  getLedgerInfoDbl(std::string vname, std::string fld);
