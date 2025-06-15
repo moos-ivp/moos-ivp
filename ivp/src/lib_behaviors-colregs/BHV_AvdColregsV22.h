@@ -47,7 +47,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   void         onIdleState();
   void         onInactiveState();
   void         onCompleteState();
-  std::string  getInfo(std::string);
+  std::string  getDebugInfo(std::string);
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
   std::string  expandMacros(std::string);
@@ -120,11 +120,6 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
 
   double       m_turn_radius;
   
-  std::string  m_debug1;
-  std::string  m_debug2;
-  std::string  m_debug3;
-  std::string  m_debug4;
-
   bool         m_check_plateaus;
   bool         m_check_validity;
   double       m_pcheck_thresh;

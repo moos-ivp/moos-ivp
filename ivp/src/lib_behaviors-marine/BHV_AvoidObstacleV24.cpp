@@ -260,7 +260,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // then declare the resolution to be pending.
   for(unsigned int i=0; i<obstacles_resolved.size(); i++) {
     string obstacle_id = obstacles_resolved[i];
-    //cout << "Resolved Obstacle: " << obstacle_id << endl;
     postMessage("NOTED_RESOLVED", obstacle_id);
 
     if(m_obstacle_id == obstacle_id)
@@ -284,7 +283,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
 
   m_valid_cn_obs_info = true;
   if(!m_obship_model.isValid()) {
-    //cout << "invalid cn_ob_info2" << endl;
     m_valid_cn_obs_info = false;
   }
   if(!m_valid_cn_obs_info)
@@ -358,8 +356,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // Part 5: Check for completion based on range
   // =================================================================
   if(os_range_to_poly > m_obship_model.getCompletedDist()) {
-    //cout << "os_range_to_poly:" << os_range_to_poly << endl;
-    //cout << "complet_dist: " << m_obship_model.getCompletedDist() << endl;
     m_resolved_pending = true;
   }
 
@@ -729,9 +725,11 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
 
 //-----------------------------------------------------------
 // Procedure: applyAbleFilter()
-//   Example: action=disable, contact=345, gen_type=safety,
-//            bhv_type=AvdColregs
-//    Fields: action=disable/able  (mandatory)
+//  Examples: action=disable, obstacle_id=345
+//            action=enable,  obstacle_id=345
+//            action=disable, vsource=radar
+//            action=expunge, obstacle_id=345
+//    Fields: action=disable/enable/expunge  (mandatory)
 //            contact=345          (one of these four)
 //            gen_type=safety
 //            bhv_type=AvdColregs
@@ -786,7 +784,7 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   // match, regardless of other filter factors
   if((obid != "") && (obid != tolower(m_obstacle_id)))
     return(true);  // Return true since syntax if fine
-  // Check 4: If contact vsource has been set then MUST 
+  // Check 4: If obstacle vsource has been set then MUST 
   // match, regardless of other filter factors
   else if(vsource != "") {
     string poly_vsource = m_obship_model.getVSource();
@@ -801,5 +799,8 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   else
     m_disabled = false;
 
+  if(action == "expunge")
+    setComplete();
+  
   return(true);
 }

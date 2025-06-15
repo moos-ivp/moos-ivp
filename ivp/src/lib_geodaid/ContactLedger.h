@@ -57,7 +57,8 @@ public:
   void clearNode(std::string vname);  
   void clearAllNodes();
   void clearStaleNodes();
-  void clearStaleNodes(std::vector<std::string>);
+  void clearStaleNodes(std::vector<std::string>,
+		       double thresh_factor=-1);
 
 public: // Status checks
   bool isValid(std::string) const;

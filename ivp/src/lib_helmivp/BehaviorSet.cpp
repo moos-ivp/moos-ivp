@@ -148,13 +148,13 @@ vector<string> BehaviorSet::getContactNames()
 
 void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 {
-  unsigned int i, vsize = m_bhv_entry.size();
-  for(i=0; i<vsize; i++)
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++)
     if(m_bhv_entry[i].getBehavior())
       m_bhv_entry[i].getBehavior()->setInfoBuffer(info_buffer);
 
   vsize = m_behavior_specs.size();
-  for(i=0; i<vsize; i++)
+  for(unsigned int i=0; i<vsize; i++)
     m_behavior_specs[i].setInfoBuffer(info_buffer);    
 }
 
@@ -165,13 +165,13 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 
 void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 {
-  unsigned int i, vsize = m_bhv_entry.size();
-  for(i=0; i<vsize; i++)
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++)
     if(m_bhv_entry[i].getBehavior())
       m_bhv_entry[i].getBehavior()->setLedgerSnap(lsnap);
 
   vsize = m_behavior_specs.size();
-  for(i=0; i<vsize; i++)
+  for(unsigned int i=0; i<vsize; i++)
     m_behavior_specs[i].setLedgerSnap(lsnap);    
 }
 
@@ -465,10 +465,6 @@ bool BehaviorSet::handlePossibleSpawnings()
       string base_name = m_behavior_specs[i].getNamePrefix();
       string update_name = tokStringParse(update_str, "name", '#', '=');
       string fullname = base_name + update_name;
-
-      //if(strBegins(update_name, base_name))
-      //fullname = update_name;
-
       
       // For example: If the behavior name prefix is avd_obstacle_,
       // and a behavior has already been spawned with the name
@@ -498,6 +494,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  IvPBehavior *bhv = sbuild.getIvPBehavior();
 	  // Called here now since it was just spawned and could not have
 	  // been called previously. 07/18/12 mikerb
+
 	  bhv->onSetParamComplete(); 
 	  bhv->onSpawn();
 	  bhv->postFlags("spawnflags", true);
@@ -645,7 +642,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // Part 2: With new_activity_state set, act appropriately for
   //         each behavior.
   // ===================================================================
-  // Part 2A: Handle completed behaviors (marked as comleted at the start
+  // Part 2A: Handle completed behaviors (marked as completed at the start
   // of this iteration. Behaviors that become complete in this iteration 
   // are handled below, after executing onIdleState, onRunState() etc.
   if(new_activity_state == "completed")

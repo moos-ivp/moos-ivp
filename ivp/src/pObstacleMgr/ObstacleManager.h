@@ -81,6 +81,7 @@ protected:
 
   void addDisabledObstacle(std::string id);
   void addEnabledObstacle(std::string id);
+  void addExpungedObstacle(std::string id);
   
   void onNewObstacle(std::string obs_type);
   
@@ -153,12 +154,16 @@ protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
  
   std::string  m_disable_var;
   std::string  m_enable_var;
+  std::string  m_expunge_var;
+
   std::list<std::string> m_disabled_obstacles;
   std::list<std::string> m_enabled_obstacles;
+  std::list<std::string> m_expunged_obstacles;
 
   std::vector<VarDataPair> m_able_flags;
   std::vector<VarDataPair> m_disable_flags;
   std::vector<VarDataPair> m_enable_flags;
+  std::vector<VarDataPair> m_expunge_flags;
 };
 
 #endif 

@@ -44,7 +44,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
@@ -90,7 +90,6 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_max_osv = -1; // According to IvPDomain
 
   m_time_of_creation  = 0;
-  m_time_starting_now = 0;
   m_time_starting_now = 0;
 
   m_macro_ctr = 0;
@@ -337,9 +336,13 @@ string IvPBehavior::isRunnable()
   }
 #endif
 
+  if((m_contact != "") && !hasLedgerVName(m_contact))
+    setComplete();
+
   if(m_completed)
     return("completed");
 
+  
   if(m_disabled)
     return("disabled");
 
@@ -990,7 +993,6 @@ bool IvPBehavior::checkConditions()
 
 }
 
-
 //-----------------------------------------------------------
 // Procedure: checkForDurationReset()
 
@@ -1310,17 +1312,6 @@ bool IvPBehavior::durationExceeded()
   
   double remaining_time = m_duration - elapsed_time;
 
-#if 0
-  string msg1 = "ELAPSED_" + toupper(m_descriptor);
-  postMessage(msg1, elapsed_time);
-
-  string msg2 = "DUR_IDLE_TIME_" + toupper(m_descriptor);
-  postMessage(msg2, m_duration_idle_time);
-
-  string msg3 = "REMAINING_TIME_" + toupper(m_descriptor);
-  postMessage(msg3, remaining_time);
-#endif
-
   if(remaining_time < 0)
     remaining_time = 0;
   if(m_duration_status != "") {
@@ -1338,8 +1329,7 @@ bool IvPBehavior::durationExceeded()
 
 
 //-----------------------------------------------------------
-// Procedure: postDurationStatus
-//      Note: 
+// Procedure: postDurationStatus()
 
 void IvPBehavior::postDurationStatus()
 {
@@ -1909,6 +1899,17 @@ bool IvPBehavior::addFlagOnString(vector<VarDataPair>& pairs,
 
   // Part 2: Proceed with normal adding of a flag
   return(addVarDataPairOnString(pairs, str));
+}
+
+//-----------------------------------------------------------
+// Procedure: hasLedgerVName()
+
+bool IvPBehavior::hasLedgerVName(string vname)
+{
+  if(!m_ledger_snap)
+    return(false);
+
+  return(m_ledger_snap->hasVName(vname));
 }
 
 //-----------------------------------------------------------

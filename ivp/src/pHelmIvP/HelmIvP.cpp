@@ -376,11 +376,14 @@ bool HelmIvP::Iterate()
   // Clear all stale nodes(vnames) from the contact ledger, UNLESS
   // there is a behavior currently present that is still reasoning
   // about a contact. Get a list of keep_vnames and pass this to the
-  // contact ledger.
+  // contact ledger. For these contacts, double the stale_thresh
+  // time before removing from the ledger (Recall that once the
+  // contact is gone from the ledger, the contact behavior will be
+  // completed/deleted immediately.)
   vector<string> keep_vnames;
   if(m_bhv_set)
     keep_vnames = m_bhv_set->getContactNames();
-  m_ledger.clearStaleNodes(keep_vnames);
+  m_ledger.clearStaleNodes(keep_vnames, 2);
 
   m_ledger.extrapolate();
   updateLedgerSnap();
@@ -471,17 +474,26 @@ bool HelmIvP::Iterate()
   string bhvs_active_list = m_helm_report.getActiveBehaviors(false);
   if(m_bhvs_active_list != bhvs_active_list) {
     Notify("IVPHELM_BHV_ACTIVE", bhvs_active_list); 
+    Notify("IVPHELM_BHV_ACTIVE_CNT", m_helm_report.getActiveBhvsCnt()); 
     m_bhvs_active_list = bhvs_active_list;
   }
   string bhvs_running_list = m_helm_report.getRunningBehaviors(false);
   if(m_bhvs_running_list != bhvs_running_list) {
     Notify("IVPHELM_BHV_RUNNING", bhvs_running_list); 
+    Notify("IVPHELM_BHV_RUNNING_CNT", m_helm_report.getRunningBhvsCnt()); 
     m_bhvs_running_list = bhvs_running_list;
   }
   string bhvs_idle_list = m_helm_report.getIdleBehaviors(false);
   if(m_bhvs_idle_list != bhvs_idle_list) {
     Notify("IVPHELM_BHV_IDLE", bhvs_idle_list); 
+    Notify("IVPHELM_BHV_IDLE_CNT", m_helm_report.getIdleBhvsCnt()); 
     m_bhvs_idle_list = bhvs_idle_list;
+  }
+  string bhvs_disabled_list = m_helm_report.getDisabledBehaviors(false);
+  if(m_bhvs_disabled_list != bhvs_disabled_list) {
+    Notify("IVPHELM_BHV_DISABLED", bhvs_disabled_list); 
+    Notify("IVPHELM_BHV_DISABLED_CNT", m_helm_report.getDisabledBhvsCnt()); 
+    m_bhvs_disabled_list = bhvs_disabled_list;
   }
 
   m_prev_helm_report = m_helm_report;
@@ -519,8 +531,6 @@ bool HelmIvP::Iterate()
     }
   }
 
-  Notify("HD", 11);
-  
   if(allstop_msg != "clear")
     postAllStop(allstop_msg);
   else {  // Post all the Decision Variable Results
@@ -1258,10 +1268,9 @@ bool HelmIvP::OnStartUp()
   if(!m_ledger_snap)
     m_ledger_snap = new LedgerSnap;
   
-  m_ledger.setCurrTimeUTC(m_curr_time);
-  m_ledger.setGeodesy(geodesy);
-  m_ledger.setStaleThresh(10);
-
+  // default secs to remove stale contact behavior
+  double contact_max_age = 45; 
+  
   vector<string> behavior_dirs;
 
   STRING_LIST::iterator p;
@@ -1304,6 +1313,8 @@ bool HelmIvP::OnStartUp()
       handled = handleConfigHoldOnApp(value);
     else if(param == "NAV_GRACE")
       handled = setDoubleOnString(m_nav_grace, value);
+    else if(param == "CONTACT_MAX_AGE")
+      handled = setDoubleRngOnString(contact_max_age, value, 10, 1800);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
     else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
@@ -1321,6 +1332,10 @@ bool HelmIvP::OnStartUp()
       reportUnhandledConfigWarning(orig);
   }
 
+  m_ledger.setCurrTimeUTC(m_curr_time);
+  m_ledger.setGeodesy(geodesy);
+  m_ledger.setStaleThresh(contact_max_age);
+  
   if(m_seed_random)
     seedRandom();
   
@@ -1386,6 +1401,12 @@ bool HelmIvP::OnStartUp()
 
   Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
   Notify("IVPHELM_MODESET", mode_set_string_description);
+
+  Notify("IVPHELM_BHV_ACTIVE_CNT", (double)0);
+  Notify("IVPHELM_BHV_IDLE_CNT", (double)0);
+  Notify("IVPHELM_BHV_RUNNING_CNT", (double)0);
+  Notify("IVPHELM_BHV_DISABLED_CNT", (double)0);
+
   if(m_helm_alias != "")
     Notify("IVPHELM_ALIAS", m_helm_alias);
 

@@ -210,6 +210,17 @@ string LedgerSnap::getInfoString(std::string vname,
 }
 
 //-----------------------------------------------------------
+// Procedure: hasVName()
+
+bool LedgerSnap::hasVName(string vname) const
+{
+  if(m_map_xpos.count(vname) == 0)
+    return(false);
+
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: clear()
 
 void LedgerSnap::clear()

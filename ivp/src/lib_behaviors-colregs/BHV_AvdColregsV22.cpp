@@ -92,11 +92,6 @@ BHV_AvdColregsV22::BHV_AvdColregsV22(IvPDomain gdomain) :
   // -1 Indicates disabled by default
   m_giveway_bow_dist = -1; 
   
-  m_debug1     = "n/a";
-  m_debug2     = "n/a";
-  m_debug3     = "n/a";
-  m_debug4     = "n/a";
-
   m_post_status_info_on_idle = false;
   m_pts_port_turns_ok = true;
   
@@ -351,8 +346,9 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
 
   updateAvoidMode();  
   double relevance = getRelevance();
-  
-  postMessage("COL22_RELEVANCE_" + toupper(m_contact), relevance);
+
+  if(postingPerContactInfo())
+    postMessage("COL22_RELEVANCE_" + toupper(m_contact), relevance);
 
   double held_min_util_cpa_dist = m_min_util_cpa_dist;
   double held_max_util_cpa_dist = m_max_util_cpa_dist;
@@ -376,7 +372,8 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
       ipf = buildCPA_IPF();
   }
 
-  postMessage("COL22_AVOID_MODE_" + toupper(m_contact), m_avoid_mode);
+  if(postingPerContactInfo())
+    postMessage("COL22_AVOID_MODE_" + toupper(m_contact), m_avoid_mode);
 
   m_min_util_cpa_dist = held_min_util_cpa_dist;
   m_max_util_cpa_dist = held_max_util_cpa_dist;
@@ -386,14 +383,6 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
     m_actual_pwt = relevance * m_priority_wt;
     ipf->getPDMap()->normalize(0.0, 100.0);
     ipf->setPWT(m_actual_pwt);
-
-    m_debug2 = doubleToString(m_priority_wt,2) + ":" +
-      doubleToString(m_actual_pwt,2);
-    m_debug4 = "pieces: " + uintToString(ipf->size());
-  }
-  else {
-    m_debug2 = "n/a";
-    m_debug4 = "n/a";
   }
     
   postStatusInfo();
@@ -405,9 +394,9 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: getInfo()
+// Procedure: getDebugInfo()
 
-string BHV_AvdColregsV22::getInfo(string param)
+string BHV_AvdColregsV22::getDebugInfo(string param)
 {
   string result;
   
@@ -417,14 +406,6 @@ string BHV_AvdColregsV22::getInfo(string param)
     result = m_avoid_mode;
   else if(param == "avoid_submode")
     result = m_avoid_submode;
-  else if(param == "debug1")
-    result = m_debug1;
-  else if(param == "debug2")
-    result = m_debug2;
-  else if(param == "debug3")
-    result = m_debug3;
-  else if(param == "debug4")
-    result = m_debug4;
 
   return(result);
 }
@@ -656,11 +637,13 @@ void BHV_AvdColregsV22::checkModeHeadOn()
   //=====================================================================  
   if(m_avoid_mode == "headon") {
     if((m_contact_range > m_min_util_cpa_dist) && (m_cnos.rate_of_closure() < 0)) {
-      postMessage(debug_var, debug_msg + "release due to opening range");
+      if(postingPerContactInfo())
+	postMessage(debug_var, debug_msg + "release due to opening range");
       resetAvoidModes();
     }
     if(m_cnos.os_aft_of_cn()) {
-      postMessage(debug_var, debug_msg + "release due to os aft of cn");
+      if(postingPerContactInfo())
+	postMessage(debug_var, debug_msg + "release due to os aft of cn");
       resetAvoidModes();
     }
 
@@ -672,7 +655,8 @@ void BHV_AvdColregsV22::checkModeHeadOn()
       double tot_bng_extra = os_bng_extra + cn_bng_extra;
       if((os_bng_extra > 5) || (cn_bng_extra > 5) || ((tot_bng_extra > 7.5))) {
 	resetAvoidModes();
-	postMessage(debug_var, debug_msg + "release due to passing to port");
+	if(postingPerContactInfo())
+	  postMessage(debug_var, debug_msg + "release due to passing to port");
       }
     }
     return;
@@ -686,7 +670,8 @@ void BHV_AvdColregsV22::checkModeHeadOn()
   // If mode entry criteria not met, reset mode/submode to none, return now.
   if(m_contact_range >= m_pwt_outer_dist*2) {
     resetAvoidModes();
-    postMessage(debug_var, debug_msg + "not entered due to range");
+    if(postingPerContactInfo())
+      postMessage(debug_var, debug_msg + "not entered due to range");
     return;
   }
 
@@ -698,12 +683,14 @@ void BHV_AvdColregsV22::checkModeHeadOn()
 
   if((os_cn_abs_rel_bearing > m_headon_abs_relbng_thresh) ||
      (cn_os_abs_rel_bearing > m_headon_abs_relbng_thresh)) {
-    postMessage(debug_var, debug_msg + "not entered due to rel bearing");
+    if(postingPerContactInfo())
+      postMessage(debug_var, debug_msg + "not entered due to rel bearing");
     resetAvoidModes();
     return;
   }
 
-  postMessage(debug_var, debug_msg + "entered head-on mode");
+  if(postingPerContactInfo())
+    postMessage(debug_var, debug_msg + "entered head-on mode");
   m_avoid_mode    = "headon";
   m_avoid_submode = "none";
 }
@@ -800,9 +787,11 @@ void BHV_AvdColregsV22::checkModeGiveWay()
   // But if our present course has us crossing the bow, and crossing by
   // a healthy distance, then the giveway behavior will try to achieve
   // its goal by crossing the bow, setting the avoid_submode to "bow".
-  string mvar1 = "XCN_BOW_DIST_" + toupper(m_contact);
-  postMessage(mvar1, m_cnos.os_crosses_cn_bow_dist());
-
+  if(postingPerContactInfo()) {
+    string mvar1 = "XCN_BOW_DIST_" + toupper(m_contact);
+    postMessage(mvar1, m_cnos.os_crosses_cn_bow_dist());
+  }
+  
   if(m_cnos.os_crosses_cn_bow()) {
     // Criteria A: os crossing cn by by a healthy amount
     double acceptable_dist  = (2*m_max_util_cpa_dist + m_min_util_cpa_dist) / 3; 
@@ -822,8 +811,10 @@ void BHV_AvdColregsV22::checkModeGiveWay()
     if(turn_gap < acceptable_dist)
       m_avoid_submode = "bow";
 
-    string mvar2 = "XCN_BOW_TURN_GAP_" + toupper(m_contact);
-    postMessage(mvar2, turn_gap);
+    if(postingPerContactInfo()) {
+      string mvar2 = "XCN_BOW_TURN_GAP_" + toupper(m_contact);
+      postMessage(mvar2, turn_gap);
+    }
   }
 
   
@@ -852,8 +843,6 @@ IvPFunction* BHV_AvdColregsV22::buildGiveWayIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  m_debug2 = "Building Giveway IPF";
-
   AOF_R16  aof(m_domain);
 
   aof.setOwnshipParams(m_osx, m_osy);
@@ -871,26 +860,22 @@ IvPFunction* BHV_AvdColregsV22::buildGiveWayIPF()
   
   bool init_ok = ok && aof.initialize();
 
-  m_debug3 = boolToString(init_ok);
-  
   if(!init_ok) {
-    m_debug1 = "PROBLEM Init AOF_R16!!!!";
     string aof_msg = aof.getCatMsgsAOF();
     postEMessage("Unable to init AOF_R16:"+aof_msg);
     return(0);
   }
-  m_debug4 = "GiveWay AOF initialized OK";
 
   OF_Reflector reflector(&aof, 1);
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 
-  m_debug3 = "";
-  unsigned int msize = reflector.getMessageCnt();
-  for(unsigned int i=0; i<msize; i++) {
-    string msg = reflector.getMessage(i);
-    postMessage("AOF_R16", msg);
-    m_debug3 += " # " + msg;
+  if(postingPerContactInfo()) {
+    unsigned int msize = reflector.getMessageCnt();
+    for(unsigned int i=0; i<msize; i++) {
+      string msg = reflector.getMessage(i);
+      postMessage("AOF_R16", msg);
+    }
   }
 
   return(ipf);
@@ -898,7 +883,7 @@ IvPFunction* BHV_AvdColregsV22::buildGiveWayIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: checkModeStandOn                      (Rule 17)
+// Procedure: checkModeStandOn()                    (Rule 17)
 
 void BHV_AvdColregsV22::checkModeStandOn()
 {
@@ -1204,8 +1189,6 @@ void BHV_AvdColregsV22::checkModeCPA()
 
 IvPFunction* BHV_AvdColregsV22::buildStandOnIPF()
 {
-  m_debug3 = "Bldg StandOn V17 IPF";
-
   if(m_avoid_submode == "inextremis")
     return(buildCPA_IPF());
 
@@ -1240,7 +1223,7 @@ IvPFunction* BHV_AvdColregsV22::buildStandOnIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: buildCPA_IPF                    (Catch-all)
+// Procedure: buildCPA_IPF()                    (Catch-all)
 
 IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
 {
@@ -1250,8 +1233,6 @@ IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
-
-  m_debug2 = "Building CPA IPF";
 
   AOF_CPA aof(m_domain);
   aof.setOwnshipParams(m_osx, m_osy);
@@ -1263,14 +1244,10 @@ IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
   aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   bool init_ok = aof.initialize();
 
-  m_debug3 = boolToString(init_ok);
-  
   if(!init_ok) {
-    m_debug1 = "PROBLEM Init AOF_AvoidCollision!!!!";
     postEMessage("Unable to init AOF_AvoidCollision.");
     return(0);
   }
-  m_debug4 = "Basic CPA AvoidCollision AOF initialized OK";
 
   OF_Reflector reflector(&aof, 1);
 
