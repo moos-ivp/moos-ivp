@@ -95,7 +95,7 @@ Behavior=BHV_ConstantSpeed
 	
 }
 
-Behavior=BHV_AvoidObstacle
+Behavior=BHV_AvoidObstacleV24
 {
   name       = avoid_obstacle_
   pwt        = 500
@@ -105,7 +105,7 @@ Behavior=BHV_AvoidObstacle
 
 
      allowable_ttc = 5 
-       buffer_dist = 5
+       // buffer_dist = 5
     pwt_outer_dist = 19
     pwt_inner_dist = 10
     completed_dist = 51
