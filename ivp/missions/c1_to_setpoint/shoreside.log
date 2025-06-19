@@ -1,0 +1,78 @@
+*************************************
+*  This is Antler, head of MOOS...  *
+*  P. Newman 2008                   *
+*************************************
+
+
+|****** Launch ******|
+
+Unless directed otherwise using system path to locate binaries 
+   [000] Process: pMarineViewer   ~ pMarineViewer   launched successfully
+[32mpMarineViewer launching as pMarineViewer
+[0m
+pMarineViewer thread spawned
+starting pMarineViewer thread
+1749706674.9833 [33m140667284088576- [0m                          disabling nagle
+[0m
+-------------- moos connect ----------------------
+  contacting a MOOS server localhost:9000 -  try 00001   contacting a MOOS server localhost:9000 -  try 00002   contacting a MOOS server localhost:9000 -  try 00003   contacting a MOOS server localhost:9000 -  try 00004   contacting a MOOS server localhost:9000 -  try 00005   contacting a MOOS server localhost:9000 -  try 00006 ***************************************************
+*  pMarineViewer starting ...
+***************************************************
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  VEHICLES
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  SCOPE
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  BUTTON_TWO
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  BUTTON_ONE
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  ACTION
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  ACTION
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  ZOOM
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  VEHICLE_SHAPE_SCALE
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  TIFF_FILE
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  COMMSTICK
++++++++++++++++++++++++++++++++++++++++++++++++++
+param =  APPTICK
+Setting PMV LatOrigin based on the MOOS file. 
+pMarineViewer is Running:
+ |-Baseline AppTick   @ 4.0 Hz
+ |--Comms is Full Duplex and Asynchronous
+ -Iterate Mode 0 :
+   |-Regular iterate and message delivery at 4 Hz
+
+
+Processing tif file: [moos-ivp/share/ivp/marineview/bitmaps/Default.tif]
+zoom:1.5
+TIFF FILES COUNT:1
+[1] Looking for moos-ivp/share/ivp/marineview/bitmaps/Default.tif and moos-ivp/share/ivp/marineview/bitmaps/Default.info in:
+    Dir: [/home/lonewolf-ubuntu/moos-ivp/ivp/data]
+    Not found.
+[*] Looking for moos-ivp/share/ivp/marineview/bitmaps/Default.tif and moos-ivp/share/ivp/marineview/bitmaps/Default.info in:
+    Dir: [./]
+    Not found.
+**************************************************
+*******             WARNING           ************
+**************************************************
+Environment variable IVP_IMAGE_DIRS not set. This 
+colon-separated path may point to image/tiff files
+For example (in your .bashrc file) use:           
+  IVP_IMAGE_DIRS=~/my_folder1                     
+  IVP_IMAGE_DIRS+=:~/my_folder2                   
+  export IVP_IMAGE_DIRS                           
+**************************************************
+
+Could not find the pair of files: 
+moos-ivp/share/ivp/marineview/bitmaps/Default.tif and moos-ivp/share/ivp/marineview/bitmaps/Default.info
+Opening Tiff: 
+TIFFOpen: : No such file or directory.
+  Failed!!!!!!!!!
+Could not find or read contents of 
+  contacting a MOOS server localhost:9000 -  try 00007   contacting a MOOS server localhost:9000 -  try 00008   contacting a MOOS server localhost:9000 -  try 00009   contacting a MOOS server localhost:9000 -  try 00010   contacting a MOOS server localhost:9000 -  try 00011   contacting a MOOS server localhost:9000 -  try 00012   contacting a MOOS server localhost:9000 -  try 00013   contacting a MOOS server localhost:9000 -  try 00014   contacting a MOOS server localhost:9000 -  try 00015   contacting a MOOS server localhost:9000 -  try 00016   contacting a MOOS server localhost:9000 -  try 00017   contacting a MOOS server localhost:9000 -  try 00018   contacting a MOOS server localhost:9000 -  try 00019   contacting a MOOS server localhost:9000 -  try 00020   contacting a MOOS server localhost:9000 -  try 00021   contacting a MOOS server localhost:9000 -  try 00022   contacting a MOOS server localhost:9000 -  try 00023   contacting a MOOS server localhost:9000 -  try 00024   contacting a MOOS server localhost:9000 -  try 00025   contacting a MOOS server localhost:9000 -  try 00026   contacting a MOOS server localhost:9000 -  try 00027   contacting a MOOS server localhost:9000 -  try 00028 ConnectToServer returns early
+   [000] Process: pMarineViewer   has quit

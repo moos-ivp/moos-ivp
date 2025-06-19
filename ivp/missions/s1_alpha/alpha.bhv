@@ -11,6 +11,12 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
   endflag   = RETURN = true
+  
+  idleflag  = WPTING = idle
+  runflag   = WPTING = running
+  endflag   = WPTING = end
+  inactiveflag = WPTING = inactive
+  	
 
 	endflag   = SUMMARY=speed=$[SPEED],time=$[DUR_RUN_TIME]
 	
@@ -88,4 +94,22 @@ Behavior=BHV_ConstantSpeed
 	duration_reset = CONST_SPD_RESET=true
 	
 }
+
+Behavior=BHV_AvoidObstacle
+{
+  name       = avoid_obstacle_
+  pwt        = 500
+  condition  = DEPLOY = true
+  templating = spawn
+  updates    = OBSTACLE_ALERT
+
+
+     allowable_ttc = 5 
+       buffer_dist = 5
+    pwt_outer_dist = 19
+    pwt_inner_dist = 10
+    completed_dist = 51
+}
+
+
 

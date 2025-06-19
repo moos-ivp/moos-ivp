@@ -1,0 +1,14 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./JULIET_13_6_2025_____12_44_41/JULIET_13_6_2025_____12_44_41.ylog
+%% FILE OPENED ON  Thu Jan  1 05:30:00 1970
+%% LOGSTART           1749798881.350964
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+0.05518484 MOOS_DEBUG           pMarinePID           MAXPITCH               = 0.262 
+0.755373   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
+0.755373   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
+0.755373   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
+3.823831   MOOS_DEBUG           pMarinePID           pMarinePID Control Is On 
+3.823883   MOOS_DEBUG           pMarinePID           Paused Due To Tardy HELM Input: THRUST=0 
+4.012526   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: clear 
+4.012526   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: clear 
+4.012526   MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: clear 

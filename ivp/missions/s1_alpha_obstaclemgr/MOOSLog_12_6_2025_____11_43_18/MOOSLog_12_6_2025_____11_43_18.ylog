@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./MOOSLog_12_6_2025_____11_43_18/MOOSLog_12_6_2025_____11_43_18.ylog
+%% FILE OPENED ON  Thu Jan  1 05:30:00 1970
+%% LOGSTART           1749708797.510506
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+1.053161   MOOS_DEBUG           pMarinePID           YAW_PID_KP not found in Mission File 
+1.053294   MOOS_DEBUG           pMarinePID           YAW_PID_KD not found in Mission File 
+1.053422   MOOS_DEBUG           pMarinePID           YAW_PID_KI not found in Mission File 
+1.053679   MOOS_DEBUG           pMarinePID           YAW_PID_INTEGRAL_LIMIT not found in Mission File 
+1.053806   MOOS_DEBUG           pMarinePID           MAXRUDDER not found in Mission File 
+1.053813   MOOS_DEBUG           pMarinePID           ** NEW CONTROLLER GAINS ARE ** 
+1.053824   MOOS_DEBUG           pMarinePID           YAW_PID_KP             = 116811751264566953681472842627326862063863847261807542838310102736847475381301762215453945403115811195375829179189775115538073936217558747820695313158462426737797896993738642016065798953619884495840955748077740752896.000 
+1.053828   MOOS_DEBUG           pMarinePID           YAW_PID_KD             = 0.000 
+1.053829   MOOS_DEBUG           pMarinePID           YAW_PID_KI             = 0.000 
+1.053831   MOOS_DEBUG           pMarinePID           YAW_PID_INTEGRAL_LIMIT = 0.000 
+1.053833   MOOS_DEBUG           pMarinePID           MAXRUDDER              = 100.000 
+1.053962   MOOS_DEBUG           pMarinePID           SPEED_PID_KP not found in Mission File 
+1.054091   MOOS_DEBUG           pMarinePID           SPEED_PID_KD not found in Mission File 
+1.054218   MOOS_DEBUG           pMarinePID           SPEED_PID_KI not found in Mission File 
+1.054352   MOOS_DEBUG           pMarinePID           SPEED_PID_INTEGRAL_LIMIT not found in Mission File 
+1.054485   MOOS_DEBUG           pMarinePID           MAXTHRUST not found in Mission File 
+1.054488   MOOS_DEBUG           pMarinePID           SPEED_PID_KP           = 0.000 
+1.05449    MOOS_DEBUG           pMarinePID           SPEED_PID_KD           = 0.000 
+1.054491   MOOS_DEBUG           pMarinePID           SPEED_PID_KI           = 0.000 
+1.054493   MOOS_DEBUG           pMarinePID           SPEED_PID_INTEGRAL_LIMIT = 0.000 
+1.054497   MOOS_DEBUG           pMarinePID           MAXTHRUST              = 100.000 
+1.054497   MOOS_DEBUG           pMarinePID           MAXTHRUST              = 100.000 
+1.054497   MOOS_DEBUG           pMarinePID           MAXTHRUST              = 100.000 
+1.054497   MOOS_DEBUG           pMarinePID           MAXTHRUST              = 100.000 

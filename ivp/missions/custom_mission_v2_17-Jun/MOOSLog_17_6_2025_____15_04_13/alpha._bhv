@@ -1,0 +1,100 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  idleflag  = WPTING = idle
+  runflag   = WPTING = running
+  endflag   = WPTING = end
+  inactiveflag = WPTING = inactive
+
+  UPDATES   = WPT_UPDATE
+  perpetual = true
+
+               lead = 8
+        lead_damper = 1
+              speed = 2   // meters per second
+       capture_line = true
+     capture_radius = 5.0
+        slip_radius = 8.0
+             points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             repeat = 5
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-20
+}
+
+//----------------------------------------------
+Behavior=BHV_AvoidObstacleV24
+{
+  
+// General Behavior Parameters
+// ---------------------------
+  name = avdob_
+  pwt = 600
+  condition = DEPLOY = true
+  templating = spawn
+  updates = OBSTACLE_ALERT
+// Parameters specific to this behavior
+// ------------------------------------
+      allowable_ttc = 20 
+      pwt_outer_dist = 50
+      // default
+      pwt_inner_dist = 10
+// default
+      completed_dist = 60
+// default
+      min_util_cpa_dist = 8
+// default
+      max_util_cpa_dist = 16
+// default
+      use_refinery = true // default is false
+      visual_hints = obstacle_edge_color = white 
+      visual_hints = obstacle_vertex_color = gray60
+      visual_hints = obstacle_vertex_size = 1
+      visual_hints = obstacle_fill_color =  gray60
+      visual_hints = obstacle_fill_transparency = 0.7
+      
+      visual_hints = buffer_min_edge_color = gray60
+      visual_hints = buffer_min_vertex_color = blue
+      visual_hints = buffer_min_vertex_size = 1
+      visual_hints = buffer_min_fill_color = gray70
+      visual_hints = buffer_min_fill_transparency = 0.25
+
+      visual_hints = buffer_max_edge_color = gray60
+      visual_hints = buffer_max_vertex_color = dodger_blue
+      visual_hints = buffer_max_vertex_size = 0
+      visual_hints = buffer_max_fill_color = gray70
+      visual_hints = buffer_max_fill_transparency = 0.1
+
+}

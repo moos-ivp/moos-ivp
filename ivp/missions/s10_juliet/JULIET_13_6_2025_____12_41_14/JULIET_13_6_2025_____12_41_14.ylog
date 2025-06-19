@@ -1,0 +1,9 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./JULIET_13_6_2025_____12_41_14/JULIET_13_6_2025_____12_41_14.ylog
+%% FILE OPENED ON  Thu Jan  1 05:30:00 1970
+%% LOGSTART           1749798674.237139
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+0.05328298 MOOS_DEBUG           pMarinePID           MAXPITCH               = 0.262 
+0.7504599  MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
+0.7504599  MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
+0.7504599  MOOS_DEBUG           pHelmIvP             pHelmIvP AllStop: ManualOverride 
