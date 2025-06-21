@@ -100,7 +100,7 @@ void showExampleConfigAndExit()
 void showInterfaceAndExit()
 {
   blu("=============================================================== ");
-  blu("pSpoofNode INTERFACE                                    ");
+  blu("pSpoofNode INTERFACE                                            ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -115,7 +115,12 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  NODE_REPORT =                                                 ");
+  blk("  NODE_REPORT = NAME=ben,X=40.01,Y=-40.01,SPD=0,HDG=180,DEP=0,  ");
+  blk("                LAT=43.82494566,LON=-70.32989454,TYPE=kayak,    ");
+  blk("                COLOR=red,VSOURCE=radar,                        ");
+  blk("                MODE=MODE@ACTIVE:TRANSITING,ALLSTOP=clear,      ");
+  blk("                INDEX=87,YAW=-1.5707963,TIME=7001538254.13,     ");
+  blk("                LENGTH=4                                        ");
   exit(0);
 }
 
