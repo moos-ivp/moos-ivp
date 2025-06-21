@@ -117,18 +117,6 @@ void showHelpAndExit()
 }
 
 
-The zaic_hdg utility renders a configured instance 
-of the ZAIC_HDG utility in the ivpbuild toolbox.   
-This allow the user to visualize the effects of    
-parameter settings for this too. Normally this     
-is created and parameterized within an IvP    
-behavior. This tool may give behavior authors some
-insight into how the tool works. This tool was     
-also used as an engineering/validatio tool when    
-the original C++ code was written. This tool wraps 
-the very same ZAIC_HDG C++ class as is used in the 
-behaviors.                                         
-
 
 
 
