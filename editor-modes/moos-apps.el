@@ -43,6 +43,8 @@
 
       '("pAutoPoke" "flag" "required_nodes")
 
+      '("pSpoofNode" "refresh_interval" "default_length" "default_vtype" "default_group" "default_vsource" "default_color" "default_hdg" "default_spd" "default_duration" "spoof")
+
       '("uFldConvoyEval" "recap_var" "stat_recap_var" "spd_policy_var" )
       
       '("uFldVoronoi" "stale_time" "region" "muster_region" "prox_edge_color" "prox_vertex_color" "prox_fill_color" "prox_label_color" "max_appcast_events")

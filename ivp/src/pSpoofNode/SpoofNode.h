@@ -30,7 +30,7 @@ protected: // Standard MOOSApp functions to overload
 
  protected:
   bool handleConfigDefaultVType(std::string);
-  bool handleMailSpoof(std::string);
+  bool handleSpoofRequest(std::string);
   bool handleMailSpoofCancel(std::string);
 
   void advancePositions(double);
@@ -61,6 +61,7 @@ protected: // Standard MOOSApp functions to overload
   double m_last_posting;
 
   unsigned int m_total_postings;
+  unsigned int m_total_spoof_reqs;
   
   std::map<std::string, NodeRecord> m_map_node_records;
   std::map<std::string, double> m_map_node_durations;

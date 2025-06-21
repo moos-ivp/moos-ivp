@@ -90,6 +90,21 @@ void showHelpAndExit()
 {
   cout << endl;
   cout << "Usage: zaic_hdg [OPTIONS]                           " << endl;
+  cout << "  zaic_hdg [OPTIONS]                                " << endl;
+  cout << "                                                    " << endl;
+  cout << "Synopsis:                                           " << endl;
+  cout << "  The zaic_hdg utility renders a configured instance" << endl;
+  cout << "  of the ZAIC_HDG utility in the ivpbuild toolbox.  " << endl;
+  cout << "  This allow the user to visualize the effects of   " << endl;
+  cout << "  parameter settings for this too. Normally this    " << endl;
+  cout << "  tool is created and parameterized within an IvP   " << endl;
+  cout << "  behavior. This tool may give behavior authors some" << endl;
+  cout << "  insight into how the tool works. This tool was    " << endl;
+  cout << "  also used as an engineering/validatio tool when   " << endl;
+  cout << "  the original C++ code was written. This tool wraps" << endl;
+  cout << "  the very same ZAIC_HDG C++ class as is used in the" << endl;
+  cout << "  behaviors.                                        " << endl;
+  cout << "                                                    " << endl;
   cout << "Options:                                            " << endl;
   cout << "  --help, -h           Display this help message    " << endl;
   cout << "  --domain=360         Set upper value of domain    " << endl;
@@ -100,7 +115,6 @@ void showHelpAndExit()
   cout << " $ zaic_hdg --domain=500 --verbose                  " << endl;
   exit(0);
 }
-
 
 
 

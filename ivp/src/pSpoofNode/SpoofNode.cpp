@@ -61,7 +61,7 @@ bool SpoofNode::OnNewMail(MOOSMSG_LIST &NewMail)
 
     bool handled = false;
     if(key == "SPOOF") 
-      handled = handleMailSpoof(sval);
+      handled = handleSpoofRequest(sval);
     else if(key == "SPOOF_CANCEL") 
       handled = handleMailSpoofCancel(sval);
     
@@ -131,7 +131,6 @@ bool SpoofNode::OnStartUp()
       handled = setNonWhiteVarOnString(m_default_group, value);
     else if(param == "default_vsource") 
       handled = setNonWhiteVarOnString(m_default_vsource, value);
-
     else if(param == "default_color")
       handled = setColorOnString(m_default_color, value);
 
@@ -142,12 +141,24 @@ bool SpoofNode::OnStartUp()
     else if(param == "default_duration") 
       handled = setPosDoubleOnString(m_default_duration, value);
 
-    
+    if(!handled && (param != "spoof"))
+      reportUnhandledConfigWarning(orig);
+  }
+
+  // Handle the spoof requests AFTER all the default values are set
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+
+    bool handled = true;
+    if(param == "spoof") 
+      handled = handleSpoofRequest(value);
     if(!handled)
       reportUnhandledConfigWarning(orig);
-
   }
-  
+
   registerVariables();	
   return(true);
 }
@@ -221,11 +232,11 @@ bool SpoofNode::handleConfigDefaultVType(string str)
 }
 
 //-----------------------------------------------------------
-// Procedure: handleMailSpoof()
+// Procedure: handleSpoofRequest()
 //   Example: x=23, y=34
 //   Example: x=23, y=34, name=val, group=blue, type=heron, color=blue
 
-bool SpoofNode::handleMailSpoof(string str)
+bool SpoofNode::handleSpoofRequest(string str)
 {
   str = tolower(str);
   
@@ -281,7 +292,7 @@ bool SpoofNode::handleMailSpoof(string str)
   record.setLength(m_default_length);
   
   if(vname == "")
-    vname = "C" + uintToString(m_map_node_records.size());
+    vname = "C" + uintToString(m_total_spoof_reqs, 4);
   if(vtype == "")
     vtype = m_default_vtype;
   if(color == "")
@@ -306,6 +317,8 @@ bool SpoofNode::handleMailSpoof(string str)
   m_map_node_records[vname]   = record;
   m_map_node_durations[vname] = dbl_duration;
   m_map_spoof_start[vname]    = m_curr_time;
+
+  m_total_spoof_reqs++; 
   
   return(true);
 }
