@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
-/*    DATE: Feb 12, 2007                                         */
+/*    DATE: Jan 29th, 2025                                         */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
 /* implied to use, copy, modify, and distribute this software    */
@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
   pair_model.set_cnv(0.9);
 
   string tif_file = "MIT_SP.tif";
-  //string tif_file = "AerialMIT.tif";
   
   for(int i=1; i<argc; i++) { 
     string argi  = argv[i];
@@ -111,10 +110,10 @@ void showHelpAndExit()
   cout << "  pairview [OPTIONS] image.tif                       " << endl;
   cout << "                                                    " << endl;
   cout << "Synopsis:                                           " << endl;
-  cout << "  The pairview utility renders two ships, ownship and" << endl;
-  cout << "  contact, and allows the user to manipulate both   " << endl;
-  cout << "  and observe properties of their relative position " << endl;
-  cout << "  that are key to the     " << endl;
+  cout << "  The pairview utility renders two ships, ownship   " << endl;
+  cout << "  and contact, and allows the user to manipulate the" << endl;
+  cout << "  the positions of both and observe properties of   " << endl;
+  cout << "  their relative position.                          " << endl;
   cout << "                                                    " << endl;
   cout << "Options:                                            " << endl;
   cout << "  -h,--help      Displays this help message         " << endl;
@@ -130,6 +129,9 @@ void showHelpAndExit()
   cout << "  --cnv=<num>    Contact Velocity/Speed             " << endl;
   cout << "                                                    " << endl;
   cout << "  --noimg        Do not open with a background image" << endl;
+  cout << "                                                    " << endl;
+  cout << "  --alert_rng=<num>                                 " << endl;
+  cout << "  --warn_time=<num>                                 " << endl;
   cout << "                                                    " << endl;
   cout << "Examples:                                           " << endl;
   cout << "  pairview --osx=200 --osy=23.2 --osh=43 --osv=2.3  " << endl;

@@ -236,6 +236,7 @@ void ZAIC_Viewer::drawAxes()
 
 void ZAIC_Viewer::drawLabels()
 {
+  return;
   if(m_color_scheme == 0)
       glColor3f(0, 0, 0.6);
   if(m_color_scheme == 1)

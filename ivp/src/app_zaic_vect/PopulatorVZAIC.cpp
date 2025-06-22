@@ -30,6 +30,9 @@
 
 using namespace std;
 
+//-------------------------------------------------------------
+// Constructor()
+
 PopulatorVZAIC::PopulatorVZAIC()
 {
   m_minutil = 0;
@@ -106,12 +109,3 @@ bool PopulatorVZAIC::readFile(string filename)
   cout << "Done reading in file: " << filename << endl;
   return(true);
 }
-
-
-
-
-
-
-
-
-

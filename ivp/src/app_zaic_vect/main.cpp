@@ -35,7 +35,7 @@ void showHelpAndExit();
 void idleProc(void *);
 
 //--------------------------------------------------------
-// Procedure: idleProc
+// Procedure: idleProc()
 
 void idleProc(void *)
 {
@@ -44,7 +44,7 @@ void idleProc(void *)
 }
 
 //--------------------------------------------------------
-// Procedure: main
+// Procedure: main()
 
 int main(int argc, char *argv[])
 {
@@ -78,12 +78,14 @@ int main(int argc, char *argv[])
     cout << "No ZAIC_Vector file provided. Exiting now." << endl;
     exit(1);
   }
-      
   Fl::add_idle(idleProc);
   ZAIC_VECT_GUI* gui = new ZAIC_VECT_GUI(700, 460, "ZAIC_VECT-Viewer");
 
   gui->setZAIC(zaic);
   gui->setVerbose(verbose);
+
+  IvPFunction *ipf = zaic->extractIvPFunction();
+  ipf->getPDMap()->print();
 
   // Enter the GUI event loop.
   return Fl::run();
@@ -95,15 +97,29 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << endl;
-  cout << "Usage: zaic_vect [OPTIONS]                          " << endl;
-  cout << "Options:                                            " << endl;
-  cout << "  --help, -h           Display this help message    " << endl;
-  cout << "  --domain=360         Set upper value of domain    " << endl;
-  cout << "  --verbose,           Enable verbose output        " << endl;
-  cout << "  --version, -v,       Display the release version  " << endl;
-  cout << "                                                    " << endl;
-  cout << "Example:                                            " << endl;
-  cout << " $ zaic_vect --domain=500 --verbose                 " << endl;
+  cout << "Usage: zaic_vect file.zaic [OPTIONS]                 " << endl;
+  cout << "  zaic_vect [OPTIONS                                 " << endl;
+  cout << "                                                     " << endl;
+  cout << "Synopsis:                                            " << endl;
+  cout << "  The zaic_vect utility renders a configured instance" << endl;
+  cout << "  of the ZAIC_VECT utility in the ivpbuild toolbox.  " << endl;
+  cout << "  This allow the user to visualize the effects of    " << endl;
+  cout << "  parameter settings for this too. Normally this     " << endl;
+  cout << "  tool is created and parameterized within an IvP    " << endl;
+  cout << "  behavior. This tool may give behavior authors some " << endl;
+  cout << "  insight into how the tool works. This tool was     " << endl;
+  cout << "  also used as an engineering/validation tool when   " << endl;
+  cout << "  the original C++ code was written. This tool wraps " << endl;
+  cout << "  the very same ZAIC_VECT C++ class as is used in the" << endl;
+  cout << "  behaviors.                                         " << endl;
+  cout << "                                                     " << endl;
+  cout << "Options:                                             " << endl;
+  cout << "  --help, -h           Display this help message     " << endl;
+  cout << "  --verbose,           Enable verbose output         " << endl;
+  cout << "  --version, -v,       Display the release version   " << endl;
+  cout << "                                                     " << endl;
+  cout << "Example:                                             " << endl;
+  cout << " $ zaic_vect test.zaic --verbose                     " << endl;
   exit(0);
 }
 
