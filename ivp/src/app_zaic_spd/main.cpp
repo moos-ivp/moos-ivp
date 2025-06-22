@@ -94,7 +94,22 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << endl;
-  cout << "Usage: zaic_spd [OPTIONS]                            " << endl;
+  cout << "Usage: zaic_spd [OPTIONS]                           " << endl;
+  cout << "  zaic_spd [OPTIONS]                                " << endl;
+  cout << "                                                    " << endl;
+  cout << "Synopsis:                                           " << endl;
+  cout << "  The zaic_spd utility renders a configured instance" << endl;
+  cout << "  of the ZAIC_SPD utility in the ivpbuild toolbox.  " << endl;
+  cout << "  This allow the user to visualize the effects of   " << endl;
+  cout << "  parameter settings for this tool. Normally this   " << endl;
+  cout << "  tool is created and parameterized within an IvP   " << endl;
+  cout << "  behavior. This tool may give behavior authors some" << endl;
+  cout << "  insight into how the tool works. This tool was    " << endl;
+  cout << "  also used as an engineering/validation tool when  " << endl;
+  cout << "  the original C++ code was written. This tool wraps" << endl;
+  cout << "  the very same ZAIC_SPD C++ class as is used in the" << endl;
+  cout << "  behaviors.                                        " << endl;
+  cout << "                                                    " << endl;
   cout << "Options:                                             " << endl;
   cout << "  --help, -h             Display this help message   " << endl;
   cout << "  --domain=speed,0,4,41  Set the IvP domain domain   " << endl;
