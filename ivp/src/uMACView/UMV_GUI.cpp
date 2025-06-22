@@ -1491,18 +1491,18 @@ void UMV_GUI::resizeWidgets()
 
   m_ac_brw_nodes->color(color_back);
   m_ac_brw_nodes->textcolor(color_text);
-  //m_ac_brw_nodes->position(0);   // mikerb june2225
-  m_ac_brw_nodes->vposition(0);
+  m_ac_brw_nodes->position(0);   // mikerb june2225
+  //m_ac_brw_nodes->vposition(0);
 
   m_ac_brw_procs->color(color_back);
   m_ac_brw_procs->textcolor(color_text);
-  //m_ac_brw_procs->position(0); // mikerb june2225
-  m_ac_brw_procs->vposition(0); 
+  m_ac_brw_procs->position(0); // mikerb june2225
+  //m_ac_brw_procs->vposition(0); 
 
   m_ac_brw_casts->color(color_back);
   m_ac_brw_casts->textcolor(color_text);
-  // m_ac_brw_casts->position(0); // mikerb june2225
-  m_ac_brw_casts->vposition(0);
+  m_ac_brw_casts->position(0); // mikerb june2225
+  //m_ac_brw_casts->vposition(0);
 
   if(realmcast_color_scheme == "indigo") {
     color_back = fl_rgb_color(95, 117, 182);   // indigo-lighter (65,87,152)
@@ -1525,18 +1525,18 @@ void UMV_GUI::resizeWidgets()
 
   m_rc_brw_nodes->color(color_back);
   m_rc_brw_nodes->textcolor(color_text);
-  //m_rc_brw_nodes->position(0);  // mikerb june2225
-  m_rc_brw_nodes->vposition(0);
+  m_rc_brw_nodes->position(0);  // mikerb june2225
+  //m_rc_brw_nodes->vposition(0);
 
   m_rc_brw_procs->color(color_back);
   m_rc_brw_procs->textcolor(color_text);
-  //m_rc_brw_procs->position(0);  // mikerb june2225
-  m_rc_brw_procs->vposition(0);
+  m_rc_brw_procs->position(0);  // mikerb june2225
+  //m_rc_brw_procs->vposition(0);
 
   m_rc_brw_casts->color(color_back);
   m_rc_brw_casts->textcolor(color_text);
-  //m_rc_brw_casts->position(0);  // mikerb june2225
-  m_rc_brw_casts->vposition(0);
+  m_rc_brw_casts->position(0);  // mikerb june2225
+  //m_rc_brw_casts->vposition(0);
 
 
   // ================================================================
