@@ -19,3 +19,5 @@ SET(HEADERS
 # Build Library
 ADD_LIBRARY(ucommand ${SRC})
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
+

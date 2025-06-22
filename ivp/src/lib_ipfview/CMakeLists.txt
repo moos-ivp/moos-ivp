@@ -32,4 +32,5 @@ SET(HEADERS
 # Build Library
 ADD_LIBRARY(ipfview ${SRC})
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
 
