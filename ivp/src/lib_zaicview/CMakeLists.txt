@@ -25,6 +25,7 @@ IF (${APPLE})
         )
 
     ADD_DEFINITIONS(-DOPSYS_IS_OS_X=1)    
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
   ELSE (${APPLE})    
     ADD_DEFINITIONS(-DOPSYS_IS_LINUX=1)
 ENDIF (${APPLE})

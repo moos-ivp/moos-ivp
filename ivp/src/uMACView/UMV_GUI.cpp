@@ -32,7 +32,7 @@
 using namespace std;
 
 //-------------------------------------------------------------------
-// Constructor
+// Constructor()
 
 UMV_GUI::UMV_GUI(int g_w, int g_h, const char *g_l)
   : Fl_Window(g_w, g_h, g_l) {
@@ -97,7 +97,7 @@ UMV_GUI::UMV_GUI(int g_w, int g_h, const char *g_l)
 }
 
 //----------------------------------------------------------
-// Procedure: augmentMenu
+// Procedure: augmentMenu()
 
 void UMV_GUI::augmentMenu() 
 {
@@ -288,7 +288,6 @@ void UMV_GUI::augmentMenu()
 		 (Fl_Callback*)UMV_GUI::cb_InfoCastSetting, (void*)342,
 		 FL_MENU_RADIO);
 
-  
   m_menubar->add("InfoCasting/realmcast_show_masked/realmcast_show_masked=true", 0,
 		 (Fl_Callback*)UMV_GUI::cb_InfoCastSetting, (void*)350,
 		 FL_MENU_RADIO);
@@ -328,14 +327,10 @@ void UMV_GUI::augmentMenu()
   m_menubar->add("InfoCasting/realmcast_time_format/realmcast_time_format_utc Toggle", 0,
 		 (Fl_Callback*)UMV_GUI::cb_InfoCastSetting, (void*)382,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER);
-
-  
-
-
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void UMV_GUI::resize(int lx, int ly, int lw, int lh)
 {
@@ -495,12 +490,10 @@ void UMV_GUI::updateAppCastProcs(bool clear)
   // to this call, set the browser select to be the current_proc.
   if(clear || (curr_brw_ix==0))
     m_ac_brw_procs->select(brw_item_index, 1);
-
 }
 
-
 //----------------------------------------------------- 
-// Procedure: updateAppCast
+// Procedure: updateAppCast()
 
 void UMV_GUI::updateAppCast() 
 {
@@ -743,7 +736,7 @@ void UMV_GUI::updateRealmCastProcsRC(bool clear)
 
 
 //----------------------------------------------------- 
-// Procedure: updateRealmCast
+// Procedure: updateRealmCast()
 
 void UMV_GUI::updateRealmCast() 
 {
@@ -1498,15 +1491,18 @@ void UMV_GUI::resizeWidgets()
 
   m_ac_brw_nodes->color(color_back);
   m_ac_brw_nodes->textcolor(color_text);
-  m_ac_brw_nodes->position(0);
+  m_ac_brw_nodes->position(0);   // mikerb june2225
+  //m_ac_brw_nodes->vposition(0);
 
   m_ac_brw_procs->color(color_back);
   m_ac_brw_procs->textcolor(color_text);
-  m_ac_brw_procs->position(0);
+  m_ac_brw_procs->position(0); // mikerb june2225
+  //m_ac_brw_procs->vposition(0); 
 
   m_ac_brw_casts->color(color_back);
   m_ac_brw_casts->textcolor(color_text);
-  m_ac_brw_casts->position(0);
+  m_ac_brw_casts->position(0); // mikerb june2225
+  //m_ac_brw_casts->vposition(0);
 
   if(realmcast_color_scheme == "indigo") {
     color_back = fl_rgb_color(95, 117, 182);   // indigo-lighter (65,87,152)
@@ -1529,15 +1525,18 @@ void UMV_GUI::resizeWidgets()
 
   m_rc_brw_nodes->color(color_back);
   m_rc_brw_nodes->textcolor(color_text);
-  m_rc_brw_nodes->position(0);
+  m_rc_brw_nodes->position(0);  // mikerb june2225
+  //m_rc_brw_nodes->vposition(0);
 
   m_rc_brw_procs->color(color_back);
   m_rc_brw_procs->textcolor(color_text);
-  m_rc_brw_procs->position(0);
+  m_rc_brw_procs->position(0);  // mikerb june2225
+  //m_rc_brw_procs->vposition(0);
 
   m_rc_brw_casts->color(color_back);
   m_rc_brw_casts->textcolor(color_text);
-  m_rc_brw_casts->position(0);
+  m_rc_brw_casts->position(0);  // mikerb june2225
+  //m_rc_brw_casts->vposition(0);
 
 
   // ================================================================

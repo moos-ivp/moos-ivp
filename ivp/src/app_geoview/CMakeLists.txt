@@ -48,6 +48,7 @@ IF (${APPLE})
   SET_TARGET_PROPERTIES(geoview PROPERTIES	  
     LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
     )
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
 ENDIF (${APPLE})
 
 

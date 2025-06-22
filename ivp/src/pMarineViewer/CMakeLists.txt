@@ -48,6 +48,7 @@ IF (${APPLE})
   SET_TARGET_PROPERTIES(pMarineViewer PROPERTIES	  
     LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
     )
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
 ENDIF (${APPLE})
 
 ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/pMarineViewer --version)
