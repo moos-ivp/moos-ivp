@@ -196,7 +196,7 @@ SET(IVP_GUI_APPS
   app_zaic_hleq      app_zaic_vect       app_zaic_hdg
   app_zaic_spd       app_zaic_peak       pMarineViewer
   uFunctionVis       uMACView            uPlotViewer
-  uCommand           app_pairview
+  uCommand           
 # app_vzaicview      app_gzaicview
 )
 
