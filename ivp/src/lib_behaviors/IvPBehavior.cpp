@@ -337,7 +337,8 @@ string IvPBehavior::isRunnable()
 #endif
 
   if((m_contact != "") && !hasLedgerVName(m_contact))
-    setComplete();
+    if(isDynamicallySpawned()) // Added mikerb Jun2525
+      setComplete();
 
   if(m_completed)
     return("completed");
