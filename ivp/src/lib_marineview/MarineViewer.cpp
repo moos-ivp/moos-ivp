@@ -3671,7 +3671,25 @@ string MarineViewer::getTiffFileCurrent() const
   return(m_tif_files[m_curr_back_img_ix]);
 }
 
+//-------------------------------------------------------------
+// Procedure: setCtrView(x,y)
 
+void MarineViewer::setCtrView(double pos_x, double pos_y)
+{
+  // First determine how much we're off in terms of meters
+  double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
+  
+  // Next determine how much in terms of pixels
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  double x_pixels = pix_per_mtr_x * delta_x;
+  double y_pixels = pix_per_mtr_y * delta_y;
+  
+  m_vshift_x = -x_pixels;
+  m_vshift_y = -y_pixels;
+}
 
 //-------------------------------------------------------------
 // Procedure: setAutoZoom()

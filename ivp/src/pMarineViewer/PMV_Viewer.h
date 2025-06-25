@@ -83,7 +83,6 @@ class PMV_Viewer : public MarineViewer
   
   void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
 
-  void   setCenterView(double x, double y);
   void   setCenterView(std::string vname);
   
  private:
