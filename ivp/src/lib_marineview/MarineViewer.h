@@ -80,6 +80,7 @@ class MarineViewer : public Fl_Gl_Window
   std::string vehisetting(const std::string& s);
   void   clear(std::string vname, std::string shape, std::string stype);
 
+  void   setCtrView(double x, double y);
   void   setAutoZoom(double, double);
   void   autoZoom();
   
