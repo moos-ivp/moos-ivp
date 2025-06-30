@@ -288,6 +288,8 @@ bool PMV_Viewer::setParam(string param, string value)
     m_ledger.setActiveVName("cycle_active");
     handled = true;
   }
+  else if(param == "extrap_policy")
+    handled = m_ledger.setExtrapPolicy(value);
 
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
@@ -339,11 +341,8 @@ bool PMV_Viewer::setParam(string param, double value)
   else if(param == "curr_time") {
     m_curr_time = value;
     m_ledger.setCurrTimeUTC(m_curr_time);
+    m_ledger.extrapolate(); 
     m_geoshapes_map.manageMemory(m_curr_time);
-    return(true);
-  }
-  else if(param == "time_warp") {
-    m_time_warp = value;
     return(true);
   }
   else if(param == "extrapolate") {
@@ -383,6 +382,7 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
   NodeRecord record = m_ledger.getRecord(vname);
+
   if(!record.valid())  // FIXME more rigorous test
     return;
 
@@ -456,8 +456,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   record.setName(vname_aug);
 
-  if(m_extrapolate > 0)
-    record = extrapolateRecord(record, m_curr_time, m_extrapolate);
+  // if(m_extrapolate > 0)
+  //  record = extrapolateRecord(record, m_curr_time, m_extrapolate);
   
   drawCommonVehicle(record, vehi_color, vname_color, vname_draw, 1, transp);
 }

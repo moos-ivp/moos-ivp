@@ -106,6 +106,10 @@ NodeReporter::NodeReporter()
   // Nov 12, 2022
   m_max_extent = 0;
   m_max_extent_prev = 0;
+
+  // June 2025
+  m_report_cog = false; // include course over ground in report 
+  m_hdg_error  = 0;     // add hdg error to allow test of handling
 }
 
 //-----------------------------------------------------------------
@@ -496,6 +500,10 @@ bool NodeReporter::OnStartUp()
       handled = setNonNegDoubleOnString(m_extrap_max_gap, value);
     else if(param =="json_report") 
       handled = setNonWhiteVarOnString(m_json_report, value);
+    else if(param == "report_cog") 
+      handled = setBooleanOnString(m_report_cog, value);
+    else if(param == "hdg_error") 
+      handled = setPosDoubleOnString(m_hdg_error, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -625,8 +633,6 @@ bool NodeReporter::Iterate()
   if(m_record_last_posted.getTimeStamp() > 0) 
     delta_time = m_curr_time - m_record_last_posted.getTimeStamp();
 
-  cout << "delta_time:" << doubleToStringX(delta_time,2) << endl;
-  
   if(m_extrap_enabled && (delta_time > 0)) {
     if(delta_time < m_extrap_max_gap) {
       NodeRecord extrap_record = extrapolateRecord(m_record_last_posted,
@@ -671,7 +677,15 @@ bool NodeReporter::Iterate()
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
     
     m_record.setIndex(m_reports_posted);
+
     string report = assembleNodeReport(m_record);
+    if(m_hdg_error != 0) {
+      double save_hdg = m_record.getHeading();
+      double delt_hdg = angle360(save_hdg + m_hdg_error);
+      m_record.setHeading(delt_hdg);
+      report = assembleNodeReport(m_record);
+      m_record.setHeading(save_hdg);
+    }
 
     if(!m_paused) {
 
@@ -741,8 +755,11 @@ bool NodeReporter::Iterate()
       m_blackout_interval = 0;
   }
 
-  // Update the last_posted record
-  // m_record_last_posted = m_record;
+  if(m_report_cog)
+    cogRecord(m_record_last_formed, m_record);
+  
+  // Update the last_formed record
+  m_record_last_formed = m_record;
 
   //==============================================================
   // Part 5: Handle the Platform Report

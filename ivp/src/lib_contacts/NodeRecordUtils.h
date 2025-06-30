@@ -37,13 +37,6 @@ NodeRecord extrapolateRecord(const NodeRecord&, double curr_time,
 
 double rangeBetweenRecords(const NodeRecord& rec1, const NodeRecord& rec2);
 
+bool cogRecord(const NodeRecord& prev, NodeRecord& curr);
+
 #endif 
-
-
-
-
-
-
-
-
-

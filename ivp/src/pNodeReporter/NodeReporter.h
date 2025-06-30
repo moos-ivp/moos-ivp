@@ -135,6 +135,7 @@ public:
  protected: 
   LinearExtrapolator m_extrapolator;
   NodeRecord         m_record_last_posted;
+  NodeRecord         m_record_last_formed;
 
 protected: // MissionHash support
   Odometer     m_odometer;
@@ -146,6 +147,10 @@ protected: // MissionHash support
   NodeRiderSet m_riderset;
 
   std::string  m_json_report;
+
+  // Added June 30, 202
+  bool    m_report_cog; // course over ground
+  double  m_hdg_error;
 };
 
 #endif
