@@ -33,16 +33,38 @@ using namespace std;
 
 LinearExtrapolator::LinearExtrapolator()
 {
-  m_xpos         = 0;
-  m_ypos         = 0;
-  m_spd          = 0;
-  m_hdg          = 0;
-  m_decay_start  = 0;
-  m_decay_end    = 0;
-  m_timestamp    = 0;
-  m_position_set = false;
+  // Init Config Params
+  m_decay_beg  = -1;
+  m_decay_end  = -1;
 
+  // Init State vars
+  m_xpos       = 0;
+  m_ypos       = 0;
+  m_spd        = 0;
+  m_hdg        = 0;
+  m_timestamp  = 0;
+
+  m_position_set = false;
   m_decay_maxed  = false;
+}
+
+//---------------------------------------------------------------
+// Procedure: setDecay()
+
+bool LinearExtrapolator::setDecay(double beg, double end)
+{
+  if((beg == -1) && (end == -1))      // ok to shut off
+    m_decay_beg=beg, m_decay_end=end;
+  else if((beg < 0) || (end < 0))     // no other neg vals ok
+    return(false);
+  else if(beg > end)  // cannot begin after end 
+    return(false);
+  else {
+    m_decay_beg = beg;
+    m_decay_end = end;
+  }
+
+  return(true);
 }
 
 //---------------------------------------------------------------
@@ -51,7 +73,7 @@ LinearExtrapolator::LinearExtrapolator()
 bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
 				     double g_timestamp)
 {
-  // If there is no point to extrapolate from set to zero and return
+  // Sanity Check 1: If no point to extrap FROM, return newpt 0,0
   if(!m_position_set) {
     r_xpos = 0;
     r_ypos = 0;
@@ -59,50 +81,55 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
     return(false);
   }
 
-  // Handle the error cases.
+  // By default the extrap return position is the current position
+  r_xpos = m_xpos;
+  r_ypos = m_ypos;
+
+  // Sanity check 2: Must have valid decay range
+  if((m_decay_beg >= 0) || (m_decay_end >= 0)) {
+    if(m_decay_end < m_decay_beg) {
+      m_failure_reason = "invalid decay range";
+      return(false);
+    }
+  }
+  // Sanity check 3: Negative delta time should be flagged
   double delta_time = g_timestamp - m_timestamp;
-  if((m_decay_end < m_decay_start) || (delta_time < -0.1)) {
-    r_xpos = m_xpos;
-    r_ypos = m_ypos;
+  if(delta_time < -0.1) {
     m_failure_reason = "negative delta time, possible clock skew";
-    m_failure_reason += ", dtime=" + doubleToString(delta_time, 5);
+    m_failure_reason += ", delta_time=" + doubleToString(delta_time, 5);
     return(false);
   }
   m_failure_reason = "";
 
-  // Handle a special (easy) case.
-  if(delta_time == 0) {
-    r_xpos = m_xpos;
-    r_ypos = m_ypos;
-    return(true);
-  }
-
-  // By default, assume more decay remaining unless calculated otherwise
-  // below.
-  m_decay_maxed = false;
-
-  double distance = 0;
-  if(delta_time <= m_decay_start)
-    distance = m_spd * delta_time;
   
-  if(delta_time > m_decay_start) {
-    double decay_range = m_decay_end - m_decay_start;
-    // Handle special case where decay is instantaneous
-    if(decay_range <= 0) {
-      distance = m_spd * m_decay_start;
-      m_decay_maxed = true;
-    }
+  // Sanity check 4: No delta time, return position is curr position.
+  if(delta_time == 0) 
+    return(true);
+
+  // By default, set more decay remaining unless calc otherwise below.
+  m_decay_maxed = false;
+  
+  double distance = 0;
+  if((m_decay_beg < 0) && (m_decay_end < 0)) { // If no decay policy in use
+   distance = m_spd * delta_time;
+  }
+  else { // Decay policy IS in use
+    if(delta_time <= m_decay_beg)  // No decay yet.
+      distance = m_spd * delta_time;
     else {
+      distance = m_spd * m_decay_beg;
+      double decay_range = m_decay_end - m_decay_beg;
+
       if(delta_time <= m_decay_end) {
-	double decay_rate = (m_spd / (m_decay_end - m_decay_start));
-	double decay_time = delta_time - m_decay_start;
+	double decay_rate = (m_spd / (m_decay_end - m_decay_beg));
+	double decay_time = delta_time - m_decay_beg;
 	double curr_speed = m_spd - (decay_rate * decay_time);
 	double avg_speed  = (m_spd + curr_speed) / 2.0;
-	distance = (m_spd * m_decay_start) + (avg_speed * decay_time);
+	distance += (avg_speed * decay_time);
       }
       else { 
 	m_decay_maxed = true;
-	distance = (m_spd * m_decay_start) + ((m_spd/2.0) * decay_range);
+	distance += ((m_spd/2.0) * decay_range);
       }
     }
   }

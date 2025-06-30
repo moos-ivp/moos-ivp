@@ -40,7 +40,8 @@ class NodeRecord
   void setSpeed(double v)     {m_speed=v;      m_speed_set=true;}
   void setSpeedOG(double v)   {m_speed_og=v;   m_speed_og_set=true;}
   void setHeading(double v)   {m_heading=v;    m_heading_set=true;}
-  void setHeadingOG(double v) {m_heading_og=v; m_heading_og_set=true;}
+  void setHeadingOG(double v) {m_heading_og=v; m_heading_og_set=true;} // deprecated
+  void setCourseOG(double v)  {m_cog=v;        m_cog_set=true;}
   void setYaw(double v)       {m_yaw=v;        m_yaw_set=true;}
   void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;}
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;}
@@ -77,7 +78,8 @@ class NodeRecord
   double getSpeed() const      {return(m_speed);}
   double getSpeedOG() const    {return(m_speed_og);}
   double getHeading() const    {return(m_heading);}
-  double getHeadingOG() const  {return(m_heading_og);}
+  double getHeadingOG() const  {return(m_heading_og);} // deprecated
+  double getCourseOG() const   {return(m_cog);}
   double getYaw() const        {return(m_yaw);}
   double getPitch() const      {return(m_pitch);}
   double getDepth() const      {return(m_depth);}
@@ -97,7 +99,8 @@ class NodeRecord
   bool   isSetSpeed() const     {return(m_speed_set);}
   bool   isSetSpeedOG() const   {return(m_speed_og_set);}
   bool   isSetHeading() const   {return(m_heading_set);}
-  bool   isSetHeadingOG() const {return(m_heading_og_set);}
+  bool   isSetHeadingOG() const {return(m_heading_og_set);} // deprecated
+  bool   isSetCourseOG() const  {return(m_cog_set);}
   bool   isSetYaw() const       {return(m_yaw_set);}
   bool   isSetPitch() const     {return(m_pitch_set);}
   bool   isSetDepth() const     {return(m_depth_set);}
@@ -137,7 +140,8 @@ class NodeRecord
   double m_speed;
   double m_speed_og;    // Speed over ground
   double m_heading;
-  double m_heading_og;  // Heading over ground
+  double m_heading_og;  // Heading over ground DEPRECATED
+  double m_cog;         // Course Over Ground 
   double m_yaw;
   double m_pitch;
   double m_depth;
@@ -168,7 +172,8 @@ class NodeRecord
   bool m_speed_set;
   bool m_speed_og_set;
   bool m_heading_set;
-  bool m_heading_og_set;
+  bool m_heading_og_set; // deprecated
+  bool m_cog_set;
   bool m_yaw_set;
   bool m_pitch_set;
   bool m_depth_set;

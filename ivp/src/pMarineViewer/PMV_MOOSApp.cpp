@@ -520,18 +520,17 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
+  m_gui->mviewer->setParam("curr_time", e.moos_time); 
   m_gui->clearStaleVehicles();
 
   m_pmv_iteration++;
   
   double curr_time = e.moos_time - m_start_time;
-  cout << "." << flush;
 
   double warp_elapsed = curr_time - m_last_redraw_time;
   double beat_elapsed = curr_time - m_last_beat_time;
   double real_elapsed = warp_elapsed / m_time_warp;
   if(real_elapsed > 0.085) {
-    m_gui->mviewer->PMV_Viewer::draw();
     m_gui->mviewer->redraw();
     m_last_redraw_time = curr_time;
   }
@@ -559,7 +558,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     }
   }
 
-  m_gui->mviewer->setParam("curr_time", e.moos_time);
+  //  m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
 
   // We want to detect when a vehicle has been cleared that may still be
@@ -904,6 +903,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if(param == "cmd") 
       handled = handleConfigCmd(value);
 
+    else if(param == "extrap_policy") 
+      handled = m_gui->mviewer->setParam(param, value);
+    
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
     
@@ -1445,8 +1447,8 @@ bool PMV_MOOSApp::buildReport()
   double curr_time = m_gui->mviewer->getCurrTime();
   m_msgs << "Curr Time:        " << doubleToString(curr_time,2) << endl;
 
-  double time_warp = m_gui->mviewer->getTimeWarp();
-  m_msgs << "Time Warp:        " << doubleToString(time_warp,3) << endl;
+  //double time_warp = m_gui->mviewer->getTimeWarp();
+  //m_msgs << "Time Warp:        " << doubleToString(time_warp,3) << endl;
 
   double srep_thresh = m_gui->mviewer->getStaleReportThresh();
   m_msgs << "Stale report thresh: " << doubleToStringX(srep_thresh,2) << endl;

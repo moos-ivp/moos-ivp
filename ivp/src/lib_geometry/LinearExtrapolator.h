@@ -34,10 +34,7 @@ public:
   LinearExtrapolator();
   virtual ~LinearExtrapolator() {}
 
-  void setDecay(double s, double e) {
-    m_decay_start = s; 
-    m_decay_end   = e;
-  }
+  bool setDecay(double beg, double end);
 
   void setPosition(double x, double y, double s, double h, double t) {
     m_xpos = x;
@@ -59,7 +56,7 @@ public:
   double m_ypos;         // Position in meters
   double m_spd;          // Speed in meters per second
   double m_hdg;          // Heading in degress
-  double m_decay_start;  // Time in seconds
+  double m_decay_beg;    // Time in seconds
   double m_decay_end;    // Time in seconds
   double m_timestamp;    // Time in seconds
   bool   m_position_set; // false until first setPosition

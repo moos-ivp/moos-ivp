@@ -288,9 +288,35 @@ unsigned int LedgerSnap::size() const
 //-----------------------------------------------------------
 // Procedure: getSpec(vname)
 
-string LedgerSnap::getSpec(string vname) const
+string LedgerSnap::getSpec(string vname) 
 {
-  return("");
+  string str;
+  str += "x=" + doubleToStringX(m_map_xpos[vname],4);
+  str += ",y=" + doubleToStringX(m_map_ypos[vname],4);
+  str += ",h=" + doubleToStringX(m_map_hdg[vname],4);
+  str += ",v=" + doubleToStringX(m_map_spd[vname],4);
+  str += ",d=" + doubleToStringX(m_map_dep[vname],4);
+  str += ",lat=" + doubleToStringX(m_map_lat[vname],4);
+  str += ",lon=" + doubleToStringX(m_map_lon[vname],4);
+  str += ",utc=" + doubleToStringX(m_map_utc[vname],4);
+  str += ",grp=" + m_map_group[vname];
+  str += ",type=" + m_map_type[vname];
+  str += ",vsrc=" + m_map_vsource[vname];
+  
+  return(str);
+}
+
+//-----------------------------------------------------------
+// Procedure: print()
+
+void LedgerSnap::print()
+{
+  map<string, double>::iterator p;
+  for(p=m_map_xpos.begin(); p!=m_map_xpos.end(); p++) {
+    string vname = p->first;
+    string info = getSpec(vname);
+    cout << "vname:" << vname << ": " << info << endl;
+  }
 }
 
 

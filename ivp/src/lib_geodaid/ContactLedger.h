@@ -43,10 +43,17 @@ public: // General configuration
 
   void setRecord(std::string vname, NodeRecord record);
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
-  void setStaleThresh(double age) {m_stale_thresh=age;}
   void extrapolate(double utc=0);
   void setActiveVName(std::string vname); 
   void setHistorySize(unsigned int v) {m_history_size=v;}
+
+public: // Config stale node and extrapolation policy
+  bool setExtrapPolicy(std::string);
+  bool setExtrapMode(std::string);
+  bool setExtrapThresh(double age);
+  bool setExtrapDecay(double beg, double end);
+
+  void setStaleThresh(double age)      {m_stale_thresh=age;}
   
 public: // Managing, Handle Node Reports
   std::string processNodeReport(std::string report,
@@ -117,11 +124,12 @@ protected:
   void updateGlobalCoords(NodeRecord&);
   
 protected: // Config vars
-  double m_stale_thresh;
-  double m_extrap_thresh;
-  double m_decay_start;
-  double m_decay_end;
-
+  double m_extrap_thresh;    // Extrap only after this age
+  double m_extrap_decay_beg; // After this age, extrap contact slowed
+  double m_extrap_decay_end; // After this age, extrap contact stopped 
+  double m_stale_thresh;     // After this age, contact is dropped
+  int    m_extrap_mode;      // 0:off, 1:hdg, 2:cog
+  
   unsigned int m_history_size;
 
   std::string m_active_vname;

@@ -27,6 +27,7 @@
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
 #include "LinearExtrapolator.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -76,6 +77,27 @@ NodeRecord extrapolateRecord(const NodeRecord& record, double curr_time,
   }
 
   return(record);
+}
+
+//---------------------------------------------------------
+// Procedure: cogRecord()
+//   Purpose: Set the course over ground based on the position
+//            of the current record compared to the previous.
+
+bool cogRecord(const NodeRecord& prev_record,
+	       NodeRecord& curr_record)
+{
+  if(!prev_record.isSetXY() || !curr_record.isSetXY())
+    return(false);
+  
+  double prev_x = prev_record.getX();
+  double prev_y = prev_record.getY();
+  double curr_x = curr_record.getX();
+  double curr_y = curr_record.getY();
+
+  double cog = relAng(prev_x, prev_y, curr_x, curr_y);
+  curr_record.setCourseOG(cog);
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -156,6 +178,8 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
 	new_record.setAltitude(atof(value.c_str()));
       else if(param == "HDG_OG")
 	new_record.setHeadingOG(atof(value.c_str()));
+      else if(param == "COG")
+	new_record.setCourseOG(atof(value.c_str()));
       else if(param == "SPD_OG")
 	new_record.setSpeedOG(atof(value.c_str()));
       else if(param == "TRANSPARENCY")
@@ -247,6 +271,8 @@ NodeRecord string2NodeRecordJSON(string report)
 	new_record.setAltitude(atof(value.c_str()));
       else if(param == "HDG_OG")
 	new_record.setHeadingOG(atof(value.c_str()));
+      else if(param == "COG")
+	new_record.setCourseOG(atof(value.c_str()));
       else if(param == "SPD_OG")
 	new_record.setSpeedOG(atof(value.c_str()));
       else if(param == "TRANSPARENCY")

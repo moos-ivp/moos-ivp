@@ -465,8 +465,8 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
 
   // Sanity check - skip if update already successfully done
-  if(m_cnos.helm_iter() == m_helm_iter)
-    return(true);
+  //if(m_cnos.helm_iter() == m_helm_iter)
+  //  return(true);
 
   if(m_completed)
     return(true);

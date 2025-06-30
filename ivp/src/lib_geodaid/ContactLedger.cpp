@@ -37,14 +37,14 @@ using namespace std;
 ContactLedger::ContactLedger(unsigned int history_size)
 {
   // Config vars
-  m_stale_thresh = -1;
   m_history_size = history_size;
 
-  // If a record has been received as recently as this value
-  // don't bother calculating an extrapolated position.
-  m_extrap_thresh = 0.02;
-  m_decay_start = 15;
-  m_decay_end   = 30;
+  // Stale node and extrapolation policy
+  m_extrap_mode      = 2;   // 0:off, 1:hdg, 2:cog
+  m_extrap_thresh    = 0.1; // Extrap only after this age 
+  m_extrap_decay_beg = 15;  // After this age, extrap contact slowed  
+  m_extrap_decay_end = 30;  // After this age, extrap contact stopped
+  m_stale_thresh     = -1;  // After this age, extrap contact dropped
   
   // State vars
   m_curr_utc = 0;
@@ -88,11 +88,88 @@ bool ContactLedger::setGeodesy(double dlat, double dlon)
 
 void ContactLedger::setRecord(string vname, NodeRecord record)
 {
-  m_map_records_rep[vname] = record;
-
-  
+  m_map_records_rep[vname] = record;  
   extrapolate(vname);
 }
+
+//---------------------------------------------------------------
+// Procedure: setExtrapPolicy()
+
+bool ContactLedger::setExtrapPolicy(string str)
+{
+  bool all_ok = true;
+  bool one_ok = false;
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+
+    bool ok = false;
+    if(param == "mode")
+      ok = setExtrapMode(value);
+    else if((param == "thresh") && isNumber(value))
+      ok = setExtrapThresh(atoi(value.c_str()));
+    else if(param == "decay") {
+      string beg = biteStringX(value, ':');
+      string end = value;
+      if(isNumber(beg) && isNumber(end)) {
+	double dbeg = atof(beg.c_str());
+	double dend = atof(end.c_str());
+	ok = setExtrapDecay(dbeg, dend);
+      }
+    }
+
+
+    all_ok = all_ok && ok;
+    one_ok = one_ok || ok;
+  }
+
+  // true if at least one valid part, and no invalid parts.
+  return(one_ok && all_ok);
+}
+
+//---------------------------------------------------------------
+// Procedure: setExtrapMode()
+
+bool ContactLedger::setExtrapMode(string mode)
+{
+  if(mode == "off")
+    m_extrap_mode = 0;  // off
+  else if(mode == "hdg")
+    m_extrap_mode = 1;  // hdg (based on reported heading)
+  else if(mode == "cog")
+    m_extrap_mode = 2;  // cog (based on observed course over ground)
+  else
+    return(false);
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: setExtrapThresh()
+
+bool ContactLedger::setExtrapThresh(double val)
+{
+  if(val < 0)
+    return(false);
+
+  m_extrap_thresh = val;
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: setExtrapDecay()
+
+bool ContactLedger::setExtrapDecay(double beg, double end)
+{
+  if((beg < 0) || (end < 0) || (beg > end))
+    return(false);
+
+  m_extrap_decay_beg = beg;
+  m_extrap_decay_end = end;
+  return(true);
+}
+
 
 //---------------------------------------------------------------
 // Procedure: processNodeReport()
@@ -181,9 +258,22 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   }
   record.setLength(vlen);
   
-
   // ========================================================
-  // Part 3: Receive the node reccord
+  // Part 3: Check record for Course Over Ground (COG). If
+  //         missing and there exists a prior report for this 
+  //         vehicle, calculate COG here.
+  //         Otherwise COG is set to reported heading.
+  // ========================================================
+  if(!record.isSetCourseOG()) {
+    if(m_map_records_rep.count(vname)) 
+      cogRecord(m_map_records_rep[vname], record);
+    else
+      record.setCourseOG(record.getHeading());
+  }
+  
+  // ========================================================
+  // Part 4: Receive the node reccord. Extrap position starts
+  //         as the same as the received position.
   // ========================================================
   m_map_records_rep[vname] = record;
   m_map_records_ext[vname] = record;
@@ -193,7 +283,7 @@ string ContactLedger::processNodeRecord(NodeRecord record,
     m_active_vname = vname;
   
   // ========================================================
-  // Part 4: Update the vehicle position history
+  // Part 5: Update the vehicle position history
   // ========================================================
   if(m_history_size > 0) {
     double pos_x = record.getX();
@@ -215,7 +305,7 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   }
 
   // ========================================================
-  // Part 5: Determine skew and update stats
+  // Part 6: Determine skew and update stats
   // ========================================================
   double skew = m_curr_utc - record.getTimeStamp();
 
@@ -373,6 +463,9 @@ void ContactLedger::setActiveVName(string vstr)
 
 void ContactLedger::extrapolate(string vname)
 {
+  //======================================================
+  // Part 1: Sanity checks
+  //======================================================
   // Sanity check 1: Ledger UTC current time must be set
   if(m_curr_utc <= 0)
     return;
@@ -381,45 +474,52 @@ void ContactLedger::extrapolate(string vname)
     return;
 
   NodeRecord record_rep = m_map_records_rep[vname];
-
   // Sanity check 3: Record must have nav info
   if(!record_rep.isSetXY() && !record_rep.isSetLatLon())
     return;
-  
   // Sanity check 4: Record must timestamp
   if(!record_rep.isSetTimeStamp())
     return;
-
   // Fixable check: Record has Lat/Lon but not x/y 
   if(!record_rep.isSetXY()) {
     updateLocalCoords(m_map_records_rep[vname]);
     record_rep = m_map_records_rep[vname];
   }
-  
   // By default, extrap record is set to reported record
   m_map_records_ext[vname] = record_rep;
+  // If extrapolation disabled, just return now.
+  if(m_extrap_mode == 0)
+    return;
   
+  //======================================================
+  // Part 2: Extrapolate
+  //======================================================
   // If reported record is very recent, then we're done
   double record_utc = record_rep.getTimeStamp();
-  double elapsed = m_curr_utc - record_utc;
-  //cout << "elapsed:" << elapsed << endl;
+  double elapsed    = m_curr_utc - record_utc;
   if(elapsed < m_extrap_thresh)
     return;
 
   // Else reported record is not very recent, extrapolate
   double x = record_rep.getX();
   double y = record_rep.getY();
-  double hdg = record_rep.getHeading();
+  double hdg = angle360(record_rep.getHeading());
   double spd = record_rep.getSpeed();
 
-  hdg = angle360(hdg);
+  double extrap_hdg = hdg;
+  if(m_extrap_mode == 2) {
+    if(m_map_records_rep[vname].isSetCourseOG())
+      extrap_hdg = m_map_records_rep[vname].getCourseOG();
+  }
   
   LinearExtrapolator extrapolator;
-  extrapolator.setPosition(x, y, spd, hdg, record_utc);
+  extrapolator.setDecay(m_extrap_decay_beg, m_extrap_decay_end);
+  extrapolator.setPosition(x, y, spd, extrap_hdg, record_utc);
 
   double new_x, new_y;
   bool ok = extrapolator.getPosition(new_x, new_y, m_curr_utc);
 
+  
   if(!ok) {
     string failure_reason = extrapolator.getFailureReason();
     cout << "Extrap Fail: " << failure_reason << endl;
@@ -1025,4 +1125,3 @@ string ContactLedger::getClosestVehicle(double mx, double my) const
 
   return(closest_vname);
 }
-

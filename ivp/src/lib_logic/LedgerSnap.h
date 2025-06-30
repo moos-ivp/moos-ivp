@@ -68,9 +68,10 @@ public:
   unsigned int size() const;
 
 public: // debugging
-  std::string getSpec() const;
-  std::string getSpec(std::string vname) const;
-    
+  std::string getSpec()  const;
+  std::string getSpec(std::string vname);
+  void print();
+  
 protected:
   std::map<std::string, double> m_map_xpos;
   std::map<std::string, double> m_map_ypos;
