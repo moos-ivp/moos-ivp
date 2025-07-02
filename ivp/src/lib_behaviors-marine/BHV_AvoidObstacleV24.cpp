@@ -76,6 +76,8 @@ BHV_AvoidObstacleV24::BHV_AvoidObstacleV24(IvPDomain gdomain) :
   m_closing = false;
 
   m_holonomic_ok = false;
+
+  m_allstop_on_breach = true;
   
   initVisualHints();
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
@@ -177,6 +179,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   //else if(param == "spoke_degs")
   //  return(m_tm_generator.setParam("spoke_degs", dval));
 
+  else if(param == "allstop_on_breach") 
+    return(setBooleanOnString(m_allstop_on_breach, val));
   else
     return(false);
 
@@ -411,10 +415,20 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
 
   IvPFunction *ipf = buildOF();
 
-  // If the IvP function has no decisions with positive utility
-  // then this means a collision with an obstacle is not avoidable.
-  // More possible when using platform model with non-zero turn
-  // radius.
+  // Special case 1: No IPF built, due to ownship being within
+  // the obstacle polygon. Likely want to invoke Allstop unless
+  // allstop_on_breach has been explicitly set to false.
+  if(!ipf) {
+    if(m_allstop_on_breach)
+      postEMessage("Allstop: Obstacle Breached");
+    else
+      postWMessage("Obstacle Breached");
+    return(0);
+  }
+  
+  // If IvP function has no decisions with positive utility then
+  // this means a collision with an obstacle is unavoidable.
+  // Possible when using plat model with non-zero turn radius.
   if(ipf->getValMaxUtil() == 0) {
     postEMessage("Allstop: obstacle unavoidable");
     delete(ipf);

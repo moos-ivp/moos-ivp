@@ -105,6 +105,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configure optional blackout functionality                  ");
   blu("  blackout_interval  = 0       "," // seconds. Range [0,inf)    ");
+  blu("  blackout_variance  = 0       "," // seconds. Range [0,inf)    ");
   blk("                                                                ");
   blk("   // Configure the optional platform report summary            ");
   blk("  plat_report_input  = COMPASS_HEADING, gap=1                   ");
@@ -123,6 +124,7 @@ void showExampleConfigAndExit()
   blu("  cross_fill_policy   = literal                                 ");
   blk("                                                                ");
   blk("  // Configure monitor/reporting of dual nav solution           ");
+  blk("  alt_nav_group      = blue                                     ");
   blk("  alt_nav_prefix     = NAV_GT                                   ");
   blk("  alt_nav_name       = _GT                                      ");
   blk("                                                                ");
@@ -149,9 +151,11 @@ void showExampleConfigAndExit()
   blk("  extrap_hdg_thresh = 1     // degrees, default is 1            ");
   blk("  extrap_max_gap    = 5     // seconds, default is 5            ");
   blk("                                                                ");
+  blk("  hdg_error  = 5    // degrees, default is 0. For debugging.    ");
+  blk("  report_cog = true // default is false. Include COG in report  ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
-  blk("                                                                ");
   exit(0);
 }
 
