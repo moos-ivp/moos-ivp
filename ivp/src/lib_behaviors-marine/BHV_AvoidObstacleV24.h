@@ -100,6 +100,7 @@ public:
 
   std::string m_side_lock;
 
+  bool m_allstop_on_breach;
   
 protected:
   HintHolder m_hints;

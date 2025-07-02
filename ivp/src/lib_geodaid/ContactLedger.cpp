@@ -109,6 +109,8 @@ bool ContactLedger::setExtrapPolicy(string str)
       ok = setExtrapMode(value);
     else if((param == "thresh") && isNumber(value))
       ok = setExtrapThresh(atoi(value.c_str()));
+    else if((param == "decay") && (tolower(value) == "off"))
+      ok = setExtrapDecay(-1, -1);
     else if(param == "decay") {
       string beg = biteStringX(value, ':');
       string end = value;
@@ -162,9 +164,18 @@ bool ContactLedger::setExtrapThresh(double val)
 
 bool ContactLedger::setExtrapDecay(double beg, double end)
 {
+  // check for disabling
+  if((beg == -1) || (end == -1)) {
+    m_extrap_decay_beg = beg;
+    m_extrap_decay_end = end;
+    return(true);
+  }
+
+  // check for bad values
   if((beg < 0) || (end < 0) || (beg > end))
     return(false);
 
+  // Othewise apply acceptable values
   m_extrap_decay_beg = beg;
   m_extrap_decay_end = end;
   return(true);
