@@ -53,6 +53,8 @@ Expander::Expander(string given_infile, string given_outfile)
 
   m_interactive = false;
   m_impatient = false;
+
+  m_xfile = false;
 }
 
 //--------------------------------------------------------
@@ -93,8 +95,19 @@ vector<string> Expander::expandFile(string filename,
   vector<string> return_vector;
   vector<string> empty_vector;
 
-  vector<string> fvector = fileBuffer(filename);
+  vector<string> fvector;
+  // If xfile is true, first try the input file, with an 'x' at end.
+  // For example, meta_shoreside.moosx instead of meta_shoreside.moos
+  if(m_xfile) {
+    cout << "Looking for:" << filename <<"x" << endl;
+    fvector = fileBuffer(filename + "x");
+  }
 
+  if(!m_xfile || (fvector.size() == 0))
+    fvector = fileBuffer(filename);
+
+  m_xfile = false; // Only use xfile at topmost level
+  
   unsigned int i, vsize = fvector.size();
   if(vsize == 0) {
     cout << "#  Warning: The file " << filename << " was empty." << endl;    

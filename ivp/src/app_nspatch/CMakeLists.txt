@@ -1,5 +1,5 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                      app_nsplug
+# The CMakeLists.txt for:                         nspatch
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
@@ -7,14 +7,16 @@
 SET(SYSTEM_LIBS m)
 
 SET(SRC
-   Expander.cpp
-   Expander_Info.cpp
-   main.cpp
-)
- 
-ADD_EXECUTABLE(nsplug ${SRC})
-     
-TARGET_LINK_LIBRARIES(nsplug
+  BHVFile.cpp
+  MOOSFile.cpp
+  Populator_BHVFile.cpp
+  Populator_MOOSFile.cpp
+  main.cpp
+  PatchApplicator.cpp)
+
+ADD_EXECUTABLE(nspatch ${SRC})
+   
+TARGET_LINK_LIBRARIES(nspatch
   mbutil
   ${SYSTEM_LIBS})
 

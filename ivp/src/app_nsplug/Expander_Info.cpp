@@ -56,6 +56,10 @@ void showHelpAndExit()
   blk("Options:                                                        ");
   mag("  --help, -h                                                    ");
   blk("      Display this help message.                                ");
+  mag("  --xfile,-x                                                    ");
+  blk("      In reading the input file, check first if the filename    ");
+  blk("      appended with x exists. If so, use that instead. Example: ");
+  blk("      Use meta_vehicle.moosx instead of meta_vehicle.moos       ");
   mag("  --force,-f                                                    ");
   blk("      Overwrite the output file even if it already exists.      ");
   blk("      The user will not be prompted for confirmation.           ");
