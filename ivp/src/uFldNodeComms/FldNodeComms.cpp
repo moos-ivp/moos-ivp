@@ -64,7 +64,7 @@ FldNodeComms::FldNodeComms()
   m_msg_color = "white";
   m_msg_repeat_color = "light_green";
   
-  m_min_share_interval = 0.1;
+  m_min_share_interval = -1;
   
   m_pulse_duration   = 10;      // zero means no pulses posted.
   m_view_node_rpt_pulses = true;
@@ -305,6 +305,7 @@ void FldNodeComms::registerVariables()
   Register("UNC_STEALTH", 0);
   Register("UNC_EARANGE", 0);
   Register("UNC_DROP_PCT", 0);
+  Register("UNC_SHARED_NODE_REPORTS", 0);
   Register("UNC_VIEW_NODE_RPT_PULSES", 0);
 }
 

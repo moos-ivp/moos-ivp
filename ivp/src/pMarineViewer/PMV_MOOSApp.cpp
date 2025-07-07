@@ -935,7 +935,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if((param == "node_report_unc") && isBoolean(value)) {
       if(tolower(value) == "true")
 	m_node_report_vars.push_back("NODE_REPORT_UNC");
-      Notify("UNC_SHARED_NODE_REPORTS", "true");
+      Notify("UNC_SHARED_NODE_REPORTS", value);
       handled = true;
     }
     else if(param == "connection_posting") {
