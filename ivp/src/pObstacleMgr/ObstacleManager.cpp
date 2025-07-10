@@ -297,6 +297,8 @@ void ObstacleManager::registerVariables()
     Register(m_disable_var, 0);
   if(m_enable_var != "")
     Register(m_enable_var, 0);
+  if(m_expunge_var != "")
+    Register(m_expunge_var, 0);
 }
 
 
@@ -351,7 +353,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 //---------------------------------------------------------
 // Procedure: handleMailModEnableObstacle()
 //   Example: XYZ_ENABLE_TARGET = 87993
-//   Example: XYZ_DISABLE_TARGET = obstacle=87993
+//   Example: XYZ_DISABLE_TARGET = obstacle_id=87993
 //   Example: XYZ_DISABLE_TARGET = vsource=radar
 //
 // Notes: Re-enabling a behavior is a matter for the helm, by
@@ -370,11 +372,11 @@ bool ObstacleManager::handleMailModEnableObstacle(string str,
   string msg;
   // First, handle special case, the value is just obstacle ID
   if(!strContains(str,"=") && !strContains(str,","))
-    msg = "obstacle=" + str;
+    msg = "obstacle_id=" + str;
   else {
-    obstacle_id = tokStringParse(str, "obstacle");
+    obstacle_id = tokStringParse(str, "obstacle_id");
     if(obstacle_id != "")
-      msg = "obstacle=" + obstacle_id;
+      msg = "obstacle_id=" + obstacle_id;
     else { 
       string vsource = tokStringParse(str, "vsource");
       if(vsource != "")
@@ -458,12 +460,14 @@ void ObstacleManager::addEnabledObstacle(string id)
 
 void ObstacleManager::addExpungedObstacle(string id)
 {
+  m_map_obstacles.erase(id); // mikerb jul0925
+  
   // If obstacle already on list, remove so we can put at front
   m_expunged_obstacles.remove(id);
   m_expunged_obstacles.push_front(id);
 
   // If list is too large, removed the oldest.
-  if(m_expunged_obstacles.size() > 250)
+  if(m_expunged_obstacles.size() > 50)
     m_expunged_obstacles.pop_back();
 }
 
@@ -827,14 +831,14 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
   string update_str = "name=" + alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
-  // mikerb May1425
-  update_str += ",id=" + key;
-
   //string source = poly.get_source();
   string vsource = m_map_obstacles[key].getVSource();
   if(vsource != "")
     update_str += ",vsource=" + vsource;
-  
+
+  // mikerb May1425
+  update_str += "#id=" + key;
+
   m_alerts_posted++;  
   Notify(alert_var, update_str);
   reportEvent(alert_var + "=" + update_str);

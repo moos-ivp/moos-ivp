@@ -168,7 +168,7 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
     return(m_hints.setHints(val));
   else if(param == "use_refinery")
     return(setBooleanOnString(m_use_refinery, val));
-  else if(param == "id") {
+  else if((param == "id") || (param == "obid")) {
     // Once the obstacle id is set, it cannot be overwritten
     if((m_obstacle_id != "") && (m_obstacle_id != val))
       return(false);
@@ -780,9 +780,9 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   // ======================================================
   // Part 2: Check for proper format.
   // ======================================================
-
   // action must be specified and only disable or enable
-  if((action != "disable") && (action != "enable"))
+  if((action != "disable") && (action != "enable") &&
+     (action != "expunge"))
     return(false);
 
   // At least one of obid or vsource must be given
@@ -796,16 +796,20 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
 
   // Check 3: If obstacle_id has been set then MUST 
   // match, regardless of other filter factors
-  if((obid != "") && (obid != tolower(m_obstacle_id)))
-    return(true);  // Return true since syntax if fine
+  if(obid != "") {
+    if(tolower(obid) != tolower(m_obstacle_id))
+      return(true);  // Return true since syntax if fine
+  }
   // Check 4: If obstacle vsource has been set then MUST 
   // match, regardless of other filter factors
   else if(vsource != "") {
+    cout << "vsource:" << vsource << endl;
     string poly_vsource = m_obship_model.getVSource();
+    cout << "poly_vsource" << poly_vsource << endl;
     if(tolower(vsource) != tolower(poly_vsource))
       return(true); // Return true since syntax if fine
   }
-  else
+  else 
     return(false); // No criteria given (obid or vsource)
 
   if(action == "disable")
