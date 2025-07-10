@@ -110,6 +110,8 @@ public:
 
   ContactStateSet m_cnos;
 
+  bool m_nav_warning_posted; 
+  
 private:
   std::vector<VarDataPair> m_cnflags;
 };
