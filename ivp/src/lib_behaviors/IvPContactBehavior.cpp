@@ -68,6 +68,8 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
+
+  m_nav_warning_posted = false;
 }
 
 //-----------------------------------------------------------
@@ -492,32 +494,19 @@ bool IvPContactBehavior::updatePlatformInfo()
   
   if(!ok1 || !ok2 || !ok3 || !ok4) {    
     string msg = m_contact + " x/y/heading/speed info not found";
-    if(m_on_no_contact_ok)
+    if(m_on_no_contact_ok) {
       postWMessage(msg);
+      m_nav_warning_posted = true;
+    }
     else
       postEMessage(msg);
     return(false);
   }
-
-#if 0
-  // Part 1B: ascertain current contact position and trajectory.
-  double cnutc = 0;
-  if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
-  if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
-  if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
-  if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
-  if(ok) cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
-  if(!ok && !m_on_no_contact_ok) {    
-    string msg = m_contact + " x/y/heading/speed info not found";
-    if(m_on_no_contact_ok)
-      postWMessage(msg);
-    else
-      postEMessage(msg);
-    return(false);
+  if(m_nav_warning_posted) {
+    postRetractWMessage(m_contact + " x/y/heading/speed info not found");
+    m_nav_warning_posted = false;
   }
-  m_cnh = angle360(m_cnh);
-#endif
-  
+    
   // Part 1C: At this point we know this update will be a success, i.e.,
   // it will return with true. So now is the time to invoke archive
   // on the ContactStateSet, moving the previously current cnos into the
