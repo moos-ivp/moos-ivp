@@ -1,0 +1,91 @@
+//--------    FILE: juliet.bhv   -------------
+
+initialize   DEPLOY   = false
+initialize   RETURN   = false
+initialize   GOTO_DEPTH = false
+
+//========================================================
+// Hierarchical Mode Declarations
+//  o ROOT                     o ROOT
+//  |--o INACTIVE              |--o GOTO_DEPTH
+//  |--o ACTIVE                |--o NOT GOTO_TDEPTH
+//     |--o RETURNING
+//     |--o LOITERING
+//========================================================
+
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} LOITERING
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE == LOITERING
+  updates   = UP_LOITER
+
+         speed = 1.3
+     clockwise = best
+        radius = 4.0
+     nm_radius = 15.0
+       polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=juliet_loiter
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki, edge_color=khaki
+  visual_hints = edge_size=1, vertex_size=4, vertex_color=white
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURNING = false
+  endflag    = DEPLOY = false
+
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+       point = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_GoToDepth
+{
+  name        = bhv_go_to_depth
+  pwt         = 1000
+  condition   = MODE == LOITERING
+  condition   = GOTO_DEPTH = true
+  endflag     = GOTO_DEPTH = false
+
+           depth = 40,60:30,45:20,45
+          repeat = 2
+       perpetual = true
+    capture_flag = DEPTH_ACHIEVED
+   capture_delta = 0.5
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth
+  pwt       = 100
+  duration  = no-time-limit
+  condition = MODE==LOITERING
+  condition = GOTO_DEPTH != true
+  updates   = DEPTH_VALUE
+
+        depth = 50
+    peakwidth = 8
+    basewidth = 12
+  summitdelta = 10
+}
+
