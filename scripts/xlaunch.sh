@@ -10,6 +10,7 @@ trap "echo xlaunch.sh has received sigterm" SIGTERM
 #  Part 1: Declare global var defaults
 ME=`basename "$0"`
 ZBATCH=""
+JUST_MAKE=""
 CMD_ARGS=""
 ARCHIVE=""
 MAX_TIME="300"
@@ -28,6 +29,7 @@ for ARGI; do
 	echo "Options:                                               " 
 	echo "  --help, -h         Show this help message            " 
 	echo "  --zbatch=<name>    Name of ZBatch                    "
+	echo "  --just_make, -j    Only create targ files            "
 	echo "  --max_time=<secs>  Max time passed to uMayFinish     "
 	echo "  --nogui, -n        Do not launch with a GUI          "
 	echo "  --archive, -a      Archive the results               "
@@ -37,7 +39,9 @@ for ARGI; do
     elif [ "${ARGI}" = "--archive" -o "${ARGI}" = "-a" ]; then
         ARCHIVE="yes"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-ng" ]; then
-	FLOW_DOWN_ARGS+="${ARGI} "
+        FLOW_DOWN_ARGS+="${ARGI} "
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
+	JUST_MAKE="${ARGI} "
     elif [ "${ARGI:0:9}" = "--zbatch=" ]; then
         ZBATCH="${ARGI#--zbatch=*}"
     elif [ "${ARGI:0:11}" = "--max_time=" ]; then
@@ -47,8 +51,15 @@ for ARGI; do
     fi
 done
 
+echo "XLaunchArgs:$CMD_ARGS"
+
 # Part 3: Launch mission
-./launch.sh $FLOW_DOWN_ARGS
+./launch.sh $FLOW_DOWN_ARGS $JUST_MAKE
+if [ "${JUST_MAKE}" != "" ]; then
+    echo "Launch with JUST_MAKE completed. Exiting."
+    exit 0
+fi
+
 # Part 4: Monitor mission, kill MOOS processes when done
 uMayFinish --max_time=${MAX_TIME} targ_shoreside.moos
 # Part 5: Bring down the launched mission
