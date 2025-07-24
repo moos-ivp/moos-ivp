@@ -50,7 +50,7 @@ public:
   virtual IvPFunction* onRunState() {return(0);}
 
   virtual BehaviorReport onRunState(std::string);
-  virtual void setCPAEngine(const CPAEngine&) {};
+  //  virtual void setCPAEngine(const CPAEngine&) {};
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
