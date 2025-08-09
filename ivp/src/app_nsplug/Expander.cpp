@@ -128,7 +128,7 @@ vector<string> Expander::expandFile(string filename,
 
     // Begin tag support, added Sep 2020
     if(strBegins(line_orig, "<tag>")) {
-      curr_tag = stripChevrons(line_orig.substr(5));
+      curr_tag = stripChevrons(stripBlankEnds(line_orig.substr(5)));
       continue;
     }
     if((inctag != "") && (inctag != curr_tag))
