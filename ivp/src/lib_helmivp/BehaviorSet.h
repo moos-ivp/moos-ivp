@@ -80,6 +80,9 @@ public:
 
   BehaviorReport produceOFX(unsigned int ix, unsigned int iter, 
 			    std::string& activity_state);
+
+  std::string getBehaviorMode(unsigned int bhv_ix);
+  std::string getBehaviorSubMode(unsigned int bhv_ix);
   
   unsigned int   removeCompletedBehaviors();
   IvPBehavior*   getBehavior(unsigned int);

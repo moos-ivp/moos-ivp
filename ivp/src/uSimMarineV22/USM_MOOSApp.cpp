@@ -164,6 +164,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       setBooleanOnString(m_enabled, sval);
     else if(key == "OBSTACLE_HIT")
       setBooleanOnString(m_obstacle_hit, sval);
+    else if(key == "USM_RESET_NAV")
+      m_model.resetNavGroundTruth();
     
     // When sim is disabled, presumably another sim is temporarily running
     // and updating the vehicle position. In the meanwhile we just inform
@@ -483,7 +485,8 @@ void USM_MOOSApp::registerVariables()
   Register("USM_ENABLED",0);
   Register("USM_TURN_RATE",0);
   Register("OBSTACLE_HIT", 0);
-
+  Register("USM_RESET_NAV", 0);
+  
   Register("WIND_CONDITIONS");
   Register("BUOYANCY_RATE", 0);
   Register("WATER_DEPTH", 0);
@@ -497,7 +500,7 @@ void USM_MOOSApp::registerVariables()
   Register("ROTATE_SPEED", 0);
   Register("USM_SIM_PAUSED", 0); 
   Register("USM_RESET", 0);
-  Register("OBSTACLE_HIT", 0);
+
   // Added buoyancy and trim control and sonar handshake
   Register("TRIM_CONTROL",0);
   Register("BUOYANCY_CONTROL",0);

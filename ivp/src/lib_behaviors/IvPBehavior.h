@@ -73,6 +73,8 @@ public:
   virtual std::string isDeprecated() {return("");}
   virtual bool applyAbleFilter(std::string) {return(true);}
   virtual std::vector<std::string> getInfoVars();
+  virtual std::string getMode() const {return("");}
+  virtual std::string getSubMode() const {return("");}
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);

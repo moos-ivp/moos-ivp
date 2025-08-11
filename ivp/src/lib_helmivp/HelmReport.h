@@ -46,7 +46,8 @@ public:
   void  addActiveBHV(const std::string& descriptor, double time,
 		     double pwt, int pcs, double cpu,
 		     const std::string& update_summary, 
-		     unsigned int ipfs);
+		     unsigned int ipfs, const std::string mode="",
+		     const std::string submode="");
 
   void  clearRunningBHVs();
   void  addRunningBHV(const std::string& descriptor, double time,
@@ -163,6 +164,8 @@ protected:
   std::vector<std::string>  m_bhvs_active_desc;    // Active Behaviors
   std::vector<double>       m_bhvs_active_time;
   std::vector<std::string>  m_bhvs_active_upds;
+  std::vector<std::string>  m_bhvs_active_mode;
+  std::vector<std::string>  m_bhvs_active_submode;
   
   std::vector<double>       m_bhvs_active_pwt;
   std::vector<double>       m_bhvs_active_cpu;

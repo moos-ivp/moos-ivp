@@ -126,6 +126,9 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_markpt.set_vertex_size(4);
 
   m_prevpt.set_label("prev_pt");
+
+  m_slow_dist = -1;
+  m_stop_dist = -1;
 }
 
 //-----------------------------------------------------------
@@ -463,6 +466,9 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   else if(param == "visual_hints")  
     return(m_hints.setHints(param_val));
 
+  else if(param == "end_spd")  
+    return(setEndSpeed(param_val));
+
   return(false);
 }
 
@@ -795,6 +801,23 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   double cruise_speed = m_cruise_speed;
   if((m_use_alt_speed) && (m_cruise_speed_alt >= 0))
     cruise_speed = m_cruise_speed_alt;
+
+  // If end_speed feature is in use
+  if(m_slow_dist > 0) {
+    double dist_to_end = m_waypoint_engine.distToEndFinal(m_osx, m_osy);
+    if(dist_to_end <= m_stop_dist)
+      cruise_speed = 0;
+    else if(dist_to_end < m_slow_dist) {
+      double range = m_slow_dist - m_stop_dist;
+      double pct = 0;
+      if(range > 0) {
+	double delta = dist_to_end - m_stop_dist;
+	pct = delta / range;
+      }
+      cruise_speed *= pct;
+    }
+  }
+
   
   if((method == "roc") || (method == "rate_of_closure")) {
     bool ok = true;
@@ -822,23 +845,23 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
     if(method == "zaic_spd") {
       ZAIC_SPD spd_zaic(m_domain, "speed");
-      //spd_zaic.setMedSpeed(m_cruise_speed);
+      //spd_zaic.setMedSpeed(cruise_speed);
       //spd_zaic.setLowSpeed(0.1);
-      //spd_zaic.setHghSpeed(m_cruise_speed+0.4);
+      //spd_zaic.setHghSpeed(cruise_speed+0.4);
       //spd_zaic.setLowSpeedUtil(70);
       //spd_zaic.setHghSpeedUtil(20);
       //spd_zaic.setMaxSpdUtil(20);
 
-      spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
+      spd_zaic.setParams(cruise_speed, 0.1, cruise_speed+0.4, 70, 20);
       spd_ipf = spd_zaic.extractIvPFunction();
       if(!spd_ipf)
 	postWMessage("Failure on the SPD ZAIC via ZAIC_SPD utility");
     }
     else {
       ZAIC_PEAK spd_zaic(m_domain, "speed");
-      double peak_width = m_cruise_speed / 2;
-      spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
-      //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);               
+      double peak_width = cruise_speed / 2;
+      spd_zaic.setParams(cruise_speed, peak_width, 1.6, 20, 0, 100);
+      //    spd_zaic.setParams(cruise_speed, 1, 1.6, 20, 0, 100);               
       spd_ipf = spd_zaic.extractIvPFunction();
       if(!spd_ipf)
 	postWMessage("Failure on the SPD ZAIC via ZAIC_PEAK utility");
@@ -1204,8 +1227,6 @@ string BHV_Waypoint::expandMacros(string sdata)
 
   sdata = macroExpand(sdata, "X", m_prevpt.x()); // deprecated
   sdata = macroExpand(sdata, "Y", m_prevpt.y()); // deprecated
-
-
   
   sdata = macroExpand(sdata, "IX", m_waypoint_engine.getCurrIndex()); // deprecated
   sdata = macroExpand(sdata, "CYCLES", m_waypoint_engine.getCycleCount());
@@ -1215,6 +1236,16 @@ string BHV_Waypoint::expandMacros(string sdata)
   sdata = macroExpand(sdata, "WPTS_REM", m_waypoint_engine.size() -
 		      m_waypoint_engine.getCurrIndex());
   sdata = macroExpand(sdata, "WPTS", m_waypoint_engine.size());
+
+  if(strContains(sdata, "CYC_DIST_TOGO")) {
+    double cyc_dist_togo = m_waypoint_engine.distToEndCycle(m_osx, m_osy);
+    sdata = macroExpand(sdata, "CYC_DIST_TOGO", cyc_dist_togo); 
+  }
+
+  if(strContains(sdata, "ALL_DIST_TOGO")) {
+    double all_dist_togo = m_waypoint_engine.distToEndFinal(m_osx, m_osy);
+    sdata = macroExpand(sdata, "ALL_DIST_TOGO", all_dist_togo); 
+  }
 
   return(sdata);
 }
@@ -1230,5 +1261,39 @@ string BHV_Waypoint::getReverseStr() const
     return("reverse");
   
   return("normal");
+}
+
+//-----------------------------------------------------------
+// Procedure: setEndSpeed()
+
+bool BHV_Waypoint::setEndSpeed(string str)
+{
+  double slow_dist = -1;
+  double stop_dist = -1;
+  
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+
+    bool handled = false;
+    if(param == "slow_dist")
+      handled = setPosDoubleOnString(slow_dist, value);
+    else if(param == "stop_dist")
+      handled = setNonNegDoubleOnString(stop_dist, value);
+
+    if(!handled)
+      return(false);
+  }
+
+  if((slow_dist < 0) || (stop_dist < 0))
+    return(false);
+  if(stop_dist > slow_dist)
+    return(false);
+
+  m_slow_dist = slow_dist;
+  m_stop_dist = stop_dist;
+
+  return(true);
 }
 

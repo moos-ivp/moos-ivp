@@ -60,6 +60,7 @@ protected:
   void         updateOdoDistance();
   void         markOdoLeg();
   std::string  getReverseStr() const;
+  bool         setEndSpeed(std::string);
   
 protected: 
   WaypointEngine m_waypoint_engine;
@@ -98,6 +99,9 @@ protected: // configuration parameters
   // Visual hints affecting properties of polygons/points
   HintHolder  m_hints;
 
+  double  m_slow_dist;
+  double  m_stop_dist;
+  
 protected: // intermediate or object global variables.
   
   // Time/Distance efficiency state information

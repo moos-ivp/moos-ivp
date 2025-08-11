@@ -591,6 +591,38 @@ void BehaviorSet::setPlatModel(const PlatModel& pmodel)
 }
 
 //------------------------------------------------------------
+// Procedure: getBehaviorMode()
+
+string BehaviorSet::getBehaviorMode(unsigned int ix)
+
+{
+  // Quick index sanity check
+  if(ix >= m_bhv_entry.size())
+    return("");
+
+  IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+  if(!bhv)
+    return("");
+  return(bhv->getMode());
+}
+
+//------------------------------------------------------------
+// Procedure: getBehaviorSubMode()
+
+string BehaviorSet::getBehaviorSubMode(unsigned int ix) 
+
+{
+  // Quick index sanity check
+  if(ix >= m_bhv_entry.size())
+    return("");
+
+  IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+  if(!bhv)
+    return("");
+  return(bhv->getSubMode());
+}
+
+//------------------------------------------------------------
 // Procedure: produceOF()
 
 IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
@@ -723,6 +755,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
       string desc_str = bhv->getDescriptor();
       string iter_str = uintToString(iteration);
       string ctxt_str = iter_str + ":" + desc_str;
+
       ipf->setContextStr(ctxt_str);
       string ipf_str = IvPFunctionToString(ipf);
       bhv->postMessage("BHV_IPF", ipf_str);

@@ -86,6 +86,9 @@ class WaypointEngine {
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
 
+  double  distToEndCycle(double osx, double osy) const;
+  double  distToEndFinal(double osx, double osy) const;
+
 protected: // Config Vars
   bool      m_reverse;
   bool      m_perpetual;

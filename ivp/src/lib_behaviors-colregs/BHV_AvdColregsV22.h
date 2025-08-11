@@ -51,7 +51,9 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
   std::string  expandMacros(std::string);
-
+  std::string  getMode() const {return(m_avoid_mode);}
+  std::string  getSubMode() const {return(m_avoid_submode);}
+  
  protected:
   void         updateAvoidMode();
 

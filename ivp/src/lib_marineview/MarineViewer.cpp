@@ -2467,6 +2467,7 @@ void MarineViewer::drawVector(const XYVector& vect)
   
   // Then draw the vector head
   glBegin(GL_POLYGON);
+  glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
   glVertex2f(points[4], points[5]);
   glVertex2f(points[6], points[7]);
   glVertex2f(points[2], points[3]);

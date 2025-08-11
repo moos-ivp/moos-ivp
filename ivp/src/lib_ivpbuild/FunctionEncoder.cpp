@@ -33,7 +33,7 @@
 using namespace std;
 
 //--------------------------------------------------------------
-// Procedure: IvPFunctionToString
+// Procedure: IvPFunctionToString()
 //      Note: cstr is short for context_string
 //
 // H,cstr_len,cstr,dim,pcs,deg,pwt,
@@ -239,9 +239,7 @@ string IvPFunctionToString(IvPFunction *ivp_function)
 }
 
 //--------------------------------------------------------------
-// Procedure: IvPFunctionToVector
-//   Purpose: 
-//
+// Procedure: IvPFunctionToVector()
 //
 //  "P,Function-ID,Total-Packets,Packet-Index,0,200,1,800,3.002"
 
@@ -288,8 +286,7 @@ vector<string> IvPFunctionToVector(const string& whole_string,
 
 
 //--------------------------------------------------------------
-// Procedure: StringToIvPFunction
-//   Purpose: 
+// Procedure: StringToIvPFunction()
 
 IvPFunction *StringToIvPFunction(const string& str)
 {
@@ -497,8 +494,7 @@ IvPFunction *StringToIvPFunction(const string& str)
 
 
 //--------------------------------------------------------------
-// Procedure: StringToIvPContext
-//   Purpose: 
+// Procedure: StringToIvPContext()
 
 string StringToIvPContext(const string& str)
 {
@@ -530,8 +526,7 @@ string StringToIvPContext(const string& str)
 
 
 //--------------------------------------------------------------
-// Procedure: IPFStringToIvPDomain
-//   Purpose: 
+// Procedure: IPFStringToIvPDomain()
 
 IvPDomain IPFStringToIvPDomain(const string& str)
 {

@@ -139,7 +139,7 @@ bool SpoofNode::OnStartUp()
     else if(param == "default_spd") 
       handled = setPosDoubleOnString(m_default_spd, value);
     else if(param == "default_duration") 
-      handled = setPosDoubleOnString(m_default_duration, value);
+      handled = setNonNegDoubleOnString(m_default_duration, value);
 
     if(!handled && (param != "spoof"))
       reportUnhandledConfigWarning(orig);
@@ -290,6 +290,7 @@ bool SpoofNode::handleSpoofRequest(string str)
   record.setHeading(dbl_hdg);
   record.setSpeed(dbl_spd);
   record.setLength(m_default_length);
+  record.setTimeStamp(m_curr_time);
   
   if(vname == "")
     vname = "C" + uintToString(m_total_spoof_reqs, 4);
@@ -395,9 +396,6 @@ void SpoofNode::checkForExpiredNodes()
 
 }
     
-
-  
-
 //-----------------------------------------------------------
 // Procedure: buildReport()
 

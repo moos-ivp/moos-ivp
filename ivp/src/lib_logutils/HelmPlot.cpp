@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
+// Constructor()
 
 HelmPlot::HelmPlot()
 {
@@ -41,7 +41,7 @@ HelmPlot::HelmPlot()
 }
 
 //---------------------------------------------------------------
-// Procedure: setVehiType
+// Procedure: setVehiType()
 
 void HelmPlot::setVehiType(string str)
 {
@@ -49,7 +49,7 @@ void HelmPlot::setVehiType(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: addEtry
+// Procedure: addEtry()
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
 
@@ -72,7 +72,7 @@ bool HelmPlot::addEntry(double gtime, string gval)
 }
 
 //---------------------------------------------------------------
-// Procedure: getValueByIndex
+// Procedure: getValueByIndex()
 
 string HelmPlot::getValueByIndex(string query, unsigned int index) const
 {  
@@ -101,7 +101,7 @@ string HelmPlot::getValueByIndex(string query, unsigned int index) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getValueByTime
+// Procedure: getValueByTime()
 
 string HelmPlot::getValueByTime(string query, double gtime) const
 {
@@ -112,7 +112,7 @@ string HelmPlot::getValueByTime(string query, double gtime) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getTimeByIndex
+// Procedure: getTimeByIndex()
 
 double HelmPlot::getTimeByIndex(unsigned int index) const
 {
@@ -124,7 +124,7 @@ double HelmPlot::getTimeByIndex(unsigned int index) const
 
 
 //---------------------------------------------------------------
-// Procedure: getTimeByIterAdd
+// Procedure: getTimeByIterAdd()
 
 double HelmPlot::getTimeByIterAdd(double ctime, 
 				   unsigned int iter_offset) const
@@ -150,7 +150,7 @@ double HelmPlot::getTimeByIterAdd(double ctime,
 }
      
 //---------------------------------------------------------------
-// Procedure: getTimeByIterSub
+// Procedure: getTimeByIterSub()
 
 double HelmPlot::getTimeByIterSub(double ctime, 
 				   unsigned int iter_offset) const
@@ -178,7 +178,7 @@ double HelmPlot::getTimeByIterSub(double ctime,
 }
      
 //---------------------------------------------------------------
-// Procedure: getIterByTime
+// Procedure: getIterByTime()
 
 unsigned int HelmPlot::getIterByTime(double gtime) const
 {
@@ -187,7 +187,7 @@ unsigned int HelmPlot::getIterByTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getIterByIndex
+// Procedure: getIterByIndex()
 
 unsigned int HelmPlot::getIterByIndex(unsigned int index) const
 {
@@ -197,7 +197,7 @@ unsigned int HelmPlot::getIterByIndex(unsigned int index) const
 }
      
 //---------------------------------------------------------------
-// Procedure: containsTime 
+// Procedure: containsTime()
 //      Note: Assumes time series is strictly monotonic 
 
 bool HelmPlot::containsTime(double local_time) const
@@ -215,7 +215,7 @@ bool HelmPlot::containsTime(double local_time) const
 
 
 //---------------------------------------------------------------
-// Procedure: print
+// Procedure: print()
 
 void HelmPlot::print() const
 {

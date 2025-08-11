@@ -86,6 +86,8 @@ public:
   
   void   setGeodesy(CMOOSGeodesy);
   void   setObstacleHit(bool v=true) {m_obstacle_hit=v;}
+
+  void   resetNavGroundTruth() {m_record=m_record_gt;}
   
   // Getters
   double     getTurnRate() const     {return(m_turn_rate);}

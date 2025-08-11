@@ -127,14 +127,17 @@ HelmReport string2HelmReport(const string& str,
 	string pcs  = biteStringX(bhv, '$');
 	string cpu  = biteStringX(bhv, '$');
 	string upds = biteStringX(bhv, '$');
-	string ipfs = bhv;
-	
+	string ipfs = biteStringX(bhv, '$');
+	string mode = biteStringX(bhv, '$');
+	string submode = bhv;
+
 	double d_time = atof(time.c_str());
 	double d_pwt  = atof(pwt.c_str());
 	int    i_pcs  = atoi(pcs.c_str());
 	double d_cpu  = atof(cpu.c_str());
 	unsigned int u_ipfs = (unsigned int)(atoi(ipfs.c_str()));      
-	report.addActiveBHV(descriptor, d_time, d_pwt, i_pcs, d_cpu, upds, u_ipfs);
+	report.addActiveBHV(descriptor, d_time, d_pwt, i_pcs, d_cpu,
+			    upds, u_ipfs, mode, submode);
       }
     }
     
