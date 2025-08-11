@@ -54,8 +54,10 @@ class XYFieldGenerator
   bool    addRandomPoint();
   bool    addAllRandomPoints(unsigned int amt);
 
-  bool    addPoint(const XYPoint&);
-  bool    addPoint(double vx, double vy);
+  bool    addPoint(const XYPoint&,
+		   bool must_be_in_region=true);
+  bool    addPoint(double vx, double vy,
+		   bool must_be_in_region=true);
 
   
   XYPoint getNewestPoint() const;

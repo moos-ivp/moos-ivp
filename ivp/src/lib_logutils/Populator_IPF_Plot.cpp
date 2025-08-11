@@ -108,20 +108,32 @@ void Populator_IPF_Plot::handleEntry(double g_time, const string& g_ipf_str)
   int       ipf_pieces = ipf->size();
   string    ipf_source;
   int       ipf_iteration = 0;
+  string    ipf_mode, ipf_submode;
   double    ipf_pwt    = ipf->getPWT();
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
 
   // The Context string might come in the form of NUM:CONTEXT"
   vector<string> svector = parseString(context, ':');
+#if 1
+  if(svector.size() >= 1)
+    ipf_iteration = atoi(svector[0].c_str());
+  if(svector.size() >= 2)
+    ipf_source    = svector[1];
+  if(svector.size() >= 3)
+    ipf_mode    = svector[2];
+  if(svector.size() >= 4)
+    ipf_submode = svector[3];
+#endif
+#if 0
   if(svector.size() == 2) {
     ipf_iteration = atoi(svector[0].c_str());
     ipf_source    = svector[1];
   }
+#endif
   string tag = (m_vname + "_" + ipf_source);
 
   delete(ipf);
 
-  
   int index = -1;
   int vsize = m_ipf_tags.size();
   for(int i=0; i<vsize; i++) {
@@ -139,8 +151,9 @@ void Populator_IPF_Plot::handleEntry(double g_time, const string& g_ipf_str)
     index = vsize;
   }
   
-  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration, ipf_pieces,
-			      ipf_pwt, ivp_domain);
+  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration,
+			      ipf_pieces, ipf_pwt, ivp_domain,
+			      ipf_mode, ipf_submode);
 }
 
 //---------------------------------------------------------------

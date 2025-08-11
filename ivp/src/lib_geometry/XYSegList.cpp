@@ -608,12 +608,21 @@ XYPoint XYSegList::get_center_pt() const
 
 XYPoint XYSegList::get_centroid_pt() const
 {
+  unsigned int vxsize = m_vx.size();
+  if(vxsize == 0) {
+    XYPoint null_pt(0,0);
+    return(null_pt);
+  }
+  if(vxsize == 1) {
+    XYPoint solo_pt(m_vx[0],m_vy[0]);
+    return(solo_pt);
+  }
+  
   double signed_area = 0;
   double first  = 0;
   double second = 0;
 
   // For all vertices
-  unsigned int vxsize = m_vx.size();
   for(unsigned int i=0; i<vxsize; i++) {
     
     double x0 = m_vx[i];

@@ -40,7 +40,7 @@ ContactLedger::ContactLedger(unsigned int history_size)
   m_history_size = history_size;
 
   // Stale node and extrapolation policy
-  m_extrap_mode      = 2;   // 0:off, 1:hdg, 2:cog
+  m_extrap_mode      = 0;   // 0:off, 1:hdg, 2:cog
   m_extrap_thresh    = 0.1; // Extrap only after this age 
   m_extrap_decay_beg = 15;  // After this age, extrap contact slowed  
   m_extrap_decay_end = 30;  // After this age, extrap contact stopped

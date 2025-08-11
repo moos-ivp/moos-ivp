@@ -37,7 +37,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
 		       InfoBuffer *g_info_buffer,
@@ -60,7 +60,7 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain,
 }
 
 //-----------------------------------------------------------
-// Procedure: Destructor
+// Destructor()
 
 HelmEngine::~HelmEngine()
 {
@@ -277,8 +277,13 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	double pwt = newof->getPWT();
 	int    pcs = newof->size();
+
+	string mode = m_bhv_set->getBehaviorMode(bhv_ix);
+	string submode = m_bhv_set->getBehaviorSubMode(bhv_ix);
+	
 	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt,
-				   pcs, of_time, upd_summary, 1);
+				   pcs, of_time, upd_summary, 1,
+				   mode, submode);
 	//m_ivp_functions.push_back(newof);
 	m_map_ipfs[descriptor] = newof;
       }
