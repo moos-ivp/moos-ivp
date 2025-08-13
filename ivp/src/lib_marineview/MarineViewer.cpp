@@ -1481,6 +1481,7 @@ void MarineViewer::drawTextBox(const XYTextBox& tbox, double tstamp)
   glPopMatrix();
 }
 
+
 //-------------------------------------------------------------
 // Procedure: drawDatum()
 
