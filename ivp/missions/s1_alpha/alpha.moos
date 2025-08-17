@@ -31,6 +31,64 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
+  Run = pObstacleMgr    @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  
+}
+
+
+ProcessConfig = pObstacleMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  max_pts_per_cluster = 50
+  max_age_per_point = 60
+  alert_range = 35
+
+  ignore_range = 40
+  lasso = true
+  lasso_radius = 6
+  lasso_points = 8
+}
+
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+  
+  delay_start = 1
+
+  rand_var    = varname=RND_AX, type=gaussian, min=155, max=165, mu=160, sigma=2, key=at_reset
+  rand_var    = varname=RND_AY, type=gaussian, min=-65, max=-55, mu=-60, sigma=2, key=at_reset
+
+  rand_var    = varname=RND_BX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_reset
+  rand_var    = varname=RND_BY, type=gaussian, min=-80, max=-50, mu=-65, sigma=2, key=at_reset
+
+  rand_var    = varname=RND_CX, type=gaussian, min=40, max=70, mu=65, sigma=2, key=at_reset
+  rand_var    = varname=RND_CY, type=gaussian, min=-100, max=-70, mu=-85, sigma=2, key=at_reset
+                                           
+  rand_var    = varname=RND_DX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_reset
+  rand_var    = varname=RND_DY, type=gaussian, min=-115, max=-85, mu=-100, sigma=2, key=at_reset
+                                           
+  rand_var    = varname=RND_EX, type=gaussian, min=40, max=70, mu=55, sigma=2, key=at_reset
+  rand_var    = varname=RND_EY, type=gaussian, min=-130, max=-100, mu=-115, sigma=2, key=at_reset
+                                           
+  reset_max   = 4000
+  reset_time  = all-posted
+
+  event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
+  event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
+  event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
+  event       = var=VIEW_POINT, val="x=$[RND_DX],y=$[RND_DY],active=true,label=$[TCOUNT],msg=d,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
+  event       = var=VIEW_POINT, val="x=$[RND_EX],y=$[RND_EY],active=true,label=$[TCOUNT],msg=e,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.6
+
+  event       = var=TRACKED_FEATURE, val="x=$[RND_AX],y=$[RND_AY],label=a,color=1,size=2", time=1.44
+  event       = var=TRACKED_FEATURE, val="x=$[RND_BX],y=$[RND_BY],label=b,color=2,size=2", time=2
+  event       = var=TRACKED_FEATURE, val="x=$[RND_CX],y=$[RND_CY],label=c,color=3,size=2", time=2.3
+  event       = var=TRACKED_FEATURE, val="x=$[RND_DX],y=$[RND_DY],label=d,color=3,size=2", time=2.3
+  event       = var=TRACKED_FEATURE, val="x=$[RND_EX],y=$[RND_EY],label=e,color=3,size=2", time=2.6
 }
 
 //------------------------------------------
@@ -177,6 +235,8 @@ ProcessConfig = pMarineViewer
   // left_context[survey-point] = DEPLOY=true
   // left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
   // left_context[survey-point] = RETURN=false
+  
+  left_context[pt] = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=pt$(IX),vertex_color=white
 
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
@@ -190,7 +250,11 @@ ProcessConfig = pMarineViewer
   scope  = VIEW_POLYGON
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
-
+  scope  = DST_AVD_OBSTACLESC
+  scope  = RNG_AVD_OBSTACLESC
+  scope  = RNG_AVD_OBSTACLESA
+  scope  = POSE_KEEP
+  
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
