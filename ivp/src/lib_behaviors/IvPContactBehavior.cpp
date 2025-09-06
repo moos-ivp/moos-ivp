@@ -447,6 +447,29 @@ string IvPContactBehavior::expandMacros(string sdata)
 }
 
 //-----------------------------------------------------------
+// Procedure: setComplete()
+//   Purpose: Add further contact information to the post_mortem
+//      Note: Typical post_mortem message passed as arg may
+//            indicate the reason why behavior completed, e.g.,
+//            reached a certain range to contact.
+//            This method adds range and relative bearing info
+//            automatically for all invocations of setComplete
+//            for contact behaviors.
+//   Example: "range" becomes "range#rng=98.2#bng=82"
+
+void IvPContactBehavior::setComplete(string post_mortem)
+{
+  IvPBehavior::setComplete(post_mortem);
+
+  if(m_post_mortem != "")
+    m_post_mortem += "#";
+  m_post_mortem += "rng=" + doubleToStringX(m_contact_range,1); 
+  double relbng = relAng(m_osx,m_osy, m_cnx,m_cny);
+  m_post_mortem += "#bng=" + doubleToStringX(relbng,1); 
+}
+
+
+//-----------------------------------------------------------
 // Procedure: updatePlatformInfo()
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
@@ -668,8 +691,7 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
 //   Example: action=disable, contact=345, gen_type=safety,
 //            bhv_type=AvdColregs
 //    Fields: action=disable/able  (mandatory)
-//            contact=345          (one of these four)
-//            gen_type=safety
+//            contact=345          (one of these three)
 //            bhv_type=AvdColregs
 //            vsource=ais
 
