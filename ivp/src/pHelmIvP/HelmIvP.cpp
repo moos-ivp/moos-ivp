@@ -778,6 +778,7 @@ void HelmIvP::postLifeEvents()
   for(unsigned int i=0; i<events.size(); i++) {
     double htime = m_curr_time - m_start_time;
     string str = events[i].getSpec(htime);
+    str += ",iter=" + uintToString(m_helm_iteration);
     Notify("IVPHELM_LIFE_EVENT", str);
   }
 
