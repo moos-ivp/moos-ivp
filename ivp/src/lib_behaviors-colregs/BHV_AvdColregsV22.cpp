@@ -258,8 +258,10 @@ void BHV_AvdColregsV22::onIdleState()
   if(m_post_status_info_on_idle)
     postStatusInfo();
 
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1)))
-    setComplete();  
+  if(!filterCheckHolds())
+    setComplete("filtera");
+  if(m_contact_range >= (m_completed_dist * 1.1))
+    setComplete("rng1p1a");
 }
 
 //-----------------------------------------------------------
@@ -268,8 +270,11 @@ void BHV_AvdColregsV22::onIdleState()
 void BHV_AvdColregsV22::onDisabledState() 
 {
   postViewableBearingLine(false);
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
-    setComplete();
+
+  if(!filterCheckHolds())
+    setComplete("filterb");
+  if(m_contact_range >= (m_completed_dist*1.1))
+    setComplete("rng1p1b");
 }
 
 //-----------------------------------------------------------
@@ -334,8 +339,12 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
   
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1))) {
-    setComplete();
+  if(!filterCheckHolds()) {
+    setComplete("filterc");
+    return(0);
+  }
+  if(m_contact_range >= (m_completed_dist*1.1)) {
+    setComplete("rng1p1c");
     return(0);
   }
 

@@ -840,13 +840,15 @@ void IvPBehavior::postRepeatableMessage(string var, double ddata)
 //-----------------------------------------------------------
 // Procedure: setComplete()
 
-void IvPBehavior::setComplete()
+void IvPBehavior::setComplete(string post_mortem)
 {
   postFlags("endflags", true);
   // Removed by mikerb jun2213 to prevent double posting
   // postFlags("inactiveflags");  
-  if(!m_perpetual)
+  if(!m_perpetual) {
     m_completed = true;
+    m_post_mortem = post_mortem;
+  }
 }
 
 

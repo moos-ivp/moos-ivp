@@ -41,7 +41,8 @@ public:
   void   setBehaviorType(std::string str) {m_behavior_type = str;}
   void   setSpawnString(std::string str)  {m_spawn_string = str;}
   void   setPostingIndex(int val)         {m_posting_index = val;}
-  
+  void   setPostMortem(std::string str)   {m_post_mortem = str;}
+
   double getTimeStamp() const         {return(m_timestamp);}
   unsigned int getIteration() const   {return(m_iteration);}
   std::string getEventType() const    {return(m_event_type);}
@@ -49,7 +50,10 @@ public:
   std::string getBehaviorType() const {return(m_behavior_type);}
   std::string getSpawnString() const  {return(m_spawn_string);}
   int getPostingIndex() const         {return(m_posting_index);}
+  std::string getPostMortem() const   {return(m_post_mortem);}
 
+  std::string getSpec(double time_value=0) const;
+  
   bool operator==(const LifeEvent&);
   
 protected:
@@ -59,6 +63,7 @@ protected:
   std::string  m_behavior_name;
   std::string  m_behavior_type;
   std::string  m_spawn_string;
+  std::string  m_post_mortem;
   int          m_posting_index;
 };
 
