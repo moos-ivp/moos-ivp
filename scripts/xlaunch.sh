@@ -63,7 +63,7 @@ fi
 # Part 4: Monitor mission, kill MOOS processes when done
 uMayFinish --max_time=${MAX_TIME} targ_shoreside.moos
 # Part 5: Bring down the launched mission
-kill -s SIGTERM 0
+pkill -INT -P $$
 # Part 6: sleep 2 secs to let mission processes come down.
 sleep 2
 
