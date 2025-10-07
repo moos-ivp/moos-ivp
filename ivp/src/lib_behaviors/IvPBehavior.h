@@ -106,8 +106,11 @@ public:
   bool    isDynamicallySpawnable() const  {return(m_dynamically_spawnable);}
   std::string getSpawnBaseName() const    {return(m_spawn_basename);}
   std::string getContact() const          {return(m_contact);}
+  std::string getPostMortem() const       {return(m_post_mortem);}
   
  protected:
+  virtual void setComplete(std::string post_mortem="");
+
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
   void    setBehaviorType(std::string str) {m_behavior_type = str;}
@@ -116,7 +119,6 @@ public:
   std::string getOwnshipName() const {return(m_us_name);}
   
   void    addInfoVars(std::string, std::string="");
-  void    setComplete();
   void    postBadConfig(std::string);
 
   void    postFlags(const std::string&, bool repeat=false);
@@ -320,6 +322,8 @@ protected:
 
   bool m_disabled;
   bool m_can_disable;
+
+  std::string m_post_mortem;
   
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.

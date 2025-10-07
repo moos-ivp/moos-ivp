@@ -43,6 +43,8 @@ BehaviorSet::BehaviorSet()
   m_total_behaviors_ever = 0;
   m_bhv_entry.reserve(1000);
   m_completed_pending = false;
+
+  m_max_blacklist = 200;
 }
 
 //------------------------------------------------------------
@@ -181,12 +183,12 @@ void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 //      Note: Filter msg can/will be applied many times over, to
 //            the same behaviors. The manner in which filter msgs
 //            are applied, repeated msgs make no difference.
-//   Example: action=disable, contact=345, gen_type=safety,
-//            bhv_type=AvdColregs, vsource=ais
+//   Example: action=disable, contact=345
+//            action=able, vsource=ais
 //    Fields: action=disable/able  (mandatory)
 //            contact=345          (one of these three)
-//            gen_type=safety
 //            bhv_type=AvdColregs
+//            vsource=ais
 
 bool BehaviorSet::applyAbleFilterMsg(string msg)
 {
@@ -199,7 +201,51 @@ bool BehaviorSet::applyAbleFilterMsg(string msg)
     }
   }
 
+  // mikerb added Sep 0625
+  string vname  = tokStringParse(msg, "contact");
+  if(vname != "") {
+    string action = tokStringParse(msg, "action");
+    if(action == "able")
+      rmBlackListDisabled(vname);
+    else if(action == "disable") 
+      addBlackListDisabled(vname);
+  }
+
   return(all_ok);
+}
+
+//------------------------------------------------------------
+// Procedure: addBlackListDisabled()
+
+void BehaviorSet::addBlackListDisabled(string vname)
+{
+  m_set_blacklist_disabled.insert(vname);
+
+  // Guard against unbounded memory growth
+  m_lst_blacklist_disabled.push_front(vname);
+  if(m_lst_blacklist_disabled.size() > m_max_blacklist) {
+    string vname_to_remove = m_lst_blacklist_disabled.back();
+    m_set_blacklist_disabled.erase(vname_to_remove);
+    m_lst_blacklist_disabled.pop_back();
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: rmBlackListDisabled()
+
+void BehaviorSet::rmBlackListDisabled(string vname)
+{
+  m_set_blacklist_disabled.erase(vname);
+}
+
+//------------------------------------------------------------
+// Procedure: isBlackListDisabled()
+
+bool BehaviorSet::isBlackListDisabled(string vname) const
+{
+  if(m_set_blacklist_disabled.count(vname) == 0)
+    return(false);
+  return(true);
 }
 
 //------------------------------------------------------------
@@ -478,7 +524,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	unsigned int ms = m_behavior_specs[i].getMaxSpawnings();
 	if((ms > 0) && (m_behavior_specs[i].getSpawnsMade() >= ms))
 	  continue;
-	
+
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
 	//sbuild.print();
@@ -503,6 +549,14 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  addBehavior(bhv); 
 	  life_event.setEventType("spawn");
 	  m_behavior_specs[i].spawnMade();
+
+	  // Mod mikerb Sep 0625: check disable blacklist and apply here
+	  string contact = tokStringParse(update_str, "contact", '#', '=');
+	  if(isBlackListDisabled(contact)) {
+	    string able_filter_msg = "action=disable,contact=" + contact;
+	    bhv->applyAbleFilter(able_filter_msg);
+	  }
+	  
 	}
 	else
 	  life_event.setEventType("abort");
@@ -911,7 +965,7 @@ bool BehaviorSet::stateOK(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: resetStateOK
+// Procedure: resetStateOK()
 
 void BehaviorSet::resetStateOK()
 {
@@ -922,7 +976,7 @@ void BehaviorSet::resetStateOK()
 
 
 //------------------------------------------------------------
-// Procedure: removeCompletedBehaviors
+// Procedure: removeCompletedBehaviors()
 
 unsigned int BehaviorSet::removeCompletedBehaviors()
 {
@@ -944,6 +998,8 @@ unsigned int BehaviorSet::removeCompletedBehaviors()
       life_event.setBehaviorType(m_bhv_entry[i].getBehaviorType());
       life_event.setSpawnString("");
       life_event.setEventType("death");
+      life_event.setPostMortem(m_bhv_entry[i].getPostMortem());
+
       m_life_events.push_back(life_event);
 
       m_bhv_names.erase(m_bhv_entry[i].getBehaviorName());
@@ -960,7 +1016,7 @@ unsigned int BehaviorSet::removeCompletedBehaviors()
 }
 
 //------------------------------------------------------------
-// Procedure: getBehavior
+// Procedure: getBehavior()
 
 IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 {
@@ -970,7 +1026,7 @@ IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: isBehaviorAGoalBehavior
+// Procedure: isBehaviorAGoalBehavior()
 
 bool BehaviorSet::isBehaviorAGoalBehavior(unsigned int ix)
 {
@@ -983,7 +1039,7 @@ bool BehaviorSet::isBehaviorAGoalBehavior(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: getDescriptor
+// Procedure: getDescriptor()
 
 string BehaviorSet::getDescriptor(unsigned int ix)
 {
@@ -993,7 +1049,7 @@ string BehaviorSet::getDescriptor(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: getStateElapsed
+// Procedure: getStateElapsed()
 
 double BehaviorSet::getStateElapsed(unsigned int ix)
 {

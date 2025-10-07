@@ -52,6 +52,8 @@ public:
   //std::vector<std::string> getInfoVars();
   
  protected:
+  void  setComplete(std::string post_mortem="");
+
   bool  updatePlatformInfo();
   void  postViewableBearingLine(bool active=true);
 

@@ -64,6 +64,12 @@ public:
     return("unknown");
   }
 
+  std::string  getPostMortem()  {
+    if(m_behavior)
+      return(m_behavior->getPostMortem());
+    return("err97");
+  }
+
   std::string  getBehaviorType()  {
     if(m_behavior)
       return(m_behavior->getBehaviorType());
