@@ -216,9 +216,7 @@ bool MarinePID::OnStartUp()
     else if(param == "enable_thrust_cap")
       handled = setBooleanOnString(m_enable_thrust_cap, value);
     else if(param == "output_suffix"){
-      handled = (value != "");
-      if (handled)
-	m_output_suffix = toupper(value); 
+      handled = setNonWhiteVarOnString(m_output_suffix, toupper(value)); 
     } else
       handled = false;
     
