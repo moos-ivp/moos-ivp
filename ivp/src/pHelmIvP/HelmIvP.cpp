@@ -774,19 +774,15 @@ void HelmIvP::postLifeEvents()
     return;
   
   vector<LifeEvent> events = m_bhv_set->getLifeEvents();
-  unsigned int i, vsize = events.size();
-  for(i=0; i<vsize; i++) {
+
+  for(unsigned int i=0; i<events.size(); i++) {
     double htime = m_curr_time - m_start_time;
-    string str = "time=" + doubleToString(htime, 2);
-    str += ", iter="  + intToString(m_helm_iteration);
-    str += ", bname=" + events[i].getBehaviorName();
-    str += ", btype=" + events[i].getBehaviorType();
-    str += ", event=" + events[i].getEventType();
-    str += ", seed="  + events[i].getSpawnString();
-    str += ", posting_index=" + uintToString(i);
+    string str = events[i].getSpec(htime);
+    str += ",iter=" + uintToString(m_helm_iteration);
     Notify("IVPHELM_LIFE_EVENT", str);
   }
-  if(vsize > 0)
+
+  if(events.size() > 0)
     m_bhv_set->clearLifeEvents();
 }
 

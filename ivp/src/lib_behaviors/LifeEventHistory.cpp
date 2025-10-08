@@ -31,7 +31,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 LifeEventHistory::LifeEventHistory()
 {
@@ -50,7 +50,7 @@ LifeEventHistory::LifeEventHistory()
 }
 
 //-----------------------------------------------------------
-// Procedure: addLifeEvent
+// Procedure: addLifeEvent()
 
 void LifeEventHistory::addLifeEvent(const LifeEvent& event)
 {
@@ -66,7 +66,7 @@ void LifeEventHistory::addLifeEvent(const LifeEvent& event)
 }
 
 //-----------------------------------------------------------
-// Procedure: addLifeEvent
+// Procedure: addLifeEvent()
 
 void LifeEventHistory::addLifeEvent(const string& str)
 {
@@ -114,6 +114,12 @@ void LifeEventHistory::addLifeEvent(const string& str)
 
     else if(left == "seed") {
       event.setSpawnString(right);
+      if(rlen > m_max_len_seed)
+	m_max_len_seed = rlen;
+    }
+
+    else if(left == "post_mortem") {
+      event.setPostMortem(right);
       if(rlen > m_max_len_seed)
 	m_max_len_seed = rlen;
     }
@@ -194,9 +200,15 @@ vector<string> LifeEventHistory::getReport(string mode)
     line += padString(btype, m_max_len_btype, false) + cpad;
 
     string seed = m_life_events[i].getSpawnString();
-    if(m_seed_active)
-      line += padString(seed, m_max_len_seed, false);
-
+    if(m_seed_active) {
+      if(seed != "") 
+	line += padString(seed, m_max_len_seed, false);
+      else {
+	string post_mortem = m_life_events[i].getPostMortem();
+	line += padString(post_mortem, m_max_len_seed, false);
+      }
+    }
+      
     if(m_color_active) {
       if(event == "spawn") {
 	if(seed == "helm startup")

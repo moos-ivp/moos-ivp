@@ -24,11 +24,12 @@
 /*****************************************************************/
 
 #include "LifeEvent.h"
+#include "MBUtils.h"
 
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 LifeEvent::LifeEvent()
 {
@@ -60,5 +61,32 @@ bool LifeEvent::operator==(const LifeEvent& event)
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: getSpec()
 
+string LifeEvent::getSpec(double time_value) const
+{
+  string str;
+  str += "iter="  + uintToString(getIteration());
 
+  if(time_value > 0)
+    str += ",time=" + doubleToString(time_value, 2);
+
+  str += ", bname=" + getBehaviorName();
+  str += ", btype=" + getBehaviorType();
+  str += ", event=" + getEventType();
+
+  string seed = getSpawnString();
+  if(seed != "")
+    str += ", seed="  + seed;
+
+  string post_mortem = getPostMortem();
+  if(post_mortem != "")
+    str += ", post_mortem="  + post_mortem;
+
+  int posting_index = getPostingIndex();
+  if(posting_index >= 0)
+    str += ", posting_index=" + intToString(posting_index);
+
+  return(str);
+}
