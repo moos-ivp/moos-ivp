@@ -54,6 +54,8 @@ protected:
 
   bool      m_enable_thrust_cap;
   double    m_thrust_cap;
+
+  std::string m_output_suffix;
 };
 #endif 
 
