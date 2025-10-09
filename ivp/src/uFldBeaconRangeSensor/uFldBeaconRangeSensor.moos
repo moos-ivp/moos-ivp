@@ -1,6 +1,7 @@
-=============================================================== 
-uFldBeaconRangeSensor Example MOOS Configuration                      
-=============================================================== 
+// =============================================================== 
+// uFldBeaconRangeSensor Example MOOS Configuration                      
+//=============================================================== 
+ProcessConfig = uFldBeaconRangeSensor
 {                                                               
   AppTick   = 4                                                 
   CommsTick = 4                                                 

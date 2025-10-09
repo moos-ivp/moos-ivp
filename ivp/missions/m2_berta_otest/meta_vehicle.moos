@@ -10,7 +10,7 @@ Community  = $(VNAME)
 #include plug_origin_warp.moos
 
 //------------------------------------------------------------
-Processconfig = ANTLER
+ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 50
    
@@ -31,6 +31,7 @@ Processconfig = ANTLER
 #ifdef VNAME henry
 //  Run = uTimerScript     @ NewConsole = false
 #endif
+}
 
 //--------------------------------------------------------
 // uTimerScript Configuration Block   
