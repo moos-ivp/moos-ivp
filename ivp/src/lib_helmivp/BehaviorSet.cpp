@@ -43,6 +43,8 @@ BehaviorSet::BehaviorSet()
   m_total_behaviors_ever = 0;
   m_bhv_entry.reserve(1000);
   m_completed_pending = false;
+
+  m_max_blacklist = 200;
 }
 
 //------------------------------------------------------------
@@ -148,13 +150,13 @@ vector<string> BehaviorSet::getContactNames()
 
 void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 {
-  unsigned int i, vsize = m_bhv_entry.size();
-  for(i=0; i<vsize; i++)
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++)
     if(m_bhv_entry[i].getBehavior())
       m_bhv_entry[i].getBehavior()->setInfoBuffer(info_buffer);
 
   vsize = m_behavior_specs.size();
-  for(i=0; i<vsize; i++)
+  for(unsigned int i=0; i<vsize; i++)
     m_behavior_specs[i].setInfoBuffer(info_buffer);    
 }
 
@@ -165,13 +167,13 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 
 void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 {
-  unsigned int i, vsize = m_bhv_entry.size();
-  for(i=0; i<vsize; i++)
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++)
     if(m_bhv_entry[i].getBehavior())
       m_bhv_entry[i].getBehavior()->setLedgerSnap(lsnap);
 
   vsize = m_behavior_specs.size();
-  for(i=0; i<vsize; i++)
+  for(unsigned int i=0; i<vsize; i++)
     m_behavior_specs[i].setLedgerSnap(lsnap);    
 }
 
@@ -181,12 +183,12 @@ void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 //      Note: Filter msg can/will be applied many times over, to
 //            the same behaviors. The manner in which filter msgs
 //            are applied, repeated msgs make no difference.
-//   Example: action=disable, contact=345, gen_type=safety,
-//            bhv_type=AvdColregs
+//   Example: action=disable, contact=345
+//            action=able, vsource=ais
 //    Fields: action=disable/able  (mandatory)
 //            contact=345          (one of these three)
-//            gen_type=safety
 //            bhv_type=AvdColregs
+//            vsource=ais
 
 bool BehaviorSet::applyAbleFilterMsg(string msg)
 {
@@ -199,7 +201,51 @@ bool BehaviorSet::applyAbleFilterMsg(string msg)
     }
   }
 
+  // mikerb added Sep 0625
+  string vname  = tokStringParse(msg, "contact");
+  if(vname != "") {
+    string action = tokStringParse(msg, "action");
+    if(action == "able")
+      rmBlackListDisabled(vname);
+    else if(action == "disable") 
+      addBlackListDisabled(vname);
+  }
+
   return(all_ok);
+}
+
+//------------------------------------------------------------
+// Procedure: addBlackListDisabled()
+
+void BehaviorSet::addBlackListDisabled(string vname)
+{
+  m_set_blacklist_disabled.insert(vname);
+
+  // Guard against unbounded memory growth
+  m_lst_blacklist_disabled.push_front(vname);
+  if(m_lst_blacklist_disabled.size() > m_max_blacklist) {
+    string vname_to_remove = m_lst_blacklist_disabled.back();
+    m_set_blacklist_disabled.erase(vname_to_remove);
+    m_lst_blacklist_disabled.pop_back();
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: rmBlackListDisabled()
+
+void BehaviorSet::rmBlackListDisabled(string vname)
+{
+  m_set_blacklist_disabled.erase(vname);
+}
+
+//------------------------------------------------------------
+// Procedure: isBlackListDisabled()
+
+bool BehaviorSet::isBlackListDisabled(string vname) const
+{
+  if(m_set_blacklist_disabled.count(vname) == 0)
+    return(false);
+  return(true);
 }
 
 //------------------------------------------------------------
@@ -465,10 +511,6 @@ bool BehaviorSet::handlePossibleSpawnings()
       string base_name = m_behavior_specs[i].getNamePrefix();
       string update_name = tokStringParse(update_str, "name", '#', '=');
       string fullname = base_name + update_name;
-
-      //if(strBegins(update_name, base_name))
-      //fullname = update_name;
-
       
       // For example: If the behavior name prefix is avd_obstacle_,
       // and a behavior has already been spawned with the name
@@ -482,7 +524,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	unsigned int ms = m_behavior_specs[i].getMaxSpawnings();
 	if((ms > 0) && (m_behavior_specs[i].getSpawnsMade() >= ms))
 	  continue;
-	
+
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
 	//sbuild.print();
@@ -498,6 +540,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  IvPBehavior *bhv = sbuild.getIvPBehavior();
 	  // Called here now since it was just spawned and could not have
 	  // been called previously. 07/18/12 mikerb
+
 	  bhv->onSetParamComplete(); 
 	  bhv->onSpawn();
 	  bhv->postFlags("spawnflags", true);
@@ -506,6 +549,14 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  addBehavior(bhv); 
 	  life_event.setEventType("spawn");
 	  m_behavior_specs[i].spawnMade();
+
+	  // Mod mikerb Sep 0625: check disable blacklist and apply here
+	  string contact = tokStringParse(update_str, "contact", '#', '=');
+	  if(isBlackListDisabled(contact)) {
+	    string able_filter_msg = "action=disable,contact=" + contact;
+	    bhv->applyAbleFilter(able_filter_msg);
+	  }
+	  
 	}
 	else
 	  life_event.setEventType("abort");
@@ -594,6 +645,38 @@ void BehaviorSet::setPlatModel(const PlatModel& pmodel)
 }
 
 //------------------------------------------------------------
+// Procedure: getBehaviorMode()
+
+string BehaviorSet::getBehaviorMode(unsigned int ix)
+
+{
+  // Quick index sanity check
+  if(ix >= m_bhv_entry.size())
+    return("");
+
+  IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+  if(!bhv)
+    return("");
+  return(bhv->getMode());
+}
+
+//------------------------------------------------------------
+// Procedure: getBehaviorSubMode()
+
+string BehaviorSet::getBehaviorSubMode(unsigned int ix) 
+
+{
+  // Quick index sanity check
+  if(ix >= m_bhv_entry.size())
+    return("");
+
+  IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+  if(!bhv)
+    return("");
+  return(bhv->getSubMode());
+}
+
+//------------------------------------------------------------
 // Procedure: produceOF()
 
 IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
@@ -601,11 +684,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 				    string& new_activity_state,
 				    bool& ipf_reuse)
 {
-  cout << "POF 111" << endl;
   // Quick index sanity check
   if(ix >= m_bhv_entry.size())
     return(0);
-  cout << "POF 222" << endl;
   
   // ===================================================================
   // Part 1: Prepare and update behavior, determine its new activity state
@@ -613,9 +694,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   IvPFunction *ipf = 0;
   IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
-  cout << "POF 333" << bhv->getDescriptor() << endl;
-  
-  
   bhv->incBhvIteration();
   
   // possible vals: "", "idle", "running", "active"
@@ -646,12 +724,11 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // Invoke the onEveryState() function applicable in all situations
   bhv->onEveryState(new_activity_state);
   
-  cout << "POF 444" << bhv->getDescriptor() << endl;
   // ===================================================================
   // Part 2: With new_activity_state set, act appropriately for
   //         each behavior.
   // ===================================================================
-  // Part 2A: Handle completed behaviors (marked as comleted at the start
+  // Part 2A: Handle completed behaviors (marked as completed at the start
   // of this iteration. Behaviors that become complete in this iteration 
   // are handled below, after executing onIdleState, onRunState() etc.
   if(new_activity_state == "completed")
@@ -688,9 +765,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   }
   
   // Part 2C: Handle running behaviors
-  cout << "POF 555" << bhv->getDescriptor() << endl;
   if(new_activity_state == "running") {
-    cout << "POF 666"  << endl;
     double pwt = 0;
     int    pcs = 0;
 
@@ -705,7 +780,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     if(old_activity_state == "idle")
       bhv->onIdleToRunState();
 
-    cout << "POF 777"  << endl;
     // Step 1: Ask the behavior to build a IvP function
     bool need_to_run = bhv->onRunStatePrior();
     ipf_reuse = !need_to_run;
@@ -730,12 +804,12 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	pcs = 0;
       }
     }
-    cout << "POF 888"  << endl;
     // Step 4: If we're serializing and posting IvP functions, do here
     if(ipf && m_report_ipf) {
       string desc_str = bhv->getDescriptor();
       string iter_str = uintToString(iteration);
       string ctxt_str = iter_str + ":" + desc_str;
+
       ipf->setContextStr(ctxt_str);
       string ipf_str = IvPFunctionToString(ipf);
       bhv->postMessage("BHV_IPF", ipf_str);
@@ -754,8 +828,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	bhv->postFlags("inactiveflags", true); // true means repeatable
       bhv->onInactiveState();
     }
-    cout << "POF 999"  << endl;
-    
     bhv->updateStateDurations("running");
   }
 
@@ -770,8 +842,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->onCompleteState();
   }    
    
-  cout << "POF AAA"  << endl;
-  
   // =========================================================================
   // Part 3: Update all the bookkeeping structures 
   // =========================================================================
@@ -791,8 +861,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   if(bhv->getBhvIteration() == 1)
     bhv->postFlags("spawnxflags", true);
 
-  
-  cout << "POF BBB"  << endl;
   // Return either the IvP function or NULL
   return(ipf);
 }
@@ -897,7 +965,7 @@ bool BehaviorSet::stateOK(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: resetStateOK
+// Procedure: resetStateOK()
 
 void BehaviorSet::resetStateOK()
 {
@@ -908,7 +976,7 @@ void BehaviorSet::resetStateOK()
 
 
 //------------------------------------------------------------
-// Procedure: removeCompletedBehaviors
+// Procedure: removeCompletedBehaviors()
 
 unsigned int BehaviorSet::removeCompletedBehaviors()
 {
@@ -930,6 +998,8 @@ unsigned int BehaviorSet::removeCompletedBehaviors()
       life_event.setBehaviorType(m_bhv_entry[i].getBehaviorType());
       life_event.setSpawnString("");
       life_event.setEventType("death");
+      life_event.setPostMortem(m_bhv_entry[i].getPostMortem());
+
       m_life_events.push_back(life_event);
 
       m_bhv_names.erase(m_bhv_entry[i].getBehaviorName());
@@ -946,7 +1016,7 @@ unsigned int BehaviorSet::removeCompletedBehaviors()
 }
 
 //------------------------------------------------------------
-// Procedure: getBehavior
+// Procedure: getBehavior()
 
 IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 {
@@ -956,7 +1026,7 @@ IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: isBehaviorAGoalBehavior
+// Procedure: isBehaviorAGoalBehavior()
 
 bool BehaviorSet::isBehaviorAGoalBehavior(unsigned int ix)
 {
@@ -969,7 +1039,7 @@ bool BehaviorSet::isBehaviorAGoalBehavior(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: getDescriptor
+// Procedure: getDescriptor()
 
 string BehaviorSet::getDescriptor(unsigned int ix)
 {
@@ -979,7 +1049,7 @@ string BehaviorSet::getDescriptor(unsigned int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: getStateElapsed
+// Procedure: getStateElapsed()
 
 double BehaviorSet::getStateElapsed(unsigned int ix)
 {

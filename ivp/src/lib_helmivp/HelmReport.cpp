@@ -90,6 +90,8 @@ void HelmReport::clear(bool clear_completed)
   m_bhvs_active_cpu.clear();
   m_bhvs_active_pcs.clear();
   m_bhvs_active_ipfs.clear();
+  m_bhvs_active_mode.clear();
+  m_bhvs_active_submode.clear();
 
   m_update_results.clear();
 
@@ -208,7 +210,8 @@ string HelmReport::getDecisionSummary() const
 void HelmReport::addActiveBHV(const string& descriptor, double time, 
 			      double pwt, int pcs, double cpu_time, 
 			      const string& update_summary, 
-			      unsigned int ipfs)
+			      unsigned int ipfs, string mode,
+			      string submode)
 {
   m_bhvs_active_desc.push_back(descriptor);
   m_bhvs_active_time.push_back(time);
@@ -217,6 +220,8 @@ void HelmReport::addActiveBHV(const string& descriptor, double time,
   m_bhvs_active_pcs.push_back(pcs);
   m_bhvs_active_cpu.push_back(cpu_time);
   m_bhvs_active_ipfs.push_back(ipfs);
+  m_bhvs_active_mode.push_back(mode);
+  m_bhvs_active_submode.push_back(submode);
 }
   
 //-----------------------------------------------------------
@@ -237,6 +242,8 @@ string HelmReport::getActiveBehaviors(bool full_report) const
       return_str += "$" + doubleToString(m_bhvs_active_cpu[i]);
       return_str += "$" + m_bhvs_active_upds[i];
       return_str += "$" + uintToString(m_bhvs_active_ipfs[i]);
+      return_str += "$" + m_bhvs_active_mode[i]; 
+      return_str += "$" + m_bhvs_active_submode[i]; 
     }
     else {
       if(i>0)
@@ -262,6 +269,8 @@ void HelmReport::clearActiveBHVs()
   m_bhvs_active_cpu.clear();
   m_bhvs_active_pcs.clear();
   m_bhvs_active_ipfs.clear();
+  m_bhvs_active_mode.clear();
+  m_bhvs_active_submode.clear();
 }
 
 //-----------------------------------------------------------
@@ -424,7 +433,7 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
   m_bhvs_completed_upds.push_back(update_summary);
   
 
-  if(m_bhvs_completed_desc.size() > 50) {
+  if(m_bhvs_completed_desc.size() > 20) {
     m_bhvs_completed_desc.pop_front();
     m_bhvs_completed_time.pop_front();
     m_bhvs_completed_upds.pop_front();

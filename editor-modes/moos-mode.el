@@ -71,7 +71,12 @@
 ;; _? matches "zero or 1 underscores" so that the mission and behavior
 ;; files copied into Log folders by pLogger open in moos mode.
 (add-to-list 'auto-mode-alist '("\\._?moos\\'" . moos-mode))
+(add-to-list 'auto-mode-alist '("\\._?xmoos\\'" . moos-mode))
+(add-to-list 'auto-mode-alist '("\\._?moosx\\'" . moos-mode))
+
 (add-to-list 'auto-mode-alist '("\\._?bhv\\'" . moos-mode))
+(add-to-list 'auto-mode-alist '("\\._?xbhv\\'" . moos-mode))
+(add-to-list 'auto-mode-alist '("\\._?bhvx\\'" . moos-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar moos-default-tab-width 2)

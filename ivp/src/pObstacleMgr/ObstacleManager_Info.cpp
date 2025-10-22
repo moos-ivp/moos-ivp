@@ -30,7 +30,7 @@
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: showSynopsis
+// Procedure: showSynopsis()
 
 void showSynopsis()
 {
@@ -44,7 +44,7 @@ void showSynopsis()
 }
 
 //----------------------------------------------------------------
-// Procedure: showHelpAndExit
+// Procedure: showHelpAndExit()
 
 void showHelpAndExit()
 {
@@ -77,7 +77,7 @@ void showHelpAndExit()
 }
 
 //----------------------------------------------------------------
-// Procedure: showExampleConfigAndExit
+// Procedure: showExampleConfigAndExit()
 
 void showExampleConfigAndExit()
 {
@@ -119,6 +119,10 @@ void showExampleConfigAndExit()
   blk("  poly_shade_thresh = 100    // Set shade color=off if amt>100  ");
   blk("  poly_vertex_thresh = 150   // Set vertex size=0 if amt>150    ");
   blk("                                                                ");
+  blk("  disable_var = XYZ_DISABLE_TARGET  // Default is empty str     ");
+  blk("  enable_var  = XYZ_ENABLE_TARGET   // Default is empty str     ");
+  blk("  expunge_var = XYZ_EXPUNGE_TARGET  // Default is empty str     ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
@@ -127,11 +131,10 @@ void showExampleConfigAndExit()
 
 
 //----------------------------------------------------------------
-// Procedure: showInterfaceAndExit
+// Procedure: showInterfaceAndExit()
 
 void showInterfaceAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pObstacleMgr INTERFACE                                          ");
   blu("=============================================================== ");
@@ -148,6 +151,14 @@ void showInterfaceAndExit()
   blk("  OBM_ALERT_REQUEST = name=avd_obstacle, alert_range=25,        ");
   blk("                      update_var=OBSTACLE_ALERT                 ");
   blk("                                                                ");
+  blk("  XYZ_DISABLE_TARGET = obstacle=3498                            ");
+  blk("  XYZ_DISABLE_TARGET = 3498                                     ");
+  blk("  XYZ_DISABLE_TARGET = vsource=radar                            ");
+  blk("                                                                ");
+  blk("  XYZ_ENABLE_TARGET  = obstacle=3498                            ");
+  blk("  XYZ_ENABLE_TARGET  = 3498                                     ");
+  blk("  XYZ_ENABLE_TARGET  = vsource=radar                            ");
+  blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  VIEW_POLYGON      = pts={32,-100:38,-98:40,-100:32,-104},     ");
@@ -159,11 +170,17 @@ void showInterfaceAndExit()
   blk("                      poly=pts={32,-100:38,-98:40,-100:32,-104},");
   blk("                      label=d                                   ");
   blk("  OBM_RESOLVED      = ob_23                                     ");
+  blk("                                                                ");
+  blk("  BHV_ABLE_FILTER   = obstacle=3498, action=disable             ");
+  blk("  BHV_ABLE_FILTER   = obstacle=3498, action=enable              ");
+  blk("  BHV_ABLE_FILTER   = vsource=radar, action=disable             ");
+  blk("  BHV_ABLE_FILTER   = vsource=radar, action=enable              ");
+  blk("                                                                ");
   exit(0);
 }
 
 //----------------------------------------------------------------
-// Procedure: showReleaseInfoAndExit
+// Procedure: showReleaseInfoAndExit()
 
 void showReleaseInfoAndExit()
 {

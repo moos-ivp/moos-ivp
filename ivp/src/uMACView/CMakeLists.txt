@@ -42,6 +42,8 @@ TARGET_LINK_LIBRARIES(uMACView
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
   SET_TARGET_PROPERTIES(uMACView PROPERTIES	  
-    LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
+    LINK_FLAGS "-framework OpenGL -framework Cocoa"
     )
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations ")
 ENDIF (${APPLE})

@@ -41,6 +41,7 @@ public:
   void           onIdleToRunState();
   BehaviorReport onRunState(std::string);
   void           onRunToIdleState();
+  void           onEveryState(std::string s="");
   void           onSetParamComplete();
   void           onCompleteState() {postErasables();}
   void           postConfigStatus();
@@ -59,6 +60,7 @@ protected:
   void         updateOdoDistance();
   void         markOdoLeg();
   std::string  getReverseStr() const;
+  bool         setEndSpeed(std::string);
   
 protected: 
   WaypointEngine m_waypoint_engine;
@@ -77,6 +79,8 @@ protected: // configuration parameters
   std::string m_efficiency_measure;
   std::string m_ipf_type;
 
+  std::string m_waypts_init;
+  
   // Configurable names of MOOS variables for reports
   std::string m_var_report;
   std::string m_var_index;
@@ -95,6 +99,9 @@ protected: // configuration parameters
   // Visual hints affecting properties of polygons/points
   HintHolder  m_hints;
 
+  double  m_slow_dist;
+  double  m_stop_dist;
+  
 protected: // intermediate or object global variables.
   
   // Time/Distance efficiency state information

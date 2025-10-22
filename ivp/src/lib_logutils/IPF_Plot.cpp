@@ -41,7 +41,9 @@ bool IPF_Plot::addEntry(double timestamp,
 			unsigned int helm_iteration, 
 			unsigned int piece_count,
 			double priority,
-			IvPDomain ivp_domain)
+			IvPDomain ivp_domain,
+			const string& mode,
+			const string& submode)
 {
   unsigned int tsize = m_time_stamp.size();
   if((tsize != 0) && (m_time_stamp[tsize-1] > timestamp))
@@ -58,7 +60,9 @@ bool IPF_Plot::addEntry(double timestamp,
   m_piece_count.push_back(piece_count);
   m_priority.push_back(priority);
   m_ivp_domain_iter.push_back(ivp_domain);
-
+  m_mode.push_back(mode);
+  m_submode.push_back(submode);
+  
   return(true);
 }
 

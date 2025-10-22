@@ -4,13 +4,7 @@
 #--------------------------------------------------------
 
 # Set System Specific Libraries
-if (${WIN32})
-  SET(SYSTEM_LIBS
-    )
-else (${WIN32})
-  SET(SYSTEM_LIBS
-    m)
-endif (${WIN32})
+SET(SYSTEM_LIBS m)
 
 SET(SRC
    Expander.cpp

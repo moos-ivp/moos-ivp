@@ -65,12 +65,15 @@ ObstacleManager::ObstacleManager()
   m_obstacles_color = "blue";
 
   m_given_max_duration = 60; // seconds
+
+  m_disable_var = "";  // e.g.  XYZ_DISABLE_TARGET
+  m_enable_var  = "";   // e.g. XYZ_ENABLE_TARGET
+  m_expunge_var = "";   // e.g. XYZ_EXPUNGE_TARGET
   
   // Init State Variables
   m_nav_x = 0;
   m_nav_y = 0;
 
-  // Init state variables
   m_points_total   = 0;
   m_points_ignored = 0;
   m_points_invalid = 0;
@@ -128,6 +131,12 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = handleGivenObstacle(sval);
     else if(key == "OBM_ALERT_REQUEST") 
       handled = handleMailAlertRequest(sval);
+    else if((m_disable_var != "") && (key == m_disable_var))
+      handled = handleMailModEnableObstacle(sval, "disable");
+    else if((m_expunge_var != "") && (key == m_expunge_var))
+      handled = handleMailModEnableObstacle(sval, "expunge");
+    else if((m_enable_var != "") && (key == m_enable_var))
+      handled = handleMailModEnableObstacle(sval, "enable");
     else if(key == "APPCAST_REQ") // handle by AppCastingMOOSApp
       handled = true;
 
@@ -223,6 +232,13 @@ bool ObstacleManager::OnStartUp()
     else if(param == "mailflag") 
       handled = m_mfset.addFlag(value);
 
+    else if(param == "disable_var")
+      handled = setNonWhiteVarOnString(m_disable_var, value);
+    else if(param == "enable_var")
+      handled = setNonWhiteVarOnString(m_enable_var, value);
+    else if(param == "expunge_var")
+      handled = setNonWhiteVarOnString(m_expunge_var, value);
+
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
 
@@ -277,6 +293,12 @@ void ObstacleManager::registerVariables()
   for(unsigned int i=0; i<mflag_vars.size(); i++)
     Register(mflag_vars[i], 0);
 
+  if(m_disable_var != "")
+    Register(m_disable_var, 0);
+  if(m_enable_var != "")
+    Register(m_enable_var, 0);
+  if(m_expunge_var != "")
+    Register(m_expunge_var, 0);
 }
 
 
@@ -295,6 +317,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   string x_str;
   string y_str;
   string obstacle_key_str;
+  string vsource;
   
   vector<string> svector = parseString(point_str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -304,6 +327,8 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
       x_str = value;
     else if(param == "y")
       y_str = value;
+    else if(param == "vsource")
+      vsource = value;
     else if((param == "key") || (param == "label"))
       obstacle_key_str = value;
   }
@@ -311,13 +336,139 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   if((x_str == "") || (y_str == "") || (obstacle_key_str == ""))
     return(null_pt);
 
+  if(strContainsWhite(vsource))
+    return(null_pt);
+  
   double x = atof(x_str.c_str());
   double y = atof(y_str.c_str());
   
   XYPoint new_pt(x,y);
   new_pt.set_msg(obstacle_key_str);
+  new_pt.set_vsource(vsource);
   
   return(new_pt);
+}
+
+
+//---------------------------------------------------------
+// Procedure: handleMailModEnableObstacle()
+//   Example: XYZ_ENABLE_TARGET = 87993
+//   Example: XYZ_DISABLE_TARGET = obstacle_id=87993
+//   Example: XYZ_DISABLE_TARGET = vsource=radar
+//
+// Notes: Re-enabling a behavior is a matter for the helm, by
+//        way of a message to the BHV_ABLE_FILTER variable.
+//        The contact manager can facilitate.
+//        Assumed input is the ID of a contact.
+
+bool ObstacleManager::handleMailModEnableObstacle(string str,
+						  string action)
+{
+  if((action != "enable") && (action != "disable") &&
+     (action != "expunge"))
+    return(false);
+
+  string obstacle_id;
+  string msg;
+  // First, handle special case, the value is just obstacle ID
+  if(!strContains(str,"=") && !strContains(str,","))
+    msg = "obstacle_id=" + str;
+  else {
+    obstacle_id = tokStringParse(str, "obstacle_id");
+    if(obstacle_id != "")
+      msg = "obstacle_id=" + obstacle_id;
+    else { 
+      string vsource = tokStringParse(str, "vsource");
+      if(vsource != "")
+	msg = "vsource=" + vsource;
+    }
+  }
+  if(msg == "")
+    return(false);
+
+  msg += ",action=" + action;
+  
+  Notify("BHV_ABLE_FILTER", msg);
+
+  // Update list of (re)enabled contacts and post flags
+
+  if(action == "enable") {
+    if(obstacle_id != "") 
+      addEnabledObstacle(obstacle_id);
+    postFlags(m_able_flags);
+    postFlags(m_enable_flags);
+  }
+  if(action == "disable") {
+    if(obstacle_id != "")
+      addDisabledObstacle(obstacle_id);
+    postFlags(m_able_flags);
+    postFlags(m_disable_flags);
+  }
+  if(action == "expunge") {
+    if(obstacle_id != "") 
+      addExpungedObstacle(obstacle_id);
+    postFlags(m_expunge_flags);
+  }
+  
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: addDisabledObstacle()
+//   Purpose: Maintain a list of obstacle disabled. This list
+//            used primarily for informational purposes, and
+//            its size can be used as a way of confirming that
+//            a disabled obstacle has been added.
+//      Note: We are always paranoid about memory growth, so
+//            this list is limited to 250 most recent obstacles.
+
+void ObstacleManager::addDisabledObstacle(string id)
+{
+  // If obstacle id on enabled list, remove it
+  m_enabled_obstacles.remove(id);
+
+  // If obstacle already on list, remove so we can put at front
+  m_disabled_obstacles.remove(id);
+  m_disabled_obstacles.push_front(id);
+
+  // If list is too large, removed the oldest.
+  if(m_disabled_obstacles.size() > 250)
+    m_disabled_obstacles.pop_back();
+}
+
+//---------------------------------------------------------
+// Procedure: addEnabledObstacle()
+//      Note: See comments for addDisabledObstacle()
+
+void ObstacleManager::addEnabledObstacle(string id)
+{
+  // If obstacle id on disabled list, remove it
+  m_disabled_obstacles.remove(id);
+
+  // If obstacle already on list, remove so we can put at front
+  m_enabled_obstacles.remove(id);
+  m_enabled_obstacles.push_front(id);
+
+  // If list is too large, removed the oldest.
+  if(m_enabled_obstacles.size() > 250)
+    m_enabled_obstacles.pop_back();
+}
+
+
+//---------------------------------------------------------
+// Procedure: addExpungedObstacle()
+
+void ObstacleManager::addExpungedObstacle(string id)
+{
+  m_map_obstacles.erase(id); // mikerb jul0925
+  
+  // If obstacle already on list, remove so we can put at front
+  m_expunged_obstacles.remove(id);
+  m_expunged_obstacles.push_front(id);
+
+  // If list is too large, removed the oldest.
+  if(m_expunged_obstacles.size() > 50)
+    m_expunged_obstacles.pop_back();
 }
 
 
@@ -334,7 +485,6 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
     m_given_mail_ever++;
   else if(source == "mission")
     m_given_config_ever++;
-
 
   XYPolygon new_poly = string2Poly(poly);
   if(!new_poly.is_convex())
@@ -375,9 +525,13 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
     return(false);
   }
 
+  string vsource = new_poly.get_vsource();
+  
   m_map_obstacles[key].setPoly(new_poly);
   m_map_obstacles[key].setDuration(duration);
   m_map_obstacles[key].setTStamp(m_curr_time);
+  m_map_obstacles[key].setChanged();
+  m_map_obstacles[key].setVSource(vsource);
   onNewObstacle("given");  
   
   reportEvent("new obstacle: " + m_map_obstacles[key].getInfo(m_curr_time)); 
@@ -424,6 +578,8 @@ bool ObstacleManager::handleMailNewPoint(string value)
   m_map_obstacles[key].addPoint(newpt);
   m_map_obstacles[key].setChanged(true);
   m_map_obstacles[key].setMaxPts(m_max_pts_per_cluster);
+  m_map_obstacles[key].setVSource(newpt.get_vsource());
+
   onNewObstacle("points");  
 
   return(true);
@@ -675,6 +831,14 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
   string update_str = "name=" + alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
+  //string source = poly.get_source();
+  string vsource = m_map_obstacles[key].getVSource();
+  if(vsource != "")
+    update_str += ",vsource=" + vsource;
+
+  // mikerb May1425
+  update_str += "#id=" + key;
+
   m_alerts_posted++;  
   Notify(alert_var, update_str);
   reportEvent(alert_var + "=" + update_str);
@@ -889,8 +1053,8 @@ void ObstacleManager::onNewObstacle(string obs_type)
   
   m_obstacles_ever++;
 
-
-  postFlags(m_new_obs_flags);  
+  if(obs_type == "given")
+    postFlags(m_new_obs_flags);  
 }
 
 //------------------------------------------------------------
@@ -901,26 +1065,62 @@ void ObstacleManager::postFlags(const vector<VarDataPair>& flags)
   for(unsigned int i=0; i<flags.size(); i++) {
     VarDataPair pair = flags[i];
     string moosvar = pair.get_var();
+    string postval;
 
     // If posting is a double, just post. No macro expansion
     if(!pair.is_string()) {
       double dval = pair.get_ddata();
+      postval = doubleToStringX(dval,4);
       Notify(moosvar, dval);
     }
     // Otherwise if string posting, handle macro expansion
     else {
-      string sval = pair.get_sdata();
-
-      unsigned int obs_now = m_map_obstacles.size();
-      
-      sval = macroExpand(sval, "OBS_NOW", obs_now);
-      sval = macroExpand(sval, "OBS_EVER", m_obstacles_ever);
-      
-      Notify(moosvar, sval);
+      postval = stripBlankEnds(pair.get_sdata());
+      postval = expandMacros(postval);
+      if(postval != "")
+        Notify(moosvar, postval);
     }
+    reportEvent(moosvar + "=" + postval);
   }
 }
 
+
+//------------------------------------------------------------
+// Procedure: expandMacros()
+//   Purpose: For any set of flags, post each. For flags that
+//            contain a macro, expand the macro first.
+
+string ObstacleManager::expandMacros(string sdata) const
+{
+  // Handle $[RECENT_DISABLED]
+  if(m_disabled_obstacles.size() > 0) {
+    string most_recently_disabled = m_disabled_obstacles.front();
+    sdata = macroExpand(sdata, "RECENT_DISABLED", most_recently_disabled);
+  }
+
+  // Handle $[RECENT_ENABLED]
+  if(m_enabled_obstacles.size() > 0) {
+    string most_recently_enabled = m_enabled_obstacles.front();
+    sdata = macroExpand(sdata, "RECENT_ENABLED", most_recently_enabled);
+  }
+
+  // Handle $[TOTAL_DISABLED]
+  unsigned int total_disabled = m_disabled_obstacles.size();
+  sdata = macroExpand(sdata, "TOTAL_DISABLED", total_disabled);
+
+  // Handle $[ALL_DISABLED] (check first before building content)
+  if(strContains(sdata, "ALL_DISABLED")) {
+    string all_disabled = stringListToString(m_disabled_obstacles);
+    sdata = macroExpand(sdata, "ALL_DISABLED", all_disabled);
+  }
+
+  unsigned int obs_now = m_map_obstacles.size();      
+  sdata = macroExpand(sdata, "OBS_NOW", obs_now);
+  sdata = macroExpand(sdata, "OBS_EVER", m_obstacles_ever);
+
+  return(sdata);
+}
+  
 
 //------------------------------------------------------------
 // Procedure: buildReport()

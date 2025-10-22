@@ -50,7 +50,7 @@ public:
   virtual IvPFunction* onRunState() {return(0);}
 
   virtual BehaviorReport onRunState(std::string);
-  virtual void setCPAEngine(const CPAEngine&) {};
+  //  virtual void setCPAEngine(const CPAEngine&) {};
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
@@ -73,6 +73,8 @@ public:
   virtual std::string isDeprecated() {return("");}
   virtual bool applyAbleFilter(std::string) {return(true);}
   virtual std::vector<std::string> getInfoVars();
+  virtual std::string getMode() const {return("");}
+  virtual std::string getSubMode() const {return("");}
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
@@ -104,8 +106,11 @@ public:
   bool    isDynamicallySpawnable() const  {return(m_dynamically_spawnable);}
   std::string getSpawnBaseName() const    {return(m_spawn_basename);}
   std::string getContact() const          {return(m_contact);}
+  std::string getPostMortem() const       {return(m_post_mortem);}
   
  protected:
+  virtual void setComplete(std::string post_mortem="");
+
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
   void    setBehaviorType(std::string str) {m_behavior_type = str;}
@@ -114,7 +119,6 @@ public:
   std::string getOwnshipName() const {return(m_us_name);}
   
   void    addInfoVars(std::string, std::string="");
-  void    setComplete();
   void    postBadConfig(std::string);
 
   void    postFlags(const std::string&, bool repeat=false);
@@ -193,6 +197,7 @@ public:
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
 
+  bool    hasLedgerVName(std::string vname);
   double  getLedgerInfoDbl(std::string vname, std::string fld, bool&);
   string  getLedgerInfoStr(std::string, std::string, bool&);
   double  getLedgerInfoDbl(std::string vname, std::string fld);
@@ -317,6 +322,8 @@ protected:
 
   bool m_disabled;
   bool m_can_disable;
+
+  std::string m_post_mortem;
   
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.

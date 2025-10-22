@@ -37,7 +37,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
 		       InfoBuffer *g_info_buffer,
@@ -60,7 +60,7 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain,
 }
 
 //-----------------------------------------------------------
-// Procedure: Destructor
+// Destructor()
 
 HelmEngine::~HelmEngine()
 {
@@ -129,39 +129,8 @@ bool HelmEngine::addAbleFilterMsg(string msg)
   if(!m_bhv_set)
     return(false);
 
-  // Oldest in front, newest in back
-  m_able_filter_msgs.push_back(msg);
-
-  // More aggressive pruning will happen directly after applying
-  // the messages, but less agressive pruning is done here to
-  // be super conservative in gaurding against unbounded growth.
-  if(m_able_filter_msgs.size() > 1000)
-    m_able_filter_msgs.pop_front();
-
-  return(true);
-}
-
-
-//------------------------------------------------------------------
-// Procedure: applyAbleFilterMsgs()
-
-bool HelmEngine::applyAbleFilterMsgs()
-{
-  if(!m_bhv_set)
-    return(false);
-  
-  bool last_msg_ok = true;
-  list<string>::iterator p;
-  for(p=m_able_filter_msgs.begin(); p!=m_able_filter_msgs.end(); p++) {
-    string msg = *p;
-    last_msg_ok = m_bhv_set->applyAbleFilterMsg(msg);
-  }
-
-  // Prune the oldest if needed
-  if(m_able_filter_msgs.size() > 100)
-    m_able_filter_msgs.pop_front();
-
-  return(last_msg_ok);
+  bool ok = m_bhv_set->applyAbleFilterMsg(msg);
+  return(ok);
 }
 
 
@@ -190,11 +159,6 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
     m_bhv_set->connectInfoBuffer(m_info_buffer);
     m_bhv_set->connectLedgerSnap(m_ledger_snap);
   }
-  
-  //cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
-  
-  // bhv_set is stable w/ possible new bhvs, apply filter msgs
-  applyAbleFilterMsgs();
   
   // Update the PlatModel for each behavior including newly
   // spawned behaviors.
@@ -313,8 +277,13 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	double pwt = newof->getPWT();
 	int    pcs = newof->size();
+
+	string mode = m_bhv_set->getBehaviorMode(bhv_ix);
+	string submode = m_bhv_set->getBehaviorSubMode(bhv_ix);
+	
 	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt,
-				   pcs, of_time, upd_summary, 1);
+				   pcs, of_time, upd_summary, 1,
+				   mode, submode);
 	//m_ivp_functions.push_back(newof);
 	m_map_ipfs[descriptor] = newof;
       }

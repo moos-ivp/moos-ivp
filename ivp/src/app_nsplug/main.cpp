@@ -23,7 +23,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <string>
 #include <iostream>
 #include "ColorParse.h"
@@ -34,10 +33,8 @@
 
 using namespace std;
 
-void showHelpAndExit();
-
 //--------------------------------------------------------
-// Procedure: main
+// Procedure: main()
 
 int main(int argc, char *argv[])
 {
@@ -57,6 +54,8 @@ int main(int argc, char *argv[])
       showManualAndExit();
     else if((arg == "-f") || (arg == "--force"))
       expander.setForce(true);
+    else if((arg == "-x") || (arg == "--xfile"))
+      expander.setXFile(true);
     else if(strBegins(arg, "--path=")) 
       expander.addPath(arg.substr(7));
     else if(strBegins(arg, "--tag=")) 

@@ -206,6 +206,8 @@ void showInterfaceAndExit()
   blk("  USM_ENABLED        = [true/false]                             ");
   blk("  USM_TURN_RATE      = [0,100]                                  ");
   blk("                                                                ");
+  blk("  USM_RESET_NAV      = true                                     ");
+  blk("                                                                ");
   blk("  WIND_CONDITIONS    = spd=4, dir=155                           ");
   blk("  OBSTACLE_HIT       = true                                     ");
   blk("                                                                ");

@@ -13,6 +13,7 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$1"; fi }
 #  Part 2: Set global var defaults
 #---------------------------------------------------------------
 ME=`basename "$0"`
+CMD_ARGS=""
 DIR=$(pwd)
 LEVEL=0
 CONFIRM=""
@@ -20,6 +21,7 @@ VERBOSE=""
 DRYRUN=""
 MAX_AGE=""
 FLOW_DOWN_ARGS=""
+GRP_DIR=""
 
 txtrst=$(tput setaf 0)  # Reset
 txtred=$(tput setaf 1)  # Red
@@ -30,6 +32,7 @@ txtblu=$(tput setaf 4)  # Blue
 #  Part 3: Check for and handle command-line arguments
 #---------------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "$ME [OPTIONS] [level]                             "
 	echo "                                                  "
@@ -46,6 +49,8 @@ for ARGI; do
 	echo "  --dir=<dirname>    Begin in given directory     "
 	echo "  --max_age=<N>      Ignore logs  > N hours old   "
 	echo "  --today, -t        Same as --max_age=16         "
+	echo "                                                  "
+	echo "  --grp_dir=<str>    A group dir for archiving    "
 	echo "                                                  "
 	echo "  --min_odo=<N>      Ignore logs with odometry <N "
 	echo "  --odo_two, -o      Same as --min_odo=2          "
@@ -91,11 +96,15 @@ for ARGI; do
     elif [ "${ARGI}" = "--x" -o "${ARGI}" = "-x" ]; then
 	FLOW_DOWN_ARGS+=" $ARGI"
 
+    elif [ "${ARGI:0:10}" = "--grp_dir=" ]; then
+        GRP_DIR=$ARGI
     else
         echo "$ME: Bad arg:" $ARGI "Exit Code 1."
         exit 1
     fi
 done
+
+#echo "$ME: [$CMD_ARGS]"
 
 # create string of blanks with string length $LEVEL 
 BUF=`printf %${LEVEL}s`
@@ -134,7 +143,7 @@ if [ "${HAS_AN_ALOG}" = "yes" ]; then
        
     if [ "${DO_THE_ARCHIVE}" = "yes" ]; then
 	echo "$BUF$ME Archiving: ${PWD##*/}"
-	mhash_archive.sh $FLOW_DOWN_ARGS
+	mhash_archive.sh $FLOW_DOWN_ARGS $GRP_DIR
     fi
 
     exit 0
@@ -150,7 +159,7 @@ for file in *; do
     if [ -d $file ]; then
 	if [ "${LEVEL}" = "0" -o "${LEVEL}" = "3" ]; then
 	    cd $file;
-	    mhash_archive_all.sh $FLOW_DOWN_ARGS
+	    mhash_archive_all.sh $FLOW_DOWN_ARGS $GRP_DIR
 	    cd ..
 	fi
     fi

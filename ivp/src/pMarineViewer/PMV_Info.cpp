@@ -210,6 +210,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  beat_flag = HEARTBEAT=true                                    ");
   blk("                                                                ");
+  blk("  extrap_policy = mode=hdg,thresh=0.1,decay=10:15               ");
+  blk("                                                                ");
   blk("  show_title_ip    = true // {TRUE or false}                    ");
   blk("  show_title_user  = true // {TRUE or false}                    ");
   blk("  show_title_mhash = true // {TRUE or false}                    ");

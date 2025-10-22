@@ -68,6 +68,8 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
+
+  m_nav_warning_posted = false;
 }
 
 //-----------------------------------------------------------
@@ -128,7 +130,7 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(setBooleanOnString(m_exit_on_filter_group, param_val));
   else if(param == "exit_on_filter_region")
     return(setBooleanOnString(m_exit_on_filter_region, param_val));
-      
+
   else if(param == "cnflag")
     return(addContactFlag(param_val));
 
@@ -317,6 +319,9 @@ void IvPContactBehavior::onEveryState(string new_state)
 {
   IvPBehavior::onEveryState(new_state);
 
+  if(m_completed)
+    postViewableBearingLine(false);
+  
   updatePlatformInfo();
   if(new_state == "running")
     handleContactFlags();
@@ -442,6 +447,29 @@ string IvPContactBehavior::expandMacros(string sdata)
 }
 
 //-----------------------------------------------------------
+// Procedure: setComplete()
+//   Purpose: Add further contact information to the post_mortem
+//      Note: Typical post_mortem message passed as arg may
+//            indicate the reason why behavior completed, e.g.,
+//            reached a certain range to contact.
+//            This method adds range and relative bearing info
+//            automatically for all invocations of setComplete
+//            for contact behaviors.
+//   Example: "range" becomes "range#rng=98.2#bng=82"
+
+void IvPContactBehavior::setComplete(string post_mortem)
+{
+  IvPBehavior::setComplete(post_mortem);
+
+  if(m_post_mortem != "")
+    m_post_mortem += "#";
+  m_post_mortem += "rng=" + doubleToStringX(m_contact_range,1); 
+  double relbng = relAng(m_osx,m_osy, m_cnx,m_cny);
+  m_post_mortem += "#bng=" + doubleToStringX(relbng,1); 
+}
+
+
+//-----------------------------------------------------------
 // Procedure: updatePlatformInfo()
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
@@ -462,9 +490,12 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
 
   // Sanity check - skip if update already successfully done
-  if(m_cnos.helm_iter() == m_helm_iter)
-    return(true);
+  //if(m_cnos.helm_iter() == m_helm_iter)
+  //  return(true);
 
+  if(m_completed)
+    return(true);
+  
   if(m_contact == "") {
     if(m_on_no_contact_ok)
       return(true);
@@ -486,32 +517,19 @@ bool IvPContactBehavior::updatePlatformInfo()
   
   if(!ok1 || !ok2 || !ok3 || !ok4) {    
     string msg = m_contact + " x/y/heading/speed info not found";
-    if(m_on_no_contact_ok)
+    if(m_on_no_contact_ok) {
       postWMessage(msg);
+      m_nav_warning_posted = true;
+    }
     else
       postEMessage(msg);
     return(false);
   }
-
-#if 0
-  // Part 1B: ascertain current contact position and trajectory.
-  double cnutc = 0;
-  if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
-  if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
-  if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
-  if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
-  if(ok) cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
-  if(!ok && !m_on_no_contact_ok) {    
-    string msg = m_contact + " x/y/heading/speed info not found";
-    if(m_on_no_contact_ok)
-      postWMessage(msg);
-    else
-      postEMessage(msg);
-    return(false);
+  if(m_nav_warning_posted) {
+    postRetractWMessage(m_contact + " x/y/heading/speed info not found");
+    m_nav_warning_posted = false;
   }
-  m_cnh = angle360(m_cnh);
-#endif
-  
+    
   // Part 1C: At this point we know this update will be a success, i.e.,
   // it will return with true. So now is the time to invoke archive
   // on the ContactStateSet, moving the previously current cnos into the
@@ -527,6 +545,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   
   m_cn_group = getLedgerInfoStr(m_contact, "grp");
   m_cn_vtype = getLedgerInfoStr(m_contact, "type");  
+  m_cn_vsource = getLedgerInfoStr(m_contact, "vsource");  
   
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
@@ -673,8 +692,8 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
 //            bhv_type=AvdColregs
 //    Fields: action=disable/able  (mandatory)
 //            contact=345          (one of these three)
-//            gen_type=safety
 //            bhv_type=AvdColregs
+//            vsource=ais
 
 bool IvPContactBehavior::applyAbleFilter(string str)
 {
@@ -688,7 +707,7 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // Part 1: Parse the filter string. Must be one of the
   //         supported fields, no field more than once.
   // ======================================================
-  string action, contact, gen_type, bhv_type;
+  string action, contact, bhv_type, vsource;
   vector<string> svector = parseString(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
@@ -698,10 +717,10 @@ bool IvPContactBehavior::applyAbleFilter(string str)
       action = value;
     else if((param == "contact") && (contact == ""))
       contact = value;
-    else if((param == "gen_type") && (gen_type == ""))
-      gen_type = value;
     else if((param == "bhv_type") && (bhv_type == ""))
       bhv_type = value;
+    else if((param == "vsource") && (vsource == ""))
+      vsource = value;
     else
       return(false);
   }
@@ -711,39 +730,38 @@ bool IvPContactBehavior::applyAbleFilter(string str)
   // ======================================================
 
   // action must be specified and only disable or enable
-  if((action != "disable") && (action != "enable"))
+  if((action != "disable") && (action != "enable") &&
+     (action != "expunge"))
     return(false);
 
-  // gen_type can only be empty or safety
-  if((gen_type != "") && (gen_type != "safety"))
-    return(false);
-
-  // At least one of contact, gen_type, or bhv_type must be given
-  if((contact == "") && (gen_type == "") && (bhv_type == ""))
+  // At least one of contact, gen_type, or bhv_type, or vsource
+  // must be given
+  if((contact == "") && (bhv_type == "") && (vsource == ""))
     return(false);
 
   // ======================================================
-  // Part 3: At this pt syntax checking has passed, now
+  // Part 3: At this point syntax checking has passed, now
   // check if this filter message applies to this behavior.
   // ======================================================
 
-  // Check 1: If the gen_type has been set to safety, then
-  // then it MUST be a safety(constraint) behavior,
-  // regardless of other filter factors
-  if((gen_type == "safety") && !isConstraint())
-    return(true);  // Return true since syntax if fine
-
-  // Check 2: If the bhv_type has been set then it MUST
+  // Check 1: If the bhv_type has been set then it MUST
   // match, regardless of other filter factors
   if((bhv_type != "") && (bhv_type != tolower(getBehaviorType())))
     return(true);  // Return true since syntax if fine
 
-  // Check 3: If contact name has been set then MUST 
+  // Check 2: If contact name has been set then MUST 
   // match, regardless of other filter factors
   if((contact != "") && (contact != tolower(m_contact)))
     return(true);  // Return true since syntax if fine
 
-  if(action == "disable")
+  // Check 3: If contact vsource has been set then MUST 
+  // match, regardless of other filter factors
+  if((vsource != "") && (vsource != tolower(m_cn_vsource)))
+    return(true);  // Return true since syntax if fine
+
+  if(action == "expunge")
+    setComplete();
+  else if(action == "disable")
     m_disabled = true;
   else
     m_disabled = false;

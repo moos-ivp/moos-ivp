@@ -411,6 +411,9 @@ XYPolygon stringRadial2Poly(string str)
   double radius = 0;
   double snap = 0;
   int    pts = 0;
+
+  double shiftx = 0;
+  double shifty = 0;
   
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');
@@ -436,6 +439,10 @@ XYPolygon stringRadial2Poly(string str)
       //zval_set = true;
       zval = atof(value.c_str());
     }
+    else if((param == "shiftx") && (isNumber(value)))
+      shiftx = atof(value.c_str());
+    else if((param == "shifty") && (isNumber(value)))
+      shifty = atof(value.c_str());
     else if((param == "active") && (tolower(value)=="false")) {
       null_poly.set_active(false);
       new_poly.set_active(false);
@@ -465,6 +472,9 @@ XYPolygon stringRadial2Poly(string str)
 
   if(!xpos_set || !ypos_set || !radius_set || !pts_set)
     return(null_poly);
+
+  xpos += shiftx;
+  ypos += shifty;
   
   // The "false" parameter in add_vertex() below indicates that a
   // convexity determination is *not* to be made as part of the call

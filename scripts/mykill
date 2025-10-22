@@ -18,13 +18,13 @@ fi
 
 killall -9 iVelodyne pFeatureTracker pObstacleMgr    \
 	uFldRescueMgr pPoseKeep pContactMgrV20       \
-        pDeadManPost  pTaskManager iM200 iM300       \
+        pDeadManPost  pTaskManager  iM300            \
 	pMediator pSpoofNode uFldVoronoi pProxonoi   \
 	pEncircle uFldTaskMonitor uFldAnemo          \
 	uFldConvoyEval uSimHeron uSockComms          \
-	pGeoSelect 
+	pGeoSelect >& /dev/null
 
-killall -9 uFldFlagManager uFldTagManager pGenRescue
+killall -9 uFldFlagManager uFldTagManager pGenRescue >& /dev/null
 
 killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
@@ -32,7 +32,7 @@ killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
         pHuxley pMessageSim pBeamform uTermCommand pRealm   \
         pBearingTrack uMissionTester uSimMarineV22          \
-	uFldLegRunMgr uFldLegRunEval
+	uFldLegRunMgr uFldLegRunEval >& /dev/null
 
 killall -9 pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim     \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL       \
@@ -40,7 +40,7 @@ killall -9 pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim     \
         pRedirect pLoiterControl pTransponderAIS uMVS        \
         pMarinePID uTMS uMVS_Bluefin pEchoVar pMarinePIDV22  \
         pTrafficControl pShipsideViewer uRepeater uXMS       \
-        pViewerRelay uHelmScope pClusterPriority zLoggerNG
+        pViewerRelay uHelmScope pClusterPriority zLoggerNG >& /dev/null
 
 killall -9 iMicroModem pRouter pFramer pMessageSim             \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality        \
@@ -50,38 +50,38 @@ killall -9 iMicroModem pRouter pFramer pMessageSim             \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
         uSimBeaconRange uSimCurrent pBasicContactMgr           \
         uSimActiveSonar bngview pConvexHull pObstacleMgr       \
-        pObstacleManager pContactMgrV20 uFldWrapDetect
+        pObstacleManager pContactMgrV20 uFldWrapDetect >& /dev/null
 
 killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
         pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway   \
         pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
-        pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec
+        pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec >& /dev/null
         
         
-killall -9 pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
-        pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
+killall -9 pCBF pBTracker pTrackMonitor uTimerScript pDTSP      \
+        pNodeReporter iCommStack pMissionCtl iDSP  \
         pNotDTSP pBoundingCircle pRIDManager uLogView           \
         uLogViewHelm uLogViewIPF pFooBar pFoobar                \
-        pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
+        pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard >& /dev/null
 
-killall -9 pFleetControl uFldScope uFldContactRangeSensor         \
+killall -9 pFleetControl uFldScope uFldContactRangeSensor      \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
         uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
         uFldHazardSensor uFldMessageHandler pGenPath pGenPath2 \
         pPointAssign uFldHazardMetric pHandleSensorData        \
         uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
-        pShare uFldGenericSensor uFldHazardMgr pGradeFrontEstimate pFrontEstimate
+        pShare uFldGenericSensor uFldHazardMgr                 \
+	pGradeFrontEstimate pFrontEstimate >& /dev/null
 
-killall -9 pParticle uFldContactRangeSensorHP pUUVPath         \
-        pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
+killall -9 pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
         pHunterPrey camera_example camera_example_server       \
-        camera_example_viewer iHuxley uFldCollisionDetect iSay \
-        uLoadWatch pPolePath sedit pEvalLoiter uMemWatch       \
-        uSimHeron uSockComms pMapMarkers uMayFinish
+        camera_example_viewer uFldCollisionDetect iSay \
+        uLoadWatch sedit pEvalLoiter uMemWatch       \
+        uSimHeron uSockComms pMapMarkers uMayFinish >& /dev/null
 
-killall -9 uSpeechRec uDialogManager
+killall -9 uSpeechRec uDialogManager >& /dev/null
 
-killall -9 pAntler pLogger 
+killall -9 pAntler pLogger >& /dev/null
 
 echo Done - Killed all MOOS-Related Processes.....

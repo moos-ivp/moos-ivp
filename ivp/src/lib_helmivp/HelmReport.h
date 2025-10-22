@@ -46,7 +46,8 @@ public:
   void  addActiveBHV(const std::string& descriptor, double time,
 		     double pwt, int pcs, double cpu,
 		     const std::string& update_summary, 
-		     unsigned int ipfs);
+		     unsigned int ipfs, const std::string mode="",
+		     const std::string submode="");
 
   void  clearRunningBHVs();
   void  addRunningBHV(const std::string& descriptor, double time,
@@ -120,8 +121,15 @@ public:
   std::string  getIdleBehaviors(bool full=true)      const;
   std::string  getDisabledBehaviors(bool full=true)  const;
   std::string  getCompletedBehaviors(bool full=true) const;
+
+  unsigned int getActiveBhvsCnt() const   {return(m_bhvs_active_desc.size());}
+  unsigned int getRunningBhvsCnt() const  {return(m_bhvs_running_desc.size());}
+  unsigned int getIdleBhvsCnt() const     {return(m_bhvs_idle_desc.size());}
+  unsigned int getDisabledBhvsCnt() const {return(m_bhvs_disabled_desc.size());}
+  unsigned int getCompletedBhvsCnt() const {return(m_bhvs_completed_desc.size());}
+  
   std::string  getCompletedBehaviorsTerse() const;
-  std::string  getDomainString()       const;
+  std::string  getDomainString() const;
   std::string  timeInState(double, double) const;
 
   // Serialization Methods
@@ -156,6 +164,9 @@ protected:
   std::vector<std::string>  m_bhvs_active_desc;    // Active Behaviors
   std::vector<double>       m_bhvs_active_time;
   std::vector<std::string>  m_bhvs_active_upds;
+  std::vector<std::string>  m_bhvs_active_mode;
+  std::vector<std::string>  m_bhvs_active_submode;
+  
   std::vector<double>       m_bhvs_active_pwt;
   std::vector<double>       m_bhvs_active_cpu;
   std::vector<int>          m_bhvs_active_pcs;

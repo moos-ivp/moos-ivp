@@ -119,7 +119,7 @@ void ZAIC_Vector::setDomainVals(vector<double> vals)
 }
 
 //-------------------------------------------------------------
-// Procedure: setRangeVals
+// Procedure: setRangeVals()
 //   Purpose: Set the values in the mapping from the IvP
 //            domain to the utility values
 
@@ -145,7 +145,7 @@ void ZAIC_Vector::setRangeVals(vector<double> vals)
 }
 
 //-------------------------------------------------------------
-// Procedure: setTolerance
+// Procedure: setTolerance()
 //   Purpose: Set the error tolerance for building a piecewise mapping
 
 void ZAIC_Vector::setTolerance(double val)
@@ -304,7 +304,7 @@ IvPFunction *ZAIC_Vector::extractOF()
   
   convertValues();
 
-  PDMap *pdmap = setPDMap2();
+  PDMap *pdmap = setPDMap();
   if(!pdmap)
     return(0);
 
@@ -315,7 +315,7 @@ IvPFunction *ZAIC_Vector::extractOF()
 
 
 //-------------------------------------------------------------
-// Procedure: setPDMap
+// Procedure: setPDMap()
 
 PDMap *ZAIC_Vector::setPDMap()
 {
@@ -597,6 +597,8 @@ void ZAIC_Vector::clearWarnings()
 
 //-------------------------------------------------------------
 // Procedure: setPDMap2()
+//      Note: Unused alternative. Maybe not functioning all ok
+
 
 PDMap *ZAIC_Vector::setPDMap2()
 {

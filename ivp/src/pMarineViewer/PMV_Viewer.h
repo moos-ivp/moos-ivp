@@ -76,14 +76,12 @@ class PMV_Viewer : public MarineViewer
   double       getVehiclesShapeScale() const;
   unsigned int getDrawCount() const {return(m_draw_count);}
   double       getCurrTime() const {return(m_curr_time);}
-  double       getTimeWarp() const {return(m_time_warp);}
   double       getElapsed() const {return(m_elapsed);}
 
   void   setVerbose(bool bval=true) {m_verbose=bval;}
   
   void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
 
-  void   setCenterView(double x, double y);
   void   setCenterView(std::string vname);
   
  private:
@@ -99,7 +97,6 @@ class PMV_Viewer : public MarineViewer
   std::string m_reference_point;
   std::string m_reference_bearing;
   double      m_curr_time;
-  double      m_time_warp;
   double      m_elapsed;
 
   bool        m_config_complete;

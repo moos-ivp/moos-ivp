@@ -235,7 +235,9 @@ void ObShipModelV24::setOBuffRDegs(double dval)
 
 string ObShipModelV24::setGutPoly(string polystr)
 {
+  cout << "str1:" << polystr << endl;
   XYPolygon new_poly = string2Poly(polystr);
+  cout << "str2:" << new_poly.get_spec() << endl;
   return(setGutPoly(new_poly));
 }
 

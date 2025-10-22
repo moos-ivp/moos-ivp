@@ -91,15 +91,30 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << endl;
-  cout << "Usage: zaic_hleq [OPTIONS]                          " << endl;
-  cout << "Options:                                            " << endl;
-  cout << "  --help, -h           Display this help message    " << endl;
-  cout << "  --domain=410         Set upper value of domain    " << endl;
-  cout << "  --verbose,           Enable verbose output        " << endl;
-  cout << "  --version, -v,       Display the release version  " << endl;
-  cout << "                                                    " << endl;
-  cout << "Example:                                            " << endl;
-  cout << " $ zaic_hleq --domain=500 --verbose                 " << endl;
+  cout << "Usage: zaic_hleq [OPTIONS]                           " << endl;
+  cout << "  zaic_hleq [OPTIONS]                                " << endl;
+  cout << "                                                     " << endl;
+  cout << "Synopsis:                                            " << endl;
+  cout << "  The zaic_hleq utility renders a configured instance" << endl;
+  cout << "  of the ZAIC_HLEQ utility in the ivpbuild toolbox.  " << endl;
+  cout << "  This allow the user to visualize the effects of    " << endl;
+  cout << "  parameter settings for this tool. Normally this    " << endl;
+  cout << "  tool is created and parameterized within an IvP    " << endl;
+  cout << "  behavior. This tool may give behavior authors some " << endl;
+  cout << "  insight into how the tool works. This tool was     " << endl;
+  cout << "  also used as an engineering/validation tool when   " << endl;
+  cout << "  the original C++ code was written. This tool wraps " << endl;
+  cout << "  the very same ZAIC_HLEQ C++ class as is used in the" << endl;
+  cout << "  behaviors.                                         " << endl;
+  cout << "                                                     " << endl;
+  cout << "Options:                                             " << endl;
+  cout << "  --help, -h           Display this help message     " << endl;
+  cout << "  --domain=410         Set upper value of domain     " << endl;
+  cout << "  --verbose,           Enable verbose output         " << endl;
+  cout << "  --version, -v,       Display the release version   " << endl;
+  cout << "                                                     " << endl;
+  cout << "Example:                                             " << endl;
+  cout << " $ zaic_hleq --domain=500 --verbose                  " << endl;
   exit(0);
 }
 

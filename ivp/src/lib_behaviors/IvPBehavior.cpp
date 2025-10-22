@@ -44,7 +44,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
@@ -90,7 +90,6 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_max_osv = -1; // According to IvPDomain
 
   m_time_of_creation  = 0;
-  m_time_starting_now = 0;
   m_time_starting_now = 0;
 
   m_macro_ctr = 0;
@@ -337,9 +336,14 @@ string IvPBehavior::isRunnable()
   }
 #endif
 
+  if((m_contact != "") && !hasLedgerVName(m_contact))
+    if(isDynamicallySpawned()) // Added mikerb Jun2525
+      setComplete();
+
   if(m_completed)
     return("completed");
 
+  
   if(m_disabled)
     return("disabled");
 
@@ -403,13 +407,12 @@ void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
 
 bool IvPBehavior::updatePlatformInfo()
 {
-  bool ok1, ok2, ok3, ok4, ok5;
+  bool ok1, ok2, ok3;
 
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
-  m_osd = getBufferDoubleVal("NAV_DEPTH", ok5);
+  m_osh = angle360(m_osh);
 
   // Must get ownship position
   if(!ok1 || !ok2) {
@@ -423,16 +426,12 @@ bool IvPBehavior::updatePlatformInfo()
     return(false);
   }
 
-  // If speed info is not found, its not a show-stopper.
-  // A warning will be posted.
-  if(!ok4)
-    postWMessage("No ownship speed info in info_buffer");
-  
-  m_osh = angle360(m_osh);
+  // If speed info not found, just post a warning
+  m_osv = getBufferDoubleVal("NAV_SPEED");
 
-  if(!ok5 && (m_domain.hasDomain("depth")))
-    postWMessage("No ownship depth info in info_buffer");
-
+  // Look for depth info only if in the IvP domain
+  if(m_domain.hasDomain("depth"))
+    m_osd = getBufferDoubleVal("NAV_DEPTH");
   
   return(true);
 }
@@ -841,13 +840,15 @@ void IvPBehavior::postRepeatableMessage(string var, double ddata)
 //-----------------------------------------------------------
 // Procedure: setComplete()
 
-void IvPBehavior::setComplete()
+void IvPBehavior::setComplete(string post_mortem)
 {
   postFlags("endflags", true);
   // Removed by mikerb jun2213 to prevent double posting
   // postFlags("inactiveflags");  
-  if(!m_perpetual)
+  if(!m_perpetual) {
     m_completed = true;
+    m_post_mortem = post_mortem;
+  }
 }
 
 
@@ -994,7 +995,6 @@ bool IvPBehavior::checkConditions()
   return(true);
 
 }
-
 
 //-----------------------------------------------------------
 // Procedure: checkForDurationReset()
@@ -1315,17 +1315,6 @@ bool IvPBehavior::durationExceeded()
   
   double remaining_time = m_duration - elapsed_time;
 
-#if 0
-  string msg1 = "ELAPSED_" + toupper(m_descriptor);
-  postMessage(msg1, elapsed_time);
-
-  string msg2 = "DUR_IDLE_TIME_" + toupper(m_descriptor);
-  postMessage(msg2, m_duration_idle_time);
-
-  string msg3 = "REMAINING_TIME_" + toupper(m_descriptor);
-  postMessage(msg3, remaining_time);
-#endif
-
   if(remaining_time < 0)
     remaining_time = 0;
   if(m_duration_status != "") {
@@ -1343,8 +1332,7 @@ bool IvPBehavior::durationExceeded()
 
 
 //-----------------------------------------------------------
-// Procedure: postDurationStatus
-//      Note: 
+// Procedure: postDurationStatus()
 
 void IvPBehavior::postDurationStatus()
 {
@@ -1680,6 +1668,7 @@ double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
   }
   if((!ok) && !vectorContains(m_info_vars_no_warning, varname))     
     postWMessage(varname + " dbl info not found in helm info_buffer");
+  
   return(value);
 }
 
@@ -1913,6 +1902,17 @@ bool IvPBehavior::addFlagOnString(vector<VarDataPair>& pairs,
 
   // Part 2: Proceed with normal adding of a flag
   return(addVarDataPairOnString(pairs, str));
+}
+
+//-----------------------------------------------------------
+// Procedure: hasLedgerVName()
+
+bool IvPBehavior::hasLedgerVName(string vname)
+{
+  if(!m_ledger_snap)
+    return(false);
+
+  return(m_ledger_snap->hasVName(vname));
 }
 
 //-----------------------------------------------------------

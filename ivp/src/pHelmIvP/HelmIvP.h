@@ -156,6 +156,7 @@ protected:
   std::string   m_bhvs_active_list;
   std::string   m_bhvs_running_list;
   std::string   m_bhvs_idle_list;
+  std::string   m_bhvs_disabled_list;
 
   std::string   m_ownship;
   std::vector<std::string> m_node_report_vars;
@@ -212,6 +213,6 @@ protected:
   
   std::string  m_helm_prefix;
 
-  PlatModelGenerator m_pmgen;
+  PlatModelGenerator m_plat_model_generator;
 };
 #endif 

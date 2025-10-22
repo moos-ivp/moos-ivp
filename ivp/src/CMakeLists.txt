@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 PROJECT(IVP)
 
@@ -179,7 +179,8 @@ SET(ROBOT_APPS
   pHostInfo          iSay                pContactMgrV20
   pMarinePIDV22      uSimMarineV22       uSimMarineV23
   pMissionHash       pMissionEval        iBlinkStick
-  pAutoPoke          uMayFinish
+  pAutoPoke          uMayFinish          app_pluck
+  app_nspatch
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck
@@ -189,14 +190,14 @@ SET(IVP_NON_GUI_APPS
   uFldScope          uFldNodeComms       uFldBeaconRangeSensor
   pSearchGrid        uFldGenericSensor   uFldContactRangeSensor
   uFldDelve          app_bweb            app_mhash_gen
-  app_projfield      pMapMarkers
+  app_projfield      pMapMarkers         pSpoofNode
 )
 SET(IVP_GUI_APPS
   app_ffview         app_geoview         app_alogview
   app_zaic_hleq      app_zaic_vect       app_zaic_hdg
   app_zaic_spd       app_zaic_peak       pMarineViewer
   uFunctionVis       uMACView            uPlotViewer
-  uCommand           app_pairview
+  uCommand           
 # app_vzaicview      app_gzaicview
 )
 

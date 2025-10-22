@@ -48,6 +48,7 @@ public:
   void         onIdleToRunState();
   void         onInactiveState()  {postErasablePolygons();}
   void         onEveryState(std::string);
+  bool         applyAbleFilter(std::string);
   void         postConfigStatus();
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
@@ -81,6 +82,8 @@ public:
 
   bool m_draw_buff_min_poly;
   bool m_draw_buff_max_poly;
+
+  bool m_holonomic_ok;
   
  protected: // State variables
 
@@ -97,6 +100,7 @@ public:
 
   std::string m_side_lock;
 
+  bool m_allstop_on_breach;
   
 protected:
   HintHolder m_hints;

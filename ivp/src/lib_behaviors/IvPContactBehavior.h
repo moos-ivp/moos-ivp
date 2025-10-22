@@ -47,10 +47,13 @@ public:
   void  onHelmStart();
   void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
   void  onEveryState(std::string new_state);
+  bool  applyAbleFilter(std::string);
   std::string expandMacros(std::string);
   //std::vector<std::string> getInfoVars();
   
  protected:
+  void  setComplete(std::string post_mortem="");
+
   bool  updatePlatformInfo();
   void  postViewableBearingLine(bool active=true);
 
@@ -66,7 +69,6 @@ public:
 
   void  handleContactFlags();
   void  handleContactFlagRange(VarDataPair);
-  bool  applyAbleFilter(std::string);
   
  protected: // Configuration Parameters
   
@@ -99,6 +101,7 @@ public:
 
   std::string m_cn_group;
   std::string m_cn_vtype;
+  std::string m_cn_vsource; // Added 4/11/25 contac info src, e.g., radar, ais
 
   double m_relevance;
 
@@ -109,6 +112,8 @@ public:
 
   ContactStateSet m_cnos;
 
+  bool m_nav_warning_posted; 
+  
 private:
   std::vector<VarDataPair> m_cnflags;
 };

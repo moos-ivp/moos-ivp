@@ -75,6 +75,10 @@ BHV_AvoidObstacleV24::BHV_AvoidObstacleV24(IvPDomain gdomain) :
   m_cpa_rng_ever = -1;
   m_closing = false;
 
+  m_holonomic_ok = false;
+
+  m_allstop_on_breach = true;
+  
   initVisualHints();
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
   addInfoVars(m_resolved_obstacle_var);
@@ -141,6 +145,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   else if((param == "completed_dist") && non_neg_number) 
     config_result = m_obship_model.setCompletedDist(dval);
 
+  else if(param == "holonomic_ok") 
+    return(setBooleanOnString(m_holonomic_ok, val));
   else if(param == "draw_buff_min_poly") 
     return(setBooleanOnString(m_draw_buff_min_poly, val));
   else if(param == "draw_buff_max_poly") 
@@ -151,6 +157,9 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   //else if((param == "turn_model_degs") && non_neg_number)
   //  return(m_obship_model.setTurnModelDegs(dval));
 
+  else if(param == "can_disable")
+    return(setBooleanOnString(m_can_disable, val));
+
   else if(param == "rng_flag")
     return(handleParamRangeFlag(val));
   else if(param == "cpa_flag")
@@ -159,7 +168,7 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
     return(m_hints.setHints(val));
   else if(param == "use_refinery")
     return(setBooleanOnString(m_use_refinery, val));
-  else if(param == "id") {
+  else if((param == "id") || (param == "obid")) {
     // Once the obstacle id is set, it cannot be overwritten
     if((m_obstacle_id != "") && (m_obstacle_id != val))
       return(false);
@@ -170,6 +179,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   //else if(param == "spoke_degs")
   //  return(m_tm_generator.setParam("spoke_degs", dval));
 
+  else if(param == "allstop_on_breach") 
+    return(setBooleanOnString(m_allstop_on_breach, val));
   else
     return(false);
 
@@ -253,7 +264,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // then declare the resolution to be pending.
   for(unsigned int i=0; i<obstacles_resolved.size(); i++) {
     string obstacle_id = obstacles_resolved[i];
-    cout << "Resolved Obstacle: " << obstacle_id << endl;
     postMessage("NOTED_RESOLVED", obstacle_id);
 
     if(m_obstacle_id == obstacle_id)
@@ -277,7 +287,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
 
   m_valid_cn_obs_info = true;
   if(!m_obship_model.isValid()) {
-    cout << "invalid cn_ob_info2" << endl;
     m_valid_cn_obs_info = false;
   }
   if(!m_valid_cn_obs_info)
@@ -351,9 +360,12 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
   // Part 5: Check for completion based on range
   // =================================================================
   if(os_range_to_poly > m_obship_model.getCompletedDist()) {
-    cout << "os_range_to_poly:" << os_range_to_poly << endl;
-    cout << "complet_dist: " << m_obship_model.getCompletedDist() << endl;
     m_resolved_pending = true;
+  }
+
+  if(!m_holonomic_ok) {
+    if(m_plat_model.getModelType() == "holo")
+      postWMessage("holo plat_model not best. Set holonomic_ok=true to silence");
   }
 }
 
@@ -380,11 +392,10 @@ void BHV_AvoidObstacleV24::onIdleToRunState()
 // Procedure: onRunState()
 
 IvPFunction *BHV_AvoidObstacleV24::onRunState() 
-{
+{  
   // Part 1: Handle if obstacle has been resolved
   if(m_resolved_pending) {
     setComplete();
-    //cout << "reason1" << endl;
     return(0);
   }
   if(!m_valid_cn_obs_info)
@@ -394,7 +405,6 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
 
   // Part 2: No IvP function if obstacle is aft
   if(m_obship_model.isObstacleAft(20)) {
-    //cout << "reason3" << endl;
     return(0);
   }
   
@@ -404,6 +414,27 @@ IvPFunction *BHV_AvoidObstacleV24::onRunState()
     return(0);
 
   IvPFunction *ipf = buildOF();
+
+  // Special case 1: No IPF built, due to ownship being within
+  // the obstacle polygon. Likely want to invoke Allstop unless
+  // allstop_on_breach has been explicitly set to false.
+  if(!ipf) {
+    if(m_allstop_on_breach)
+      postEMessage("Allstop: Obstacle Breached");
+    else
+      postWMessage("Obstacle Breached");
+    return(0);
+  }
+  
+  // If IvP function has no decisions with positive utility then
+  // this means a collision with an obstacle is unavoidable.
+  // Possible when using plat model with non-zero turn radius.
+  if(ipf->getValMaxUtil() == 0) {
+    postEMessage("Allstop: obstacle unavoidable");
+    delete(ipf);
+    return(0);
+  }
+
   return(ipf);
 }
 
@@ -419,7 +450,6 @@ IvPFunction *BHV_AvoidObstacleV24::buildOF()
   if(!ok_init) {
     string aof_msg = aof_avoid.getCatMsgsAOF();
     postWMessage("Unable to init AOF_AvoidObstacleV24:"+aof_msg);
-    //cout << "reason5" << endl;
     return(0);
   }
   
@@ -704,4 +734,91 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   sdata = macroExpand(sdata, "MAXU_CPA", max_util_cpa);
   
   return(sdata);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: applyAbleFilter()
+//  Examples: action=disable, obstacle_id=345
+//            action=enable,  obstacle_id=345
+//            action=disable, vsource=radar
+//            action=expunge, obstacle_id=345
+//    Fields: action=disable/enable/expunge  (mandatory)
+//            contact=345          (one of these four)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+//            vsource=ais
+
+bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
+{
+  // If this behavior is configured to be immune to disable
+  // actions, then just ignore and return true, even if the
+  // passed argument is not proper.
+  if(!m_can_disable)
+    return(true);
+
+  // ======================================================
+  // Part 1: Parse the filter string. Must be one of the
+  //         supported fields, no field more than once.
+  // ======================================================
+  string action, obid, vsource;
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = tolower(svector[i]);
+
+    if((param == "action") && (action == ""))
+      action = value;
+    else if((param == "obstacle_id") && (obid == ""))
+      obid = value;
+    else if((param == "vsource") && (vsource == ""))
+      vsource = value;
+    else
+      return(false);
+  }
+
+  // ======================================================
+  // Part 2: Check for proper format.
+  // ======================================================
+  // action must be specified and only disable or enable
+  if((action != "disable") && (action != "enable") &&
+     (action != "expunge"))
+    return(false);
+
+  // At least one of obid or vsource must be given
+  if((obid == "") && (vsource == ""))
+    return(false);
+
+  // ======================================================
+  // Part 3: At this point syntax checking has passed, now
+  // check if this filter message applies to this behavior.
+  // ======================================================
+
+  // Check 3: If obstacle_id has been set then MUST 
+  // match, regardless of other filter factors
+  if(obid != "") {
+    if(tolower(obid) != tolower(m_obstacle_id))
+      return(true);  // Return true since syntax if fine
+  }
+  // Check 4: If obstacle vsource has been set then MUST 
+  // match, regardless of other filter factors
+  else if(vsource != "") {
+    cout << "vsource:" << vsource << endl;
+    string poly_vsource = m_obship_model.getVSource();
+    cout << "poly_vsource" << poly_vsource << endl;
+    if(tolower(vsource) != tolower(poly_vsource))
+      return(true); // Return true since syntax if fine
+  }
+  else 
+    return(false); // No criteria given (obid or vsource)
+
+  if(action == "disable")
+    m_disabled = true;
+  else
+    m_disabled = false;
+
+  if(action == "expunge")
+    setComplete();
+  
+  return(true);
 }

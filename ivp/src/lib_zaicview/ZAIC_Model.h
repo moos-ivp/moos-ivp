@@ -38,7 +38,6 @@ class ZAIC_Model
   virtual bool setParam(std::string, std::string) {return(false);}
   virtual void moveX(double amt) {};
   virtual void currMode(int) {};
-
   
   // Getters
   IvPDomain  getIvPDomain();

@@ -29,7 +29,7 @@
 using namespace std;
 
 //-------------------------------------------------------------------
-// Constructor
+// Constructor()
 
 GUI_HelmScope::GUI_HelmScope(int g_w, int g_h, const char *g_l)
   : Fl_Window(g_w, g_h, g_l) 
@@ -291,7 +291,7 @@ Fl_Menu_Item GUI_HelmScope::menu_[] = {
 };
 
 //----------------------------------------------------------
-// Procedure: setDataBroker
+// Procedure: setDataBroker()
 
 void GUI_HelmScope::setDataBroker(ALogDataBroker dbroker, string vname)
 {
@@ -302,7 +302,7 @@ void GUI_HelmScope::setDataBroker(ALogDataBroker dbroker, string vname)
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void GUI_HelmScope::resize(int lx, int ly, int lw, int lh)
 {
@@ -312,7 +312,7 @@ void GUI_HelmScope::resize(int lx, int ly, int lw, int lh)
 }
 
 //----------------------------------------------------------
-// Procedure: handle
+// Procedure: handle()
 
 int GUI_HelmScope::handle(int event) 
 {
@@ -345,7 +345,7 @@ int GUI_HelmScope::handle(int event)
 }
 
 //----------------------------------------------------------
-// Procedure: setCurrTime
+// Procedure: setCurrTime()
 
 void GUI_HelmScope::setCurrTime(double curr_time)
 {
@@ -358,7 +358,7 @@ void GUI_HelmScope::setCurrTime(double curr_time)
 
 //----------------------------------------- Browser
 inline void GUI_HelmScope::cb_Browser_i() {
-  cout << "In cb_Browser_i()" << endl;
+  //cout << "In cb_Browser_i()" << endl;
 }
 void GUI_HelmScope::cb_Browser(Fl_Widget* o) {
   ((GUI_HelmScope*)(o->parent()->user_data()))->cb_Browser_i();

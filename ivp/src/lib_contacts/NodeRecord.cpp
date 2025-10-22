@@ -43,7 +43,8 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_speed      = 0;
   m_speed_og   = 0;
   m_heading    = 0;
-  m_heading_og = 0;
+  m_heading_og = 0; // deprecated in favor of cog
+  m_cog        = 0;
   m_depth      = 0;
   m_altitude   = 0;
   m_length     = 0;
@@ -62,7 +63,8 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_speed_set      = false;
   m_speed_og_set   = false;
   m_heading_set    = false;
-  m_heading_og_set = false;
+  m_heading_og_set = false; // deprecated in favor of cog
+  m_cog_set        = false;
   m_depth_set      = false;
   m_altitude_set   = false;
   m_length_set     = false;
@@ -100,6 +102,8 @@ string NodeRecord::getStringValue(string key) const
     return(doubleToStringX(m_heading, 2));
   else if((key == "heading_og") || (key == "hdg_og"))
     return(doubleToStringX(m_heading_og, 2));
+  else if(key == "cog")
+    return(doubleToStringX(m_cog, 2));
   else if(key == "yaw")
     return(doubleToStringX(m_yaw, 4));
   else if((key == "depth") || (key == "dep"))
@@ -187,6 +191,9 @@ string NodeRecord::getSpec(bool terse) const
     str += ",SPD="  + doubleToStringX(m_speed,2);
   if(m_heading_set)
     str += ",HDG="  + doubleToStringX(m_heading,2);
+  if(m_cog_set)
+    str += ",COG="  + doubleToStringX(m_cog,2);
+
   if(m_depth_set && !terse)
     str += ",DEP="  + doubleToStringX(m_depth,2);
 
@@ -211,6 +218,8 @@ string NodeRecord::getSpec(bool terse) const
     str += ",COLOR=" + m_color;
   if(m_group != "")
     str += ",GROUP=" + m_group;
+  if(m_vsource != "")
+    str += ",VSOURCE=" + m_vsource;
   if(m_mode != "")
     str += ",MODE=" + m_mode;
   if(m_mode_aux != "")
@@ -226,7 +235,7 @@ string NodeRecord::getSpec(bool terse) const
   if(m_speed_og_set)
     str += ",SPD_OG=" + doubleToStringX(m_speed_og,2);
 
-  if(m_heading_og_set)
+  if(m_heading_og_set) // deprecated in favor of cog
     str += ",HDG_OG="  + doubleToStringX(m_heading_og,2);
 
   if(m_index != 0)
@@ -277,6 +286,16 @@ string NodeRecord::getGroup(string default_group) const
   if(m_group == "")
     return(default_group);
   return(m_group);
+}
+
+//---------------------------------------------------------------
+// Procedure: getVSource()
+
+string NodeRecord::getVSource(string default_vsource) const
+{
+  if(m_vsource == "")
+    return(default_vsource);
+  return(m_vsource);
 }
 
 //---------------------------------------------------------------

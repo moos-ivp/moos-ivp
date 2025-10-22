@@ -380,9 +380,11 @@ void ShoreBroker::handleMailNodePing(const string& info)
   
   // Part 2: Determine the status (response) to the incoming ping.
   string status = "ok";
-  if(m_time_warp_str != hrecord.getTimeWarp()) 
+  if(m_time_warp_str != hrecord.getTimeWarp()) {
     status = "timewarp (" + m_time_warp_str + "!=" + hrecord.getTimeWarp() + ")";
-  
+    reportRunWarning(status);
+  }
+    
   if((m_keyword != "") && (m_keyword != hrecord.getKeyword()))
     status = "keyword_mismatch";
   hrecord.setStatus(status);

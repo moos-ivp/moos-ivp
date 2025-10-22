@@ -80,6 +80,9 @@ public:
 
   BehaviorReport produceOFX(unsigned int ix, unsigned int iter, 
 			    std::string& activity_state);
+
+  std::string getBehaviorMode(unsigned int bhv_ix);
+  std::string getBehaviorSubMode(unsigned int bhv_ix);
   
   unsigned int   removeCompletedBehaviors();
   IvPBehavior*   getBehavior(unsigned int);
@@ -140,6 +143,11 @@ public:
   unsigned long int size() const;
 
   unsigned int bhvStateCount(std::string) const;
+
+private:
+  void addBlackListDisabled(std::string vname);
+  void rmBlackListDisabled(std::string vname);
+  bool isBlackListDisabled(std::string vname) const;
   
 protected:
   std::vector<BehaviorSetEntry> m_bhv_entry;
@@ -174,6 +182,10 @@ protected:
   ModeSet m_mode_set;
 
   unsigned int m_total_behaviors_ever;
+
+  std::set<std::string>  m_set_blacklist_disabled;
+  std::list<std::string> m_lst_blacklist_disabled;
+  unsigned int           m_max_blacklist;
 };
 
 #endif 

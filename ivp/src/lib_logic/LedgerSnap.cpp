@@ -91,6 +91,24 @@ void LedgerSnap::setUTCAgeReceived(string vname, double dval)
 
 
 //-----------------------------------------------------------
+// Procedure: setGroup(), setType(), setVSource()
+
+void LedgerSnap::setGroup(string vname, string sval)
+{
+  m_map_group[vname] = sval;
+}
+void LedgerSnap::setType(string vname, string sval)
+{
+  m_map_type[vname] = sval;
+}
+void LedgerSnap::setVSource(string vname, string sval)
+{
+  m_map_vsource[vname] = sval;
+}
+
+
+
+//-----------------------------------------------------------
 // Procedure: getInfoDouble()
 
 double LedgerSnap::getInfoDouble(std::string vname,
@@ -180,10 +198,26 @@ string LedgerSnap::getInfoString(std::string vname,
     p = m_map_type.find(vname);
     if(p != m_map_type.end())
       return(p->second);
+  }  
+  else if(fld == "vsource") {
+    p = m_map_vsource.find(vname);
+    if(p != m_map_vsource.end())
+      return(p->second);
   }
   
   ok = false;
   return("");
+}
+
+//-----------------------------------------------------------
+// Procedure: hasVName()
+
+bool LedgerSnap::hasVName(string vname) const
+{
+  if(m_map_xpos.count(vname) == 0)
+    return(false);
+
+  return(true);
 }
 
 //-----------------------------------------------------------
@@ -245,6 +279,8 @@ unsigned int LedgerSnap::size() const
     max_size = m_map_group.size();
   if(m_map_type.size() > max_size)
     max_size = m_map_type.size();
+  if(m_map_vsource.size() > max_size)
+    max_size = m_map_vsource.size();
 
   return(max_size);
 }
@@ -252,9 +288,35 @@ unsigned int LedgerSnap::size() const
 //-----------------------------------------------------------
 // Procedure: getSpec(vname)
 
-string LedgerSnap::getSpec(string vname) const
+string LedgerSnap::getSpec(string vname) 
 {
-  return("");
+  string str;
+  str += "x=" + doubleToStringX(m_map_xpos[vname],4);
+  str += ",y=" + doubleToStringX(m_map_ypos[vname],4);
+  str += ",h=" + doubleToStringX(m_map_hdg[vname],4);
+  str += ",v=" + doubleToStringX(m_map_spd[vname],4);
+  str += ",d=" + doubleToStringX(m_map_dep[vname],4);
+  str += ",lat=" + doubleToStringX(m_map_lat[vname],4);
+  str += ",lon=" + doubleToStringX(m_map_lon[vname],4);
+  str += ",utc=" + doubleToStringX(m_map_utc[vname],4);
+  str += ",grp=" + m_map_group[vname];
+  str += ",type=" + m_map_type[vname];
+  str += ",vsrc=" + m_map_vsource[vname];
+  
+  return(str);
+}
+
+//-----------------------------------------------------------
+// Procedure: print()
+
+void LedgerSnap::print()
+{
+  map<string, double>::iterator p;
+  for(p=m_map_xpos.begin(); p!=m_map_xpos.end(); p++) {
+    string vname = p->first;
+    string info = getSpec(vname);
+    cout << "vname:" << vname << ": " << info << endl;
+  }
 }
 
 

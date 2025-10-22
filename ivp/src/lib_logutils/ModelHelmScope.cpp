@@ -184,9 +184,10 @@ vector<string> ModelHelmScope::getActiveList() const
   // 1
   string raw = m_helm_plot.getValueByTime("active", m_curr_time);
 
-  ACTable actab(7,2);
+  ACTable actab(9,2);
   if(m_headers_bhv) {
-    actab << "Behavior" << "Time" << "Pwt" << "Pcs" << "CPU" << "UPD" << "IPFs";
+    actab << "Behavior" << "Time" << "Pwt" << "Pcs" << "CPU" << "UPD"
+	  << "IPFs" << "Mode" << "SubMode";
     actab.addHeaderLines();
   }
 
@@ -200,12 +201,15 @@ vector<string> ModelHelmScope::getActiveList() const
       string cpu = biteString(svector[i], '$');
       string upd = biteString(svector[i], '$');
       string ipf = biteString(svector[i], '$');
+      string mode = biteString(svector[i], '$');
+      string submode = biteString(svector[i], '$');
       
       string elapsed = convertTimeUTC2TimeElapsed(utc);
       
       pwt = dstringCompact(pwt);
       cpu = dstringCompact(cpu);
-      actab << bhv << elapsed << pwt << pcs << cpu << upd << ipf;
+      actab << bhv << elapsed << pwt << pcs << cpu << upd
+	    << ipf << mode << submode;
     }
   }
 

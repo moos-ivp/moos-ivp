@@ -41,7 +41,9 @@ public:
 		  unsigned int iteration, 
 		  unsigned int piece_count,
 		  double  priority,
-		  IvPDomain domain);
+		  IvPDomain domain,
+		  const std::string& mode="",
+		  const std::string& submode="");
 
   double getTimeByIndex(unsigned int) const;
 
@@ -83,6 +85,8 @@ protected:
   std::vector<unsigned int> m_piece_count;
   std::vector<unsigned int> m_priority;
   std::vector<IvPDomain>    m_ivp_domain_iter;
+  std::vector<std::string>  m_mode;
+  std::vector<std::string>  m_submode;
 
   IvPDomain                 m_ivp_domain;
 };

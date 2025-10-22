@@ -103,6 +103,8 @@ void showExampleConfigAndExit()
   blu("  tardy_helm_threshold = 2.0                                    ");
   blu("  tardy_nav_threshold  = 2.0                                    ");
   blu("  verbose              = terse   "," // or {verbose, quiet}     ");
+  blk("  output_suffix        = _PID  // ex. for DESIRED_RUDDER_PID    ");
+  blk("                               // default is no value           "); 
   blk("                                                                ");
   blk("  // Yaw control configuration                                  ");
   blk("  yaw_pid_kp  = 0.5                                             ");
@@ -169,9 +171,9 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  DESIRED_RUDDER   = -22                                        ");
-  blk("  DESIRED_THRUST   = 60                                         ");
-  blk("  DESIRED_ELEVATOR = -1.2                                       ");
+  blk("  DESIRED_RUDDER   = -22        (These default variable names   ");
+  blk("  DESIRED_THRUST   = 60          can be changed.  See the       ");
+  blk("  DESIRED_ELEVATOR = -1.2        output_suffix parameter.)      ");
   blk("                                                                ");
   blk("  PID_MAX_SAT_HDG = true                                        ");
   blk("  PID_MAX_SAT_SPD = true                                        ");

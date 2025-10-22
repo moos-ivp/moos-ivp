@@ -1423,52 +1423,59 @@ void MarineViewer::drawTextBox(const XYTextBox& tbox, double tstamp)
   if(!tbox.active() || !tbox.valid() || tbox.expired(tstamp))
     return;
 
-  string message = tbox.getMsg();
-  if(message == "")
-    return;
-  
   string mcolor = tbox.getMColor();
   string label  = tbox.get_label();
   double x      = tbox.x();
   double y      = tbox.y();
   int    fsize  = tbox.getFSize();
-  
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
+  int    lines  = tbox.size();
 
-  // Determine position in terms of image percentage
-  double tbox_ix = meters2img('x', x);
-  double tbox_iy = meters2img('y', y);
+  // Write each line
+  for (int i = 0;  i < lines; i++){
+    string message = tbox.getMsg(i);
+    if(message == "")
+      return;
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, w(), 0, h(), -1 ,1);
+      
+    // Determine position in terms of image percentage
+    double tbox_ix = meters2img('x', x);
+    double tbox_iy = meters2img('y', y);
 
-  // Determine position in terms of view percentage
-  double tbox_vx = img2view('x', tbox_ix);
-  double tbox_vy = img2view('y', tbox_iy);
+    // Determine position in terms of view percentage
+    double tbox_vx = img2view('x', tbox_ix);
+    double tbox_vy = img2view('y', tbox_iy);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
+    // Adjust y value down based on line number i and font size
+    tbox_vy -= double(i) * double(fsize) * 1.5;
 
-  glTranslatef(tbox_vx, tbox_vy, 0); // theses are in pixel units
-  glScalef(m_zoom, m_zoom, m_zoom);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-  //double factor_x = m_back_img.get_pix_per_mtr_x();
-  //double factor_y = m_back_img.get_pix_per_mtr_y();
+    glTranslatef(tbox_vx, tbox_vy, 0); // theses are in pixel units
+    glScalef(m_zoom, m_zoom, m_zoom);
 
-  //bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
+    //double factor_x = m_back_img.get_pix_per_mtr_x();
+    //double factor_y = m_back_img.get_pix_per_mtr_y();
 
-  ColorPack labelc("white");
-  if(isColor(mcolor))
-    labelc = ColorPack(mcolor);
+    //bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
 
-  if(coordInView(x,y) && labelc.visible()) {
-    glColor3f(labelc.red(), labelc.grn(), labelc.blu());
-    gl_font(1, fsize);
-    if(m_zoom > 4)
-      gl_font(1, fsize+2);
-    double offset = 4.0 * (1/m_zoom);
-    glRasterPos3f(offset, offset, 0);
-    gl_draw_aux(message);
+    ColorPack labelc("white");
+    if(isColor(mcolor))
+      labelc = ColorPack(mcolor);
+    
+    if(coordInView(x,y) && labelc.visible()) {
+      glColor3f(labelc.red(), labelc.grn(), labelc.blu());
+      gl_font(1, fsize);
+      if(m_zoom > 4)
+	gl_font(1, fsize+2);
+      double offset = 4.0 * (1/m_zoom);
+      glRasterPos3f(offset, offset, 0);
+      gl_draw_aux(message);
+    }
   }
 
   glPopMatrix();
@@ -2467,6 +2474,7 @@ void MarineViewer::drawVector(const XYVector& vect)
   
   // Then draw the vector head
   glBegin(GL_POLYGON);
+  glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
   glVertex2f(points[4], points[5]);
   glVertex2f(points[6], points[7]);
   glVertex2f(points[2], points[3]);
@@ -3671,7 +3679,25 @@ string MarineViewer::getTiffFileCurrent() const
   return(m_tif_files[m_curr_back_img_ix]);
 }
 
+//-------------------------------------------------------------
+// Procedure: setCtrView(x,y)
 
+void MarineViewer::setCtrView(double pos_x, double pos_y)
+{
+  // First determine how much we're off in terms of meters
+  double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
+  
+  // Next determine how much in terms of pixels
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  double x_pixels = pix_per_mtr_x * delta_x;
+  double y_pixels = pix_per_mtr_y * delta_y;
+  
+  m_vshift_x = -x_pixels;
+  m_vshift_y = -y_pixels;
+}
 
 //-------------------------------------------------------------
 // Procedure: setAutoZoom()

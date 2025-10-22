@@ -139,6 +139,11 @@ bool LoadWatch::OnStartUp()
       reportUnhandledConfigWarning(orig);
 
   }
+
+  //Initialize ULW Breach Vars
+
+  Notify("ULW_BREACH_COUNT", m_breach_count);
+  Notify("ULW_NEAR_BREACH_COUNT", m_near_breach_count);
   
   registerVariables();	
   return(true);

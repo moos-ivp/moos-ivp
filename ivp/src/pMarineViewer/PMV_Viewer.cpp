@@ -288,6 +288,8 @@ bool PMV_Viewer::setParam(string param, string value)
     m_ledger.setActiveVName("cycle_active");
     handled = true;
   }
+  else if(param == "extrap_policy")
+    handled = m_ledger.setExtrapPolicy(value);
 
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
@@ -339,11 +341,8 @@ bool PMV_Viewer::setParam(string param, double value)
   else if(param == "curr_time") {
     m_curr_time = value;
     m_ledger.setCurrTimeUTC(m_curr_time);
+    m_ledger.extrapolate(); 
     m_geoshapes_map.manageMemory(m_curr_time);
-    return(true);
-  }
-  else if(param == "time_warp") {
-    m_time_warp = value;
     return(true);
   }
   else if(param == "extrapolate") {
@@ -383,6 +382,7 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
   NodeRecord record = m_ledger.getRecord(vname);
+
   if(!record.valid())  // FIXME more rigorous test
     return;
 
@@ -456,8 +456,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   record.setName(vname_aug);
 
-  if(m_extrapolate > 0)
-    record = extrapolateRecord(record, m_curr_time, m_extrapolate);
+  // if(m_extrapolate > 0)
+  //  record = extrapolateRecord(record, m_curr_time, m_extrapolate);
   
   drawCommonVehicle(record, vehi_color, vname_color, vname_draw, 1, transp);
 }
@@ -696,7 +696,7 @@ void PMV_Viewer::setWeightedCenterView()
   if(!ok1 || !ok2)
     return;
 
-  setCenterView(pos_x, pos_y);
+  setCtrView(pos_x, pos_y);
 }
 
 
@@ -711,27 +711,7 @@ void PMV_Viewer::setCenterView(string vname)
   pos_x = m_ledger.getX(active_vname);
   pos_y = m_ledger.getY(active_vname);
 
-  setCenterView(pos_x, pos_y);
-}
-
-//-------------------------------------------------------------
-// Procedure: setCenterView(x,y)
-
-void PMV_Viewer::setCenterView(double pos_x, double pos_y)
-{
-  // First determine how much we're off in terms of meters
-  double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
-  double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
-  
-  // Next determine how much in terms of pixels
-  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
-  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
-
-  double x_pixels = pix_per_mtr_x * delta_x;
-  double y_pixels = pix_per_mtr_y * delta_y;
-  
-  m_vshift_x = -x_pixels;
-  m_vshift_y = -y_pixels;
+  setCtrView(pos_x, pos_y);
 }
 
 

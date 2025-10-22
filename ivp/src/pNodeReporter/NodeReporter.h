@@ -71,6 +71,7 @@ public:
   std::string  m_node_report_var;
   double       m_nohelm_thresh;
   std::string  m_group_name;
+  std::string  m_vsource;
   bool         m_terse_reports;
   bool         m_allow_color_change;
 
@@ -134,6 +135,7 @@ public:
  protected: 
   LinearExtrapolator m_extrapolator;
   NodeRecord         m_record_last_posted;
+  NodeRecord         m_record_last_formed;
 
 protected: // MissionHash support
   Odometer     m_odometer;
@@ -145,6 +147,10 @@ protected: // MissionHash support
   NodeRiderSet m_riderset;
 
   std::string  m_json_report;
+
+  // Added June 30, 202
+  bool    m_report_cog; // course over ground
+  double  m_hdg_error;
 };
 
 #endif

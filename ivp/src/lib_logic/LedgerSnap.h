@@ -36,7 +36,6 @@ public:
   ~LedgerSnap() {}
 
 public:
-
   void setX(std::string vname, double dval);
   void setY(std::string vname, double dval);
   void setHdg(std::string vname, double dval);
@@ -51,6 +50,7 @@ public:
 
   void setGroup(std::string vname, std::string sval);
   void setType(std::string vname, std::string sval);
+  void setVSource(std::string vname, std::string sval);
 
   void setCurrTimeUTC(double v) {m_curr_time_utc=v;}
   
@@ -62,13 +62,16 @@ public:
 			    std::string field,
 			    bool& ok) const;
 
+  bool hasVName(std::string) const;
+  
   void clear();
   unsigned int size() const;
 
 public: // debugging
-  std::string getSpec() const;
-  std::string getSpec(std::string vname) const;
-    
+  std::string getSpec()  const;
+  std::string getSpec(std::string vname);
+  void print();
+  
 protected:
   std::map<std::string, double> m_map_xpos;
   std::map<std::string, double> m_map_ypos;
@@ -84,6 +87,7 @@ protected:
 
   std::map<std::string, std::string> m_map_group;
   std::map<std::string, std::string> m_map_type;
+  std::map<std::string, std::string> m_map_vsource;
 
   double m_curr_time_utc;
 };

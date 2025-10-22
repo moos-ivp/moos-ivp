@@ -45,7 +45,6 @@ XYFieldGenerator::XYFieldGenerator()
   m_buffer_dist = 0;     
   
   srand(time(NULL));
-
 }
 
 //---------------------------------------------------------
@@ -177,9 +176,10 @@ XYPoint XYFieldGenerator::generatePoint()
 // Procedure: addPoint(const XYPoint&)
 //            Convenience function
 
-bool XYFieldGenerator::addPoint(const XYPoint& point)
+bool XYFieldGenerator::addPoint(const XYPoint& point,
+				bool must_be_in_region)
 {
-  return(addPoint(point.x(), point.y()));
+  return(addPoint(point.x(), point.y(), must_be_in_region));
 }
 
 //---------------------------------------------------------
@@ -192,9 +192,10 @@ bool XYFieldGenerator::addPoint(const XYPoint& point)
 //   Returns: true if the point or a neighbor was added.
 //            false otherwise.
 
-bool XYFieldGenerator::addPoint(double vx, double vy)
+bool XYFieldGenerator::addPoint(double vx, double vy,
+				bool must_be_in_region)
 {
-  if(!isPointInRegion(vx, vy))
+  if(must_be_in_region && !isPointInRegion(vx, vy))
     return(false);
 
   XYPoint new_point(vx, vy);

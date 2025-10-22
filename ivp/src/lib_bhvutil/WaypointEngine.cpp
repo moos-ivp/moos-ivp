@@ -443,6 +443,77 @@ double WaypointEngine::distToNextWpt(double osx, double osy) const
 }
 
 //-----------------------------------------------------------
+// Procedure: distToEndCycle()
+//   Purpose: Calculate ownships remaining distance in curr cycle
+
+double WaypointEngine::distToEndCycle(double osx, double osy) const
+{
+  // Sanity Check
+  if((m_curr_ix < 0) || ((unsigned int)(m_curr_ix) >= m_seglist.size()))
+    return(-1);
+
+  // Be nice and use the proper type to avoid warnings
+  unsigned int curr_ix = (unsigned int)(m_curr_ix);
+  
+  // Part 1: Distance from current position to next waypoint
+  double curr_ptx = m_seglist.get_vx(curr_ix);
+  double curr_pty = m_seglist.get_vy(curr_ix);
+  double dist = distPointToPoint(osx, osy, curr_ptx, curr_pty);
+
+  // Part 2: Distance for remaining legs in cycle
+  for(unsigned int ix=curr_ix; ix<m_seglist.size()-1; ix++) {
+    double next_ptx = m_seglist.get_vx(ix + 1);
+    double next_pty = m_seglist.get_vy(ix + 1);
+    double leg_dist = distPointToPoint(curr_ptx, curr_pty,
+				       next_ptx, next_pty);
+
+    curr_ptx = next_ptx;
+    curr_pty = next_pty;
+    
+    dist += leg_dist;
+  }
+  
+  return(dist);
+}
+
+//-----------------------------------------------------------
+// Procedure: distToEndFinal()
+//   Purpose: Calculate ownships remaining distance in curr cycle
+//            Plus the distance in remaining full cycles
+
+double WaypointEngine::distToEndFinal(double osx, double osy) const
+{
+  // Sanity Check: If endless repeats, the distance is infinite
+  if(m_repeats_endless)
+    return(-1);
+  // Sanity check
+  if((m_curr_ix < 0) || ((unsigned int)(m_curr_ix) >= m_seglist.size()))
+    return(-1);
+
+  // Part 1: Calculate dist to end of cycle
+  double dist_to_end = distToEndCycle(osx, osy);
+
+  // Part 2: Det remaining cycles. If zero, no need to calc cycle len
+  unsigned int remaining_cycles = 0;
+  if(m_repeats_allowed > m_repeats_sofar)
+    remaining_cycles = m_repeats_allowed - m_repeats_sofar;
+  if(remaining_cycles == 0)
+    return(dist_to_end);
+  
+  // Part 3: Calc Cycle dist, including dist from finish to start.
+  double cycle_dist = m_seglist.length();
+  XYPoint first_pt = m_seglist.get_first_point();
+  XYPoint last_pt  = m_seglist.get_last_point();
+  double  gap_dist = distPointToPoint(first_pt, last_pt);
+  cycle_dist += gap_dist;
+
+  // Part 4: apply remaining cycles to overall dist remaining
+  dist_to_end += (cycle_dist * remaining_cycles);
+
+  return(dist_to_end);
+}
+
+//-----------------------------------------------------------
 // Procedure: getPointsStr()
 
 string WaypointEngine::getPointsStr() const
