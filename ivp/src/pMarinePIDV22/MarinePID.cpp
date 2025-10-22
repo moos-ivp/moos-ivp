@@ -40,6 +40,7 @@ MarinePID::MarinePID()
   m_pid_ok_skew        = 360;
   m_enable_thrust_cap  = false;
   m_thrust_cap         = 100;
+  m_output_suffix      = ""; 
 }
 
 //--------------------------------------------------------------------
@@ -154,22 +155,22 @@ void MarinePID::postPengineResults()
   if(all_stop) {
     if(m_pid_allstop_posted)
       return;    
-    Notify("DESIRED_RUDDER", 0.0);
-    Notify("DESIRED_THRUST", 0.0);
+    Notify("DESIRED_RUDDER" + m_output_suffix, 0.0);
+    Notify("DESIRED_THRUST" + m_output_suffix, 0.0);
     if(m_pengine.hasDepthControl())
-      Notify("DESIRED_ELEVATOR", 0.0);
+      Notify("DESIRED_ELEVATOR" + m_output_suffix, 0.0);
     m_pid_allstop_posted = true;
   }
   else {
-    Notify("DESIRED_RUDDER", m_pengine.getDesiredRudder());
+    Notify("DESIRED_RUDDER" + m_output_suffix, m_pengine.getDesiredRudder());
 
     double des_thrust = m_pengine.getDesiredThrust();
     if(des_thrust > m_thrust_cap)
       des_thrust = m_thrust_cap;
-    Notify("DESIRED_THRUST", m_pengine.getDesiredThrust());
+    Notify("DESIRED_THRUST" + m_output_suffix, m_pengine.getDesiredThrust());
 
     if(m_pengine.hasDepthControl())
-      Notify("DESIRED_ELEVATOR", m_pengine.getDesiredElevator());
+      Notify("DESIRED_ELEVATOR" + m_output_suffix, m_pengine.getDesiredElevator());
     m_pid_allstop_posted = false;
   }
 }
@@ -214,7 +215,9 @@ bool MarinePID::OnStartUp()
       handled = true;
     else if(param == "enable_thrust_cap")
       handled = setBooleanOnString(m_enable_thrust_cap, value);
-    else
+    else if(param == "output_suffix"){
+      handled = setNonWhiteVarOnString(m_output_suffix, toupper(value)); 
+    } else
       handled = false;
     
     if(!handled)
