@@ -389,6 +389,19 @@ void Common_IPF_GUI::cb_ToggleDrawPcs(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawPcs_i();
 }
 
+//----------------------------------------- Toggle Refinery
+inline void Common_IPF_GUI::cb_ToggleRefinery_i() {
+  cout << "JJJ: " << m_viewer->getUseRefinery() << endl;
+  m_viewer->setParam("use_refinery", "toggle");
+  m_viewer->redraw();
+  updateXY();
+  cout << "PPP: " << m_viewer->getUseRefinery() << endl;
+
+}
+void Common_IPF_GUI::cb_ToggleRefinery(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleRefinery_i();
+}
+
 //----------------------------------------- Frame Height
 inline void Common_IPF_GUI::cb_FrameHgt_i(int amt) {
   m_viewer->setParam("mod_frame_height", (double)amt);

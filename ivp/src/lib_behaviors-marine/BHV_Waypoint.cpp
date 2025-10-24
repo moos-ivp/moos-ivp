@@ -142,7 +142,7 @@ void BHV_Waypoint::onSetParamComplete()
   applyHints(m_trackpt, m_hints, "trackpt");
   applyHints(m_nextpt, m_hints, "nextpt");
 
-#if 0
+#if 1
   m_trackpt.set_vertex_size(4);
   m_trackpt.set_color("label", m_hints.getColor("nextpt_color"));
   m_trackpt.set_color("vertex", m_hints.getColor("nextpt_color"));
@@ -167,9 +167,6 @@ void BHV_Waypoint::onSetParamComplete()
   unsigned int wpts    = m_waypoint_engine.size(); 
   unsigned int repeats = m_waypoint_engine.getRepeats(); 
 
-  cout << "wpts: " << wpts << endl;
-  cout << "repeats: " << repeats << endl;
-  
   if((wpts == 1) && (repeats > 0))
     postWMessage("cycles/repeats not supported with single waypt");
   
@@ -201,7 +198,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_waypts_init = param_val_lower;
       return(true);
     }
-      
+
     XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = string2Poly(param_val);
@@ -738,7 +735,7 @@ bool BHV_Waypoint::setNextWaypoint()
   // first waypoint, then steer to an intermediate point that
   // is m_lead_distance away from the perpendicular intersection
   // point between the current position and the trackline.
-  
+
   if(m_lead_allowed && (m_lead_distance >= 0)) {
     int current_waypt = m_waypoint_engine.getCurrIndex();
     bool track_anchor = false;

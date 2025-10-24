@@ -76,7 +76,6 @@ LAUNCH_GUI="yes"
 IP_ADDR="localhost"
 MOOS_PORT="9000"
 PSHARE_PORT="9200"
-MMOD=""
 
 VNAMES=""
 
@@ -105,8 +104,6 @@ for ARGI; do
 	echo "    Port number of this vehicle's MOOSDB port  "
 	echo "  --pshare=<9200>                              "
 	echo "    Port number of this vehicle's pShare port  "
-        echo "  --mmod=<mod>                                 "
-        echo "    Identify a mission variation/mod           "
 	echo "                                               "
         echo "  --vnames=<vnames>                            "
         echo "    Colon-separate list of all vehicle names   "
@@ -128,8 +125,6 @@ for ARGI; do
 	MOOS_PORT="\${ARGI#--mport=*}"
     elif [ "\${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="\${ARGI#--pshare=*}"
-    elif [ "\${ARGI:0:7}" = "--mmod=" ]; then
-        MMOD="\${ARGI#--mmod=*}"
 
     elif [ "\${ARGI:0:9}" = "--vnames=" ]; then
         VNAMES="\${ARGI#--vnames=*}"
@@ -141,8 +136,8 @@ done
 
 #------------------------------------------------------------ 
 #  Part 4: If not auto_launched (likely running in the field),
-#          and the IP_ADDR has not be explicitly set, try to get
-#          it using the ipaddrs.sh script. 
+#          and the IP_ADDR has not been explicitly set, try 
+#          to get it using the ipaddrs.sh script. 
 #------------------------------------------------------------ 
 if [ "\${AUTO_LAUNCHED}" = "no" -a "\${IP_ADDR}" = "localhost" ]; then
     MAYBE_IP_ADDR=\`ipaddrs.sh --blunt\`
@@ -168,7 +163,6 @@ if [ "\${VERBOSE}" = "yes" ]; then
     echo "MOOS_PORT =     [\${MOOS_PORT}]    "
     echo "PSHARE_PORT =   [\${PSHARE_PORT}]  "
     echo "LAUNCH_GUI =    [\${LAUNCH_GUI}]   "
-    echo "MMOD =          [\${MMOD}]         "
     echo "----------------------------------"
     echo "VNAMES =        [\${VNAMES}]       "
     echo "----------------------------------"
@@ -187,7 +181,7 @@ fi
 nsplug meta_shoreside.moos targ_shoreside.moos \$NSFLAGS WARP=\$TIME_WARP \\
        IP_ADDR=\$IP_ADDR             MOOS_PORT=\$MOOS_PORT    \\
        PSHARE_PORT=\$PSHARE_PORT     LAUNCH_GUI=\$LAUNCH_GUI  \\
-       MMOD=\$MMOD                   VNAMES=\$VNAMES          \\
+       VNAMES=\$VNAMES                                        \\
 
 if [ "\${JUST_MAKE}" = "yes" ]; then
     echo "\$ME: Targ files made; exiting without launch."

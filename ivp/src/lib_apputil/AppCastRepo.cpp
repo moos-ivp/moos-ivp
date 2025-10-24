@@ -197,8 +197,34 @@ vector<string> AppCastRepo::getCurrentNodes() const
 
 vector<string> AppCastRepo::getCurrentProcs() const
 {
-  return(m_appcast_tree.getProcs(m_current_node));
+  vector<string> procs = m_appcast_tree.getProcs(m_current_node);
+
+  vector<string> sorted_procs;
+  
+  set<string> set_procs;
+  for(unsigned int i=0; i<procs.size(); i++) 
+    set_procs.insert(procs[i]);
+
+  string checks = "pHelmIvP,pNodeReporter,pContactMgrV20,uFldNodeBroker";
+  checks += ",pObstacleMgr,uTimerScript,pMarinePIDV22,uSimMarineV22";
+  checks += ",pMissionEval,uFldMessageHandler,uLoadWatch,uProcessWatch";
+  checks += ",uXMS,pDeadManPost,pHostInfo,pRealm,uMemWatch";
+
+  while(checks != "") {
+    string check = biteStringX(checks, ',');
+    if(set_procs.count(check)) {
+      sorted_procs.push_back(check);
+      set_procs.erase(check);
+    }
+  }
+  for(set<string>::iterator p=set_procs.begin(); p!=set_procs.end(); p++)
+    sorted_procs.push_back(*p);
+
+  return(sorted_procs);
 }
+  
+//  return(m_appcast_tree.getProcs(m_current_node));
+
 
 //---------------------------------------------------------
 // Procedure: getNodeCount

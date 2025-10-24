@@ -95,6 +95,9 @@ public:
   inline void cb_ToggleDrawPcs_i();
   static void cb_ToggleDrawPcs(Fl_Widget*);
 
+  inline void cb_ToggleRefinery_i();
+  static void cb_ToggleRefinery(Fl_Widget*);
+
   inline void cb_FrameHgt_i(int);
   static void cb_FrameHgt(Fl_Widget*, int);
 

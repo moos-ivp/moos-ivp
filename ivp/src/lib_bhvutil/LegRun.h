@@ -106,7 +106,6 @@ public: // Analyzers
   
   bool    legModified()  {return(m_leg_modified);}
   bool    turnModified() {return(m_turn_modified);}
-
   
 public: // Turn Points
   XYSegList initTurnPoints1(bool adjust=false, double sx=0, double sy=0);
