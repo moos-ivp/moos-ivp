@@ -23,30 +23,24 @@ public: // Leg Setters
 
   bool handleLegRunFile(std::string, double, std::string&);
   
-  bool addLegRun(std::string name, double leglen,
-		 double turn1_rad, double turn2rad,
-		 double turn1_bias, double turn2_bias,
-		 double turn1_ext, double turn2_ext,
-		 std::string turn1_dir,
-		 std::string turn2_dir);
-  
-  
 public: // Getters
   
   std::string getLegRunFile() const {return(m_legrun_file);}
+
+  LegRun getLegRun(std::string id) const;
+
+  std::vector<std::string> getLegIDs() const;
+
+  std::vector<LegRun> getLegRuns() const;
   
 public: // Analyzers
-  bool valid() const;
-  
+
   unsigned int size() const {return(m_map_legruns.size());}
   
-private: // Config vars
+private: 
   std::map<std::string, LegRun> m_map_legruns;
   
   std::string m_legrun_file;
-  
-private: // State var
-  
 };
 
 #endif 

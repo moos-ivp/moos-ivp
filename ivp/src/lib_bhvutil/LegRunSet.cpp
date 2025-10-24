@@ -22,11 +22,45 @@ LegRunSet::LegRunSet()
 }
 
 //---------------------------------------------------------
-// Procedure: valid()
+// Procedure: getLegIDs()
 
-bool LegRunSet::valid() const
+vector<string> LegRunSet::getLegIDs() const
 {
-  return(true);
+  vector<string> leg_ids;
+  
+  map<string, LegRun>::const_iterator p;
+  for(p=m_map_legruns.begin(); p!=m_map_legruns.end(); p++) 
+    leg_ids.push_back(p->first);
+    
+  return(leg_ids);
+}
+
+//---------------------------------------------------------
+// Procedure: getLegRuns()
+
+vector<LegRun> LegRunSet::getLegRuns() const
+{
+  vector<LegRun> legruns;
+  
+  map<string, LegRun>::const_iterator p;
+  for(p=m_map_legruns.begin(); p!=m_map_legruns.end(); p++) 
+    legruns.push_back(p->second);
+    
+  return(legruns);
+}
+
+//---------------------------------------------------------
+// procedure: getLegRun()
+
+LegRun LegRunSet::getLegRun(string id) const
+{
+  LegRun null_legrun;
+
+  map<string,LegRun>::const_iterator q=m_map_legruns.find(id);
+  if(q==m_map_legruns.end())
+    return(null_legrun);
+
+  return(q->second);
 }
 
 //---------------------------------------------------------
@@ -38,6 +72,10 @@ bool LegRunSet::valid() const
 bool LegRunSet::setLegParams(string str)
 {
   string id = tokStringParse(str, "id");
+
+  if(id == "")
+    string id = tokStringParse(str, "vname");
+
   if(id == "")
     return(false);
 
@@ -50,54 +88,32 @@ bool LegRunSet::setLegParams(string str)
 // Procedure: handleLegRunFile()
 
 bool LegRunSet::handleLegRunFile(string str, double curr_time,
-				  string& warning)
+				 string& warning)
 {
   vector<string> lines = fileBuffer(str);
   if(lines.size() == 0) {
     warning = "File not found, or empty: " + str;
     return(false);
   }
-#if 0
+
   // Part 1: Parse all the lines
   for(unsigned int i=0; i<lines.size(); i++) {
-    string orig = lines[i];
-    string line = stripBlankEnds(stripComment(lines[i], "//"));
+    string line = stripBlankEnds(lines[i]);
+    if(strBegins(line, "//"))
+      continue;
+    if(strBegins(line, "#"))
+      continue;
     if(line == "")
       continue;
-
-    string param = biteStringX(line, '=');
-    string value = line;
-
-    if(param == "swimmer") {
-      Swimmer swimmer = stringToSwimmer(value);
-      string  sname   = swimmer.getName();
-      if(m_map_swimmers.count(sname) != 0) {
-        warning = "Bad SwimFile Line: " + orig;
-        return(false);
-      }
-      if(swimmer.getType() == "reg")
-        m_total_reg++;
-      else
-        m_total_unreg++;
-
-      swimmer.setTimeEnter(curr_time);
-      tagSwimmerID(swimmer);
-      m_map_swimmers[sname] = swimmer;
-    }
-    else if((param == "region") || (param == "poly")) {
-      m_rescue_region = string2Poly(value);
-      m_rescue_region.set_color("edge", "gray90");
-      m_rescue_region.set_color("vertex", "dodger_blue");
-      m_rescue_region.set_vertex_size(5);
-      if(!m_rescue_region.is_convex()) {
-        warning = "Bad SwimFile Line: " + orig;
-        return(false);
-      }
+    
+    bool ok = setLegParams(line);
+    if(!ok) {
+      warning = "Bad LegRun Line:[" + line + "]";
+      return(false);
     }
   }
+  m_legrun_file = str;
 
-  m_swim_file = str;
-#endif
   return(true);
 }
 

@@ -76,6 +76,7 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_grid_height = 0.5 * hgt;
 
   m_show_pieces = false;
+  m_use_refinery = false;
 
   m_refresh_quadset_aof_pending = true;
   m_refresh_quadset_ipf_pending = true;
@@ -89,7 +90,7 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
 }
 
 //-------------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void Common_IPFViewer::resize(int x, int y, int wid, int hgt)
 {
@@ -102,12 +103,14 @@ void Common_IPFViewer::resize(int x, int y, int wid, int hgt)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool Common_IPFViewer::setParam(string param, string value)
 {
   value = tolower(stripBlankEnds(value));
 
+  cout << "Common_IPFViewer::setParam() param: " << param << ", value:" << value << endl;
+  
   if((param == "draw_frame") && (value == "toggle")) {
     if(!m_draw_frame) {
       m_draw_frame = true;
@@ -133,6 +136,9 @@ bool Common_IPFViewer::setParam(string param, string value)
     m_refresh_quadset_ipf_pending = true;
     return(setBooleanOnString(m_show_pieces, value));
   }
+  else if(param == "use_refinery") 
+    return(setBooleanOnString(m_use_refinery, value));
+
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
   else if(param == "reset_view") {
@@ -161,12 +167,14 @@ bool Common_IPFViewer::setParam(string param, string value)
   else
     return(false);
 
+  cout << "KJK m_use_refinery:" << boolToString(m_use_refinery) << endl;
+  
   redraw();
   return(true);
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool Common_IPFViewer::setParam(string param, double value)
 {
@@ -235,7 +243,7 @@ bool Common_IPFViewer::setParam(string param, double value)
 }
 
 //-------------------------------------------------------------
-// Procedure: printParams
+// Procedure: printParams()
 
 void Common_IPFViewer::printParams()
 {

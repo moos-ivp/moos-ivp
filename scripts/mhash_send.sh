@@ -101,11 +101,11 @@ eval `ssh-agent -s` &> /dev/null
 ps -p $SSH_AGENT_PID &> /dev/null
 SSH_AGENT_RUNNING=$?
 
-if [ ${SSH_AGENT_RUNNING} = "1" ] ; then
+if [ ${SSH_AGENT_RUNNING} = 0 ]; then
+    vecho $txtblu"ssh-agent started ok fine. PID: $SSH_AGENT_PID" $txtrst
+else
     vecho $txtred"unable to start ssh-agent. Exiting" $txtrst
     exit 1
-else
-    vecho $txtblu"ssh-agent started ok. PID:" $SSH_AGENT_PID $txtrst
 fi
 
 #-------------------------------------------------------
@@ -119,18 +119,6 @@ elif [ -f ~/.ssh/foodir/id_rsa_yco ]; then
     ssh-add -t 7200 ~/.ssh/foodir/id_rsa_yco 2> /dev/null
     ok_add=$?
 fi
-
-# USMA addition
-if [ -f ~/.ssh/id_rsa_yco_usma ]; then
-    ssh-add -t 7200 ~/.ssh/id_rsa_yco_usma 2> /dev/null
-    usma_add=$?
-    if [ "$usma_add" -ne "0" ] ; then 
-	vecho $txtred"Adding (OPTIONAL) USMA ssh key to ssh-agent: FAIL" $txtrst
-    else
-	vecho $txtblu"ADDING USMA ssh key to ssh-agent: OK" $txtrst
-    fi
-fi
-
 
 if [ "$ok_add" -ne "0" ] ; then 
     vecho $txtred"Adding ssh key to ssh-agent: FAIL" $txtrst

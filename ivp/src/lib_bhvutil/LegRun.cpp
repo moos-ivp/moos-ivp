@@ -184,24 +184,15 @@ bool LegRun::setParam(string param, string val)
 
 bool LegRun::setPoint1(string str)
 {
-  XYPoint newpt = string2Point(str);
-  if(!newpt.valid())
+  string xval = biteStringX(str, ':');
+  string yval = str;
+  if(!isNumber(xval) || !isNumber(yval))
     return(false);
-  m_p1.set_vertex(newpt.x(), newpt.y());
-  return(true);
 
-#if 0
-  string xstr = biteStringX(str, ':');
-  string ystr = str;
-  if(!isNumber(xstr) || !isNumber(ystr))
-    return(false);
-  double xval = atof(xstr.c_str());
-  double yval = atof(ystr.c_str());
-  m_p1.set_vertex(xval, yval);
-
-  clearTurnSegls();
+  double dxval = atof(xval.c_str());
+  double dyval = atof(yval.c_str());
+  m_p1.set_vertex(dxval, dyval);
   return(true);
-#endif
 }
 
 //---------------------------------------------------------
@@ -210,26 +201,15 @@ bool LegRun::setPoint1(string str)
 
 bool LegRun::setPoint2(string str)
 {
-  XYPoint newpt = string2Point(str);
-  if(!newpt.valid())
+  string xval = biteStringX(str, ':');
+  string yval = str;
+  if(!isNumber(xval) || !isNumber(yval))
     return(false);
-  m_p2.set_vertex(newpt.x(), newpt.y());
-  return(true);
 
-#if 0
-    
-  string xstr = biteStringX(str, ':');
-  string ystr = str;
-  if(!isNumber(xstr) || !isNumber(ystr))
-    return(false);
-  double xval = atof(xstr.c_str());
-  double yval = atof(ystr.c_str());
-  m_p2.set_vertex(xval, yval);
-
-  clearTurnSegls();
+  double dxval = atof(xval.c_str());
+  double dyval = atof(yval.c_str());
+  m_p2.set_vertex(dxval, dyval);
   return(true);
-#endif
-  
 }
 
 //---------------------------------------------------------
@@ -1024,27 +1004,27 @@ string LegRun::getSpec(char sepchar) const
 {
   string s = "p1=" + m_p1.get_spec_xy(':');
   s += sepchar;
-  s = "p2=" + m_p2.get_spec_xy(':');
+  s += "p2=" + m_p2.get_spec_xy(':');
   s += sepchar;
 
-  s = "turn1_rad=" + doubleToStringX(m_turn1_rad,1);
+  s += "turn1_rad=" + doubleToStringX(m_turn1_rad,1);
   s += sepchar;
-  s = "turn2_rad=" + doubleToStringX(m_turn2_rad,1);
+  s += "turn2_rad=" + doubleToStringX(m_turn2_rad,1);
   s += sepchar;
   
-  s = "turn1_bias=" + doubleToStringX(m_turn1_bias,1);
+  s += "turn1_bias=" + doubleToStringX(m_turn1_bias,1);
   s += sepchar;
-  s = "turn2_bias=" + doubleToStringX(m_turn2_bias,1);
+  s += "turn2_bias=" + doubleToStringX(m_turn2_bias,1);
   s += sepchar;
 
-  s = "turn1_ext=" + doubleToStringX(m_turn1_ext,1);
+  s += "turn1_ext=" + doubleToStringX(m_turn1_ext,1);
   s += sepchar;
-  s = "turn2_ext=" + doubleToStringX(m_turn2_ext,1);
+  s += "turn2_ext=" + doubleToStringX(m_turn2_ext,1);
   s += sepchar;
   
-  s = "turn1_dir=" + m_turn1_dir;
+  s += "turn1_dir=" + m_turn1_dir;
   s += sepchar;
-  s = "turn2_dir=" + m_turn2_dir;
+  s += "turn2_dir=" + m_turn2_dir;
 
   return(s);
 }

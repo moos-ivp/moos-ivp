@@ -60,6 +60,7 @@ public:
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
   void   setColorMap(std::string);
   bool   getShowPieces()               {return(m_show_pieces);}
+  bool   getUseRefinery()              {return(m_use_refinery);}
   
 protected:
   void   resetRadVisuals();
@@ -138,6 +139,7 @@ protected:
   int        m_grid_height;
 
   bool       m_show_pieces;
+  bool       m_use_refinery;
 };
 
 #endif 

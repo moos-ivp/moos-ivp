@@ -133,7 +133,16 @@ XYSegList stringStandard2SegList(string str)
 	string pstr = biteStringX(vertex, ',');
 	  
 	string property;
-	  
+
+	// Support Orig format: pts={1,2:3,4}
+	// Support Also format: pts={x=1,y=2:x=3,y=4}
+	if(strBegins(xstr, "x="))
+	  biteStringX(xstr, '=');
+	if(strBegins(ystr, "y="))
+	  biteStringX(ystr, '=');
+	if(strBegins(zstr, "z="))
+	  biteStringX(zstr, '=');
+	
 	if(!isNumber(xstr) || !isNumber(ystr))
 	  return(null_segl);
 	double xval = atof(xstr.c_str());
