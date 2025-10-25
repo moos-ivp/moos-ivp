@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MBUtils.cpp                                          */
-/*    DATE: (1996-2005)                                          */
+/*    DATE: (1996-2025)                                          */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -40,7 +40,7 @@ void showReleaseInfo(string app, string license_info)
     pad = padString("", (22-app.length()));
   cout << "******************************************************************" << endl;
   cout << "* " + app + " - Part of the MOOS-IvP Release Bundle   " +  pad +"*" << endl;
-  cout << "* Version 24.8                                                   *" << endl;
+  cout << "* Version 24.8.1                                                 *" << endl;
   cout << "* M.Benjamin (MIT), P.Newman (Oxford)                            *" << endl;
   if(license_info == "gpl") { 
     cout << "* This is free software; see the source for copying conditions.  *" << endl;
