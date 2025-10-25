@@ -19,6 +19,8 @@ jobs:
           # Mac OS X - 13 runs on intel
           - os: macos-13
             os-type: darwin
+          - os: macos-26
+            os-type: darwin
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -45,7 +47,7 @@ jobs:
       run: ./build-check.sh
 
     - name: Build Tests
-      run: ./build-utests.sh 
+      run: ./build-utests.sh
 
     - name: Run Tests
       working-directory: ./ivp/src_unit_tests/
