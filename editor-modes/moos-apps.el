@@ -106,7 +106,7 @@
 
       '("pContactMgrV20" "alert" "alert_range_color" "cpa_range_color" "contact_max_age" "display_radii" "display_radii_id" "alert_verbose" "decay" "recap_interval" "ignore_group" "ignore_type" "match_type" "match_group" "match_region" "ignore_region" "strict_ignore" "range_report_timeout" "post_closest_range" "max_retired_history" "reject_range" "contact_max_age" "eval_range_far" "eval_range_near" "max_appcast_events" "post_all_ranges" "hold_alerts_for_helm" "post_closest_relbng" "disable_var" "enable_var" "able_flag" "enable_flag" "disable_flag" "early_warning_flag" "early_warning_radii" "early_warning_time" "ewarn_radii_color" "cease_warning_flag" )
 
-      '("uLoadWatch" "thresh" "breach_trigger" "max_appcast_events")
+      '("uLoadWatch" "thresh" "breach_trigger" "max_appcast_events" "near_breach_thresh" )
       '("uSimLidar" "poly" "polygon" "max_range" "mount_angle" "point_cloud_color" "range" "beams" "field_of_view" "scan_resolution" "max_appcast_events")
       '("iSay" "default_voice" "default_rate" "interval_policy" "min_utter_interval" "audio_dir" "os_mode" "max_appcast_events" "volume" )
       '("uXMS" "var" "source" "history_var" "display_virgins" "display_source" "display_aux_source" "display_time" "display_community" "display_all" "trunc_data" "term_report_interval" "colormap" "color_map" "refresh_mode" "content_mode" "paused")

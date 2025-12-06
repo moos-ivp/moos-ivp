@@ -128,6 +128,7 @@ void showInterfaceAndExit()
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  LOAD_WARNING = app=pHelmIvP, maxgap=1.54                      ");
+  blk("  LOADCAST_REQ = app=pHelmIvP, duration=35, thresh=2            ");
   blk("                                                                ");
   blk("  ULW_BREACH       = true                                       ");
   blk("  ULW_BREACH_COUNT = 3                                          ");

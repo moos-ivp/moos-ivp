@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LoadWatch.cpp                                        */
 /*    DATE: Dec 24th, 2013                                       */
+/*    DATE: Dec 6th, 2025  On-demand watching added              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -34,14 +35,19 @@ using namespace std;
 
 LoadWatch::LoadWatch()
 {
-  m_breach_trigger = 1; // First offense forgiven, 2nd offense reported!
-
+  // Init Config Vars
+  m_breach_trigger = 1;  // First offense forgiven, 2nd offense reported!
+  m_lcast_req_freq = 15; 
+  
+  // Init State Vars
   m_breach_count = 0;
   m_breach       = false;
 
   m_near_breach_count  = 0;
   m_near_breach        = false;
   m_near_breach_thresh = 0.9;
+
+  m_last_lcast_req_utc = 0;
 }
 
 //---------------------------------------------------------
@@ -97,6 +103,8 @@ bool LoadWatch::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  postLoadCastRequests();
+  
   handleCacheIterLen();
   handleCacheIterGap();
   
@@ -157,7 +165,35 @@ void LoadWatch::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
   Register("*_ITER_GAP", "*", 0);
   Register("*_ITER_LEN", "*", 0);
+  Register("LOADCAST", 0);
 }
+
+//---------------------------------------------------------
+// Procedure: postLoadCastRequests()
+
+void LoadWatch::postLoadCastRequests()
+{
+  double elapsed = m_curr_time - m_last_lcast_req_utc;
+  if(elapsed < m_lcast_req_freq)
+    return;
+
+  double req_duration = m_lcast_req_freq * 2; 
+  
+  map<string, double>::iterator p;
+  for(p=m_map_thresh.begin(); p!=m_map_thresh.end(); p++) {
+    string app = p->first;
+    double thresh = p->second;
+
+    string msg = "app=" + app;
+    msg += ",thresh=" + doubleToStringX(thresh,2);
+    msg += ", duration=" + doubleToStringX(req_duration,2);
+
+    Notify("LOADCAST_REQ", msg);
+  }
+
+  m_last_lcast_req_utc = m_curr_time;
+}
+
 
 //---------------------------------------------------------
 // Procedure: handleCacheIterGap()
@@ -325,7 +361,7 @@ void LoadWatch::handleCacheIterLen()
 }
 
 //---------------------------------------------------------
-// Procedure: handleConfigThresh
+// Procedure: handleConfigThresh()
 //   Example: thresh = app=pHelmIvP, gapthresh=1.5 
 
 bool LoadWatch::handleConfigThresh(string thresh)
@@ -338,7 +374,8 @@ bool LoadWatch::handleConfigThresh(string thresh)
     string value = svector[i];
     
     if(param == "app")
-      app = toupper(value);
+      app = value;
+    //app = toupper(value);
     else if(param == "gapthresh")
       gapthresh = value;
   }
@@ -355,7 +392,7 @@ bool LoadWatch::handleConfigThresh(string thresh)
 }
 
 //---------------------------------------------------------
-// Procedure: handleConfigNearThresh
+// Procedure: handleConfigNearThresh()
 //      Note: The nesr_thresh is applied globally to all app
 //            thresholds. Examples:
 //              pFoo thresh = 1.5
@@ -403,7 +440,6 @@ bool LoadWatch::buildReport()
 
 
   ACTable actab(6);
-
   actab << "Application | AvgGap | MaxGap | AvgLen | MaxLen | Breaches"; 
   actab.addHeaderLines();
 
@@ -430,12 +466,3 @@ bool LoadWatch::buildReport()
 
   return(true);
 }
-
-
-
-
-
-
-
-
-

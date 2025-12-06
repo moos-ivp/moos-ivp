@@ -45,7 +45,8 @@ class LoadWatch : public AppCastingMOOSApp
    
  protected:
   void registerVariables();
-  
+
+  bool handleMailLoadCast(std::string);
   void handleCacheIterGap();
   void handleCacheIterGapEntry(std::string app, double dval);
   void handleCacheIterLen();
@@ -53,13 +54,17 @@ class LoadWatch : public AppCastingMOOSApp
   bool handleConfigThresh(std::string);
   bool handleConfigNearThresh(std::string);
 
+  void postLoadCastRequests();
+  
   void updateBreachSet(std::string app);
   void updateNearBreachSet(std::string app);
   
  private: // Configuration variables
   std::map<std::string, double> m_map_thresh;
-  unsigned int                  m_breach_trigger;
-   
+
+  unsigned int  m_breach_trigger;
+  double        m_lcast_req_freq;     
+  
  private: // State variables
   std::map<std::string, double>       m_map_app_gap_total;
   std::map<std::string, double>       m_map_app_gap_max;
@@ -82,6 +87,7 @@ class LoadWatch : public AppCastingMOOSApp
   std::map<std::string, double> m_map_gap_cache;
   std::map<std::string, double> m_map_len_cache;
 
+  double m_last_lcast_req_utc;
 };
 
 #endif 

@@ -59,6 +59,11 @@ AppCastingMOOSApp::AppCastingMOOSApp()
 
   m_comms_policy = "open";
   m_comms_policy_config = "open";
+
+  m_lcast_duration = 0;  // Amt time the request for lcast is honored
+  m_lcast_tstart = 0;    // UTC time at which request was received
+  m_lcast_thresh = 0;    // Threshold for gap to be reported
+  m_lcast_isdue = false; // If time or threshold criteria are met
 }
 
 //----------------------------------------------------------------
@@ -102,10 +107,14 @@ bool AppCastingMOOSApp::Iterate()
     m_app_logging_info = "";
   }
 
-  //m_cout << "test message on iteration " << m_iteration << endl;
+  double elapsed = m_curr_time - m_lcast_tstart;
+  if(elapsed < m_lcast_duration)
+    m_lcast_isdue = true;
+  else
+    m_lcast_isdue = false;
   
   // Handle the construction of the ITER_GAP
-  if(m_last_iterate_time != 0) {
+  if(m_lcast_isdue && (m_last_iterate_time != 0)) {
     double app_freq = GetAppFreq();
     if(app_freq > 0) {
       double app_gap = 1.0 / app_freq;
@@ -130,13 +139,15 @@ void AppCastingMOOSApp::PostReport(const string& directive)
 {
   m_ac.setIteration(m_iteration);
 
-  double app_freq = GetAppFreq();
-  if(app_freq > 0) {
-    double app_gap = 1.0 / app_freq;
-    double iter_len = MOOSTime() - m_iterate_start_time;
-    string app_name = MOOSToUpper((const string&)(m_sMOOSName));
-    string var = app_name + "_ITER_LEN";
-    Notify(var,  (iter_len / app_gap));
+  if(m_lcast_isdue) {
+    double app_freq = GetAppFreq();
+    if(app_freq > 0) {
+      double app_gap = 1.0 / app_freq;
+      double iter_len = MOOSTime() - m_iterate_start_time;
+      string app_name = MOOSToUpper((const string&)(m_sMOOSName));
+      string var = app_name + "_ITER_LEN";
+      Notify(var,  (iter_len / app_gap));
+    }
   }
 
   if(m_time_warp <= 0)
@@ -289,7 +300,7 @@ void AppCastingMOOSApp::preOnStartUp()
 }
 
 //----------------------------------------------------------------
-// Procedure: OnStartUpDirectives
+// Procedure: OnStartUpDirectives()
 
 bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 {
@@ -442,6 +453,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 void AppCastingMOOSApp::RegisterVariables()
 {
   m_Comms.Register("APPCAST_REQ", 0);
+  m_Comms.Register("LOADCAST_REQ", 0);
   m_Comms.Register("TERM_REPORT_INTERVAL", 0);
   m_Comms.Register("COMMS_POLICY", 0);
 }
@@ -458,6 +470,10 @@ bool AppCastingMOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     if(msg.GetKey() == "APPCAST_REQ") {
       handleMailAppCastRequest(msg.GetString());
+      p = NewMail.erase(p);
+    }
+    else if(msg.GetKey() == "LOADCAST_REQ") {
+      handleMailLoadCastRequest(msg.GetString());
       p = NewMail.erase(p);
     }
     else if(msg.GetKey() == "COMMS_POLICY") {
@@ -484,7 +500,7 @@ bool AppCastingMOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //----------------------------------------------------------------
-// Procedure: handleMailAppCastRequest
+// Procedure: handleMailAppCastRequest()
 //   Example: str = node=henry,         (name of this community)
 //                  app=pHostInfo,      (name of this app)
 //                  duration=10,        (lifespan of the request)
@@ -535,7 +551,62 @@ void AppCastingMOOSApp::handleMailAppCastRequest(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: appcastRequested
+// Procedure: handleMailLoadCastRequest()
+//   Example: str = app=pHelmIvP,       (name of this app)
+//                  duration=10,        (lifespan of the request)
+//                  thresh=2            (ratio, 0 means all)
+
+void AppCastingMOOSApp::handleMailLoadCastRequest(const string& str)
+{
+  string s_app;
+  string s_duration;
+  string s_thresh;
+
+  string request = str;
+  while(request != "") {
+    string pair = MOOSChomp(request, ",");
+    string param = MOOSToUpper(MOOSChomp(pair, "="));
+    string value = pair;
+    MOOSTrimWhiteSpace(param);
+    MOOSTrimWhiteSpace(value);
+
+    if(param == "APP")
+      s_app = value;
+    else if(param == "DURATION")
+      s_duration = value;
+    else if(param == "THRESH")
+      s_thresh = value;
+  }
+
+  // app must match this app, cannot be empty string. Or specified app
+  // is set to "all".
+
+  bool handle = false;
+  if(s_app == GetAppName())
+    handle = true;
+  if((s_app == "all") || (s_app == "any"))
+    handle = true;
+
+  if(!handle)
+    return;
+  
+
+  double d_duration = atof(s_duration.c_str());
+  d_duration = (d_duration < 0) ? 0 : d_duration;
+  d_duration = (d_duration > 30) ? 30 : d_duration;
+
+  // A thresh of zero means report will not be witheld due to low
+  // load. Otherwise load must exceed thresh.
+  double d_thresh = atof(s_thresh.c_str());
+  d_thresh = (d_thresh < 0) ? 0 : d_thresh;
+
+  m_lcast_duration = d_duration;
+  m_lcast_tstart   = m_curr_time;
+  m_lcast_thresh   = d_thresh;
+}
+
+//----------------------------------------------------------------
+// Procedure: appcastRequested()
 //      Note: Check all possible subscribers (keys) to see if any one of 
 //            them has an appcast request that hasn't expired. All it 
 //            takes is one, and the appcast is thereby warranted.
