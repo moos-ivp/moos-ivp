@@ -29,7 +29,7 @@ SET(SRC
   Seglr.cpp
   SeglrUtils.cpp
   PlatModel.cpp
-//  SpokeLog.cpp
+#  SpokeLog.cpp
   VPlug_DropPoints.cpp
   VPlug_GeoSettings.cpp
   VPlug_GeoShapes.cpp
@@ -102,7 +102,7 @@ SET(HEADERS
   Seglr.h
   SeglrUtils.h
   PlatModel.h
-//  SpokeLog.h
+#  SpokeLog.h
   XYWedge.h
   ProxPoint.h
   XYArc.h
