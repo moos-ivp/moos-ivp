@@ -13,11 +13,12 @@ SET(SRC
 #  VehicleSet.cpp
 )
 
+# This is used to supply a preprocessor definition that gets compiled
+# into some code, such as lib_marineview.  I really dislike this
+# approach because it's very brittle w.r.t. anything getting moved
+# around, or if you use the code on a different system than that on
+# which it was compiled. -CJC
 
-# This is used to supply a preprocessor definition that gets compiled into some
-# code, such as lib_marineview.  I really dislike this approach because it's 
-# very brittle w.r.t. anything getting moved around, or if you use the code on
-# a different system than that on which it was compiled. -CJC
 GET_FILENAME_COMPONENT(IVP_DATA_DIR ../../data ABSOLUTE)
 GET_FILENAME_COMPONENT(IVP_DATA_DIRX ../../datax ABSOLUTE)
 
@@ -42,4 +43,3 @@ ELSE (${APPLE})
     ADD_DEFINITIONS(-DOPSYS_IS_LINUX=1)
 ENDIF (${APPLE})
 
-#MESSAGE(FATAL_ERROR FOO_DATA_DIR ${FOO_DATA_DIR})

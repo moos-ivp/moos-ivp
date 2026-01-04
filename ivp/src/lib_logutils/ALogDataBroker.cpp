@@ -46,6 +46,7 @@ ALogDataBroker::ALogDataBroker()
   m_verbose  = false;
   m_max_fileptrs = 100;
   m_vqual = "med";
+  m_view_vessels = true;
   
   // Init state vars
   m_global_logstart = 0;
@@ -64,6 +65,7 @@ void ALogDataBroker::addALogFile(string alog_file)
   m_alog_files.push_back(alog_file);
 
   SplitHandler handler(alog_file);
+  handler.setViewVessels(m_view_vessels);
   handler.setProgress(m_progress);
   handler.setVerbose(m_verbose);
   handler.setMaxFilePtrCache(m_max_fileptrs);
@@ -631,6 +633,7 @@ string ALogDataBroker::getRegionInfo()
 
 LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 {
+  m_verbose = true;
   if(m_verbose)
     cout << "ALogDataBroker::getLogPlot() mix: " << mix << endl;
 
@@ -681,6 +684,13 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
     double d_tstamp = atof(tstamp.c_str());
     double d_varval = atof(varval.c_str());
 
+    //cout << "d_tstamp:" << doubleToString(d_tstamp,2) << endl;
+    //cout << "m_logskew[aix]:" << doubleToString(m_logskew[aix],2) << endl;
+    //cout << "m_pruned_logtmax:" << doubleToString(m_pruned_logtmax,2) << endl;
+
+    //double dval = d_tstamp + m_logskew[aix];
+    //cout << "dval:" << doubleToString(dval) << endl;
+    
     if((d_tstamp + m_logskew[aix]) < m_pruned_logtmin)
       continue;
     if((d_tstamp + m_logskew[aix]) > m_pruned_logtmax)

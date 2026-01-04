@@ -527,6 +527,8 @@ bool NodeReporter::OnStartUp()
     string vtype = tolower(m_record.getType());
     if((vtype == "kayak") || (vtype == "mokai"))
       m_record.setLength(4); // meters;
+    else if((vtype == "skyw") || (vtype == "skywalker"))
+      m_record.setLength(2); // meters;
     else if(vtype == "auv")
       m_record.setLength(4); // meters;
     else if(vtype == "cray")

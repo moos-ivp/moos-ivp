@@ -17,7 +17,9 @@ SET(SRC main.cpp)
 ADD_EXECUTABLE(alogsplit ${SRC})
    
 TARGET_LINK_LIBRARIES(alogsplit
+  contacts
   logutils
+  geometry
   mbutil
   ${SYSTEM_LIBS})
 

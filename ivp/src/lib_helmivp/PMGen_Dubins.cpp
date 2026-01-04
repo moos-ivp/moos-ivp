@@ -19,11 +19,11 @@ using namespace std;
 //----------------------------------------------------------------
 // Constructor()
 
-PMGen_Dubins::PMGen_Dubins()
+PMGen_Dubins::PMGen_Dubins(double radius, double degs)
 {
   m_valid = false;
-  m_radius     = 30;
-  m_spoke_degs = 10;
+  m_radius     = radius;
+  m_spoke_degs = degs;
 }
 
 //----------------------------------------------------------------

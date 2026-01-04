@@ -40,6 +40,24 @@ using namespace std;
 
 XYPoint string2Point(const string& str)
 {
+  // Special case 1: "3,4"
+  string str1 = str;
+  string xval = biteStringX(str1, ',');
+  string yval = str1;
+  if(isNumber(xval) && isNumber(yval)) {
+    XYPoint pt(atof(xval.c_str()), atof(yval.c_str()));
+    return(pt);
+  }
+  
+  // Special case 2: "3:4"
+  str1 = str;
+  xval = biteStringX(str1, ':');
+  yval = str1;
+  if(isNumber(xval) && isNumber(yval)) {
+    XYPoint pt(atof(xval.c_str()), atof(yval.c_str()));
+    return(pt);
+  }
+
   XYPoint new_point = stringStandard2Point(str);
   if(new_point.valid())
     return(new_point);

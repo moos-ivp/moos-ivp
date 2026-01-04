@@ -20,7 +20,7 @@
 class PMGen_Dubins : public PMGen
 {
  public:
-  PMGen_Dubins();
+  PMGen_Dubins(double radius=30, double degs=10);
   ~PMGen_Dubins() {};
 
 public: // Setters

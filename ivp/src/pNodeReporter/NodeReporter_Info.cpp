@@ -154,6 +154,9 @@ void showExampleConfigAndExit()
   blk("  hdg_error  = 5    // degrees, default is 0. For debugging.    ");
   blk("  report_cog = true // default is false. Include COG in report  ");
   blk("                                                                ");
+  blk("  coord_policy_global = false  // If true, x/y coords not in    ");
+  blk("                               // reports. Default is false.    ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   exit(0);

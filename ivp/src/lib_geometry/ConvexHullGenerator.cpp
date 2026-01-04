@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Procedure: addPoint
+// Procedure: addPoint()
 
 void ConvexHullGenerator::addPoint(double x, double y)
 {
@@ -41,7 +41,7 @@ void ConvexHullGenerator::addPoint(double x, double y)
 }
 
 //---------------------------------------------------------
-// Procedure: addPoint
+// Procedure: addPoint()
 
 void ConvexHullGenerator::addPoint(XYPoint point)
 {
@@ -49,7 +49,7 @@ void ConvexHullGenerator::addPoint(XYPoint point)
 }
 
 //---------------------------------------------------------
-// Procedure: addPoint
+// Procedure: addPoint()
 
 void ConvexHullGenerator::addPoint(double x, double y, string label)
 {
@@ -60,7 +60,7 @@ void ConvexHullGenerator::addPoint(double x, double y, string label)
 
 
 //---------------------------------------------------------
-// Procedure: generateConvexHull
+// Procedure: generateConvexHull()
 //      Note: Based on Graham-Scan in CLR page 1031
 
 XYPolygon ConvexHullGenerator::generateConvexHull()
@@ -245,7 +245,7 @@ XYPolygon ConvexHullGenerator::generateConvexHullOnePt(XYPoint a)
   
 
 //---------------------------------------------------------
-// Procedure: findRoot
+// Procedure: findRoot()
 //   Purpose: The first step of the Graham-Scan algorithm is to
 //            identify the root point. In this case it's the
 //            point with the lowest y-value. Ties are broken
@@ -298,7 +298,7 @@ void ConvexHullGenerator::findRoot()
 
 
 //---------------------------------------------------------
-// Procedure: sortPoints
+// Procedure: sortPoints()
 
 void ConvexHullGenerator::sortPoints()
 {

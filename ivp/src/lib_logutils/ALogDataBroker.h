@@ -52,6 +52,7 @@ class ALogDataBroker
   void cacheAppLogIndices();
   void setVerbose(bool v=true)  {m_verbose=v;}
   void setProgress(bool v=true) {m_progress=v;}
+  void setViewVessels(bool v=true)  {m_view_vessels=v;}
   void setMaxFilePtrs(unsigned int v) {m_max_fileptrs=v;}
   void setVQual(std::string s) {m_vqual=s;}
   void addDetachedPair(std::string s) {m_detached_pairs.push_back(s);}
@@ -160,6 +161,8 @@ class ALogDataBroker
   bool m_progress;
   unsigned int m_max_fileptrs;
   std::string m_vqual;
+  bool m_view_vessels;
+  
 };
 
 #endif

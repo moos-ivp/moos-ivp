@@ -26,6 +26,8 @@
 #include <cstdio>
 #include <cmath>
 #include "MBUtils.h"
+#include "NodeRecord.h"
+#include "NodeRecordUtils.h"
 #include "SplitHandler.h"
 #include "LogUtils.h"
 #include "JsonUtils.h"
@@ -44,6 +46,7 @@ SplitHandler::SplitHandler(string alog_file)
   m_verbose   = false;
   m_progress  = false;
   m_max_cache = 125;  // Default limit for concurrent fopen fileptrs
+  m_view_vessels = true;
   
   // Init state variables
   m_alog_file_confirmed = false;
@@ -181,7 +184,7 @@ bool SplitHandler::handleMakeSplitFiles()
 
     // Otherwise handle a normal line
     string varname = getVarName(line_raw);
-
+    
     // Replace slashes in variable names - filesystems get confused
     varname = findReplace(varname, "/", "_");
     
@@ -314,6 +317,17 @@ bool SplitHandler::handleMakeSplitFiles()
     bool ok = handleSplitLine(varname, line_raw);
     if(!ok)
       break;
+
+    // begin mikerb mod nov 7th, 2025
+    if(m_view_vessels && (varname == "NODE_REPORT")) {
+      string mod_line = findReplace(line_raw, "NODE_REPORT", "VIEW_VESSEL");
+      string old_data = getDataEntry(mod_line);
+      string new_data = nodeRecordToViewVessel(old_data);
+      mod_line = rplDataEntry(mod_line, new_data);
+
+      handleSplitLine("VISUALS", mod_line);
+    }
+    // end mikerb mod nov 7th, 2025
     
   }
 
@@ -559,7 +573,7 @@ bool SplitHandler::addDetachedPair(string var, string key)
 }
 
 //--------------------------------------------------------
-// Procedure: handlePreCheckSplitDir
+// Procedure: handlePreCheckSplitDir()
 //   Purpose: (1) Make sure we don't already have the split directory
 //            (2) Create and verify the split directory
 
@@ -609,8 +623,41 @@ bool SplitHandler::handlePreCheckSplitDir()
   return(true);
 }
 
+//--------------------------------------------------------
+// Procedure: nodeRecordToViewVessel()
 
+string SplitHandler::nodeRecordToViewVessel(string str)
+{
+  //cout << endl;
+  //cout << "NODE_RECORD:" << endl;
+  //cout << "spec: " << str << endl;
+  
+  string view_vessel_str;
 
+  NodeRecord record = string2NodeRecord(str);
+  if(!record.valid())
+    return("");
 
+  view_vessel_str = "label=" + record.getName();
+  view_vessel_str += ",x=" + doubleToStringX(record.getX(),2);
+  view_vessel_str += ",y=" + doubleToStringX(record.getY(),2);
+  view_vessel_str += ",hdg=" + doubleToStringX(record.getHeading(),2);
+  view_vessel_str += ",len=" + doubleToStringX(record.getLength(),2);
+  view_vessel_str += ",type=" + record.getType();
 
+  string color = record.getColor();
+  if(color != "")
+    view_vessel_str += ",color=" + color;
+
+  double utc = record.getTimeStamp();
+  if(utc != 0)
+    view_vessel_str += ",time=" + doubleToStringX(utc,2);
+
+  view_vessel_str += ",dur=3";
+  
+  //cout << "view_vessel_str:" << view_vessel_str << endl;
+  
+  return(view_vessel_str);
+  
+}
 

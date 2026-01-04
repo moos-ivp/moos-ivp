@@ -60,6 +60,7 @@ void VPlug_GeoShapes::clear(string shape, string stype)
 {
   if((shape == "") && (stype == "")) {
     m_polygons.clear();
+    m_vessels.clear();
     m_seglists.clear();
     m_seglrs.clear();
     m_hexagons.clear();
@@ -81,6 +82,8 @@ void VPlug_GeoShapes::clear(string shape, string stype)
 
   if((shape == "polygons") || (shape=="polygon"))
     clearPolygons(stype);
+  else if((shape == "vessels") || (shape=="vessel"))
+    clearVessels();
   else if((shape == "points") || (shape == "point"))
     clearPoints(stype);
   else if((shape == "seglists") || (shape == "seglist"))
@@ -102,6 +105,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
   // First check the parameters that may be arriving in streams
   if((param ==  "poly") || (param == "polygon"))
     return(addPolygon(value));
+  else if(param ==  "vessel")
+    return(addVessel(value));
   else if((param ==  "segl") || (param == "seglist"))
     return(addSegList(value));
   else if(param ==  "seglr")
@@ -119,6 +124,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
       m_polygons.clear();
     else if(value == "polygons")
       m_seglists.clear();
+    else if(value == "vessels")
+      m_vessels.clear();
     else if(value == "grids") {
       m_grids.clear();
       m_convex_grids.clear();
@@ -209,6 +216,14 @@ void VPlug_GeoShapes::manageMemory(double curr_time)
   }
   m_polygons = save_polys;
 
+  //-------------------------------------------------- XYVessels
+  vector<XYVessel> save_vessels;
+  for(unsigned int i=0; i<m_vessels.size(); i++) {
+    if(!m_vessels[i].expired(curr_time))
+      save_vessels.push_back(m_vessels[i]);
+  }
+  m_vessels = save_vessels;
+
   //-------------------------------------------------- SegLists
   vector<XYSegList> save_segls;
   for(unsigned int i=0; i<m_seglists.size(); i++) {
@@ -230,6 +245,20 @@ void VPlug_GeoShapes::forgetPolygon(string label)
       new_polys.push_back(m_polygons[i]);
   }
   m_polygons = new_polys;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: forgetVessel()
+
+void VPlug_GeoShapes::forgetVessel(string label)
+{
+  vector<XYVessel> new_vessels;
+  for(unsigned int i=0; i<m_vessels.size(); i++) {
+    if(m_vessels[i].get_label() != label) 
+      new_vessels.push_back(m_vessels[i]);
+  }
+  m_vessels = new_vessels;
 }
 
 
@@ -262,6 +291,40 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
     }
   }
   m_polygons.push_back(new_poly);  
+}
+
+//-----------------------------------------------------------
+// Procedure: addVessel()
+
+void VPlug_GeoShapes::addVessel(const XYVessel& new_vessel)
+{
+  string new_label = new_vessel.get_label();
+  if(!new_vessel.active()) {
+    forgetVessel(new_label);
+    return;
+  }
+
+  double vx = new_vessel.getX();
+  double vy = new_vessel.getY();
+  
+  // ignore vessel with both x/y zero. Suspicious
+  if((vx != 0) || (vy != 0)) {
+    updateBounds(vx, vx, vy, vy);
+  }
+
+  if(new_label == "") {
+    m_vessels.push_back(new_vessel);
+    return;
+  }
+
+  unsigned int i, vsize = m_vessels.size();
+  for(i=0; i<vsize; i++) {
+    if(m_vessels[i].get_label() == new_label) {
+      m_vessels[i] = new_vessel;
+      return;
+    }
+  }
+  m_vessels.push_back(new_vessel);  
 }
 
 //-----------------------------------------------------------
@@ -550,7 +613,7 @@ unsigned int VPlug_GeoShapes::sizeTotalShapes() const
 	 sizeMarkers()     + sizeRangePulses() + 
 	 sizeSeglrs()      + sizeArrows() + 
 	 sizeOvals()       + sizeCommsPulses() +
-	 sizeTextBoxes());
+	 sizeTextBoxes()   + sizeVessels());
 }
 
 //-----------------------------------------------------------
@@ -810,6 +873,21 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str,
 }
 
 //-----------------------------------------------------------
+// Procedure: addVessel()
+
+bool VPlug_GeoShapes::addVessel(const string& vessel_str,
+				 double timestamp)
+{
+  XYVessel new_vessel = stringToVessel(vessel_str);
+  
+  if(new_vessel.get_time() == 0)
+    new_vessel.set_time(timestamp);
+
+  addVessel(new_vessel);
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: addWedge()
 
 bool VPlug_GeoShapes::addWedge(const string& wedge_str,
@@ -1035,6 +1113,19 @@ XYPolygon VPlug_GeoShapes::getPolygon(unsigned int index) const
 }
 
 //-------------------------------------------------------------
+// Procedure: getVessel(int)     
+
+XYVessel VPlug_GeoShapes::getVessel(unsigned int index) const
+{
+  if(index >= m_vessels.size()) {
+    XYVessel null_vessel(1,2,3,4);
+    return(null_vessel);
+  }
+  else
+    return(m_vessels[index]);
+}
+
+//-------------------------------------------------------------
 // Procedure: getSeglr(int)
 
 #if 0
@@ -1079,6 +1170,14 @@ void VPlug_GeoShapes::updateBounds()
       updateBounds(poly.get_min_x(), poly.get_max_x(),
 		   poly.get_min_y(), poly.get_max_y());
     }
+  }
+  for(i=0; i<m_vessels.size(); i++) {
+    XYVessel vessel = m_vessels[i];
+    double vx = vessel.getX();
+    double vy = vessel.getY();
+    // ignore vessel with both x/y zero. Suspicious
+    if((vx != 0) || (vy != 0))
+      updateBounds(vx,vx, vy,vy);
   }
   for(i=0; i<m_seglists.size(); i++) {
     if(m_seglists[i].size() > 0) {
@@ -1177,6 +1276,14 @@ void VPlug_GeoShapes::clearPolygons(string stype)
       new_polygons.push_back(m_polygons[i]);
   } 
   m_polygons = new_polygons;
+}
+
+//-----------------------------------------------------------
+// Procedure: clearVessels()
+
+void VPlug_GeoShapes::clearVessels()
+{
+  m_vessels.clear();
 }
 
 //-----------------------------------------------------------

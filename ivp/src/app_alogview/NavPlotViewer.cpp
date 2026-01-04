@@ -154,10 +154,10 @@ void NavPlotViewer::setDataBroker(const ALogDataBroker& dbroker)
     string vehicle_type = m_dbroker.getVTypeFromAix(aix);
     string vehicle_color = m_dbroker.getVColorFromAix(aix);
     double vehicle_length = m_dbroker.getVLengthFromAix(aix);
-    cout << "     vname:[" << vehicle_name << "] ";
-    cout << "vtype:[" << vehicle_type << "] ";
-    cout << "vcolor:[" << vehicle_color << "] ";
-    cout << "vlen:[" << vehicle_length << "] " << endl;
+    //cout << "     vname:[" << vehicle_name << "] ";
+    //cout << "vtype:[" << vehicle_type << "] ";
+    //cout << "vcolor:[" << vehicle_color << "] ";
+    //cout << "vlen:[" << vehicle_length << "] " << endl;
     m_vnames.push_back(vehicle_name);
     m_vtypes.push_back(vehicle_type);
     m_vcolors.push_back(vehicle_color);
@@ -607,11 +607,12 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   geo_shapes = m_vplug_plot[index].getVPlugByTime(m_curr_time);
 
   vector<XYPolygon>    polys   = geo_shapes.getPolygons();
+  vector<XYVessel>     vessels = geo_shapes.getVessels();
   vector<XYGrid>       grids   = geo_shapes.getGrids();
   vector<XYRangePulse> rpulses = geo_shapes.getRangePulses();
   vector<XYCommsPulse> cpulses = geo_shapes.getCommsPulses();
-  const map<string, XYSegList>&  segls = geo_shapes.getSegLists();
-  const map<string, XYSeglr>&  seglrs = geo_shapes.getSeglrs();
+  const map<string, XYSegList>& segls  = geo_shapes.getSegLists();
+  const map<string, XYSeglr>&  seglrs  = geo_shapes.getSeglrs();
   const map<string, XYPoint>&  points  = geo_shapes.getPoints();
   const map<string, XYCircle>& circles = geo_shapes.getCircles();
   const map<string, XYMarker>& markers = geo_shapes.getMarkers();
@@ -629,7 +630,20 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   drawRangePulses(rpulses, utc_timestamp);
   drawCommsPulses(cpulses, utc_timestamp);
   drawSeglrs(seglrs);
+  //cout << "drawVPlugPlot:: vessel count = " << vessels.size() << endl;  
 
+  for(unsigned int i=0; i<vessels.size(); i++) {
+    XYVessel vessel = vessels[i];
+    if((vessel.getX() == 0) && (vessel.getY() == 0))
+      break;
+    bool expired = vessel.expired(utc_timestamp);
+    if(expired)
+      break;
+    double scaled_len = vessel.getLen() * m_shape_scale;
+    vessel.setLen(scaled_len);
+    drawVessel(vessel);
+  }
+  
   drawGrids(grids);
 }
 

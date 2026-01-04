@@ -38,6 +38,7 @@
 #include "XYGrid.h"
 #include "XYConvexGrid.h"
 #include "XYPolygon.h"
+#include "XYVessel.h"
 #include "XYSegList.h"
 #include "XYSeglr.h"
 #include "XYCircle.h"
@@ -150,6 +151,9 @@ protected:
 
   void  drawPolygons(const std::vector<XYPolygon>&, double timestamp=0);
   void  drawPolygon(const XYPolygon&);
+  
+  void  drawVessels(const std::vector<XYVessel>&, double timestamp=0);
+  void  drawVessel(const XYVessel&);
   
   void  drawSegLists(const std::map<std::string, XYSegList>&, double timestamp=0);
   void  drawSegList(const XYSegList&);

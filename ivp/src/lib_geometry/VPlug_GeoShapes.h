@@ -30,6 +30,7 @@
 #include <map>
 #include <string>
 #include "XYPolygon.h"
+#include "XYVessel.h"
 #include "XYSegList.h"
 #include "XYHexagon.h"
 #include "XYGrid.h"
@@ -65,6 +66,7 @@ public:
   double  getYMax() const {return(m_ymax);}
 
   void addPolygon(const XYPolygon&);
+  void addVessel(const XYVessel&);
   void addSegList(const XYSegList&);
   void addSeglr(const XYSeglr&);
   void addCircle(const XYCircle&, unsigned int drawpts=18);
@@ -83,6 +85,7 @@ public:
   void addTextBox(const XYTextBox&);
 
   void forgetPolygon(std::string label);
+  void forgetVessel(std::string label);
   void forgetSegList(std::string label);
   void forgetSeglr(std::string label);
   void forgetWedge(std::string label);
@@ -94,6 +97,7 @@ public:
 
 
   bool addPolygon(const std::string&, double timestamp=0);
+  bool addVessel(const std::string&, double timestamp=0);
   bool addSegList(const std::string&, double timestamp=0);
   bool addSeglr(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18, double t=0);
@@ -114,6 +118,7 @@ public:
   bool updateConvexGrid(const std::string&);
 
   unsigned int sizePolygons() const    {return(m_polygons.size());}
+  unsigned int sizeVessels() const     {return(m_vessels.size());}
   unsigned int sizeSegLists() const    {return(m_seglists.size());}
   unsigned int sizeSeglrs() const      {return(m_seglrs.size());}
   unsigned int sizeCircles() const     {return(m_circles.size());}
@@ -133,6 +138,7 @@ public:
   unsigned int sizeTotalShapes() const;
 
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);}
+  std::vector<XYVessel>  getVessels() const  {return(m_vessels);}
   std::vector<XYWedge>   getWedges() const   {return(m_wedges);}
   //std::vector<XYSegList> getSegLists() const {return(m_seglists);}
   //std::vector<XYSeglr  > getSeglrs() const   {return(m_seglrs);}
@@ -153,10 +159,12 @@ public:
   const std::map<std::string, XYMarker>& getMarkers() const {return(m_markers);}
   const std::map<std::string, XYTextBox>& getTextBoxes() const {return(m_textboxes);}
 
-  XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);}
+  XYPolygon& poly(unsigned int i)    {return(m_polygons[i]);}
+  XYVessel&  vessel(unsigned int i)  {return(m_vessels[i]);}
   //XYSeglr&   seglr(unsigned int i)  {return(m_seglrs[i]);}
 
   XYPolygon    getPolygon(unsigned int) const;
+  XYVessel     getVessel(unsigned int) const;
   //XYSeglr      getSeglr(unsigned int) const;
 
  protected:
@@ -164,6 +172,7 @@ public:
   void updateBounds();
 
   void clearPolygons(std::string stype="");
+  void clearVessels();
   void clearWedges(std::string stype="");
   void clearArcs(std::string stype="");
   void clearSegLists(std::string stype="");
@@ -183,6 +192,7 @@ public:
 
 protected:
   std::vector<XYPolygon>    m_polygons;
+  std::vector<XYVessel>     m_vessels;
   std::vector<XYSegList>    m_seglists;
   std::vector<XYWedge>      m_wedges;
   std::vector<XYArc>        m_arcs;

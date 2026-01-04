@@ -55,6 +55,7 @@
 #include "Shape_Triangle.h"
 #include "Shape_EField.h"
 #include "Shape_Square.h"
+#include "Shape_Skywalker.h"
 #include "Shape_Kelp.h"
 #include "XYFormatUtilsPoly.h"
 #include "BearingLine.h"
@@ -828,6 +829,47 @@ bool MarineViewer::coordInViewX(double x, double y)
 
 
 //-------------------------------------------------------------
+// Procedure: drawVessels()
+
+void MarineViewer::drawVessels(const std::vector<XYVessel>& vessels,
+			       double timestamp)
+{
+  for(unsigned int i=0; i<vessels.size(); i++) {
+    bool expired =vessels[i].expired(timestamp);
+    if(!expired)
+      drawVessel(vessels[i]);
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: drawVessel()
+
+void MarineViewer::drawVessel(const XYVessel& vessel) 
+{
+  cout << "Vessel: " << endl;
+  cout << "spec: " << vessel.get_spec() << endl;
+    
+  NodeRecord record;
+  record.setName(vessel.get_label());
+  record.setX(vessel.getX());
+  record.setY(vessel.getY());
+
+  record.setHeading(vessel.getHdg());
+  record.setLength(vessel.getLen());
+  record.setType(vessel.get_type());
+
+  cout << "drawVessel: " << endl;
+  cout << "spec: " << record.getSpec() << endl;
+  
+  ColorPack body_color = vessel.get_color("fill");
+  ColorPack vname_color("white");
+  
+  BearingLine bline;
+  drawCommonVehicle(record, bline, body_color, vname_color, true, 
+		    1, 1);
+}
+
+//-------------------------------------------------------------
 // Procedure: drawCommonVehicle()
 
 void MarineViewer::drawCommonVehicle(const NodeRecord& record, 
@@ -886,6 +928,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   glScalef(m_zoom, m_zoom, m_zoom);
   glRotatef(-heading,0,0,1);  
 
+  ColorPack green(0,1,0);
   ColorPack black(0,0,0);
   ColorPack white(1,1,1);
   ColorPack gray(0.5, 0.5, 0.5);
@@ -914,6 +957,21 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     if(outer_line)
       drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x, transparency);    
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if((vehibody == "skyw") ||
+	  (vehibody == "skywalker")) {
+    if(vlength > 0) {
+      factor_x *= (vlength / g_skywLength);
+      factor_y *= (vlength / g_skywLength);
+    }
+    double cx = g_skywCtrX * factor_x;
+    double cy = g_skywCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_skywBody, g_skywBodySize, body_color, 0, factor_x, transparency);    
+    if(outer_line)
+      drawGLPoly(g_skywBody, g_skywBodySize, white, outer_line, factor_x, transparency);    
+    drawGLPoly(g_skywMid, g_skywMidSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "heron") {
@@ -2183,6 +2241,7 @@ void MarineViewer::drawSeglrs(const map<string, XYSeglr>& seglrs,
 void MarineViewer::drawSeglr(const XYSeglr& seglr)
 {
   ColorPack edge_c("white");  // default if no drawing hint
+  ColorPack head_c("white");  // default if no drawing hint
   ColorPack vert_c("blue");   // default if no drawing hint
   ColorPack labl_c("white");  // default if no drawing hint
   double line_width  = 1;     // default if no drawing hint
@@ -2194,8 +2253,12 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   if(seglr.color_set("vertex"))         // vertex_color
     vert_c = seglr.get_color("vertex");
   
-  if(seglr.color_set("edge"))           // edge_color
+  if(seglr.color_set("edge")) {         // edge_color
     edge_c = seglr.get_color("edge");
+    head_c = edge_c;
+  }
+  if(seglr.color_set("head"))           // head_color
+    head_c = seglr.get_color("head");
   if(seglr.edge_size_set())             // edge_size
     line_width = seglr.get_edge_size();
   if(seglr.vertex_size_set())           // vertex_size
@@ -2312,7 +2375,7 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   vpoints[6]   = hx2 * pix_per_mtr_x;
   vpoints[7]   = hy2 * pix_per_mtr_y;
 
-  glColor4f(edge_c.red(), edge_c.grn(), edge_c.blu(), transparency);
+  glColor4f(head_c.red(), head_c.grn(), head_c.blu(), transparency);
   glLineWidth(line_width);
   glBegin(GL_LINE_STRIP);
   glVertex2f(vpoints[0], vpoints[1]);
@@ -2384,16 +2447,20 @@ void MarineViewer::drawVectors(const vector<XYVector>& vects)
 void MarineViewer::drawVector(const XYVector& vect)
 {
   // Determine the color properties
-  ColorPack edge_c, vert_c, labl_c;
+  ColorPack edge_c, head_c, vert_c, labl_c;
   edge_c = m_geo_settings.geocolor("vector_edge_color", "yellow");
+  head_c = m_geo_settings.geocolor("vector_edge_color", "yellow");
   vert_c = m_geo_settings.geocolor("vector_vertex_color", "white");
   labl_c = m_geo_settings.geocolor("vector_label_color", "white");
-  if(vect.color_set("label"))          
+
+  if(vect.color_set("label"))
     labl_c = vect.get_color("label");
-  if(vect.color_set("vertex"))         
+  if(vect.color_set("vertex"))
     vert_c = vect.get_color("vertex");
-  if(vect.color_set("edge"))           
+  if(vect.color_set("edge"))
     edge_c = vect.get_color("edge");
+  if(vect.color_set("head"))
+    head_c = vect.get_color("head");
   
   // Determine the size properties
   double line_width  = 1;  // default if no drawing hints provided 
@@ -2474,7 +2541,7 @@ void MarineViewer::drawVector(const XYVector& vect)
   
   // Then draw the vector head
   glBegin(GL_POLYGON);
-  glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+  glColor3f(head_c.red(), head_c.grn(), head_c.blu());
   glVertex2f(points[4], points[5]);
   glVertex2f(points[6], points[7]);
   glVertex2f(points[2], points[3]);

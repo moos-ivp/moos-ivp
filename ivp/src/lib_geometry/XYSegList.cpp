@@ -81,7 +81,6 @@ void XYSegList::mod_vertex(unsigned int ix, double x, double y,
   }
 }
 
-
 //---------------------------------------------------------------
 // Procedure: add_vertex()
 
@@ -462,6 +461,8 @@ XYPoint XYSegList::get_last_point() const
 //            at the given distance starting from the first vertex.
 //            If dist is longer than the whole segl, it will be the
 //            last vertex.
+//      Note: Added Dec1725: Use z component of the point to hold
+//            the angle between the two adjacent vertices.
 
 XYPoint XYSegList::get_dist_point(double dist) const
 {
@@ -481,8 +482,9 @@ XYPoint XYSegList::get_dist_point(double dist) const
     return(get_last_point());
 
   double sofar_dist = 0;
-  double cx = m_vx[0]; 
-  double cy = m_vy[0]; 
+  double cx  = m_vx[0]; 
+  double cy  = m_vy[0]; 
+  double ang = 0;
   for(unsigned int i=1; i<vsize; i++) {
     double new_dist = hypot(cx-m_vx[i], cy-m_vy[i]);
     if((sofar_dist + new_dist) < dist) {
@@ -494,14 +496,14 @@ XYPoint XYSegList::get_dist_point(double dist) const
       double gap_dist = (dist - sofar_dist);
       // sanity check
       if(gap_dist > 0) {
-	double ang = relAng(cx,cy,m_vx[i],m_vy[i]);
+	ang = relAng(cx,cy,m_vx[i],m_vy[i]);
 	projectPoint(ang, gap_dist, cx,cy, cx,cy);
       }
       break;
     }
   }
 	   
-  XYPoint dpt(cx,cy);
+  XYPoint dpt(cx,cy,ang);
   return(dpt);
 }
 

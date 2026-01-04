@@ -33,6 +33,8 @@ std::string getVarName(const std::string& line);
 std::string getSourceName(const std::string& line);
 std::string getSourceNameNoAux(const std::string& line);
 std::string getDataEntry(const std::string& line);
+std::string rplDataEntry(const std::string& line,
+			 const std::string& newdata);
 
 std::string getNextRawLine(FILE*);
 ALogEntry   getNextRawALogEntry(FILE*, bool allstrings=false);

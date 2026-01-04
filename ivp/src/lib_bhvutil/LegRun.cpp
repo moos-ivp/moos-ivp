@@ -180,35 +180,29 @@ bool LegRun::setParam(string param, string val)
 
 //---------------------------------------------------------
 // Procedure: setPoint1()
-//   Example: 4:6
+//   Example: 4:6 or 4,6 or x=4,y=6
 
 bool LegRun::setPoint1(string str)
 {
-  string xval = biteStringX(str, ':');
-  string yval = str;
-  if(!isNumber(xval) || !isNumber(yval))
+  XYPoint newpt = string2Point(str);
+  if(!newpt.valid())
     return(false);
-
-  double dxval = atof(xval.c_str());
-  double dyval = atof(yval.c_str());
-  m_p1.set_vertex(dxval, dyval);
+  
+  m_p1 = newpt;
   return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: setPoint2()
-//   Example: 4:6
+//   Example: 4:6 or 4,6 or x=4,y=6
 
 bool LegRun::setPoint2(string str)
 {
-  string xval = biteStringX(str, ':');
-  string yval = str;
-  if(!isNumber(xval) || !isNumber(yval))
+  XYPoint newpt = string2Point(str);
+  if(!newpt.valid())
     return(false);
-
-  double dxval = atof(xval.c_str());
-  double dyval = atof(yval.c_str());
-  m_p2.set_vertex(dxval, dyval);
+  
+  m_p2 = newpt;
   return(true);
 }
 

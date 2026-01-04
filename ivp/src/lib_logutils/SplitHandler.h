@@ -43,6 +43,7 @@ class SplitHandler
   void setMaxFilePtrCache(unsigned int);
   bool addDetachedPair(std::string);
   bool addDetachedPair(std::string, std::string);
+  void setViewVessels(bool v)      {m_view_vessels=v;}
   
  protected:
   bool handlePreCheckSplitDir();
@@ -54,6 +55,8 @@ class SplitHandler
   
   std::string detached(std::string varname);
   std::set<std::string> detachedSet(std::string varname);
+
+  std::string nodeRecordToViewVessel(std::string);
   
  protected: // Config variables
   std::string  m_alog_file;
@@ -62,6 +65,8 @@ class SplitHandler
   bool         m_progress;
   unsigned int m_max_cache;
 
+  bool         m_view_vessels;
+  
   std::map<std::string, std::string> m_map_detached_pairs;
   std::map<std::string, std::set<std::string> > m_map_dpairs;
   

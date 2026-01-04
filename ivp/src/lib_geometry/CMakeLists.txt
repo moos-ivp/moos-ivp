@@ -29,6 +29,7 @@ SET(SRC
   Seglr.cpp
   SeglrUtils.cpp
   PlatModel.cpp
+//  SpokeLog.cpp
   VPlug_DropPoints.cpp
   VPlug_GeoSettings.cpp
   VPlug_GeoShapes.cpp
@@ -40,6 +41,7 @@ SET(SRC
   XYArtifactGrid.cpp
   XYCircle.cpp
   XYOval.cpp
+  XYVessel.cpp
   XYTextBox.cpp
   XYCommsPulse.cpp
   XYConvexGrid.cpp
@@ -100,6 +102,7 @@ SET(HEADERS
   Seglr.h
   SeglrUtils.h
   PlatModel.h
+//  SpokeLog.h
   XYWedge.h
   ProxPoint.h
   XYArc.h
@@ -108,6 +111,7 @@ SET(HEADERS
   XYBuildUtils.h
   XYCircle.h
   XYOval.h
+  XYVessel.h
   XYTextBox.h
   XYEncoders.h
   XYFormatUtilsCircle.h

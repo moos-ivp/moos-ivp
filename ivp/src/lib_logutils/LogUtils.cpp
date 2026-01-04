@@ -172,6 +172,46 @@ string getDataEntry(const string& line)
   return(str);
 }
 
+//--------------------------------------------------------
+// Procedure: rplDataEntry()
+//   Purpose: Replace the data (last) component of a alog entry line
+//            with the given newdata string.
+//
+//     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
+//            States:      0      1  2  3   4    5   6
+
+string rplDataEntry(const string& line,
+		    const string& newdata)
+{
+  unsigned int i, len = line.length();
+
+  int    state = 0;
+  string str;
+
+  for(i=0; (i<len); i++) {
+    if((line[i] == ' ') || (line[i] == '\t')) {
+      if(state == 0)
+	state = 1;
+      else if(state == 2)
+	state = 3;
+      else if(state == 4)
+	state = 5;
+      str.push_back(line[i]);
+    }
+    else {
+      if(state == 1)
+	state = 2;
+      else if(state == 3)
+	state = 4;
+      else if(state == 5) 
+	break;
+      str.push_back(line[i]);
+    }
+  }
+  
+  return(str + newdata);
+}
+
 
 //--------------------------------------------------------
 // Procedure: stripInsigDigits()

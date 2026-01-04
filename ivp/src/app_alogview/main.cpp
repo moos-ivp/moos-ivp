@@ -153,6 +153,8 @@ void help_message()
   cout << "  --detached=var          Detached var for plotting           " << endl;
   cout << "  --detached=var:key      Detached var for plotting           " << endl;
   cout << "                                                              " << endl;
+  cout << "  --no_vessel_view,-nvv   Don't draw vessels from NODE_REPORT " << endl;
+  cout << "                                                              " << endl;
   cout << "  --seglist_viewable_all=true/false                           " << endl;
   cout << "  --seglist_viewable_labels=true/false                        " << endl;
   cout << "  --seglr_viewable_all=true/false                             " << endl;

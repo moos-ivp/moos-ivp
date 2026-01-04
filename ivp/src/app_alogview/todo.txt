@@ -1,4 +1,34 @@
 
+alogview - further investigate how to automatically detect when there are
+no NAV_X/Y components for a contact, and instead draw from VIEW_VESSEL. Currently
+it seems we are drawing two vessels by default, and would need to use -nvv to
+shut off the second vessel
+
+In drawing the vessels (from the normal means) in pMarineViewer, can we make note
+of which vessels were draw and ignore any other VIEW_VESSEL objects with the same
+name?
+
+
+Files that have been alogclipped are sometimes buggy in that they open
+in alogview with empty plots.
+
+Seems like in ALogDataBroker, somehow the logtmax is not set right?
+invokes "break" immediately
+
+cout << "d_tstamp:" << doubleToString(d_tstamp,2) << endl;
+    cout << "m_logskew[aix]:" << doubleToString(m_logskew[aix],2) << endl;
+    cout << "m_pruned_logtmax:" << doubleToString(m_pruned_logtmax,2) << endl;
+
+    double dval = d_tstamp + m_logskew[aix];
+    cout << "dval:" << doubleToString(dval) << endl;
+    
+    if((d_tstamp + m_logskew[aix]) < m_pruned_logtmin)
+      continue;
+    if((d_tstamp + m_logskew[aix]) > m_pruned_logtmax)
+      break;
+
+
+
 HelmPlots
  o Scale the top fields
  o Implement Modes or ModeTree

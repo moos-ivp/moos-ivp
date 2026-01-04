@@ -42,6 +42,7 @@ VPlugPlot::VPlugPlot()
   // Init state vars
   m_view_point_cnt   = 0;
   m_view_polygon_cnt = 0;
+  m_view_vessel_cnt  = 0;
   m_view_seglist_cnt = 0;
   m_view_seglr_cnt   = 0;
   m_view_circle_cnt  = 0;
@@ -84,6 +85,10 @@ bool VPlugPlot::addEvent(const string& var, const string& val,
   else if(var == "VIEW_POLYGON") {
     m_vplugs[vsize-1].addPolygon(val);
     m_view_polygon_cnt++;
+  }
+  else if(var == "VIEW_VESSEL") {
+    m_vplugs[vsize-1].addVessel(val);
+    m_view_vessel_cnt++;
   }
   else if(var == "VIEW_SEGLIST") {
     m_vplugs[vsize-1].addSegList(val);
@@ -215,6 +220,7 @@ void VPlugPlot::summary(string indent) const
 {
   string str_point = uintToCommaString(m_view_point_cnt);
   string str_polygon = uintToCommaString(m_view_polygon_cnt);
+  string str_vessel = uintToCommaString(m_view_vessel_cnt);
   string str_seglist = uintToCommaString(m_view_seglist_cnt);
   string str_seglr = uintToCommaString(m_view_seglr_cnt);
   string str_circle = uintToCommaString(m_view_circle_cnt);
@@ -227,6 +233,10 @@ void VPlugPlot::summary(string indent) const
 
   if(m_view_point_cnt > 0)
     cout << indent << "VIEW_POINT total: " << str_point << endl;
+  if(m_view_polygon_cnt > 0)
+    cout << indent << "VIEW_POLYGON total: " << str_polygon << endl;
+  if(m_view_vessel_cnt > 0)
+    cout << indent << "VIEW_VESSEL total: " << str_vessel << endl;
   if(m_view_seglist_cnt > 0)
     cout << indent << "VIEW_SEGLIST total: " << str_seglist << endl;
   if(m_view_seglr_cnt > 0)

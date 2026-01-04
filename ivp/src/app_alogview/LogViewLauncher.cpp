@@ -138,6 +138,11 @@ bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
     string argi = argv[i];
     bool handled = handleConfigParam(argi);
 
+    if((argi == "-nvv") || (argi == "--no_view_vessel")) {
+      m_dbroker.setViewVessels(false);
+      handled = true;
+    }
+
     if(!handled) {
       cout << "Unhandled argument: " << argi << endl;
       return(false);

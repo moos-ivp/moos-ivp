@@ -141,10 +141,8 @@ void LogPlotViewer::setDataBroker(const ALogDataBroker& dbroker)
 
 void LogPlotViewer::setLeftPlot(unsigned int mix)
 {
-  cout << "LogPlotViewer::setLeftPlot()  mix: " << mix << endl;
   // Check if mix represents a change and a viable change
   if((mix == m_left_mix) || (mix >= m_dbroker.sizeMix())) {
-    cout << "No Action" << endl;
     return;
   }
 
@@ -161,7 +159,6 @@ void LogPlotViewer::setLeftPlot(unsigned int mix)
   double maxt = m_logplot1.getMaxTime();
   string str_mint = doubleToString(mint,2);
   string str_maxt = doubleToString(maxt,2);
-  cout << "   min_time: " << str_mint << " max_time: " << str_maxt << endl;
   if(!m_zoomed_in)
     adjustTimeBounds();
 }
@@ -171,7 +168,6 @@ void LogPlotViewer::setLeftPlot(unsigned int mix)
 
 void LogPlotViewer::setRightPlot(unsigned int mix)
 {
-  cout << "LogPlotViewer::setRightPlot() mix: " << mix << endl;
   // Check if mix represents a change and a viable change
   if((mix == m_right_mix) || (mix >= m_dbroker.sizeMix()))
     return;
@@ -188,7 +184,6 @@ void LogPlotViewer::setRightPlot(unsigned int mix)
   double maxt = m_logplot1.getMaxTime();
   string str_mint = doubleToString(mint,2);
   string str_maxt = doubleToString(maxt,2);
-  cout << "   min_time: " << str_mint << " max_time: " << str_maxt << endl;
 
   if(!m_zoomed_in)
     adjustTimeBounds();
@@ -600,6 +595,7 @@ void LogPlotViewer::drawLogPlot()
       
   // ----- Handle the FIRST Plot ----------
   if(m_show_left_logplot && (m_logplot1.size()!=0)) {
+
     unsigned int cache_size = cache_x1.size();
     
     // Draw the LINES of the plot
