@@ -270,6 +270,7 @@ bool CPXEnginePM::passesPortDist(double osh, double osv,
     double osx, osy, osh, cnx, cny, segt = 0;
     bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
 
+
     if(!ok)
       break;
 
@@ -658,7 +659,6 @@ bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
     dist_prior += hypot(x1-x2, y1-y2);
   }
   double time_prior = dist_prior / osv;
-
   // Part 2: Advance the contact position
   if(m_cnv > 0) {
     double cn_dist = time_prior * m_cnv;
