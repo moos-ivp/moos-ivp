@@ -1,8 +1,10 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: BHV_AvdColregsV18.cpp                                */
+/*    ORGN: Dept of Mechanical Eng                               */
+/*    FILE: BHV_AvdColregsV26.cpp                                */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
+/*    DATE: Oct 12th, 2018 (V18 from V17, plus refineries)       */
+/*    DATE: Jan 10th, 2026 (V26 from V22, plus platmodel)        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -26,7 +28,7 @@
 #include <cstdlib>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
-#include "BHV_AvdColregsV19.h"
+#include "BHV_AvdColregsV26.h"
 #include "AOF_R17.h"
 #include "AOF_R16.h"
 #include "AOF_R14.h"
@@ -39,13 +41,14 @@
 #include "BuildUtils.h"
 #include "MBUtils.h"
 #include "RefineryCPA.h"
+#include "MacroUtils.h"
 
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
-BHV_AvdColregsV19::BHV_AvdColregsV19(IvPDomain gdomain) : 
+BHV_AvdColregsV26::BHV_AvdColregsV26(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "colregs");
@@ -70,8 +73,8 @@ BHV_AvdColregsV19::BHV_AvdColregsV19(IvPDomain gdomain) :
   //  m_headon_bng_range     = 25;
   m_headon_abs_relbng_thresh = 12;//25;
 
-  m_completed_dist    = 100;
-  m_initial_speed     = 0;
+  m_completed_dist = 100;
+  m_initial_speed  = 0;
 
   m_avoid_mode    = "none";
   m_avoid_submode = "none";
@@ -90,11 +93,9 @@ BHV_AvdColregsV19::BHV_AvdColregsV19(IvPDomain gdomain) :
   // -1 Indicates disabled by default
   m_giveway_bow_dist = -1; 
   
-  m_debug1     = "n/a";
-  m_debug2     = "n/a";
-  m_debug3     = "n/a";
-  m_debug4     = "n/a";
-
+  m_post_status_info_on_idle = false;
+  m_pts_port_turns_ok = true;
+  
   // Init refinery and refinery testing vars
   m_use_refinery   = false;
   m_check_validity = false;
@@ -106,17 +107,22 @@ BHV_AvdColregsV19::BHV_AvdColregsV19(IvPDomain gdomain) :
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
   
   m_standon_set = false;
+
+  m_headon_only = false;
+
+  m_cpa_engine = &m_cpa_engine_pm;
+  m_rcpa_engine = &m_rcpa_engine_pm;
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 // m_all_clear_dist    = m_max_util_cpa_dist
 // m_collision_dist    = m_min_util_cpa_dist
 // m_active_inner_dist = m_pwt_inner_dist
 // m_active_outer_dist = m_pwt_outer_dist
 
-bool BHV_AvdColregsV19::setParam(string param, string value) 
+bool BHV_AvdColregsV26::setParam(string param, string value) 
 {
   if(IvPContactBehavior::setParam(param, value))
     return(true);
@@ -154,8 +160,8 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
   else if((param == "giveway_bow_dist") && non_neg_number) {
     if(dval < m_min_util_cpa_dist)
       dval = m_min_util_cpa_dist;
-    if(dval > m_max_util_cpa_dist)
-      dval = m_max_util_cpa_dist;
+    if(dval > m_max_util_cpa_dist *2)
+      dval = m_max_util_cpa_dist *2;
     m_giveway_bow_dist = dval;
   }
   else if((param == "turn_radius") && non_neg_number) 
@@ -166,6 +172,8 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
     return(resetAvoidModes(m_avoid_mode, value));
   else if(param == "no_alert_request")
     return(setBooleanOnString(m_no_alert_request, value));
+  else if(param == "headon_only")
+    return(setBooleanOnString(m_headon_only, value));
   else if((param == "contact_type_required") && (value != "")) {
     m_contact_type_required = tolower(value);
     return(true);
@@ -180,7 +188,19 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
     return(setBooleanOnString(m_check_validity, value));
   else if(param == "pcheck_thresh")
     return(setNonNegDoubleOnString(m_pcheck_thresh, value));
+
+  else if(param == "eval_tol")
+    return(setDoubleStrictRngOnString(m_time_on_leg, value, 5, 300));
+  else if(param == "velocity_filter") {
+    m_vfilter = stringToVelocityFilter(value);
+    return(m_vfilter.valid());
+  }
   
+  else if(param == "post_status_info_on_idle")
+    return(setBooleanOnString(m_post_status_info_on_idle, value));
+  else if(param == "pts_port_turns_ok")
+    return(setBooleanOnString(m_pts_port_turns_ok, value));
+
   else if(param == "pwt_grade") {
     value = tolower(value);
     if((value!="linear") && (value!="quadratic") && (value!="quasi"))
@@ -212,10 +232,10 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
 //            an alert request generated, this can be done by setting
 //            m_no_alert_request to true.
 
-void BHV_AvdColregsV19::onHelmStart()
+void BHV_AvdColregsV26::onHelmStart()
 {
   IvPContactBehavior::onHelmStart();
-  
+
   if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
 
@@ -229,35 +249,51 @@ void BHV_AvdColregsV19::onHelmStart()
   postMessage("BCM_ALERT_REQUEST", request);
 }
 
-//-----------------------------------------------------------
-// Procedure: onDisabledState()
 
-void BHV_AvdColregsV19::onDisabledState() 
-{
-  postViewableBearingLine(false);
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
-    setComplete();
-}
- 
+
 //-----------------------------------------------------------
 // Procedure: onIdleState()
 
-void BHV_AvdColregsV19::onIdleState() 
+void BHV_AvdColregsV26::onIdleState() 
 {
   if(!updatePlatformInfo())
     return;
-  
-  postStatusInfo();
 
-  // See the Mod July 30th, 2022 comment below.
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1)))
-    setComplete();  
+  if(m_post_status_info_on_idle)
+    postStatusInfo();
+
+  if(!filterCheckHolds())
+    setComplete("filtera");
+  if(m_contact_range >= (m_completed_dist * 1.1))
+    setComplete("rng1p1a");
 }
 
 //-----------------------------------------------------------
-// Procedure: onInactiveState()
+// Procedure: onDisabledState()
 
-void BHV_AvdColregsV19::onInactiveState() 
+void BHV_AvdColregsV26::onDisabledState() 
+{
+  postViewableBearingLine(false);
+
+  if(!filterCheckHolds())
+    setComplete("filterb");
+  if(m_contact_range >= (m_completed_dist*1.1))
+    setComplete("rng1p1b");
+}
+
+//-----------------------------------------------------------
+// Procedure: onRunToIdleState()
+
+void BHV_AvdColregsV26::onRunToIdleState() 
+{
+  if(m_bearing_line_show)
+    postViewableBearingLine(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: onInactveState()
+
+void BHV_AvdColregsV26::onInactiveState() 
 {
   if(m_bearing_line_show)
     postViewableBearingLine(false);
@@ -266,7 +302,7 @@ void BHV_AvdColregsV19::onInactiveState()
 //-----------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_AvdColregsV19::onCompleteState() 
+void BHV_AvdColregsV26::onCompleteState() 
 {
   m_avoid_mode = "complete";
   postStatusInfo();
@@ -275,7 +311,7 @@ void BHV_AvdColregsV19::onCompleteState()
 //-----------------------------------------------------------
 // Procedure: onRunStatePrior()
 
-bool BHV_AvdColregsV19::onRunStatePrior() 
+bool BHV_AvdColregsV26::onRunStatePrior() 
 {
   return(true);
   if(m_last_runcheck_post) {
@@ -291,7 +327,7 @@ bool BHV_AvdColregsV19::onRunStatePrior()
 //-----------------------------------------------------------
 // Procedure: onRunState()
 
-IvPFunction *BHV_AvdColregsV19::onRunState() 
+IvPFunction *BHV_AvdColregsV26::onRunState() 
 {
   m_iterations++;
 
@@ -299,24 +335,24 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
 
   if(!updatePlatformInfo()) 
     return(0);
+  if(!m_cpa_engine)
+    return(0);
 
+  m_cpa_engine->setPlatModel(m_plat_model);
+  
+  m_vfilter.setSpdOS(m_osv);
+  m_vfilter.setSpdCN(m_cnv);
+  
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
-
-  // Mod July 30th, 2022: Changed the actual comleted distance to be
-  // 10pct greater than set completed distance. This is to ensure that
-  // the behavior isn't spawned and killed immediately. If the
-  // spawning and completed distances are exactly the same, then it's
-  // possible that, if the entity doing the spawning and the helm
-  // disagree slightly on the range between vessels due to timing, the
-  // behavior will meet the complete threshold immediately, and the
-  // entity doing the spawning may not notice and re-alert the helm
-  // since from its perspective the range never crossedb back over the
-  // threshhold for sending a new alert.
   
-  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1))) {
-    setComplete();
+  if(!filterCheckHolds()) {
+    setComplete("filterc");
+    return(0);
+  }
+  if(m_contact_range >= (m_completed_dist*1.1)) {
+    setComplete("rng1p1c");
     return(0);
   }
 
@@ -325,12 +361,20 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
   double os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
   addRelBng(os_cn_rel_bng, curr_time);
 
-
-  updateAvoidMode();
+  updateAvoidMode();  
   double relevance = getRelevance();
-  
-  postMessage("COL19_RELEVANCE", relevance);
-  
+
+  if(postingPerContactInfo())
+    postMessage("COL22_RELEVANCE_" + toupper(m_contact), relevance);
+
+  double held_min_util_cpa_dist = m_min_util_cpa_dist;
+  double held_max_util_cpa_dist = m_max_util_cpa_dist;
+  if(m_vfilter.valid()) {
+    double filter_pct = m_vfilter.getFilterPct();
+    m_min_util_cpa_dist *= filter_pct;
+    m_max_util_cpa_dist *= filter_pct;
+  }
+
   IvPFunction *ipf = 0;
   if(relevance > 0) {
     if(m_avoid_mode == "headon") 
@@ -345,28 +389,31 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
       ipf = buildCPA_IPF();
   }
 
+  if(postingPerContactInfo())
+    postMessage("COL22_AVOID_MODE_" + toupper(m_contact), m_avoid_mode);
+
+  m_min_util_cpa_dist = held_min_util_cpa_dist;
+  m_max_util_cpa_dist = held_max_util_cpa_dist;
+
+  
   if(ipf) {
     m_actual_pwt = relevance * m_priority_wt;
     ipf->getPDMap()->normalize(0.0, 100.0);
     ipf->setPWT(m_actual_pwt);
-
-    m_debug2 = doubleToString(m_priority_wt,2) + ":" +
-      doubleToString(m_actual_pwt,2);
-    m_debug4 = "pieces: " + uintToString(ipf->size());
-  }
-  else {
-    m_debug2 = "n/a";
-    m_debug4 = "n/a";
   }
     
   postStatusInfo();
+
+  if(ipf) 
+    postViewableBearingLine();
+  
   return(ipf);
 }
 
 //-----------------------------------------------------------
 // Procedure: getInfo()
 
-string BHV_AvdColregsV19::getInfo(string param)
+string BHV_AvdColregsV26::getInfo(string param)
 {
   string result;
   
@@ -376,14 +423,6 @@ string BHV_AvdColregsV19::getInfo(string param)
     result = m_avoid_mode;
   else if(param == "avoid_submode")
     result = m_avoid_submode;
-  else if(param == "debug1")
-    result = m_debug1;
-  else if(param == "debug2")
-    result = m_debug2;
-  else if(param == "debug3")
-    result = m_debug3;
-  else if(param == "debug4")
-    result = m_debug4;
 
   return(result);
 }
@@ -391,7 +430,7 @@ string BHV_AvdColregsV19::getInfo(string param)
 //-----------------------------------------------------------
 // Procedure: getDoubleInfo()
 
-double BHV_AvdColregsV19::getDoubleInfo(string param)
+double BHV_AvdColregsV26::getDoubleInfo(string param)
 {
   double result = 0;
 
@@ -406,7 +445,7 @@ double BHV_AvdColregsV19::getDoubleInfo(string param)
 //--------------------------------------------------------------
 // Procedure: updateAvoidMode()
 
-void BHV_AvdColregsV19::updateAvoidMode()
+void BHV_AvdColregsV26::updateAvoidMode()
 {
   // Part 0: Note the current mode and submode so we can check for a change
   string prev_avoid_mode    = m_avoid_mode;
@@ -454,9 +493,14 @@ void BHV_AvdColregsV19::updateAvoidMode()
   else
     m_standon_set = false;
 
-  string msg = "V19 CN:" + m_contact + "  Mode:" + m_avoid_mode + ":" + m_avoid_submode; 
-  postMessage("AVD_INFO", msg);
-  
+  if(m_headon_only) {
+    if((m_avoid_mode == "overtaking") || (m_avoid_mode == "giveway") ||   
+       (m_avoid_mode == "standon_ot") || (m_avoid_mode == "standon")) {
+      m_avoid_mode = "cpa";
+      m_avoid_submode = "none";
+    }
+  }
+  setAvoidModeIndex();
 }
 
 //=====================================================================
@@ -464,11 +508,11 @@ void BHV_AvdColregsV19::updateAvoidMode()
 //=====================================================================
 
 //-----------------------------------------------------------
-// Procedure: checkModeOvertaking                   (Rule 13)
+// Procedure: checkModeOvertaking()                   (Rule 13)
 //      Note: TARB [150,180]
 //      Note: OCRB [-45,135]
 
-void BHV_AvdColregsV19::checkModeOvertaking()
+void BHV_AvdColregsV26::checkModeOvertaking()
 {
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
@@ -551,23 +595,20 @@ void BHV_AvdColregsV19::checkModeOvertaking()
     m_avoid_submode = "starboard";
   else
     m_avoid_submode = "port";
-
 }
 
 //-----------------------------------------------------------
-// Procedure: buildOvertakingIPF                    (Rule 13)
+// Procedure: buildOvertakingIPF()                    (Rule 13)
 
-IvPFunction* BHV_AvdColregsV19::buildOvertakingIPF()
+IvPFunction* BHV_AvdColregsV26::buildOvertakingIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, othewise the resulting ivp function will be
-  // universally negative, resulting a function with no preference in
-  // any direction.
+  // this distance, othewise the resulting ivp function will be universally
+  // negative, resulting a function with no preference in any direction.
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  //AOF_AvoidCollision aof(m_domain);
   bool ok = true;
   AOF_R13 aof(m_domain, m_cpa_engine);
   ok = ok && aof.setParam("tol", m_time_on_leg);
@@ -590,9 +631,9 @@ IvPFunction* BHV_AvdColregsV19::buildOvertakingIPF()
 }
 
 //--------------------------------------------------------------
-// Procedure: checkModeHeadOn                          (Rule 14)
+// Procedure: checkModeHeadOn()                        (Rule 14)
 
-void BHV_AvdColregsV19::checkModeHeadOn()
+void BHV_AvdColregsV26::checkModeHeadOn()
 {
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
@@ -610,11 +651,13 @@ void BHV_AvdColregsV19::checkModeHeadOn()
   //=====================================================================  
   if(m_avoid_mode == "headon") {
     if((m_contact_range > m_min_util_cpa_dist) && (m_cnos.rate_of_closure() < 0)) {
-      postMessage(debug_var, debug_msg + "release due to opening range");
+      if(postingPerContactInfo())
+	postMessage(debug_var, debug_msg + "release due to opening range");
       resetAvoidModes();
     }
     if(m_cnos.os_aft_of_cn()) {
-      postMessage(debug_var, debug_msg + "release due to os aft of cn");
+      if(postingPerContactInfo())
+	postMessage(debug_var, debug_msg + "release due to os aft of cn");
       resetAvoidModes();
     }
 
@@ -626,7 +669,8 @@ void BHV_AvdColregsV19::checkModeHeadOn()
       double tot_bng_extra = os_bng_extra + cn_bng_extra;
       if((os_bng_extra > 5) || (cn_bng_extra > 5) || ((tot_bng_extra > 7.5))) {
 	resetAvoidModes();
-	postMessage(debug_var, debug_msg + "release due to passing to port");
+	if(postingPerContactInfo())
+	  postMessage(debug_var, debug_msg + "release due to passing to port");
       }
     }
     return;
@@ -640,7 +684,8 @@ void BHV_AvdColregsV19::checkModeHeadOn()
   // If mode entry criteria not met, reset mode/submode to none, return now.
   if(m_contact_range >= m_pwt_outer_dist*2) {
     resetAvoidModes();
-    postMessage(debug_var, debug_msg + "not entered due to range");
+    if(postingPerContactInfo())
+      postMessage(debug_var, debug_msg + "not entered due to range");
     return;
   }
 
@@ -652,12 +697,14 @@ void BHV_AvdColregsV19::checkModeHeadOn()
 
   if((os_cn_abs_rel_bearing > m_headon_abs_relbng_thresh) ||
      (cn_os_abs_rel_bearing > m_headon_abs_relbng_thresh)) {
-    postMessage(debug_var, debug_msg + "not entered due to rel bearing");
+    if(postingPerContactInfo())
+      postMessage(debug_var, debug_msg + "not entered due to rel bearing");
     resetAvoidModes();
     return;
   }
 
-  postMessage(debug_var, debug_msg + "entered head-on mode");
+  if(postingPerContactInfo())
+    postMessage(debug_var, debug_msg + "entered head-on mode");
   m_avoid_mode    = "headon";
   m_avoid_submode = "none";
 }
@@ -665,7 +712,7 @@ void BHV_AvdColregsV19::checkModeHeadOn()
 //--------------------------------------------------------------
 // Procedure: buildHeadOnIPF                           (Rule 14)
 
-IvPFunction* BHV_AvdColregsV19::buildHeadOnIPF()
+IvPFunction* BHV_AvdColregsV26::buildHeadOnIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
   // this distance, othewise the resulting ivp function will be universally
@@ -697,7 +744,7 @@ IvPFunction* BHV_AvdColregsV19::buildHeadOnIPF()
 //--------------------------------------------------------------
 // Procedure: checkModeGiveWay                         (Rule 16)
 
-void BHV_AvdColregsV19::checkModeGiveWay()
+void BHV_AvdColregsV26::checkModeGiveWay()
 {
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
@@ -753,9 +800,11 @@ void BHV_AvdColregsV19::checkModeGiveWay()
   // But if our present course has us crossing the bow, and crossing by
   // a healthy distance, then the giveway behavior will try to achieve
   // its goal by crossing the bow, setting the avoid_submode to "bow".
-  string mvar1 = "XCN_BOW_DIST_" + toupper(m_contact);
-  postMessage(mvar1, m_cnos.os_crosses_cn_bow_dist());
-
+  if(postingPerContactInfo()) {
+    string mvar1 = "XCN_BOW_DIST_" + toupper(m_contact);
+    postMessage(mvar1, m_cnos.os_crosses_cn_bow_dist());
+  }
+  
   if(m_cnos.os_crosses_cn_bow()) {
     // Criteria A: os crossing cn by by a healthy amount
     double acceptable_dist  = (2*m_max_util_cpa_dist + m_min_util_cpa_dist) / 3; 
@@ -775,8 +824,10 @@ void BHV_AvdColregsV19::checkModeGiveWay()
     if(turn_gap < acceptable_dist)
       m_avoid_submode = "bow";
 
-    string mvar2 = "XCN_BOW_TURN_GAP_" + toupper(m_contact);
-    postMessage(mvar2, turn_gap);
+    if(postingPerContactInfo()) {
+      string mvar2 = "XCN_BOW_TURN_GAP_" + toupper(m_contact);
+      postMessage(mvar2, turn_gap);
+    }
   }
 
   
@@ -790,27 +841,30 @@ void BHV_AvdColregsV19::checkModeGiveWay()
   
   if(!m_cnos.os_crosses_cn_bow_or_stern() && (os_spd_in_cn_hdg > 0))
     m_avoid_submode = "bow";
+
 }
 
 //--------------------------------------------------------------
-// Procedure: buildGiveWayIPF                          (Rule 16)
+// Procedure: buildGiveWayIPF()                        (Rule 16)
 
-IvPFunction* BHV_AvdColregsV19::buildGiveWayIPF()
+IvPFunction* BHV_AvdColregsV26::buildGiveWayIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, othewise the resulting ivp function will be
-  // universally negative, resulting a function with no preference in
-  // any direction.
+  // this distance, othewise the resulting ivp function will be universally
+  // negative, resulting a function with no preference in any direction.
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  bool ok = true;
   AOF_R16 aof(m_domain, m_cpa_engine);
+  bool ok = true;
   ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  if(!m_pts_port_turns_ok)
+    ok = ok && aof.setParam("pts_port_turns_ok", "false");
+  
   ok = ok && aof.initialize();
 
   if(!ok) {
@@ -823,10 +877,12 @@ IvPFunction* BHV_AvdColregsV19::buildGiveWayIPF()
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 
-  unsigned int msize = reflector.getMessageCnt();
-  for(unsigned int i=0; i<msize; i++) {
-    string msg = reflector.getMessage(i);
-    postMessage("AOF_R16", msg);
+  if(postingPerContactInfo()) {
+    unsigned int msize = reflector.getMessageCnt();
+    for(unsigned int i=0; i<msize; i++) {
+      string msg = reflector.getMessage(i);
+      postMessage("AOF_R16", msg);
+    }
   }
 
   return(ipf);
@@ -834,9 +890,9 @@ IvPFunction* BHV_AvdColregsV19::buildGiveWayIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: checkModeStandOn                      (Rule 17)
+// Procedure: checkModeStandOn()                    (Rule 17)
 
-void BHV_AvdColregsV19::checkModeStandOn()
+void BHV_AvdColregsV26::checkModeStandOn()
 {
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
@@ -1028,7 +1084,7 @@ void BHV_AvdColregsV19::checkModeStandOn()
 //---------------------------------------------------------------------
 // Procedure: checkModeStandOnOT            (Rule 17, Overtaken Vessel)
 
-void BHV_AvdColregsV19::checkModeStandOnOT()
+void BHV_AvdColregsV26::checkModeStandOnOT()
 {
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
@@ -1121,7 +1177,7 @@ void BHV_AvdColregsV19::checkModeStandOnOT()
 //--------------------------------------------------------------
 // Procedure: checkModeCPA                          (Catch-all)
 
-void BHV_AvdColregsV19::checkModeCPA()
+void BHV_AvdColregsV26::checkModeCPA()
 {
   // Part 0: Sanity check. Existing mode must be either "none", or "cpa"
   if((m_avoid_mode != "cpa") && (m_avoid_mode != "none"))
@@ -1138,10 +1194,8 @@ void BHV_AvdColregsV19::checkModeCPA()
 //-----------------------------------------------------------
 // Procedure: buildStandOnIPF                    (Rule 17)
 
-IvPFunction* BHV_AvdColregsV19::buildStandOnIPF()
+IvPFunction* BHV_AvdColregsV26::buildStandOnIPF()
 {
-  m_debug3 = "Bldg StandOn V17 IPF";
-
   if(m_avoid_submode == "inextremis")
     return(buildCPA_IPF());
 
@@ -1176,9 +1230,9 @@ IvPFunction* BHV_AvdColregsV19::buildStandOnIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: buildCPA_IPF                    (Catch-all)
+// Procedure: buildCPA_IPF()                    (Catch-all)
 
-IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
+IvPFunction* BHV_AvdColregsV26::buildCPA_IPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
   // this distance, othewise the resulting ivp function will be universally
@@ -1195,12 +1249,9 @@ IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
   ok = ok && aof.initialize();
 
   if(!ok) {
-    m_debug1 = "PROBLEM Init AOF_AvoidCollision!!!!";
-    postEMessage("Unable to init AOF_AvoidCollision.");
+    postEMessage("Unable to init AOF_CPA.");
     return(0);
   }
-  m_debug4 = "Basic CPA AvoidCollision AOF initialized OK";
-
 
   OF_Reflector reflector(&aof, 1);
 
@@ -1214,10 +1265,10 @@ IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
     
     vector<IvPBox> regions;
     regions = refinery.getRefineRegions();
-	
-    for(unsigned int i=0; i<regions.size(); i++) 
+	 
+    for(unsigned int i=0; i<regions.size(); i++)
       reflector.setParam("plateau_region", regions[i]);
-
+    
     if(m_check_plateaus) {
       reflector.setParam("pcheck_thresh", m_pcheck_thresh);
       
@@ -1244,11 +1295,11 @@ IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
 
 
 //-----------------------------------------------------------
-// Procedure: getRelevance
+// Procedure: getRelevance()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-double BHV_AvdColregsV19::getRelevance() const
+double BHV_AvdColregsV26::getRelevance() const
 {
   // First declare the ange of relevance values to be calc'ed
   double min_dist_relevance = 0.0;
@@ -1304,7 +1355,7 @@ double BHV_AvdColregsV19::getRelevance() const
 //-----------------------------------------------------------
 // Procedure: resetAvoidModes
 
-bool BHV_AvdColregsV19::resetAvoidModes(string mode, string submode)
+bool BHV_AvdColregsV26::resetAvoidModes(string mode, string submode)
 {
   bool valid = true;
   if((mode != "headon") && (mode != "giveway") && (mode != "none") &&
@@ -1349,7 +1400,7 @@ bool BHV_AvdColregsV19::resetAvoidModes(string mode, string submode)
 //            cross its bow. Slowing down should only help widen the CPA.
 
 
-bool BHV_AvdColregsV19::findDecelerateSpeedRange(double& minv, double& maxv)
+bool BHV_AvdColregsV26::findDecelerateSpeedRange(double& minv, double& maxv)
 {
   // Part 0: initialize the results
   minv = 0;
@@ -1394,7 +1445,7 @@ bool BHV_AvdColregsV19::findDecelerateSpeedRange(double& minv, double& maxv)
 //      Note: The context is an ownship with a contact on a trajectory to
 //            cross ownship's stern. Slowing down should only help widen the CPA.
 
-bool BHV_AvdColregsV19::findAccelerateSpeedRange(double& minv, double& maxv)
+bool BHV_AvdColregsV26::findAccelerateSpeedRange(double& minv, double& maxv)
 {
   // Part 0: initialize the results
   minv = 0;
@@ -1434,7 +1485,7 @@ bool BHV_AvdColregsV19::findAccelerateSpeedRange(double& minv, double& maxv)
 //            as to whether the contact will giveway ahead or behind
 //            the standon vehicle.
 
-void BHV_AvdColregsV19::addHeading(double heading, double currtime)
+void BHV_AvdColregsV26::addHeading(double heading, double currtime)
 {
   m_cn_heading_val.push_back(heading);
   m_cn_heading_time.push_back(currtime);
@@ -1462,7 +1513,7 @@ void BHV_AvdColregsV19::addHeading(double heading, double currtime)
 //            guess as to whether the contact will giveway ahead or behind
 //            the standon vehicle.
 
-void BHV_AvdColregsV19::addRelBng(double rel_bng, double currtime)
+void BHV_AvdColregsV26::addRelBng(double rel_bng, double currtime)
 {
   m_cn_rel_bng_val.push_back(rel_bng);
   m_cn_rel_bng_time.push_back(currtime);
@@ -1487,7 +1538,7 @@ void BHV_AvdColregsV19::addRelBng(double rel_bng, double currtime)
 // Procedure: clearHeadings()
 //   Purpose: Clear the contact heading history.
 
-void BHV_AvdColregsV19::clearHeadings()
+void BHV_AvdColregsV26::clearHeadings()
 {
   m_cn_heading_val.clear();
   m_cn_heading_time.clear();
@@ -1497,7 +1548,7 @@ void BHV_AvdColregsV19::clearHeadings()
 // Procedure: clearRelBngs
 //   Purpose: Clear the contact relative bearing history.
 
-void BHV_AvdColregsV19::clearRelBngs()
+void BHV_AvdColregsV26::clearRelBngs()
 {
   m_cn_rel_bng_val.clear();
   m_cn_rel_bng_time.clear();
@@ -1507,7 +1558,7 @@ void BHV_AvdColregsV19::clearRelBngs()
 // Procedure: getHeadingRate()
 //   Purpose: Determine which way the contact is turning, if it is.
 
-bool BHV_AvdColregsV19::getHeadingRate(double& result, double min_secs)
+bool BHV_AvdColregsV26::getHeadingRate(double& result, double min_secs)
 {
   result = 0;
   if(m_cn_heading_val.size() <= 1)
@@ -1543,7 +1594,7 @@ bool BHV_AvdColregsV19::getHeadingRate(double& result, double min_secs)
 // Procedure: getRelBngRate()
 //   Purpose: Determine the relative bearing rate
 
-bool BHV_AvdColregsV19::getRelBngRate(double& result)
+bool BHV_AvdColregsV26::getRelBngRate(double& result)
 {
   result = 0;
   if(m_cn_rel_bng_val.size() <= 1)
@@ -1573,27 +1624,59 @@ bool BHV_AvdColregsV19::getRelBngRate(double& result)
 }
 
 //-----------------------------------------------------------
-// Procedure: postStatusInfo
+// Procedure: setAvoidModeIndex()
 
-void BHV_AvdColregsV19::postStatusInfo()
+void BHV_AvdColregsV26::setAvoidModeIndex()
+{
+  m_avoid_mode_ix = 0;
+  if(m_avoid_mode == "complete")
+    m_avoid_mode_ix = 3;
+  else if(m_avoid_mode == "headon")
+    m_avoid_mode_ix = 10;
+  else if(m_avoid_mode == "giveway") {
+    if(m_avoid_submode == "stern")
+      m_avoid_mode_ix = 20;
+    else if(m_avoid_submode == "bow")
+      m_avoid_mode_ix = 22;
+    else if(m_avoid_submode == "bow_must")
+      m_avoid_mode_ix = 25;
+  }
+  else if(m_avoid_mode == "standon") {
+    if(m_avoid_submode == "stern")
+      m_avoid_mode_ix = 30;
+    if(m_avoid_submode == "inextremis")
+      m_avoid_mode_ix = 31;
+    else if(m_avoid_submode == "bow")
+      m_avoid_mode_ix = 32;
+    else if(m_avoid_submode == "unsure_stern")
+      m_avoid_mode_ix = 34;
+    else if(m_avoid_submode == "unsure_bow")
+      m_avoid_mode_ix = 36;
+    else if(m_avoid_submode == "unsure")
+      m_avoid_mode_ix = 38;
+    else if(m_avoid_submode == "neither")
+      m_avoid_mode_ix = 39;
+  }
+  else if(m_avoid_mode == "overtaking") {
+    if(m_avoid_submode == "port")
+      m_avoid_mode_ix = 43;
+    else
+      m_avoid_mode_ix = 47;
+  }
+  else if(m_avoid_mode == "cpa") {
+    m_avoid_mode_ix = 50;
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: postStatusInfo()
+
+void BHV_AvdColregsV26::postStatusInfo()
 {
   // Part 1: Post the seglist if relevant
   string full_mode = m_avoid_mode;
   if(m_avoid_submode != "none")
     full_mode += ":" + m_avoid_submode;
-  
-  if((m_avoid_mode != "none") && (m_avoid_mode != "complete")) {
-    m_bearing_segl.clear();
-    m_bearing_segl.set_label(m_us_name + m_descriptor);
-    m_bearing_segl.add_vertex(m_osx, m_osy);
-    m_bearing_segl.add_vertex(m_cnx, m_cny);
-    m_bearing_segl.set_active(true);
-    m_bearing_segl.set_msg(full_mode);
-  }
-  else
-    m_bearing_segl.set_active(false);
-
-  postMessage("VIEW_SEGLIST", m_bearing_segl.get_spec());
 
   // Part 2: Post contact specific, useful for debugging but
   // typically not appropriate when there are many contacts
@@ -1606,45 +1689,6 @@ void BHV_AvdColregsV19::postStatusInfo()
   postMessage("CN_PORT_OF_OS_" + suffix, m_cnos.cn_port_of_os());
   postMessage("CN_CROSSED_OS_PORT_STAR" + suffix, m_cn_crossed_os_port_star);
   
-  unsigned int avoid_mode_ix = 0;
-  if(m_avoid_mode == "complete")
-    avoid_mode_ix = 3;
-  if(m_avoid_mode == "headon")
-    avoid_mode_ix = 10;
-  else if(m_avoid_mode == "giveway") {
-    if(m_avoid_submode == "stern")
-      avoid_mode_ix = 20;
-    else if(m_avoid_submode == "bow")
-      avoid_mode_ix = 22;
-    else if(m_avoid_submode == "bow_must")
-      avoid_mode_ix = 25;
-  }
-  else if(m_avoid_mode == "standon") {
-    if(m_avoid_submode == "stern")
-      avoid_mode_ix = 30;
-    if(m_avoid_submode == "inextremis")
-      avoid_mode_ix = 31;
-    else if(m_avoid_submode == "bow")
-      avoid_mode_ix = 32;
-    else if(m_avoid_submode == "unsure_stern")
-      avoid_mode_ix = 34;
-    else if(m_avoid_submode == "unsure_bow")
-      avoid_mode_ix = 36;
-    else if(m_avoid_submode == "unsure")
-      avoid_mode_ix = 38;
-    else if(m_avoid_submode == "neither")
-      avoid_mode_ix = 39;
-  }
-  else if(m_avoid_mode == "overtaking") {
-    if(m_avoid_submode == "port")
-      avoid_mode_ix = 43;
-    else
-      avoid_mode_ix = 47;
-  }
-  else if(m_avoid_mode == "cpa") {
-    avoid_mode_ix = 50;
-  }
-
   postMessage("AVDCOL_RANGE" + suffix, m_contact_range);
   postMessage("COLREGS_AVOID_MODE" + suffix, full_mode);
   
@@ -1652,12 +1696,13 @@ void BHV_AvdColregsV19::postStatusInfo()
 
   postMessage("COLREGS_SUMMARY" + suffix, summary);
 
-  postRepeatableMessage("COLREGS_AVOID_IX"  + suffix, avoid_mode_ix);
+  postRepeatableMessage("COLREGS_AVOID_IX"  + suffix, m_avoid_mode_ix);
   postRepeatableMessage("COLREGS_AVOID_PWT" + suffix, m_actual_pwt);
 
   postMessage("COLREGS_CONTACT_HDG" + suffix, m_cnh);
 
-  return; // shut off the rest fornow
+  return; // shut off the rest for now
+
 #if 0
   double heading_rate  = 0;
   bool   heading_history_valid = getHeadingRate(heading_rate);
@@ -1675,6 +1720,24 @@ void BHV_AvdColregsV19::postStatusInfo()
 }
 
 
+//-----------------------------------------------------------
+// Procedure: expandMacros()
 
+string BHV_AvdColregsV26::expandMacros(string sdata)
+{
+  // =======================================================
+  // First expand the macros defined at the superclass level
+  // =======================================================
+  sdata = IvPContactBehavior::expandMacros(sdata);
 
+  // =======================================================
+  // Expand configuration parameters
+  // =======================================================
+  sdata = macroExpand(sdata, "AVD_MODE", m_avoid_mode);
+  sdata = macroExpand(sdata, "AVD_SMODE", m_avoid_submode);
+  sdata = macroExpand(sdata, "APWT", m_actual_pwt);
+  sdata = macroExpand(sdata, "MODE_ID", m_avoid_mode_ix);
+  sdata = macroExpand(sdata, "FULL_MODE", m_avoid_mode + ":" + m_avoid_submode);
 
+  return(sdata);
+}

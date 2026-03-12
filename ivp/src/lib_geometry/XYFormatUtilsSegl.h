@@ -73,7 +73,7 @@ XYSegList stringZigZag2SegList(std::string);
 XYSegList stringLawnmower2SegList(std::string);
 
 //---------------------------------------------------------------
-// #5 Create a seglist given a set of points for a lawnmower pattern
+// #5 Create a seglist given a set of points for a bowtie  pattern
 // Example: "format=bowtie, x=0, y=8, height=100, wid1=10, wid2=25, 
 //          wid3=30, startx=-40, starty=80"
 

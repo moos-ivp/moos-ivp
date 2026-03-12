@@ -55,7 +55,7 @@ public:
   void   setBase(double);
   void   applyTranslation(double x, double y);
   void   applyTranslation();
-  void   applyPolar(double, int);
+  void   applyPolar(double, int, double pad=0);
   
   // Geting QuadSet Information
   unsigned int size() const                  {return(m_quads.size());}

@@ -1,0 +1,39 @@
+
+
+
+ +------------------+
+ | file.alog        +
+ |                  |
+ | NODE_REPORT      |        +------------------+
+ |                  |----->  | VISUALS.klog     | 
+ |                  |Split   |                  |
+ +------------------+        | VIEW_VESSSEL     |
+                             |                  |
+			     +------------------+
+			       
+
+ alogview
+ main()
+   LogViewLauncher
+     hasa: ALogDataBroker m_dbroker
+     for all alog files: 
+         m_dbroker.addALogFile(alogfile)
+     
+ REPLAY_GUI
+     hasa: ALogDataBroker m_dbroker
+
+ NavPlotViewer
+     hasa: ALogDataBroker m_dbroker
+     hasa: vector<VPlugPlot> m_vplug_plot (one per vehicle)
+
+     drawVPlugPlot(ix) ix per vehicle
+
+ VPlugPlot
+
+
+Populator_VPlugPlots
+
+
+VPlugPlot
+
+VPlug_GeoShapes

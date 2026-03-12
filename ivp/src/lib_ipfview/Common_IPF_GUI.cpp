@@ -41,7 +41,8 @@ Common_IPF_GUI::Common_IPF_GUI(int wid, int hgt, const char *label)
   m_start_hgt = hgt;
   m_start_wid = wid;
 
-  m_viewer = 0;
+  m_viewer  = 0;
+  m_viewer2 = 0;
 }
 
 //--------------------------------------------------------------
@@ -49,9 +50,22 @@ Common_IPF_GUI::Common_IPF_GUI(int wid, int hgt, const char *label)
 
 bool Common_IPF_GUI::setViewerParam(string param, string value)
 {
-  if(m_viewer)
-    return(m_viewer->setParam(param, value));
-  return(false);
+  // Return false if the param/value pair is invalid for
+  // either viewer. Return false if both viewers are null.
+  bool ok1 = false;
+  bool ok2 = false;
+  if(m_viewer) {
+    ok1 = m_viewer->setParam(param, value);
+    if(!ok1)
+      return(false);
+  }
+  if(m_viewer2) {
+    ok2 = m_viewer2->setParam(param, value);
+    if(!ok2)
+      return(false);
+  }
+    
+  return(ok1 || ok2);
 }
 
 //--------------------------------------------------------------
@@ -59,9 +73,44 @@ bool Common_IPF_GUI::setViewerParam(string param, string value)
 
 bool Common_IPF_GUI::setViewerParam(string param, double value)
 {
-  if(m_viewer)
-    return(m_viewer->setParam(param, value));
-  return(true);
+  // Return false if the param/value pair is invalid for
+  // either viewer. Return false if both viewers are null.
+  bool ok1 = false;
+  bool ok2 = false;
+  if(m_viewer) {
+    ok1 = m_viewer->setParam(param, value);
+  if(!ok1)
+      return(false);
+  }
+  if(m_viewer2) {
+    ok2 = m_viewer2->setParam(param, value);
+    if(!ok2)
+      return(false);
+  }
+  
+  return(ok1 || ok2);
+}
+
+//--------------------------------------------------------------
+// Procedure: viewerRedraw()
+
+void Common_IPF_GUI::viewerRedraw()
+{
+  if(m_viewer) 
+    m_viewer->redraw();
+  if(m_viewer2) 
+    m_viewer2->redraw();
+}
+
+//--------------------------------------------------------------
+// Procedure: viewerColorMap()
+
+void Common_IPF_GUI::viewerColorMap(string str)
+{
+  if(m_viewer) 
+    m_viewer->setColorMap(str);
+  if(m_viewer2) 
+    m_viewer2->setColorMap(str);
 }
 
 //--------------------------------------------------------------
@@ -174,6 +223,8 @@ void Common_IPF_GUI::augmentMenu()
 		 (Fl_Callback*)Common_IPF_GUI::cb_ColorBack, (void*)1, 0);
   m_menubar->add("Color-Map/Mac-Beige", 'b',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ColorBack,(void*)2, 0);
+  m_menubar->add("Color-Map/DarkBlue", 'U',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ColorBack,(void*)3, 0);
 }
 
 //----------------------------------------------------------------
@@ -211,6 +262,7 @@ void Common_IPF_GUI::setMenuColors()
   setMenuItemColor("Color-Map/Back-White");
   setMenuItemColor("Color-Map/Back-Blue");
   setMenuItemColor("Color-Map/Mac-Beige");
+  setMenuItemColor("Color-Map/DarkBlue");
   setMenuItemColor("Ship/DrawShip Toggle");
   setMenuItemColor("Ship/ShipScale--");
   setMenuItemColor("Ship/ShipScale++");
@@ -264,9 +316,9 @@ int Common_IPF_GUI::handle(int event)
 //----------------------------------------- Zoom In
 inline void Common_IPF_GUI::cb_Zoom_i(int val) {
   if(val < 0)
-    m_viewer->setParam("mod_zoom", 1.25);
+    setViewerParam("mod_zoom", 1.06666);
   if(val > 0)
-    m_viewer->setParam("mod_zoom", 0.80);
+    setViewerParam("mod_zoom", 0.9375);
 }
 void Common_IPF_GUI::cb_Zoom(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
@@ -275,13 +327,13 @@ void Common_IPF_GUI::cb_Zoom(Fl_Widget* o, int v) {
 //----------------------------------------- Reset
 inline void Common_IPF_GUI::cb_Reset_i(int i) {
   if(i==1)
-    m_viewer->setParam("reset_view", "1");
+    setViewerParam("reset_view", "1");
   else if(i==2)
-    m_viewer->setParam("reset_view", "2");
+    setViewerParam("reset_view", "2");
   else if(i==3)
-    m_viewer->setParam("reset_view", "3");
+    setViewerParam("reset_view", "3");
   else if(i==4)
-    m_viewer->setParam("reset_view", "4");
+    setViewerParam("reset_view", "4");
 }
 void Common_IPF_GUI::cb_Reset(Fl_Widget* o, int i) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_Reset_i(i);
@@ -290,7 +342,7 @@ void Common_IPF_GUI::cb_Reset(Fl_Widget* o, int i) {
 
 //----------------------------------------- Rotate  X
 inline void Common_IPF_GUI::cb_RotateX_i(int amt) {
-  m_viewer->setParam("mod_x_rotation", (double)(amt));
+  setViewerParam("mod_x_rotation", (double)(amt));
 }
 void Common_IPF_GUI::cb_RotateX(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
@@ -299,7 +351,7 @@ void Common_IPF_GUI::cb_RotateX(Fl_Widget* o, int v) {
 //----------------------------------------- Rotate  Z
 inline void Common_IPF_GUI::cb_RotateZ_i(int amt) {
   //cout << "In Common_IPF_GUI::cb_RotateZ_i" << endl;
-  m_viewer->setParam("mod_z_rotation", (double)(amt));
+  setViewerParam("mod_z_rotation", (double)(amt));
 }
 void Common_IPF_GUI::cb_RotateZ(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
@@ -307,7 +359,7 @@ void Common_IPF_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Scale
 inline void Common_IPF_GUI::cb_ModScale_i(int amt) {
-  m_viewer->setParam("mod_scale", (((double)amt)/100.0));
+  setViewerParam("mod_scale", (((double)amt)/100.0));
 }
 void Common_IPF_GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
@@ -315,7 +367,7 @@ void Common_IPF_GUI::cb_ModScale(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Ship Scale
 inline void Common_IPF_GUI::cb_ModShipScale_i(int amt) {
-  m_viewer->setParam("mod_ship_scale", (((double)amt)/100.0));
+  setViewerParam("mod_ship_scale", (((double)amt)/100.0));
 }
 void Common_IPF_GUI::cb_ModShipScale(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModShipScale_i(v);
@@ -323,7 +375,7 @@ void Common_IPF_GUI::cb_ModShipScale(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod BaseIPF
 inline void Common_IPF_GUI::cb_ModBaseIPF_i(int amt) {
-  m_viewer->setParam("mod_base_ipf", amt);
+  setViewerParam("mod_base_ipf", amt);
 }
 
 void Common_IPF_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
@@ -333,10 +385,10 @@ void Common_IPF_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
 //----------------------------------------- Mod FrameBaseIPF
 inline void Common_IPF_GUI::cb_ModFrameBaseIPF_i(int amt) {
   if(amt == 99)
-    m_viewer->setParam("toggle_frame_on_top", amt);    
+    setViewerParam("toggle_frame_on_top", amt);    
   else {
-    m_viewer->setParam("mod_base_ipf", amt);
-    m_viewer->setParam("mod_base_frame", amt);
+    setViewerParam("mod_base_ipf", amt);
+    setViewerParam("mod_base_frame", amt);
   }
 }
 
@@ -346,7 +398,7 @@ void Common_IPF_GUI::cb_ModFrameBaseIPF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Frame
 inline void Common_IPF_GUI::cb_ToggleFrame_i() {
-  m_viewer->setParam("draw_frame", "toggle");
+  setViewerParam("draw_frame", "toggle");
 }
 void Common_IPF_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
@@ -354,8 +406,8 @@ void Common_IPF_GUI::cb_ToggleFrame(Fl_Widget* o) {
 
 //----------------------------------------- Toggle Draw IPF
 inline void Common_IPF_GUI::cb_ToggleIPF_i() {
-  m_viewer->setParam("draw_ipf", "toggle");
-  m_viewer->redraw();
+  setViewerParam("draw_ipf", "toggle");
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_ToggleIPF(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleIPF_i();
@@ -363,8 +415,8 @@ void Common_IPF_GUI::cb_ToggleIPF(Fl_Widget* o) {
 
 //----------------------------------------- Toggle Draw Ship
 inline void Common_IPF_GUI::cb_ToggleDrawShip_i() {
-  m_viewer->setParam("draw_ship", "toggle");
-  m_viewer->redraw();
+  setViewerParam("draw_ship", "toggle");
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_ToggleDrawShip(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawShip_i();
@@ -372,8 +424,8 @@ void Common_IPF_GUI::cb_ToggleDrawShip(Fl_Widget* o) {
 
 //----------------------------------------- Toggle Piece Lines
 inline void Common_IPF_GUI::cb_TogglePieceLines_i() {
-  m_viewer->setParam("draw_pclines", "toggle");
-  m_viewer->redraw();
+  setViewerParam("draw_pclines", "toggle");
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_TogglePieceLines(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_TogglePieceLines_i();
@@ -381,8 +433,8 @@ void Common_IPF_GUI::cb_TogglePieceLines(Fl_Widget* o) {
 
 //----------------------------------------- Toggle Draw Pieces
 inline void Common_IPF_GUI::cb_ToggleDrawPcs_i() {
-  m_viewer->setParam("draw_pieces", "toggle");
-  m_viewer->redraw();
+  setViewerParam("draw_pieces", "toggle");
+  viewerRedraw();
   updateXY();
 }
 void Common_IPF_GUI::cb_ToggleDrawPcs(Fl_Widget* o) {
@@ -391,12 +443,9 @@ void Common_IPF_GUI::cb_ToggleDrawPcs(Fl_Widget* o) {
 
 //----------------------------------------- Toggle Refinery
 inline void Common_IPF_GUI::cb_ToggleRefinery_i() {
-  cout << "JJJ: " << m_viewer->getUseRefinery() << endl;
-  m_viewer->setParam("use_refinery", "toggle");
-  m_viewer->redraw();
+  setViewerParam("use_refinery", "toggle");
+  viewerRedraw();
   updateXY();
-  cout << "PPP: " << m_viewer->getUseRefinery() << endl;
-
 }
 void Common_IPF_GUI::cb_ToggleRefinery(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleRefinery_i();
@@ -404,7 +453,7 @@ void Common_IPF_GUI::cb_ToggleRefinery(Fl_Widget* o) {
 
 //----------------------------------------- Frame Height
 inline void Common_IPF_GUI::cb_FrameHgt_i(int amt) {
-  m_viewer->setParam("mod_frame_height", (double)amt);
+  setViewerParam("mod_frame_height", (double)amt);
 }
 void Common_IPF_GUI::cb_FrameHgt(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_FrameHgt_i(v);
@@ -413,9 +462,9 @@ void Common_IPF_GUI::cb_FrameHgt(Fl_Widget* o, int v) {
 //----------------------------------------- FrameShade
 inline void Common_IPF_GUI::cb_FrameShade_i(int amt) {
   if(amt < 0)
-    m_viewer->setParam("frame_color", "lighter");
+    setViewerParam("frame_color", "lighter");
   else
-    m_viewer->setParam("frame_color", "darker");
+    setViewerParam("frame_color", "darker");
 }
 void Common_IPF_GUI::cb_FrameShade(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_FrameShade_i(v);
@@ -428,8 +477,8 @@ inline void Common_IPF_GUI::cb_ColorMap_i(int index) {
     str = "copper";
   else if(index == 3)
     str = "bone";
-  m_viewer->setColorMap(str);
-  m_viewer->redraw();
+  viewerColorMap(str);
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_ColorMap(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
@@ -438,14 +487,16 @@ void Common_IPF_GUI::cb_ColorMap(Fl_Widget* o, int v) {
 //----------------------------------------- ColorBack
 inline void Common_IPF_GUI::cb_ColorBack_i(int index) {
   if(index == 0)
-    m_viewer->setParam("clear_color", "white");
+    setViewerParam("clear_color", "white");
   else if(index == 1)  // PurplishBlue
-    m_viewer->setParam("clear_color", "0.285,0.242,0.469");
-  else if(index == 2)  // PurplishBlue
-    m_viewer->setParam("clear_color", "macbeige");
+    setViewerParam("clear_color", "0.285,0.242,0.469");
+  else if(index == 2)  // Beige
+    setViewerParam("clear_color", "macbeige");
+  else if(index == 3)  // DarkBlue
+    setViewerParam("clear_color", "0.2, 0.2, 0.3");
   else
     return;
-  m_viewer->redraw();
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_ColorBack(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ColorBack_i(v);
@@ -454,10 +505,10 @@ void Common_IPF_GUI::cb_ColorBack(Fl_Widget* o, int v) {
 //----------------------------------------- cb_Polar
 inline void Common_IPF_GUI::cb_Polar_i(int index) {
   if((index >= 0) && (index <=2))
-    m_viewer->setParam("polar", index);
+    setViewerParam("polar", index);
   else
     return;
-  m_viewer->redraw();
+  viewerRedraw();
 }
 void Common_IPF_GUI::cb_Polar(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_Polar_i(v);

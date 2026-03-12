@@ -25,12 +25,12 @@
 #define AOF_R17_HEADER
 
 #include <string> 
-#include "AOF_Contact.h"
+#include "AOF_ContactX.h"
 
 
-class AOF_R17: public AOF_Contact {
+class AOF_R17: public AOF_ContactX {
 public:
-  AOF_R17(IvPDomain);
+  AOF_R17(IvPDomain, CPXEngine*);
   ~AOF_R17() {};
 
  public: // virtual functions   
@@ -45,14 +45,6 @@ public:
   double metricCPA(double) const;
 
  private:
-  int    m_crs_ix;  // Index of "course" variable in IvPDomain
-  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
-
-  double m_osh;
-  double m_osv;
-  bool   m_osh_set;
-  bool   m_osv_set;
-
   // used to store original stand-on course/speed prior to 17.a.ii actions
   double m_original_course; 
 

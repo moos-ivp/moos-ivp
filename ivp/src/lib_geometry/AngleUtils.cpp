@@ -30,7 +30,7 @@
 #include "GeomUtils.h"
 
 #ifndef M_PI
-#define M_PI 3.1415926
+#define M_PI 3.14159265359
 #endif
 
 //-------------------------------------------------------------
@@ -106,6 +106,31 @@ bool threePointTurnLeft(double x0, double y0,
   double cross_product = threePointXProduct(x0,y0, x1,y1, x2,y2);
 
   if(cross_product < -0.01)
+    return(true);
+
+  return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: threePointTurnRight
+//                                                      
+//        x2,y2  o-<<----------o (x1,y1)                                    
+//                            /                                       
+//                          /                                         
+//                        /                                           
+//                      /                                            
+//                    /                                               
+//          (x0,y0) o                                                
+//                                                      
+//      Note: From Cormen, Leiserson, Rivest and Stein:
+
+bool threePointTurnRight(double x0, double y0, 
+			 double x1, double y1,
+			 double x2, double y2)
+{ 
+  double cross_product = threePointXProduct(x0,y0, x1,y1, x2,y2);
+
+  if(cross_product > 0.01)
     return(true);
 
   return(false);
@@ -312,20 +337,19 @@ double speedInHeading(double osh, double osv, double heading)
 
 
 //---------------------------------------------------------------
-// Procedure: angle180
+// Procedure: angle180()
 //   Purpose: Convert angle to be strictly in the rang (-180, 180].
 
 double angle180(double degval)
 {
-  while(degval > 180)
+  degval = angle360(degval);  
+  if(degval > 180)
     degval -= 360.0;
-  while(degval <= -180)
-    degval += 360.0;
   return(degval);
 }
 
 //---------------------------------------------------------------
-// Procedure: angle360
+// Procedure: angle360()
 //   Purpose: Convert angle to be strictly in the rang [0, 360).
 
 double angle360(double degval)
@@ -812,29 +836,6 @@ double headingAvg(double h1, double h2)
 }
 
 //----------------------------------------------------------------
-// Procedure: portTurn()
-//   Purpose: Given a current ownship heading and prospective new
-//            heading, determine if this would result in a port or
-//            starboard turn. Presuming a vessel would turn port
-//            for delta headings in the range of [0,180) and
-//            starboard turns in the range of (0,180]. 
-
-bool portTurn(double osh, double hdg)
-{
-  osh = angle360(osh);
-  hdg = angle360(hdg);
-  if(hdg > osh) {
-    if((hdg - osh) < 180)
-      return(false);
-  }
-  else {
-    if((osh - hdg) > 180)
-      return(false);
-  }
-  return(true);
-}
-
-//----------------------------------------------------------------
 // Procedure: ptPortOfOwnship()
 //   Purpose: Given ownship position and heading, and given point
 //            Determine if the point is on the port side.
@@ -847,7 +848,7 @@ bool ptPortOfOwnship(double osx, double osy, double osh,
     return(false);
 
   double rel_bng = relBearing(osx, osy, osh, ptx, pty);
-  if((rel_bng > 180) && (rel_bng < 360))
+  if((rel_bng >= 180) && (rel_bng <= 360))
     return(true);
   
   return(false);
@@ -866,7 +867,7 @@ bool ptStarOfOwnship(double osx, double osy, double osh,
     return(false);
 
   double rel_bng = relBearing(osx, osy, osh, ptx, pty);
-  if((rel_bng > 0) && (rel_bng < 180))
+  if((rel_bng >= 0) && (rel_bng <= 180))
     return(true);
   
   return(false);
@@ -917,4 +918,87 @@ bool polyStarOfOwnship(double osx, double osy, double osh,
   return(true);
 }
 
+
+//----------------------------------------------------------------
+// Procedure: ptForeOfOwnship()
+//   Purpose: Given ownship position and heading, and given point
+//            Determine if the point is fore of ownship beam.
+
+bool ptForeOfOwnship(double osx, double osy, double osh,
+		     double ptx, double pty)
+{
+  // Sanity check
+  if((osx == ptx) && (osy == pty))
+    return(false);
+
+  double rel_bng = relBearing(osx, osy, osh, ptx, pty);
+  if((rel_bng <= 90) || (rel_bng >= 270))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: ptAftOfOwnship()
+//   Purpose: Given ownship position and heading, and given point
+//            Determine if the point is aft of ownship beam.
+
+bool ptAftOfOwnship(double osx, double osy, double osh,
+		     double ptx, double pty)
+{
+  // Sanity check
+  if((osx == ptx) && (osy == pty))
+    return(false);
+
+  double rel_bng = relBearing(osx, osy, osh, ptx, pty);
+  if((rel_bng >= 90) && (rel_bng <= 270))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: portTurn()
+//   Purpose: Given current ownship hdg and prospective new hdg,
+//            determine if this would result in a port turn.
+//      Note: Presuming a vessel would turn port for delta hdgs in
+//            the range of (180, 360) and starboard turns in the
+//            range of (0,180].
+//      Note: A delta_hdg of 0 is neither a port or starboard turn.
+//
+//            portTurn()=true  iff 180 < delta
+//   
+//  Examples:     
+//          
+//            delta = 0    portTurn()=false
+//            delta = 5    portTurn()=false
+//            delta = 180  portTurn()=false
+//            delta = 181  portTurn()=true
+//            delta = 359  portTurn()=true
+//            delta = 360=0  portTurn()=false
+//            delta = -10=350  portTurn()=false
+
+bool portTurn(double osh, double new_hdg)
+{
+  double delta = angle360(new_hdg - osh);
+  if(delta > 180)
+    return(true);
+  return(false);
+}
+//----------------------------------------------------------------
+// Procedure: starTurn()
+//   Purpose: Given current ownship hdg and prospective new hdg,
+//            determine if this would result in a starboard turn.
+//      Note: Presuming a vessel would turn port for delta hdgs in
+//            the range of (180, 360) and starboard turns in the
+//            range of (0,180].
+//      Note: A delta of 0 is neither a port or starboard turn.
+
+bool starTurn(double osh, double new_hdg)
+{
+  double delta = angle360(new_hdg - osh);
+  if((delta > 0) && (delta < 180))
+    return(true);
+  return(false);
+}
 

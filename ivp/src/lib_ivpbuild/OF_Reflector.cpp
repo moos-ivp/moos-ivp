@@ -513,7 +513,7 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
 }
 
 //-------------------------------------------------------------
-// Procedure: create
+// Procedure: create()
 
 int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 {

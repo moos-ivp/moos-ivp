@@ -253,7 +253,10 @@ string BHV_AvoidCollision::getInfo(string str)
 IvPFunction *BHV_AvoidCollision::onRunState() 
 {
   m_total_evals = 0;
-  if(!platformUpdateOK()) {
+
+  //  if(!platformUpdateOK()) {
+
+  if(!IvPContactBehavior::updatePlatformInfo()) {
     postRange();
     return(0);
   }
@@ -277,9 +280,12 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   }
   
   m_relevance = getRelevance();
-  if(m_relevance <= 0)
+  if(m_relevance <= 0) {
     return(0);
+  }
 
+  m_cpa_engine_pm.setPlatModel(m_plat_model);
+  
   IvPFunction *ipf = 0;
   if(m_collision_depth > 0)
     ipf = getAvoidDepthIPF();
@@ -297,7 +303,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 }
 
 
-
 //-----------------------------------------------------------
 // Procedure: getAvoidIPF()
 
@@ -310,10 +315,10 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
   
-  AOF_AvoidCollision aof(m_domain);
-  aof.setCPAEngine(m_cpa_engine);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
+  AOF_AvoidCollision aof(m_domain, m_cpa_engine);
+  //aof.setCPAEngine(m_cpa_engine);
+  //aof.setOwnshipParams(m_osx, m_osy);
+  //aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
   aof.setParam("tol", m_time_on_leg);
   aof.setParam("collision_distance", min_util_cpa_dist);
   aof.setParam("all_clear_distance", m_max_util_cpa_dist);
@@ -321,6 +326,7 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
   
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
+    cout << "Unable to init AOF_AvoidCollision." << endl;
     return(0);
   }    
   
@@ -334,7 +340,7 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
     RefineryCPA refinery;
     refinery.init(m_osx, m_osy, m_cnx, m_cny, m_cnh, m_cnv, m_time_on_leg,
 		  m_min_util_cpa_dist, m_max_util_cpa_dist, m_domain,
-		  &m_cpa_engine);
+		  m_cpa_engine);
     refinery.setVerbose(m_verbose);
     
     vector<IvPBox> regions;
@@ -376,6 +382,7 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
   // ===========================================================
   // Build the IvP Function
   // ===========================================================
+  reflector.setVerbose(true);
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractIvPFunction();
 

@@ -34,6 +34,8 @@ double  angleFromThreePoints(double x1, double y1, double x2, double y2,
 			     double x3, double y3);
 bool    threePointTurnLeft(double x0, double y0, double x1, double y1,
 			   double x2, double y2);
+bool    threePointTurnRight(double x0, double y0, double x1, double y1,
+			   double x2, double y2);
 double  threePointXProduct(double x0, double y0, double x1, double y1,
 			   double x2, double y2);
 
@@ -79,8 +81,6 @@ double  turnGap(double osx, double osy, double osh, double tradius,
 double  headingAvg(std::list<double>);
 double  headingAvg(double, double);
 
-bool    portTurn(double osh, double new_hdg);
-
 // After 22.8
 bool    ptPortOfOwnship(double osx, double osy, double osh,
 			double ptx, double pty);
@@ -90,7 +90,18 @@ bool    polyPortOfOwnship(double osx, double osy, double osh,
 			  XYPolygon poly);
 bool    polyStarOfOwnship(double osx, double osy, double osh,
 			  XYPolygon poly);
-			
+
+// After 24.8
+bool    ptForeOfOwnship(double osx, double osy, double osh,
+			double ptx, double pty);
+bool    ptAftOfOwnship(double osx, double osy, double osh,
+			double ptx, double pty);
+
+bool    portTurn(double osh, double new_hdg);
+bool    starTurn(double osh, double new_hdg);
+
+
+
 #endif
 
 

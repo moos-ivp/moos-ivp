@@ -769,13 +769,13 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     double pwt = 0;
     int    pcs = 0;
 
-    // Added Jan 29th, 2022 run flags that are posted on each
-    // iteration of the helm in the run state, not just when
-    // transitioning to run state.
-    bhv->postFlags("runxflags", true); // true means    
-    
-    if((old_activity_state == "idle") || (old_activity_state == ""))
-      bhv->postFlags("runflags", true); // true means repeatable
+
+    // Feb 2426 moved to below, after onRunState()
+
+    // bhv->postFlags("runxflags", true); // true means repeatable
+    // if((old_activity_state == "idle") || (old_activity_state == ""))
+    //   bhv->postFlags("runflags", true); // true means repeatable
+
     bhv->postDurationStatus();
     if(old_activity_state == "idle")
       bhv->onIdleToRunState();
@@ -788,6 +788,18 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     if(need_to_run)
       ipf = bhv->onRunState();
 
+    // Feb2426: moved posting runflags until *after* onRunState() so
+    //          macros referencing values that get set in onRunState()
+    //          have a chance to be set
+    if((old_activity_state == "idle") || (old_activity_state == "")) {
+      bhv->postFlags("runflags", true); // true means repeatable
+    }
+    // Added Jan 29th, 2022 run flags that are posted on each
+    // iteration of the helm in the run state, not just when
+    // transitioning to run state.
+    bhv->postFlags("runxflags", true); // true means repeatable
+    
+    
     // Step 2: If IvP function contains NaN components, report and abort
     if(ipf && !ipf->freeOfNan()) {
       bhv->postEMessage("NaN detected in IvP Function");

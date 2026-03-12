@@ -24,11 +24,11 @@
 #ifndef AOF_R16_HEADER
 #define AOF_R16_HEADER
 
-#include "AOF_Contact.h"
+#include "AOF_ContactX.h"
 
-class AOF_R16: public AOF_Contact {
+class AOF_R16: public AOF_ContactX {
 public:
-  AOF_R16(IvPDomain);
+  AOF_R16(IvPDomain, CPXEngine*);
   ~AOF_R16() {};
 
  public: // virtual functions   
@@ -44,19 +44,12 @@ public:
   double metricCRX(double, double, double) const;
 
  private:
-  int    m_crs_ix;          // Index of "course" variable in IvPDomain
-  int    m_spd_ix;          // Index of "speed" variable in IvPDomain 
   bool   m_pass_to_stern;
   bool   m_pass_to_bow;
   bool   m_passing_side_set;
 
   double m_ok_cn_bow_cross_dist;
   
-  double m_osh;
-  bool   m_osh_set;
-  double m_osh_orig;
-  bool   m_osh_orig_set;
-
   bool   m_pts_port_turns_ok; // Added Oct1124
 };
 #endif

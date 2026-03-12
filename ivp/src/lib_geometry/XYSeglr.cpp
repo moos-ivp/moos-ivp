@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "XYSeglr.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -237,6 +238,85 @@ double XYSeglr::getVY(unsigned int ix) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getVertAngle()
+//   Purpose: For the vertex given by ix, return the angle to
+//            the next vertex. If ix is the final vertex, then
+//            the returned angle is simply the ray_angle.
+
+// 0 1 2 3 4 (size 5)
+// ix >= 5 error
+// ix + 1 == size() then last vertex
+
+double XYSeglr::getVertAngle(unsigned int ix) const
+{
+  // Sanity check - If index is out of range
+  if(ix >= m_vy.size())
+    return(0);
+
+  // Edge case, ix represents the last vertex
+  if((ix+1) >= m_vx.size())
+    return(m_ray_angle);
+
+  double x1 = m_vx[ix];
+  double y1 = m_vy[ix];
+  double x2 = m_vx[ix+1];
+  double y2 = m_vy[ix+1];
+
+  return(relAng(x1,y1, x2,y2));
+}
+
+//---------------------------------------------------------------
+// Procedure: getVertDist()
+//   Purpose: For the vertex given by ix, return the dist to
+//            the next vertex. If ix is the final vertex, then
+//            the returned distance is -1 (infinite)
+
+double XYSeglr::getVertDist(unsigned int ix) const
+{
+  // Sanity check - If index is out of range
+  if(ix >= m_vy.size())
+    return(0);
+
+  // Edge case, ix represents the last vertex
+  if((ix+1) >= m_vx.size())
+    return(-1);
+
+  double x1 = m_vx[ix];
+  double y1 = m_vy[ix];
+  double x2 = m_vx[ix+1];
+  double y2 = m_vy[ix+1];
+
+  return(hypot(x1-x2, y1-y2));
+}
+
+//---------------------------------------------------------------
+// Procedure: getVertPDist()
+//   Purpose: For the vertex given by ix, return the dist from the
+//            base vertex.
+
+double XYSeglr::getVertPDist(unsigned int ix) const
+{
+  // Sanity check - If index is out of range
+  if(ix >= m_vy.size())
+    return(0);
+
+  if(ix == 0)
+    return(0);
+
+  double pdist = 0;
+  for(unsigned int i=1; i<=ix; i++) {
+    double x1 = m_vx[ix-1];
+    double y1 = m_vy[ix-1];
+    double x2 = m_vx[ix];
+    double y2 = m_vy[ix];
+    double idist = hypot(x1-x2, y1-y2);
+    pdist += idist;
+  }
+
+  return(pdist);
+}
+
+//---------------------------------------------------------------
 // Procedure: translateTo()
 
 void XYSeglr::translateTo(double new_base_x, double new_base_y)
@@ -361,6 +441,28 @@ string XYSeglr::get_spec(int precision) const
   return(spec);
 }
 
+//---------------------------------------------------------------
+// Procedure: get_spec_terse()
+//   Purpose: Get a string specification of the seglr. We set 
+//            the vertex precision to be at the integer by default.
+
+string XYSeglr::get_spec_terse() const
+{
+  string spec = "pts[" + uintToString(m_vx.size()) + "]={";
+
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    string sx = doubleToStringX(m_vx[i], 1);
+    string sy = doubleToStringX(m_vy[i], 1);
+    string pair = sx + "," + sy;
+    if(i>0)
+      spec += ":";
+    spec += pair;
+  }
+  spec += "},ray=" + doubleToStringX(m_ray_angle, 1);
+
+  return(spec);
+}
+
 
 //-----------------------------------------------------------------
 // Procedure: string2Seglr
@@ -447,8 +549,3 @@ XYSeglr string2Seglr(const string& str)
   
   return(new_xy_seglr);
 }
-
-
-
-
-

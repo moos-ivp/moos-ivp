@@ -24,15 +24,14 @@
 #ifndef AOF_R14_HEADER
 #define AOF_R14_HEADER
 
-#include "AOF_Contact.h"
+#include "AOF_ContactX.h"
 
-class AOF_R14: public AOF_Contact {
+class AOF_R14: public AOF_ContactX {
  public:
-  AOF_R14(IvPDomain);
+  AOF_R14(IvPDomain, CPXEngine*);
   ~AOF_R14() {};
   
  public: // virtual functions   
-  //double evalPoint(const std::vector<double>&) const;
   double evalBox(const IvPBox*) const;   
   bool   setParam(const std::string&, double);
   bool   initialize();
@@ -45,9 +44,6 @@ class AOF_R14: public AOF_Contact {
   double metric3(double, double) const;
 
  protected:
-  int    m_crs_ix;  // Index of "course" variable in IvPDomain
-  int    m_spd_ix;  // Index of "speed" variable in IvPDomain 
-
   double m_initial_bng_rate;
 
 };

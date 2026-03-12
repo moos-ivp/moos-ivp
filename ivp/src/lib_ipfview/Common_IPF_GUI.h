@@ -43,6 +43,8 @@ public:
   bool setViewerParam(std::string, double);
   
  protected:
+  void viewerRedraw();
+  void viewerColorMap(std::string);
   void augmentMenu();
   void setMenuColors();
   void setMenuItemColor(std::string);
@@ -50,6 +52,8 @@ public:
   
  protected:
   Common_IPFViewer  *m_viewer;
+  Common_IPFViewer  *m_viewer2;
+
   Fl_Menu_Bar       *m_menubar;
 
   int m_start_hgt;

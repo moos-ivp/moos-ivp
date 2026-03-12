@@ -31,24 +31,16 @@ using namespace std;
 //----------------------------------------------------------
 // Constructor()
 
-AOF_R16::AOF_R16(IvPDomain gdomain) : AOF_Contact(gdomain)
+AOF_R16::AOF_R16(IvPDomain domain, CPXEngine* engine)
+  : AOF_ContactX(domain, engine)
 {
-  m_crs_ix = gdomain.getIndex("course");
-  m_spd_ix = gdomain.getIndex("speed");
-
   m_pass_to_stern    = false;
   m_pass_to_bow      = false;
   m_passing_side_set = false;
 
-  m_osh_orig = 90;
-  m_osh_orig_set = false;
-
   // If ok_cn_bow_cross_dist is zero, this means
   m_ok_cn_bow_cross_dist = 0;
   
-  m_osh = 0;
-  m_osh_set = false;
-
   // Added Oct 11th, 2024. By default, when passing to stern, port
   // port turns allowed if trajectory still results in passing to
   // the stern. By setting false, a more conservative policy is
@@ -64,22 +56,7 @@ AOF_R16::AOF_R16(IvPDomain gdomain) : AOF_Contact(gdomain)
 
 bool AOF_R16::setParam(const string& param, double param_val)
 {
-  if(param == "osh") {
-    m_osh = angle360(param_val);
-    m_osh_set = true;
-    return(true);
-  }
-  
-  if(param == "osh_orig") {
-    // kw added to prevent turns to port qtr prevents turns to port
-    // quarter in giveway (long turns to right, or worse, turns to
-    // left to reach the port quarter hot spot on IPF
-    m_osh_orig = angle360(param_val);
-    m_osh_orig_set = true;
-    return(true);
-  }
-
-  return(AOF_Contact::setParam(param, param_val));
+  return(AOF_ContactX::setParam(param, param_val));
 }
 
 //----------------------------------------------------------------
@@ -87,49 +64,34 @@ bool AOF_R16::setParam(const string& param, double param_val)
 
 bool AOF_R16::setParam(const string& param, const string& param_val)
 {
-  if(AOF_Contact::setParam(param, param_val))
-    return(true);
+  bool ok = false;
   
   if(param == "passing_side") {
-    m_passing_side_set = true;
     if(param_val == "stern") {
-      m_pass_to_stern    = true;
-      m_pass_to_bow      = false;
+      m_pass_to_stern = true;
+      m_pass_to_bow   = false;
+      m_passing_side_set = true;
+      ok = true;
     }
     else if(param_val == "bow") {
-      m_pass_to_stern    = false;
-      m_pass_to_bow      = true;
-    }
-    else {
-      m_passing_side_set = false;      
-      string msg = "bad param[" + param + "], value[" + param_val + "]";
-      postMsgAOF(msg);    
-      return(false);
+      m_pass_to_stern = false;
+      m_pass_to_bow   = true;
+      m_passing_side_set = true;
+      ok = true;      
     }
   }
-  else if(param == "ok_cn_bow_cross_dist") {
-    bool ok = setNonNegDoubleOnString(m_ok_cn_bow_cross_dist, param_val);
-    if(!ok) {
-      string msg = "bad param[" + param + "], value[" + param_val + "]";
-      postMsgAOF(msg);
-    }
-    return(ok);
-  }
-  else if(param == "pts_port_turns_ok") {
-    bool ok = setBooleanOnString(m_pts_port_turns_ok, param_val);
-    if(!ok) {
-      string msg = "bad param[" + param + "], value[" + param_val + "]";
-      postMsgAOF(msg);
-    }
-    return(ok);
-  }
-  else {
+  else if(param == "ok_cn_bow_cross_dist")
+    ok = setNonNegDoubleOnString(m_ok_cn_bow_cross_dist, param_val);
+
+  else if(param == "pts_port_turns_ok") 
+    ok = setBooleanOnString(m_pts_port_turns_ok, param_val);
+
+  if(!ok) {
     string msg = "bad param[" + param + "], value[" + param_val + "]";
     postMsgAOF(msg);    
-    return(false);
   }
 
-  return(true);
+  return(ok);
 }
 
 //----------------------------------------------------------------
@@ -137,30 +99,14 @@ bool AOF_R16::setParam(const string& param, const string& param_val)
 
 bool AOF_R16::initialize()
 {
-  if(AOF_Contact::initialize() == false) {
-    postMsgAOF("crs_ix or spd_ix not set");
+  if(AOF_ContactX::initialize() == false)
     return(false);
-  }
   
-  if((m_crs_ix==-1) || (m_spd_ix==-1)) {
-    postMsgAOF("crs_ix or spd_ix not set");
-    return(false);
-  }
-
-  if(!m_passing_side_set) {
-    postMsgAOF("passing side is not set");
-    return(false);
-  }
+  if(!m_passing_side_set) 
+    return(postMsgAOF("passing side is not set"));
     
-  if(!m_osh_set) {
-    postMsgAOF("osh is not set");
-    return(false);
-  }
-  
-  if(m_pass_to_stern && m_pass_to_bow) {
-    postMsgAOF("pass_to_stern or pass_to_bow is not set");
-    return(false);
-  }
+  if(!m_passing_side_set)
+    return(postMsgAOF("pass_to_stern or pass_to_bow is not set"));
 
   return(true);
 }
@@ -175,11 +121,17 @@ bool AOF_R16::initialize()
 
 double AOF_R16::evalBox(const IvPBox *b) const 
 {
+  // Sanity check
+  if(!m_cpa_engine)
+    return(0);
+
   // Part 1: Determine the course and speed being evaluated.
   double eval_crs, eval_spd;
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
+  double osh = m_cpa_engine->osh();
+  
   // Part 2: Disallow certain maneuvers if crossing cn stern
   // If we're passing to stern, penalize for crossing the bow
   if(m_pass_to_stern) {
@@ -188,21 +140,22 @@ double AOF_R16::evalBox(const IvPBox *b) const
     
     if(m_pts_port_turns_ok) { // The DEFAULT
       // Rule out turns that cross the bow, plain and simple
-      if(m_cpa_engine.crossesBow(eval_crs, eval_spd))
+      if(m_cpa_engine->crossesBow(eval_crs, eval_spd))
 	return(0);
       
       // If a left-hand turn, only allow turns that still cross cn stern
-      bool os_turns_rgt = m_cpa_engine.turnsRight(m_osh, eval_crs);
+      bool os_turns_rgt = starTurn(osh, eval_crs);
       if(!os_turns_rgt) {
-	if(!m_cpa_engine.crossesStern(eval_crs, eval_spd))
+	if(!m_cpa_engine->crossesStern(eval_crs, eval_spd))
 	  return(0);
       }
     }
     // Added Oct1124 Not: the default, prehaps preferred by some
     // conservative users in 1-1 situations with no other contacts
     else { 
-      if (!m_cpa_engine.crossesStern(eval_crs, eval_spd) ||
-         m_cpa_engine.turnsLeft(m_osh, eval_crs))
+      if (!m_cpa_engine->crossesStern(eval_crs, eval_spd) ||
+	  //m_cpa_engine.turnsLeft(m_osh, eval_crs))
+         portTurn(osh, eval_crs))
       return(0);
     }
   }
@@ -210,12 +163,13 @@ double AOF_R16::evalBox(const IvPBox *b) const
     // Part 3: Disallow certain maneuvers if crossing cn bow
   // If we're passing to bow, penalize for crossing the stern
   if(m_pass_to_bow) {
-    if(m_cpa_engine.turnsRight(m_osh, eval_crs)) {
-      if(!m_cpa_engine.crossesBow(eval_crs, eval_spd))
+    //if(m_cpa_engine.turnsRight(m_osh, eval_crs)) {
+    if(starTurn(osh, eval_crs)) {
+      if(!m_cpa_engine->crossesBow(eval_crs, eval_spd))
 	return(0);
       
       if(m_ok_cn_bow_cross_dist > 0) {
-	double cn_bow_cross_dist = m_cpa_engine.crossesBowDist(eval_crs,eval_spd);
+	double cn_bow_cross_dist = m_cpa_engine->crossesBowDist(eval_crs,eval_spd);
 	if(cn_bow_cross_dist <= m_ok_cn_bow_cross_dist)
 	  return(0);
       }
@@ -224,7 +178,7 @@ double AOF_R16::evalBox(const IvPBox *b) const
 
   // Part 4: Determine the raw CPA distance that would result from the 
   // given course and speed and configured time-on-leg.
-  double cpa_dist = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
  
   // Part 5: Determine the utility of the calculated CPA distance based
   // on the tolerance ranges given by m_collision_dist and m_all_clear_dist
@@ -235,7 +189,7 @@ double AOF_R16::evalBox(const IvPBox *b) const
 
 
 //----------------------------------------------------------------
-// Procedure: metricCPA
+// Procedure: metricCPA()
 
 double AOF_R16::metricCPA(double eval_dist) const
 {
@@ -256,9 +210,8 @@ double AOF_R16::metricCPA(double eval_dist) const
 }
 
 
-
 //----------------------------------------------------------------
-// Procedure: metricCRX
+// Procedure: metricCRX()
 //      Note: We convert a CPA distance to a utility value. The 
 //            range is between 0 and 100, but it is not important
 //            since the IvP problems solver normalizes the range

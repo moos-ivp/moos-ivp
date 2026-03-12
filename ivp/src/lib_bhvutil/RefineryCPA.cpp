@@ -81,7 +81,7 @@ RefineryCPA::RefineryCPA()
 bool RefineryCPA::init(double osx, double osy, double cnx, double cny,
 		       double cnh, double cnv, double ostol,
 		       double min_ucd, double max_ucd, IvPDomain domain,
-		       CPAEngine* cpa_engine)
+		       CPXEngine* cpa_engine)
 {
   if(m_verbose) {
     cout << "RefineryCPA: Initializing: " << endl;
@@ -140,8 +140,8 @@ bool RefineryCPA::init(double osx, double osy, double cnx, double cny,
   m_range_gamma   = cpa_engine->getRangeGamma();
   m_range_epsilon = cpa_engine->getRangeEpsilon();
   m_os_port_of_cn = cpa_engine->portOfContact();
-  m_os_star_of_cn = cpa_engine->starboardOfContact();
-  m_os_cn_abs_bng = cpa_engine->ownshipContactAbsBearing();
+  m_os_star_of_cn = cpa_engine->starOfContact();
+  m_os_cn_abs_bng = cpa_engine->osToCNAbsBng();
   
   // If max_util_cpa_dist is greater than current range to contact then
   // reduce to equal current range to contact. This is the right thing
@@ -207,7 +207,8 @@ vector<IvPBox> RefineryCPA::getRefineRegionsAft()
   //         the current contact range rate from os position  (A1)
   //===========================================================
   // If ownship is aft of the contact, this speed should be negative
-  double cn_spd_in_os_pos = m_cpa_engine->getCNSpeedInOSPos();
+  //double cn_spd_in_os_pos = m_cpa_engine->getCNSpeedInOSPos();
+  double cn_spd_in_os_pos = m_cpa_engine->cnSpdInOSPos();
   if(cn_spd_in_os_pos > 0)
     return(null_regions);
 

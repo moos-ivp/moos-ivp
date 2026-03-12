@@ -168,10 +168,7 @@ public:
   bool os_crossed_cn_bow() const;  
   bool cn_crossed_os() const;
   bool cn_crossed_os_bow() const;
-  bool cn_crossed_os_stern() const;
-
-
-  
+  bool cn_crossed_os_stern() const;  
   
 protected:
   unsigned int m_max_history;

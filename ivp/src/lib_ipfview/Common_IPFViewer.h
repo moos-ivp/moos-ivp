@@ -50,7 +50,7 @@ class Common_IPFViewer : public Fl_Gl_Window
   void   draw();
 
 public:
-  bool   setQuadSetFromIPF(IvPFunction*);
+  //bool   setQuadSetFromIPF(IvPFunction*);
 
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
@@ -68,9 +68,10 @@ protected:
   void   drawQuadSet1D();
   bool   drawQuadSet2D(const QuadSet&);
 
+  void   drawFloor(double, double, double);
   void   drawFrame(bool full=true);
-  void   drawPolarFrame(bool full=true);
-  void   drawCenteredShip(double heading=0);
+  void   drawPolarFrame(double radpad=1);
+  void   drawCenteredShip(double);
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
   void   toggleFrameOnTop();
@@ -103,9 +104,13 @@ protected:
   double     m_base_aof;
   double     m_base_ipf;
 
+  double     m_start_wid;
+  double     m_start_hgt;
+  
   double     m_scale;
   double     m_rad_ratio;
   double     m_rad_extent;
+  double     m_rad_pad;
   double     m_intensity;
   int        m_polar;
   

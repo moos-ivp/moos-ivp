@@ -44,7 +44,7 @@ XYFieldGenerator::XYFieldGenerator()
   m_flex_buffer = false;
   m_buffer_dist = 0;     
   
-  srand(time(NULL));
+  //srand(time(NULL));
 }
 
 //---------------------------------------------------------

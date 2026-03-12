@@ -29,7 +29,7 @@
 #include <vector>
 #include "IvPBox.h"
 #include "IvPDomain.h"
-#include "CPAEngine.h"
+#include "CPXEngine.h"
 
 class RefineryCPA {
  public:
@@ -39,7 +39,7 @@ class RefineryCPA {
   bool init(double osx, double osy, double cnx, double cny,
 	    double cnh, double cnv, double ostol,
 	    double min_ucd, double max_ucd, IvPDomain domain,
-	    CPAEngine *cpa_engine);
+	    CPXEngine *cpa_engine);
 
   std::vector<IvPBox> getRefineRegions();
 
@@ -107,7 +107,7 @@ protected: // general utilities
   
   bool      m_initialized;
 
-  CPAEngine *m_cpa_engine;
+  CPXEngine *m_cpa_engine;
 
   double    m_contact_range;
   double    m_range_gamma;

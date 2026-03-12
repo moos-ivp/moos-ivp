@@ -43,7 +43,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_AvdColregsV17::BHV_AvdColregsV17(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
@@ -98,7 +98,7 @@ BHV_AvdColregsV17::BHV_AvdColregsV17(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 // m_all_clear_dist    = m_max_util_cpa_dist
 // m_collision_dist    = m_min_util_cpa_dist
@@ -238,7 +238,7 @@ bool BHV_AvdColregsV17::onRunStatePrior()
 
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_AvdColregsV17::onRunState() 
 {
@@ -302,7 +302,7 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: getInfo
+// Procedure: getInfo()
 
 string BHV_AvdColregsV17::getInfo(string param)
 {
@@ -327,7 +327,7 @@ string BHV_AvdColregsV17::getInfo(string param)
 }
 
 //-----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 
 double BHV_AvdColregsV17::getDoubleInfo(string param)
 {
@@ -342,7 +342,7 @@ double BHV_AvdColregsV17::getDoubleInfo(string param)
 }
 
 //--------------------------------------------------------------
-// Procedure: updateAvoidMode
+// Procedure: updateAvoidMode()
 
 void BHV_AvdColregsV17::updateAvoidMode()
 {
@@ -399,7 +399,7 @@ void BHV_AvdColregsV17::updateAvoidMode()
 //=====================================================================
 
 //-----------------------------------------------------------
-// Procedure: checkModeOvertaking                   (Rule 13)
+// Procedure: checkModeOvertaking()                 (Rule 13)
 //      Note: TARB [150,180]
 //      Note: OCRB [-45,135]
 
@@ -490,7 +490,7 @@ void BHV_AvdColregsV17::checkModeOvertaking()
 }
 
 //-----------------------------------------------------------
-// Procedure: buildOvertakingIPF                    (Rule 13)
+// Procedure: buildOvertakingIPF()                  (Rule 13)
 
 IvPFunction* BHV_AvdColregsV17::buildOvertakingIPF()
 {
@@ -502,9 +502,7 @@ IvPFunction* BHV_AvdColregsV17::buildOvertakingIPF()
     min_util_cpa_dist = (m_contact_range / 2);
 
   //AOF_AvoidCollision aof(m_domain);
-  AOF_R13 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
+  AOF_R13 aof(m_domain, m_cpa_engine);
   aof.setParam("tol", m_time_on_leg);
   aof.setParam("passing_side", m_avoid_submode);
   aof.setParam("collision_distance", min_util_cpa_dist);
@@ -525,7 +523,7 @@ IvPFunction* BHV_AvdColregsV17::buildOvertakingIPF()
 }
 
 //--------------------------------------------------------------
-// Procedure: checkModeHeadOn                          (Rule 14)
+// Procedure: checkModeHeadOn()                        (Rule 14)
 
 void BHV_AvdColregsV17::checkModeHeadOn()
 {
@@ -599,7 +597,7 @@ void BHV_AvdColregsV17::checkModeHeadOn()
 }
 
 //--------------------------------------------------------------
-// Procedure: buildHeadOnIPF                           (Rule 14)
+// Procedure: buildHeadOnIPF()                         (Rule 14)
 
 IvPFunction* BHV_AvdColregsV17::buildHeadOnIPF()
 {
@@ -610,15 +608,14 @@ IvPFunction* BHV_AvdColregsV17::buildHeadOnIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  AOF_R14 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", 120);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_R14 aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
   
-  if(!init_ok) {
+  if(!ok) {
     postEMessage("Unable to init AOF_R14.");
     return(0);
   }
@@ -632,7 +629,7 @@ IvPFunction* BHV_AvdColregsV17::buildHeadOnIPF()
 
 
 //--------------------------------------------------------------
-// Procedure: checkModeGiveWay                         (Rule 16)
+// Procedure: checkModeGiveWay()                       (Rule 16)
 
 void BHV_AvdColregsV17::checkModeGiveWay()
 {
@@ -728,7 +725,7 @@ void BHV_AvdColregsV17::checkModeGiveWay()
 }
 
 //--------------------------------------------------------------
-// Procedure: buildGiveWayIPF                          (Rule 16)
+// Procedure: buildGiveWayIPF()                        (Rule 16)
 
 IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
 {
@@ -741,27 +738,21 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
 
   m_debug2 = "Building Giveway IPF";
 
-  AOF_R16  aof(m_domain);
-
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
   bool ok = true;
+  AOF_R16 aof(m_domain, m_cpa_engine);
   ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("osh", m_osh);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);  
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = ok && aof.initialize();
+  ok = ok && aof.initialize();
 
-  m_debug3 = boolToString(init_ok);
-  
-  if(!init_ok) {
+  if(!ok) {
     m_debug1 = "PROBLEM Init AOF_R16!!!!";
     string aof_msg = aof.getCatMsgsAOF();
     postEMessage("Unable to init AOF_R16:"+aof_msg);
     return(0);
   }
-  m_debug4 = "GiveWay AOF initialized OK";
 
   OF_Reflector reflector(&aof, 1);
   reflector.create(m_build_info);
@@ -780,7 +771,7 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: checkModeStandOn                      (Rule 17)
+// Procedure: checkModeStandOn()                    (Rule 17)
 
 void BHV_AvdColregsV17::checkModeStandOn()
 {
@@ -972,7 +963,7 @@ void BHV_AvdColregsV17::checkModeStandOn()
       
 
 //---------------------------------------------------------------------
-// Procedure: checkModeStandOnOT            (Rule 17, Overtaken Vessel)
+// Procedure: checkModeStandOnOT()          (Rule 17, Overtaken Vessel)
 
 void BHV_AvdColregsV17::checkModeStandOnOT()
 {
@@ -1065,7 +1056,7 @@ void BHV_AvdColregsV17::checkModeStandOnOT()
 }  
 
 //--------------------------------------------------------------
-// Procedure: checkCPA                          (Catch-all)
+// Procedure: checkCPA()                          (Catch-all)
 
 void BHV_AvdColregsV17::checkModeCPA()
 {
@@ -1083,7 +1074,7 @@ void BHV_AvdColregsV17::checkModeCPA()
 }
 
 //-----------------------------------------------------------
-// Procedure: buildStandOnIPF                    (Rule 17)
+// Procedure: buildStandOnIPF()                    (Rule 17)
 
 IvPFunction* BHV_AvdColregsV17::buildStandOnIPF()
 {
@@ -1128,7 +1119,7 @@ IvPFunction* BHV_AvdColregsV17::buildStandOnIPF()
 
 
 //-----------------------------------------------------------
-// Procedure: buildCPA_IPF                    (Catch-all)
+// Procedure: buildCPA_IPF()                    (Catch-all)
 
 IvPFunction* BHV_AvdColregsV17::buildCPA_IPF()
 {
@@ -1140,20 +1131,15 @@ IvPFunction* BHV_AvdColregsV17::buildCPA_IPF()
     min_util_cpa_dist = (m_contact_range / 2);
 
   m_debug2 = "Building CPA IPF";
-
-  AOF_CPA aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", 120);
-  aof.setParam("osh", m_osh);
-  aof.setParam("osv", m_osv);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
-
-  m_debug3 = boolToString(init_ok);
   
-  if(!init_ok) {
+  bool ok = true;
+  AOF_CPA aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
+  
+  if(!ok) {
     m_debug1 = "PROBLEM Init AOF_AvoidCollision!!!!";
     postEMessage("Unable to init AOF_AvoidCollision.");
     return(0);
@@ -1169,7 +1155,7 @@ IvPFunction* BHV_AvdColregsV17::buildCPA_IPF()
 
 
 //-----------------------------------------------------------
-// Procedure: getRelevance
+// Procedure: getRelevance()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
@@ -1227,7 +1213,7 @@ double BHV_AvdColregsV17::getRelevance() const
 
 
 //-----------------------------------------------------------
-// Procedure: resetAvoidModes
+// Procedure: resetAvoidModes()
 
 bool BHV_AvdColregsV17::resetAvoidModes(string mode, string submode)
 {
@@ -1260,7 +1246,7 @@ bool BHV_AvdColregsV17::resetAvoidModes(string mode, string submode)
 
 
 //-----------------------------------------------------------
-// Procedure: findSlowdownSpeedRange
+// Procedure: findSlowdownSpeedRange()
 //   Purpose: Find two numbers, [VL, VH]. 
 //            All calculations are based on a present contact position,
 //            heading and speed, and present ownship position, heading
@@ -1306,7 +1292,7 @@ bool BHV_AvdColregsV17::findDecelerateSpeedRange(double& minv, double& maxv)
 }
 
 //-----------------------------------------------------------
-// Procedure: findAccelerateSpeedRange
+// Procedure: findAccelerateSpeedRange()
 //   Purpose: Find two numbers, [VL, VH]. 
 //            All calculations are based on a present contact position,
 //            heading and speed, and present ownship position, heading
@@ -1419,7 +1405,7 @@ void BHV_AvdColregsV17::clearHeadings()
 }
 
 //-----------------------------------------------------------
-// Procedure: clearRelBngs
+// Procedure: clearRelBngs()
 //   Purpose: Clear the contact relative bearing history.
 
 void BHV_AvdColregsV17::clearRelBngs()
@@ -1498,7 +1484,7 @@ bool BHV_AvdColregsV17::getRelBngRate(double& result)
 }
 
 //-----------------------------------------------------------
-// Procedure: postStatusInfo
+// Procedure: postStatusInfo()
 
 void BHV_AvdColregsV17::postStatusInfo()
 {

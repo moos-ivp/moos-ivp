@@ -5,6 +5,7 @@
 
 SET(SRC
   AOF_Contact.cpp
+  AOF_ContactX.cpp
   AOF_AttractorCPA.cpp
   AOF_AvoidCollision.cpp
   AOF_AvoidCollisionDepth.cpp

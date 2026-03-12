@@ -1,10 +1,11 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng                               */
-/*    FILE: BHV_AvdColregsV22.h                                  */
+/*    FILE: BHV_AvdColregsV26.h                                  */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
 /*    DATE: Oct 12th, 2018 (V19 from V17, plus refineries)       */
 /*    DATE: Feb 15th, 2022 (V22 from V19)                        */
+/*    DATE: Jan 10th, 2026 (V26 from V22)                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -23,8 +24,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVD_COLREGS_V22_HEADER
-#define BHV_AVD_COLREGS_V22_HEADER
+#ifndef BHV_AVD_COLREGS_V26_HEADER
+#define BHV_AVD_COLREGS_V26_HEADER
 
 #include <list>
 #include <string>
@@ -33,10 +34,10 @@
 #include "VelocityFilter.h"
 
 class IvPDomain;
-class BHV_AvdColregsV22 : public IvPContactBehavior {
+class BHV_AvdColregsV26 : public IvPContactBehavior {
  public:
-  BHV_AvdColregsV22(IvPDomain);
-  ~BHV_AvdColregsV22() {};
+  BHV_AvdColregsV26(IvPDomain);
+  ~BHV_AvdColregsV26() {};
   
   void         onHelmStart();
   bool         onRunStatePrior();
