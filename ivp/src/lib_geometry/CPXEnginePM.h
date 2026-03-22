@@ -87,7 +87,7 @@ public: // Group C - Checks for Crossing Stern and/or Bow
 
 protected:
   bool   seglrIndex(const XYSeglr&, unsigned int,
-		    double& osx, double& osy, double& osh,
+		    double& osx, double& osy, double& osh, double osv,
 		    double& cnx, double& cny, double& segt) const;
 
 protected:

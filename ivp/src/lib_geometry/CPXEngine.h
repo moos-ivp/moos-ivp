@@ -42,7 +42,7 @@ public:
   virtual ~CPXEngine() {}
 
   virtual void setPlatModel(PlatModel) {}
-
+  
   std::string getSpec() const;
   
   double osx() const {return(m_osx);}

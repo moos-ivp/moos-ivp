@@ -191,7 +191,7 @@ void CPXEnginePM::evalCPA(double osh, double osv, double ostol,
 
   for(unsigned int i=0; i<seglr.size(); i++) {
     double osx, osy, osh, cnx, cny, segt = 0;
-    bool ok = seglrIndex(seglr, i, osx, osy, osh, cnx, cny, segt);
+    bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
     if(!ok)
       break;
 
@@ -268,7 +268,7 @@ bool CPXEnginePM::passesPortDist(double osh, double osv,
 
   for(unsigned int i=0; i<seglr.size(); i++) {
     double osx, osy, osh, cnx, cny, segt = 0;
-    bool ok = seglrIndex(seglr, i, osx, osy, osh, cnx, cny, segt);
+    bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
 
     if(!ok)
       break;
@@ -348,7 +348,7 @@ bool CPXEnginePM::passesStarDist(double osh, double osv,
     double cny = 0;
     double segt = 0; // Time window on current leg, or -1 if ray
 
-    bool ok = seglrIndex(seglr, i, osx, osy, osh, cnx, cny, segt);
+    bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
     if(!ok)
       break;
 
@@ -453,7 +453,7 @@ bool CPXEnginePM::crossesSternDist(double osh, double osv,
 
   for(unsigned int i=0; i<seglr.size(); i++) {
     double osx, osy, osh, cnx, cny, segt = 0;
-    bool ok = seglrIndex(seglr, i, osx, osy, osh, cnx, cny, segt);
+    bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
     if(!ok)
       break;
 
@@ -521,7 +521,7 @@ bool CPXEnginePM::crossesBowDist(double osh, double osv,
 
   for(unsigned int i=0; i<seglr.size(); i++) {
     double osx, osy, osh, cnx, cny, segt = 0;
-    bool ok = seglrIndex(seglr, i, osx, osy, osh, cnx, cny, segt);
+    bool ok = seglrIndex(seglr, i, osx, osy, osh, osv, cnx, cny, segt);
     if(!ok)
       break;
 
@@ -614,7 +614,7 @@ bool CPXEnginePM::crossesBowOrStern(double osh, double osv) const
 //         m_osv
 
 bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
-			     double& osx, double& osy, double& osh,
+			     double& osx, double& osy, double& osh, double osv,
 			     double& cnx, double& cny, double& segt) const
 {
   // Init answers to default answers
@@ -632,9 +632,9 @@ bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
   if(ix >= seglr.size())
     return(false);
 
-  // Sanity check 3: If m_osv is zero, then the os position and
+  // Sanity check 3: If osv is zero, then the os position and
   // hdg based on vertex 0 in the seglr, and cn is not advanced
-  if(m_osv <= 0) {
+  if(osv <= 0) {
     osx = seglr.getVX(0);
     osy = seglr.getVY(0);
     osh = seglr.getVertAngle(0);
@@ -657,7 +657,7 @@ bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
     double y2 = seglr.getVY(i+1);
     dist_prior += hypot(x1-x2, y1-y2);
   }
-  double time_prior = dist_prior / m_osv;
+  double time_prior = dist_prior / osv;
 
   // Part 2: Advance the contact position
   if(m_cnv > 0) {
@@ -676,7 +676,7 @@ bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
   if(vdist < 0)
     segt = -1;
   else
-    segt = vdist / m_osv;
+    segt = vdist / osv;
 
   return(true);
 }

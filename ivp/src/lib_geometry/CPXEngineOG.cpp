@@ -341,7 +341,7 @@ double CPXEngineOG::passesPortTime(double osh, double osv) const
 // Procedure: passesPortDist()
 
 bool CPXEngineOG::passesPortDist(double osh, double osv,
-			       double& xdist, double& xtime) const
+				 double& xdist, double& xtime) const
 {
   // Default return values reflect ownship does not pass contact port
   xdist = -1;
@@ -373,13 +373,9 @@ bool CPXEngineOG::passesPortDist(double osh, double osv,
   //------------------------------------------------------
   // Step 1: Get ownship speed in contact beam direction, epsilon speed
   double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
-  cout << "CPX_OG: v_os_cnh: " << v_os_cnh << endl;
   double v_os_eps = m_cnv - v_os_cnh;
-  cout << "CPX_OG: v_os_eps1: " << v_os_eps << endl;
-  cout << "CPX_OG: m_stat_os_aft_of_cn: " << boolToString(m_stat_os_aft_of_cn) << endl;
   if(m_stat_os_aft_of_cn)
     v_os_eps = v_os_cnh - m_cnv;
-  cout << "CPX_OG: v_os_eps2: " << v_os_eps << endl;
 
   // Step 2: Determine IF ownship it will pass contact
   if(v_os_eps <= 0)
