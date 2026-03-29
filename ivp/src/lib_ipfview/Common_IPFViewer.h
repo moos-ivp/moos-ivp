@@ -73,7 +73,8 @@ protected:
   void   drawPolarFrame(double radpad=1);
   void   drawCenteredShip(double);
   void   drawOwnPoint();
-  void   drawMaxPoint(double, double);
+  void   drawMaxPoint(double, double, double hgt=230, double psize=3,
+		      std::string color="magenta");
   void   toggleFrameOnTop();
   
   void   draw1DAxes(const IvPDomain&);

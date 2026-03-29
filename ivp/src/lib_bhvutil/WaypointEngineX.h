@@ -50,7 +50,8 @@ class WaypointEngineX {
   void   resetState();
   void   setRepeat(int v)         {m_max_repeats=v;}
   void   setCaptureLine(bool v)   {m_capture_line = v;}
-
+  void   setPrevPoint(double, double);
+  
   double getPointX(unsigned int) const;
   double getPointY(unsigned int) const;  
   double getPointX() const         {return(m_seglist.get_vx(m_curr_ix));}
@@ -83,7 +84,7 @@ class WaypointEngineX {
   double  distFromBeg(double osx, double osy) const;
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
-  double  pctToNextWpt(double osx, double osy) const;
+  double  pctToNextWpt(double osx, double osy, bool fixpt=false);
   double  pctToEnd(double osx, double osy) const;
   
   bool   hasCompleted() const;

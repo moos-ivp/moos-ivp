@@ -119,7 +119,8 @@ bool Common_IPFViewer::setParam(string param, string value)
 {
   value = tolower(stripBlankEnds(value));
 
-  cout << "Common_IPFViewer::setParam() param: " << param << ", value:" << value << endl;
+  //cout << "Common_IPFViewer::setParam() param: " << param;
+  //cout << ", value:" << value << endl;
   
   if((param == "draw_frame") && (value == "toggle")) {
     if(!m_draw_frame) {
@@ -159,7 +160,7 @@ bool Common_IPFViewer::setParam(string param, string value)
     else if(value=="3")
       {m_xRot=-53; m_zRot=0;}
     else if(value=="4")
-      {m_xRot=-72; m_zRot=122;}
+      {m_xRot=-53; m_zRot=180;}
   }
   else if((param == "frame_color") && (value=="lighter"))
     m_frame_color.shade(0.05);
@@ -940,9 +941,11 @@ void Common_IPFViewer::toggleFrameOnTop()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawMaxPoint
+// Procedure: drawMaxPoint()
 
-void Common_IPFViewer::drawMaxPoint(double crs, double spd)
+void Common_IPFViewer::drawMaxPoint(double crs, double spd,
+				    double hgt, double psize,
+				    string pcolor)
 {
   if(m_quadset_ipf.size() == 0)
     return;
@@ -950,12 +953,15 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
   // Apply the radial extent
   spd *= m_rad_ratio;
 
-  double x,y,z=m_base_ipf+230;
+  double x,y,z=m_base_ipf + hgt;
   projectPoint(crs, spd, 0, 0, x, y);
   
-  glPointSize(2.0 * m_zoom);
+  glPointSize(psize * m_zoom);
 
-  glColor3f(1.0f, 0.5, 1.0f);
+  ColorPack cpack(pcolor);
+  
+  glColor3f(cpack.red(), cpack.grn(), cpack.blu());
+  //  glColor3f(1.0f, 0.5, 1.0f);
   glShadeModel(GL_FLAT);
 
   glEnable(GL_POINT_SMOOTH);

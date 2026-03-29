@@ -141,7 +141,10 @@ void Common_IPF_GUI::augmentMenu()
 		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)2, 0);
   m_menubar->add("RotateZoom/Reset3 ", '3',
 		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)3, 0);
-  m_menubar->add("RotateZoom/Reset4 ", '=',
+  m_menubar->add("RotateZoom/Reset4 ", '4',
+		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)4, 0);
+
+  m_menubar->add("RotateZoom/Reset5 ", '=',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)99, 0);
   m_menubar->add("RotateZoom/Toggle Frame ", 'f',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleFrame, (void*)-1,

@@ -153,8 +153,8 @@ double OF_Reflector::checkPlateaus(bool verbose) const
 	if(verbose) {
 	  pboxes[j].print();
 	  double pval = m_aof->evalBox(&pboxes[j]);
-	  cout << " --> max:" << maxval << ", ptval:" << pval << ", delta:"
-	       << delta << endl;
+	  //cout << " --> max:" << maxval << ", ptval:" << pval << ", delta:"
+	  //     << delta << endl;
 	}
       }
     }

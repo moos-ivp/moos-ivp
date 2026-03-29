@@ -254,8 +254,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 {
   m_total_evals = 0;
 
-  //  if(!platformUpdateOK()) {
-
   if(!IvPContactBehavior::updatePlatformInfo()) {
     postRange();
     return(0);
@@ -285,7 +283,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   }
 
   m_cpa_engine_pm.setPlatModel(m_plat_model);
-  
   IvPFunction *ipf = 0;
   if(m_collision_depth > 0)
     ipf = getAvoidDepthIPF();
@@ -382,7 +379,7 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
   // ===========================================================
   // Build the IvP Function
   // ===========================================================
-  reflector.setVerbose(true);
+  //reflector.setVerbose(true);
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractIvPFunction();
 

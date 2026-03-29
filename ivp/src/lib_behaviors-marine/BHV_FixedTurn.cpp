@@ -70,7 +70,7 @@ BHV_FixedTurn::BHV_FixedTurn(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_turn_delay_utc = -1; // UTC time in secs since 1970
   
   m_stale_nav_thresh = 5;  // seconds
-  
+
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
   addInfoVars("DESIRED_RUDDER");
   addInfoVars("DESIRED_RUDDERX");
@@ -90,6 +90,8 @@ void BHV_FixedTurn::resetState()
   m_hdg_delta_sofar = 0;
   m_curr_rudder = 0;
 
+  m_last_turn_rad = -1;
+  
   vector<XYPoint> new_mark_pts(360);
   m_mark_pts    = new_mark_pts;
 
@@ -578,7 +580,7 @@ void BHV_FixedTurn::postTurnCompleteReport()
     XYPoint pta = m_mark_pts[i]; 
     XYPoint ptb = m_mark_pts[i+180]; 
     if(pta.valid() && ptb.valid()) {
-      double rad = distPointToPoint(pta, ptb);
+      double rad = distPointToPoint(pta, ptb)/2;
       if((min_rad < 0) || (rad < min_rad))
 	min_rad = rad;
       if((max_rad < 0) || (rad > max_rad))
@@ -620,8 +622,10 @@ void BHV_FixedTurn::postTurnCompleteReport()
 
   if(total_rad > 0) {
     double avg_rad = 0;
-    if(rad_count > 0)
+    if(rad_count > 0) {
       avg_rad = (total_rad / (double)(rad_count));
+      m_last_turn_rad = avg_rad;
+    }
     str += ",avg_rad=" + doubleToStringX(avg_rad,2);
     str += ",min_rad=" + doubleToStringX(min_rad,2);
     str += ",max_rad=" + doubleToStringX(max_rad,2);
@@ -629,6 +633,7 @@ void BHV_FixedTurn::postTurnCompleteReport()
 
   postMessage("FT_REPORT", str);
 
+  
 #if 0
   XYTextBox tbox(-25, -85, "ft_report_"+m_us_name);
   tbox.setMsg(str);
@@ -668,6 +673,7 @@ string BHV_FixedTurn::expandMacros(string sdata)
   
   sdata = macroExpand(sdata, "TURN_DIST", turn_dist, 1);
   sdata = macroExpand(sdata, "TURN_TIME", turn_time);
+  sdata = macroExpand(sdata, "TURN_RAD", m_last_turn_rad);
   
   return(sdata);
 }

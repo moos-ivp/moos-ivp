@@ -858,7 +858,7 @@ IvPFunction* BHV_AvdColregsV26::buildGiveWayIPF()
 
   AOF_R16 aof(m_domain, m_cpa_engine);
   bool ok = true;
-  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
@@ -1243,7 +1243,7 @@ IvPFunction* BHV_AvdColregsV26::buildCPA_IPF()
 
   bool ok = true;
   AOF_CPA aof(m_domain, m_cpa_engine);
-  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   ok = ok && aof.initialize();
