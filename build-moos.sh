@@ -51,7 +51,7 @@ CMD_ARGS+=" "$J_ARGS
 #  If this is Raspbian and minrobot not selected, and
 #  no explicit override given with -mx, CONFIRM first
 #-------------------------------------------------------------- 
-command -v raspi-gpio
+command -v raspi-config
 if [ "$?" = "0" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
     if [ ! "${FORCE_FULL_RASPI_BUILD}" = "yes" ]; then
 	echo "Pi OS detected without --minrobotx or -mx selected."
