@@ -160,6 +160,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "USM_TURN_RATE") 
       m_model.setParam("turn_rate", dval);
+    else if(key == "USM_TURN_RADIUS") 
+      m_model.setParam("turn_radius", dval);
     else if(key == "USM_ENABLED")
       setBooleanOnString(m_enabled, sval);
     else if(key == "OBSTACLE_HIT")
@@ -189,7 +191,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 }
   
 //----------------------------------------------------------------
-// Procedure: Iterate
+// Procedure: Iterate()
 
 bool USM_MOOSApp::Iterate()
 {
@@ -322,13 +324,16 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setParam(param, dval);
     else if((param == "buoyancy_rate") && isNumber(value))
       handled = m_model.setParam(param, dval);
+    else if((param == "turn_radius") && isNumber(value))
+      handled = m_model.setParam(param, dval);
     else if((param == "drift_x") && isNumber(value))
       handled = m_model.setDriftX(dval, "");
     else if((param == "drift_y") && isNumber(value))
       handled = m_model.setDriftY(dval, "");
-    else if((param == "max_speed") && isNumber(value))
+    else if((param == "max_speed") && isNumber(value)) {
       handled = setPosDoubleOnString(m_max_speed, value);
-
+      m_model.setParam("max_speed", m_max_speed);
+    }
     else if(param == "wind_conditions")
       handled = m_model.setParam("wind_conditions", value);
     else if(param == "polar_plot")
@@ -411,7 +416,7 @@ bool USM_MOOSApp::OnStartUp()
     else
       m_model.setGeodesy(geodesy);
   }
-  
+
   // Note Geodesy best set (as above) before building cache
   m_model.cacheStartingInfo();
  
@@ -483,6 +488,7 @@ void USM_MOOSApp::registerVariables()
   Register("NAV_HEADING",0);
 
   Register("USM_ENABLED",0);
+  Register("USM_TURN_RADIUS",0);
   Register("USM_TURN_RATE",0);
   Register("OBSTACLE_HIT", 0);
   Register("USM_RESET_NAV", 0);
@@ -854,9 +860,11 @@ bool USM_MOOSApp::buildReport()
   string polar_str = m_model.getPolarPlotSpec();
   string sailing_str = boolToString(m_model.sailingEnabled());
   string trate_str = doubleToStringX(m_model.getTurnRate(),2);
+  string trad_str = doubleToStringX(m_model.getTurnRadius(),2);
   
   m_msgs << "Enabled:  " + boolToString(m_enabled) << endl;
   m_msgs << "TurnRate: " + trate_str << endl;
+  m_msgs << "TurnRadius: " + trad_str << endl;
   m_msgs << "Datum: " + datum_lat + "," + datum_lon << endl;
   m_msgs << "Sailing:" << endl;
   m_msgs << "  WindModel: " << wmod_str << endl;

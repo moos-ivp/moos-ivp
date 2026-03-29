@@ -259,6 +259,8 @@ bool USM_Model::setParam(string param, double value)
       return(false);
     }
   }
+  else if(param == "turn_radius")
+    return(m_sim_engine.setTurnRadius(value));
   else if(param == "buoyancy_rate")
     m_buoyancy_rate = value;
   else if(param == "turn_rate")
@@ -279,6 +281,8 @@ bool USM_Model::setParam(string param, double value)
       return(false);
     }
   }
+  else if(param == "max_speed")
+    return(m_sim_engine.setMaxSpeed(value));
   else if(param == "max_depth_rate")
     m_max_depth_rate = value;
   else if(param == "max_depth_rate_speed")
@@ -760,7 +764,8 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
 
   if(m_thrust_mode == "differential") {
     m_sim_engine.propagateSpeedDiffMode(record, m_thrust_map, delta_time,
-					m_thrust_lft, m_thrust_rgt, m_max_acceleration,
+					m_thrust_lft, m_thrust_rgt,
+					m_max_acceleration,
 					m_max_deceleration);
     m_sim_engine.propagateHeadingDiffMode(record, delta_time, m_thrust_lft, 
 					  m_thrust_rgt, m_turn_rate, 

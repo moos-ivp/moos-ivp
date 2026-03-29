@@ -91,6 +91,7 @@ public:
   
   // Getters
   double     getTurnRate() const     {return(m_turn_rate);}
+  double     getTurnRadius() const   {return(m_sim_engine.getTurnRadius());}
   double     getThrust() const       {return(m_thrust);}
   double     getThrustLeft() const   {return(m_thrust_lft);}
   double     getThrustRight() const  {return(m_thrust_rgt);}
