@@ -70,7 +70,7 @@ else
     echo "=========================================" 
     echo "BUILDING All MOOS and IvP code           " 
     echo "=========================================" 
-    ./build-moos.sh -mx && ./build-ivp.sh -mx 
+    ./build-moos.sh -mx && ./build-ivp.sh -mx
     RESULT=$?
 fi
 
