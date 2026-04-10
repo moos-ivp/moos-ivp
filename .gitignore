@@ -9,6 +9,7 @@ CMakeFiles
 **/*.swp
 **/.vagrant*
 build/*
+.cache/
 build-utests/*
 include/
 lib/*
