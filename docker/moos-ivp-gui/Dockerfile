@@ -9,7 +9,7 @@ ENV PATH="/home/moos/moos-ivp/bin:${PATH}"
 ENV IVP_BEHAVIOR_DIRS="/home/moos/moos-ivp/lib"
 
 # Make a user to run the MOOS apps
-RUN useradd -m -p "moos" moos && usermod -a -G sudo moos
+RUN useradd -m -p "$(openssl passwd -6 'moos')" moos && usermod -a -G sudo moos
 
 # Set the default user
 USER moos
