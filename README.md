@@ -2,6 +2,14 @@
 
 [MOOS-IvP](https://moos-ivp.org/) is a set of open source C++ modules for providing autonomy on robotic platforms, in particular autonomous marine vehicles.
 
+## Installation
+
+To install MOOS-IvP from source, clone this repository and follow the setup, dependency, build, and environment instructions for your platform:
+
+* [GNU/Linux](./README-GNULINUX.txt)
+* [macOS](./README-OS-X.txt)
+* [Windows](./README-WINDOWS.txt)
+
 ## Project Objectives and Philosophy
 
 * Platform Independence: The MOOS-IvP software typically runs on a dedicated computer for autonomy and sensing in the vehicle "payload" section.
