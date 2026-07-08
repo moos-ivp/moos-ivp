@@ -59,6 +59,8 @@ ObShipModelV24::ObShipModelV24(double osx, double osy,
   // Set the precision for rounding/expanding the obstacle_buff
   // polygon. Affects the work involved for CPA calculations
   m_obuff_rdegs = 30;
+
+  m_side_lock = false;
   
   // State variables
   m_cx = 0;
@@ -669,7 +671,7 @@ double ObShipModelV24::seglrCPA(double hdg, double& rx, double &ry,
 // Procedure: evalHdgSpd()
 
 double ObShipModelV24::evalHdgSpd(double hdg, double spd,
-				bool verbose) const
+				  bool verbose) const
 {
 
 #if 1
@@ -686,11 +688,26 @@ double ObShipModelV24::evalHdgSpd(double hdg, double spd,
   if(vpct > 1)
     vpct = 1;
 #endif
+
+  if(m_side_lock) {
+    double osx = getOSX();
+    double osy = getOSY();
+    double obcent_relbng = relBearing(osx, osy, hdg, m_cx, m_cy);
+
+    string passing_side;
+    if((obcent_relbng > 0) && (obcent_relbng < 180))
+      passing_side = "star";
+    else
+      passing_side = "port";
+
+    if(passing_side != m_passing_side)
+      return(0);
+  }
+    
   
   double min_util_cpa = vpct * m_min_util_cpa;
   double max_util_cpa = vpct * m_max_util_cpa;
 
-    
   double ix,iy; // ToDo reason about TTC with ix,iy 
   double stemdist;
   double cpa = seglrCPA(hdg, ix,iy, stemdist, verbose);

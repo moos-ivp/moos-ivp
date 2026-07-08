@@ -52,6 +52,8 @@ class ObShipModelV24
 
   void   setPlatModel(PlatModel tm);
 
+  void   setSideLock(bool v) {m_side_lock=v;}
+  
  public: // Setters that may generate health warnings
   std::string  setGutPoly(XYPolygon);
   std::string  setGutPoly(std::string);
@@ -119,6 +121,8 @@ class ObShipModelV24
 
   double getCPAInOSH() const {return(m_cpa_in_osh);}
 
+  bool   getSideLock() const {return(m_side_lock);}
+  
   bool   paramIsSet(std::string) const;
   bool   ownshipInGutPoly() const;
   bool   ownshipInMidPoly() const;
@@ -173,6 +177,8 @@ protected:
   bool   m_pause_update_dynamic;
 
   bool   m_stale_cache;
+
+  bool   m_side_lock;
   
   std::set<std::string> m_set_params;
   
