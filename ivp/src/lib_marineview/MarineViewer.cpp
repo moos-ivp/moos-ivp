@@ -846,8 +846,8 @@ void MarineViewer::drawVessels(const std::vector<XYVessel>& vessels,
 
 void MarineViewer::drawVessel(const XYVessel& vessel) 
 {
-  cout << "Vessel: " << endl;
-  cout << "spec: " << vessel.get_spec() << endl;
+  //cout << "Vessel: " << endl;
+  //cout << "spec: " << vessel.get_spec() << endl;
     
   NodeRecord record;
   record.setName(vessel.get_label());
@@ -858,8 +858,8 @@ void MarineViewer::drawVessel(const XYVessel& vessel)
   record.setLength(vessel.getLen());
   record.setType(vessel.get_type());
 
-  cout << "drawVessel: " << endl;
-  cout << "spec: " << record.getSpec() << endl;
+  //cout << "drawVessel: " << endl;
+  //cout << "spec: " << record.getSpec() << endl;
   
   ColorPack body_color = vessel.get_color("fill");
   ColorPack vname_color("white");
@@ -1058,6 +1058,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       draw_base_fin = false;
     
     drawGLPoly(g_crayBody,  g_crayBodySize, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_crayArrow,  g_crayArrowSize, fincolor, 0, factor_x, transparency);    
     if(draw_base_fin)
       drawGLPoly(g_crayBaseFinR,  g_crayBaseFinRSize, fincolor, 0, factor_x, transparency);
     drawGLPoly(g_crayFinR1,  g_crayFinR1Size, fincolor, 0, factor_x, transparency);
