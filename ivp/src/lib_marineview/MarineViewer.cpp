@@ -846,8 +846,8 @@ void MarineViewer::drawVessels(const std::vector<XYVessel>& vessels,
 
 void MarineViewer::drawVessel(const XYVessel& vessel) 
 {
-  cout << "Vessel: " << endl;
-  cout << "spec: " << vessel.get_spec() << endl;
+  //cout << "Vessel: " << endl;
+  //cout << "spec: " << vessel.get_spec() << endl;
     
   NodeRecord record;
   record.setName(vessel.get_label());
@@ -858,8 +858,8 @@ void MarineViewer::drawVessel(const XYVessel& vessel)
   record.setLength(vessel.getLen());
   record.setType(vessel.get_type());
 
-  cout << "drawVessel: " << endl;
-  cout << "spec: " << record.getSpec() << endl;
+  //cout << "drawVessel: " << endl;
+  //cout << "spec: " << record.getSpec() << endl;
   
   ColorPack body_color = vessel.get_color("fill");
   ColorPack vname_color("white");
@@ -993,7 +993,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
     drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
   }
-  else if(vehibody == "smr") {
+  else if((vehibody == "smr") || (vehibody == "smrx")) {
     //ColorPack dk_gray(0.4, 0.4, 0.6);
     ColorPack dk_gray(0.3, 0.3, 0.3);
     ColorPack lt_gray(0.6, 0.6, 0.6);
@@ -1002,6 +1002,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       factor_x *= (vlength / g_SMR_Length);
       factor_y *= (vlength / g_SMR_Length);
     }
+    
     double cx = g_SMR_CtrX * factor_x;
     double cy = g_SMR_CtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
@@ -1011,7 +1012,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_SMR_IMBody, g_SMR_IMBodySize, lt_gray, 0, factor_x, transparency);
     drawGLPoly(g_SMR_MotorA, g_SMR_MotorASize, lt_gray, 0, factor_x, transparency);
     drawGLPoly(g_SMR_MotorB, g_SMR_MotorBSize, lt_gray, 0, factor_x, transparency);
-    drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
+    if(vehibody == "smr")
+      drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
 
 
     glTranslatef(cx, cy, 0);
@@ -1056,6 +1058,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       draw_base_fin = false;
     
     drawGLPoly(g_crayBody,  g_crayBodySize, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_crayArrow,  g_crayArrowSize, fincolor, 0, factor_x, transparency);    
     if(draw_base_fin)
       drawGLPoly(g_crayBaseFinR,  g_crayBaseFinRSize, fincolor, 0, factor_x, transparency);
     drawGLPoly(g_crayFinR1,  g_crayFinR1Size, fincolor, 0, factor_x, transparency);
