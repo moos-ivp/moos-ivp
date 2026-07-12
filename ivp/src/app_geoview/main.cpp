@@ -33,6 +33,7 @@
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "LMV_Utils.h"
+#include "TiffUtils.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsPoint.h"
 
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
   for(i=1; i<argc; i++) {
     string argi  = argv[i];
     
-    if(strContains(argi, ".tif"))
+    if(isTiffFile(argi))
       tif_file = argi;
     else if(argi == "-noimg")
       tif_file = "";

@@ -94,6 +94,7 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // BackView Options ==========================================");
+  blk("  // TIFF images may use either a .tif or .tiff suffix          ");
   blk("  tiff_file            = forrest19.tif                          ");
   blk("  set_pan_x            = -90                                    ");
   blk("  set_pan_y            = -280                                   ");

@@ -28,6 +28,7 @@
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
 #include "FileBuffer.h"
+#include "TiffUtils.h"
 
 using namespace std;
 
@@ -178,7 +179,7 @@ bool LogViewLauncher::handleConfigParam(string argi)
     handled = handleVQual(argi.substr(8));
   else if(strBegins(argi, "--bg="))
     handled = handleBackground(argi.substr(5));
-  else if(strEnds(argi, ".tif")) 
+  else if(isTiffFile(argi))
     handled = handleBackground(argi);
   else if(strBegins(argi, "--detached=")) 
     m_dbroker.addDetachedPair(argi.substr(11));
@@ -491,7 +492,7 @@ bool LogViewLauncher::handleMaxTime(string val)
 
 
 //-------------------------------------------------------------
-// Procedure: handleBackground  --bg=FILE.tif
+// Procedure: handleBackground  --bg=FILE.tif[f]
 
 bool LogViewLauncher::handleBackground(string val)
 {
@@ -510,7 +511,7 @@ bool LogViewLauncher::handleBackground(string val)
   else
     m_tiff_file = val;
   
-  if(!strEnds(m_tiff_file, ".tif"))
+  if(!isTiffFile(m_tiff_file))
     return(false);
 
   m_tiff_files.push_back(m_tiff_file);
