@@ -242,7 +242,7 @@ protected:
   double    m_datum_lon;
   
   bool      m_texture_init;
-  GLuint*   m_textures;
+  std::vector<GLuint> m_textures;
   int       m_texture_set;
 
   double    m_hash_shade;
