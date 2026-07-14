@@ -15,17 +15,23 @@ if [ -z "$2" ] ; then
     exit 0
 fi
 
-#if [ -z "$3" ] ; then
-#    $3="YOUR-NAME-HERE"
-#fi
+if [ -z "$3" ] ; then
+    # name_pad=$(printf '%-48s' "YOUR-NAME-HERE")
+    name_pad=$(printf '%-48s' " ")
+else
+    name_pad=$(printf '%-48s' "$3")
+fi
+date_out=$(printf '%-48s' "$(date '+%B %d, %Y')")
 
 mkdir $2$1
 cd $2$1
 
+package_rt=$(printf '%30s' "$2$1")
+name_rt=$(printf '%43s' "$3")
 cat > CMakeLists.txt <<EOF
 #--------------------------------------------------------
-# The CMakeLists.txt for:                       $2$1
-# Author(s):                              $3
+# The CMakeLists.txt for: $package_rt
+# Author(s): $name_rt
 #--------------------------------------------------------
 
 SET(SRC
@@ -37,20 +43,21 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-   \${MOOS_LIBRARIES}
-   apputil
-   mbutil
-   m
-   pthread)
+  \${MOOS_LIBRARIES}
+  apputil
+  mbutil
+  m
+  pthread)
 
 EOF
 
+filename_pad=$(printf '%-48s' "$1.h")
 cat > ${1}.h <<EOF
 /************************************************************/
-/*    NAME: $3                                              */
+/*    NAME: $name_pad*/
 /*    ORGN: MIT, Cambridge MA                               */
-/*    FILE: ${1}.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    FILE: $filename_pad*/
+/*    DATE: $date_out*/
 /************************************************************/
 
 #ifndef ${1}_HEADER
@@ -60,36 +67,36 @@ cat > ${1}.h <<EOF
 
 class ${1} : public AppCastingMOOSApp
 {
- public:
-   ${1}();
-   ~${1}();
+  public:
+    ${1}();
+    ~${1}();
 
- protected: // Standard MOOSApp functions to overload  
-   bool OnNewMail(MOOSMSG_LIST &NewMail);
-   bool Iterate();
-   bool OnConnectToServer();
-   bool OnStartUp();
+  protected: // Standard MOOSApp functions to overload
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
 
- protected: // Standard AppCastingMOOSApp function to overload 
-   bool buildReport();
+  protected: // Standard AppCastingMOOSApp function to overload
+    bool buildReport();
 
- protected:
-   void registerVariables();
+  protected:
+    void registerVariables();
 
- private: // Configuration variables
+  private: // Configuration variables
 
- private: // State variables
+  private: // State variables
 };
 
-#endif 
+#endif
 EOF
 
 cat > main.cpp <<EOF
 /************************************************************/
-/*    NAME: $3                                              */
+/*    NAME: $name_pad*/
 /*    ORGN: MIT, Cambridge MA                               */
-/*    FILE: main.cpp, Cambridge MA                          */
-/*    DATE: December 29th, 1963                             */
+/*    FILE: main.cpp                                        */
+/*    DATE: $date_out*/
 /************************************************************/
 
 #include <string>
@@ -122,7 +129,7 @@ int main(int argc, char *argv[])
     else if(i==2)
       run_command = argi;
   }
-  
+
   if(mission_file == "")
     showHelpAndExit();
 
@@ -133,18 +140,19 @@ int main(int argc, char *argv[])
   ${1} ${1};
 
   ${1}.Run(run_command.c_str(), mission_file.c_str());
-  
+
   return(0);
 }
 
 EOF
 
+filename_pad=$(printf '%-48s' "$1.cpp")
 cat > ${1}.cpp <<EOF
 /************************************************************/
-/*    NAME: $3                                              */
+/*    NAME: $name_pad*/
 /*    ORGN: MIT, Cambridge MA                               */
-/*    FILE: ${1}.cpp                                        */
-/*    DATE: December 29th, 1963                             */
+/*    FILE: $filename_pad*/
+/*    DATE: $date_out*/
 /************************************************************/
 
 #include <iterator>
@@ -183,20 +191,20 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
+    string sval  = msg.GetString();
     string msrc  = msg.GetSource();
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
 
-     if(key == "FOO") 
-       cout << "great!";
+    if(key == "FOO")
+      cout << "great!";
 
-     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
-       reportRunWarning("Unhandled Mail: " + key);
-   }
-	
+    else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
+      reportRunWarning("Unhandled Mail: " + key);
+  }
+
    return(true);
 }
 
@@ -205,8 +213,8 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool ${1}::OnConnectToServer()
 {
-   registerVariables();
-   return(true);
+  registerVariables();
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -253,8 +261,8 @@ bool ${1}::OnStartUp()
       reportUnhandledConfigWarning(orig);
 
   }
-  
-  registerVariables();	
+
+  registerVariables();
   return(true);
 }
 
@@ -271,7 +279,7 @@ void ${1}::registerVariables()
 //------------------------------------------------------------
 // Procedure: buildReport()
 
-bool ${1}::buildReport() 
+bool ${1}::buildReport()
 {
   m_msgs << "============================================" << endl;
   m_msgs << "File:                                       " << endl;
@@ -285,20 +293,16 @@ bool ${1}::buildReport()
 
   return(true);
 }
-
-
-
-
 EOF
 
-
+filename_pad=$(printf '%-48s' "${1}_Info.h")
 cat >> ${1}_Info.h <<EOF
-/****************************************************************/
-/*   NAME: ${3}                                             */
-/*   ORGN: MIT, Cambridge MA                                    */
-/*   FILE: ${1}_Info.h                                      */
-/*   DATE: Dececmber 29th, 1963                                 */
-/****************************************************************/
+/************************************************************/
+/*    NAME: $name_pad*/
+/*    ORGN: MIT, Cambridge MA                               */
+/*    FILE: $filename_pad*/
+/*    DATE: $date_out*/
+/************************************************************/
 
 #ifndef ${1}_INFO_HEADER
 #define ${1}_INFO_HEADER
@@ -310,17 +314,16 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
-
 EOF
 
-
+filename_pad=$(printf '%-48s' "${1}_Info.cpp")
 cat >> ${1}_Info.cpp <<EOF
-/****************************************************************/
-/*   NAME: ${3}                                             */
-/*   ORGN: MIT, Cambridge MA                                    */
-/*   FILE: ${1}_Info.cpp                               */
-/*   DATE: December 29th, 1963                                  */
-/****************************************************************/
+/************************************************************/
+/*    NAME: $name_pad*/
+/*    ORGN: MIT, Cambridge MA                               */
+/*    FILE: $filename_pad*/
+/*    DATE: $date_out*/
+/************************************************************/
 
 #include <cstdlib>
 #include <iostream>
@@ -429,8 +432,6 @@ void showReleaseInfoAndExit()
   showReleaseInfo("${2}${1}", "gpl");
   exit(0);
 }
-
 EOF
-
 
 echo "$2${1} generated"
