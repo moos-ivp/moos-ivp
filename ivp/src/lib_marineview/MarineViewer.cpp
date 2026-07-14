@@ -977,7 +977,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_skywMid, g_skywMidSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
-  else if(vehibody == "quadcopter") {
+  else if((vehibody == "quad") ||
+          (vehibody == "quadcopter")) {
     if(vlength > 0) {
       factor_x *= (vlength / g_quadLength);
       factor_y *= (vlength / g_quadLength);
