@@ -471,7 +471,14 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
         
     //add the origin to these arc lengths
     dfLat = dfYArcDeg + GetOriginLatitude();
-       dfLon = dfXArcDeg + GetOriginLongitude();
+    dfLon = dfXArcDeg + GetOriginLongitude();
+
+    // fix to segfault issue if you get diverging values (BUGFIX! Sep1822 Jared Silbermann)
+    if(isnan(dfLat) || isnan(dfLon)) {
+      dfLat = 0;
+      dfLon = 0;
+      return(false);
+    }
 
     return true;
 }
@@ -525,4 +532,3 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
     
  	return true;
 }
-
