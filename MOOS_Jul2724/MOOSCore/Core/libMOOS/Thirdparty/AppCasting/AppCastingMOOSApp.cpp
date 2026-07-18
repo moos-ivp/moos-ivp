@@ -665,7 +665,7 @@ bool AppCastingMOOSApp::handleMailCommsPolicy(const string& str)
   if(str == "open") {
     if((m_comms_policy_config == "lean") ||
        (m_comms_policy_config == "dire"))
-	return(false);
+	return(true);
   }
   
   // Cannot have lean policy if original param config is dire
