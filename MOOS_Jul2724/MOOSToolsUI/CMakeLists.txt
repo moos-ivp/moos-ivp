@@ -5,7 +5,7 @@
 ###########################################################
 
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 if(COMMAND cmake_policy)
    cmake_policy(SET CMP0003 NEW)
@@ -52,5 +52,4 @@ ENDIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 
 
 add_subdirectory(Tools)
-
 

@@ -4,7 +4,7 @@
 #   pnewman@robots.ox.ac.uk
 ###########################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 
 # Libraries linked via full path no longer produce linker search paths.
 cmake_policy(SET CMP0003 NEW)
