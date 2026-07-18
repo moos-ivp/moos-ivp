@@ -6,8 +6,13 @@ SET(SOURCES
 
 include(PlatformDefines)
 
-include_directories(${PROJ4_INCLUDE_DIRS})
-link_directories(${PROJ4_LIB_PATH})
+if(MOOSGEODESY_USE_PROJ)
+    list(APPEND SOURCES MOOSGeodesyProj.cpp)
+    include_directories(${PROJ4_INCLUDE_DIRS})
+    link_directories(${PROJ4_LIB_PATH})
+else()
+    list(APPEND SOURCES MOOSGeodesyOriginal.cpp)
+endif()
 
 ##########################
 # Packages / Dependencies
@@ -69,7 +74,9 @@ cache_internal_append_unique(PROJECT_EXPORT_LIBS
 # variables
 include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
-target_link_libraries(${LIBNAME} LINK_PRIVATE proj)
+if(MOOSGEODESY_USE_PROJ)
+    target_link_libraries(${LIBNAME} LINK_PRIVATE proj)
+endif()
 target_link_libraries(${LIBNAME} LINK_PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
 
 #######################################
@@ -82,5 +89,4 @@ INSTALL(TARGETS ${LIBNAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
-
 

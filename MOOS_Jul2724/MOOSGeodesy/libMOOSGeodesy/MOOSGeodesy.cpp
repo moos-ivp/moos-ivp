@@ -32,15 +32,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include <cmath>
-#include <iostream>
-#include <limits>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sstream>
 #include <cstring>
-#include <proj_api.h>
 
 #ifdef _WIN32
 #include <float.h>
@@ -79,87 +74,6 @@ CMOOSGeodesy::CMOOSGeodesy()
     pj_utm_ = 0;
     pj_latlong_ = 0;
 
-}
-
-CMOOSGeodesy::~CMOOSGeodesy()
-{
-    pj_free(pj_utm_);
-    pj_free(pj_latlong_);
-}
-
-/**
-*This method is called to set the Origins of the Coordinate system
-*being used by the vehicle for a mission.  This class will store the
-*vehicle's position in Northings and Eastings.  This allows for tracking the
-*vehicle as if it were operating on a grid.
-*
-*@param lat the Latitude of where the vehicle is as it begins a mission
-*@param lon the Longitude of where the vehicle is as it begins a mission
-*
-*@return only returns true at the moment, no reason as to why it should fail
-*        perhaps some way of checking UTM zones vs a list of some sort? 
-*/
-
-bool CMOOSGeodesy::Initialise(double lat, double lon)
-{
-    //We will use the WGS-84 standard Reference Ellipsoid
-    //This can be modified by a client if they desire with 
-    //@see MOOSGeodesy.h
-    SetRefEllipsoid(23);
-
-    //Set the Origin of the local Grid Coordinate System
-    SetOriginLatitude(lat);
-    SetOriginLongitude(lon);
-
-    pj_free(pj_utm_);
-    pj_free(pj_latlong_);
-    pj_utm_ = 0;
-    pj_latlong_ = 0;
-
-    char utmZone[4];
-    double legacyNorth = 0.0, legacyEast = 0.0;
-    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude,
-            m_dOriginLongitude, legacyNorth,
-            legacyEast, utmZone);
-
-    int zone = atoi(utmZone);
-
-    std::stringstream proj_utm;
-    proj_utm << "+proj=utm +ellps=WGS84 +zone=" << zone;
-    if(lat < 0)
-        proj_utm << " +south";
-
-    pj_utm_ = pj_init_plus(proj_utm.str().c_str());
-    if(!pj_utm_) {
-        std::cerr << "Failed to initiate utm proj" << std::endl;
-        return false;
-    }
-
-    pj_latlong_ = pj_init_plus("+proj=latlong +ellps=WGS84");
-    if(!pj_latlong_) {
-        std::cerr << "Failed to initiate latlong proj" << std::endl;
-        return false;
-    }
-
-    double tempNorth = lat * deg2rad;
-    double tempEast = lon * deg2rad;
-    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1, &tempEast, &tempNorth, NULL);
-    if(err) {
-        std::cerr << "Failed to transform datum, reason: " << pj_strerrno(err) << std::endl;
-        return false;
-    }
-
-    //Then set the Origin for the Northing/Easting coordinate frame
-    //Also make a note of the UTM Zone we are operating in
-    SetOriginNorthing(tempNorth);
-    SetOriginEasting(tempEast);
-    SetUTMZone(utmZone);
-
-    //We set this flag to indicate that the first calculation of distance
-    //traveled is with respect to the origin coordinates.
-    m_bSTEP_AFTER_INIT = true;
-
-    return true;
 }
 
 double CMOOSGeodesy::GetOriginLongitude()
@@ -338,56 +252,6 @@ char * CMOOSGeodesy::GetUTMZone()
     return m_sUTMZone;
 }
 
-/**
-*This method is the interface to this class and allows the client to 
-*query the amount of ground covered with respect to the origin where the
-*origin is defined as a point in the UTM grid where we got an initial 
-*GPS fix that we defined to be the origin.  What this method does not take
-*into account is the curvature of the reference ellipsoid at a particular
-*Lat/Lon value.  Curvature influences the deltaX and deltaY that this method
-*calculates for determining the overall distance traveled wrt the origin.
-*Therefore, at Lat/Lon values that are significantly far enough (~300km) away from
-*the origin of the UTM grid (0,0), a shift in one dimension, i.e. just along
-*Latitude, or just along Longitude, does not map to a corresponding one
-*dimensional shift in our "local" grid where we should be seeing just a 
-*deltaX or deltaY result in moving in only one direction.  Instead, we have
-*observed that moving just .0001 degrees in Longitude (~1m in local) results in both
-*a deltaX that is coupled to a deltaY.  
-*
-*@param lat The current Latitude the vehicle is at
-*@param lon The current Longitude the vehicle is at
-*@param MetersNorth The distance in meters traveled North wrt to Origin
-*@param MetersEast The distance in meters traveled East wrt to Origin
-*/
-
-bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
-                                    double lon, 
-                                    double &MetersNorth,
-                                    double &MetersEast)
-{
-    double tmpNorth = lat * deg2rad;
-    double tmpEast = lon * deg2rad;
-    MetersNorth = std::numeric_limits<double>::quiet_NaN();
-    MetersEast = std::numeric_limits<double>::quiet_NaN();
-
-    if(!pj_latlong_ || !pj_utm_) {
-        std::cerr << "Must call Initialise before calling LatLong2LocalUTM" << std::endl;
-        return false;
-    }
-
-    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1, &tmpEast, &tmpNorth, NULL);
-    if(err) {
-        std::cerr << "Failed to transform (lat,lon) = (" << lat << "," << lon
-                  << "), reason: " << pj_strerrno(err) << std::endl;
-        return false;
-    }
-
-    MetersNorth = tmpNorth - GetOriginNorthing();
-    MetersEast = tmpEast - GetOriginEasting();
-    
-    return true;
-}
-
 double CMOOSGeodesy::GetOriginEasting()
 {
     return m_dOriginEasting;
@@ -500,31 +364,5 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
       return(false);
     }
 
-    return true;
-}
-
-
-bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
-{
-    double x = dfX + GetOriginEasting();
-    double y = dfY + GetOriginNorthing();
-
-    dfLat = std::numeric_limits<double>::quiet_NaN();
-    dfLong = std::numeric_limits<double>::quiet_NaN();
-
-    if(!pj_latlong_ || !pj_utm_) {
-        std::cerr << "Must call Initialise before calling UTM2LatLong" << std::endl;
-        return false;
-    }
-
-    int err = pj_transform(pj_utm_, pj_latlong_, 1, 1, &x, &y, NULL);
-    if(err) {
-        std::cerr << "Failed to transform (x,y) = (" << dfX << "," << dfY
-                  << "), reason: " << pj_strerrno(err) << std::endl;
-        return false;
-    }
-
-    dfLat = y * rad2deg;
-    dfLong = x * rad2deg;
     return true;
 }
