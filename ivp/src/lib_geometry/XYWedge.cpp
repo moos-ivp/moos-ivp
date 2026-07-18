@@ -179,14 +179,11 @@ bool XYWedge::isValid() const
 bool XYWedge::initialize(double degrees_per_pt)
 {
   // Part 1: Sanity checks
-  cout << "XYWedge::initialize() 111" << endl;
   if(m_initialized)
     return(true);
-  cout << "XYWedge::initialize() 222" << endl;
 
   if(!isValid())
     return(false);
-  cout << "XYWedge::initialize() 333" << endl;
 
   // Part 2: Initialize the wedge corner points
   projectPoint(m_langle, m_radlow, m_x, m_y, m_llx, m_lly);

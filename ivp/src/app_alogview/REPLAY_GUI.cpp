@@ -360,8 +360,6 @@ int REPLAY_GUI::handle(int event)
       np_viewer->redraw();
       cout << "666" << endl;
       updateTimeSubGUI();
-      cout << "77" << endl;
-      //cout << "In REPLAY_GUI::push. Curr lp time:" << lp_curr_time << endl;
     }
 
     return(1);
