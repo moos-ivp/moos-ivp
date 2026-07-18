@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "PMV_MOOSApp.h"
+#include "TiffUtils.h"
 #include "MBUtils.h"
 #include "HashUtils.h"
 #include "MacroUtils.h"
@@ -987,7 +988,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
     for(unsigned int i=0; i<tiff_files.size(); i++) {
       string tiff_file = tiff_files[i];
-      string info_file = findReplace(tiff_files[i], ".tif", ".info");
+      string info_file = tiffToInfoFile(tiff_files[i]);
       string command = "COPY_FILE_REQUEST=";
       if(tiff_file != "") {
 	Notify("PLOGGER_CMD", command + tiff_file);

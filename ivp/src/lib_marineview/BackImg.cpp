@@ -49,6 +49,7 @@
 #endif
 
 #include "BackImg.h"
+#include "TiffUtils.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
@@ -189,7 +190,7 @@ bool BackImg::readTiff(string filename)
   bool ok2 = readTiffInfo(m_info_file);
 
 #if 0
-  string info_file = findReplace(filename, ".tif", ".info");
+  string info_file = tiffToInfoFile(filename);
 
   bool ok1 = readTiffData(filename);  
   bool ok2 = readTiffInfo(info_file);
@@ -208,7 +209,7 @@ bool BackImg::locateTiffAndInfoFiles(string tiff_file)
   if(tiff_file == "")
     return(false);
 
-  string info_file = findReplace(tiff_file, ".tif", ".info");
+  string info_file = tiffToInfoFile(tiff_file);
 
   // =========================================================
   // Part 1: Most often (likely) image is just alpha or MIT mission

@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "MarineViewer.h"
+#include "TiffUtils.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
@@ -242,7 +243,7 @@ bool MarineViewer::setParam(string param, string value)
       return(false);
     if(strBegins(value, "="))
       return(false);
-    if(!strEnds(value, ".tif"))
+    if(!isTiffFile(value))
       return(false);
     if(value == "null.tif")
       handled = handleNoTiff();
