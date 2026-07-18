@@ -24,6 +24,15 @@
 #ifndef SHAPE_CRAY_HEADER
 #define SHAPE_CRAY_HEADER
 
+double g_crayArrow[]=
+  {
+    0, 33.5,
+    2.5, 28.5,
+    -2.5, 28.5
+  };
+unsigned int g_crayArrowSize = 3;
+
+
 double g_crayBody[]=
   {
     1.5, 0,

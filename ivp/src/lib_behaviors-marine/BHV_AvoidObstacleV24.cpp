@@ -520,8 +520,18 @@ double BHV_AvoidObstacleV24::getRelevance()
 	m_side_lock = "";
     }
   }
+  else {
+    if(range_relevance < 0.1)
+      m_side_lock = "";
+  }
+
+  if(m_side_lock == "")
+    m_obship_model.setSideLock(false);
   else
-    m_side_lock = "";
+    m_obship_model.setSideLock(true);
+
+  cout << "BHV_AvoidObstacleV24::getRelevance() side_lock: " << m_side_lock << endl;
+  cout << "BHV_AvoidObstacleV24::getRelevance() " << doubleToString(range_relevance,2) << endl;
   
   // Part 2: Possibly apply the grade scale to the raw distance
   double relevance = range_relevance;

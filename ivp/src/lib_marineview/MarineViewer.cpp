@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "MarineViewer.h"
+#include "TiffUtils.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
@@ -56,6 +57,7 @@
 #include "Shape_EField.h"
 #include "Shape_Square.h"
 #include "Shape_Skywalker.h"
+#include "Shape_Quadcopter.h"
 #include "Shape_Kelp.h"
 #include "XYFormatUtilsPoly.h"
 #include "BearingLine.h"
@@ -79,7 +81,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_hash_shade  = 0.65;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
-  m_textures    = new GLuint[1];
 
   //m_back_img_b_ok = false;
   //m_back_img_b_on = false;
@@ -108,7 +109,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
 MarineViewer::~MarineViewer()
 {
-   delete [] m_textures;
 }
 
 //-------------------------------------------------------------
@@ -243,7 +243,7 @@ bool MarineViewer::setParam(string param, string value)
       return(false);
     if(strBegins(value, "="))
       return(false);
-    if(!strEnds(value, ".tif"))
+    if(!isTiffFile(value))
       return(false);
     if(value == "null.tif")
       handled = handleNoTiff();
@@ -339,6 +339,8 @@ void MarineViewer::setVerbose(bool bval)
 }
 
 
+
+
 //-------------------------------------------------------------
 // Procedure: setParam()
 
@@ -416,12 +418,13 @@ bool MarineViewer::applyTiffFiles()
     return(false);
 
   unsigned int cnt = m_tif_files.size();
+  m_textures.resize(cnt);
   
   m_back_imgs = vector<BackImg>(cnt);
   
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glGenTextures(cnt, m_textures);
+  glGenTextures(static_cast<GLsizei>(cnt), m_textures.data());
 
   for(unsigned int ix=0; ix<cnt; ix++) {
     m_back_imgs[ix].readTiff(m_tif_files[ix]);
@@ -846,8 +849,8 @@ void MarineViewer::drawVessels(const std::vector<XYVessel>& vessels,
 
 void MarineViewer::drawVessel(const XYVessel& vessel) 
 {
-  cout << "Vessel: " << endl;
-  cout << "spec: " << vessel.get_spec() << endl;
+  //cout << "Vessel: " << endl;
+  //cout << "spec: " << vessel.get_spec() << endl;
     
   NodeRecord record;
   record.setName(vessel.get_label());
@@ -858,8 +861,8 @@ void MarineViewer::drawVessel(const XYVessel& vessel)
   record.setLength(vessel.getLen());
   record.setType(vessel.get_type());
 
-  cout << "drawVessel: " << endl;
-  cout << "spec: " << record.getSpec() << endl;
+  //cout << "drawVessel: " << endl;
+  //cout << "spec: " << record.getSpec() << endl;
   
   ColorPack body_color = vessel.get_color("fill");
   ColorPack vname_color("white");
@@ -974,6 +977,50 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_skywMid, g_skywMidSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
+  else if((vehibody == "quad") ||
+          (vehibody == "quadcopter")) {
+    if(vlength > 0) {
+      factor_x *= (vlength / g_quadLength);
+      factor_y *= (vlength / g_quadLength);
+    }
+
+    ColorPack rotor_color(0.68, 0.71, 0.76);
+    ColorPack arm_color(0.43, 0.47, 0.53);
+    double cx = g_quadCtrX * factor_x;
+    double cy = g_quadCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    drawGLPoly(g_quadArmA, g_quadArmASize, arm_color, 0,
+               factor_x, transparency);
+    drawGLPoly(g_quadArmB, g_quadArmBSize, arm_color, 0,
+               factor_x, transparency);
+
+    const double offsets[4][2] = {
+      {-g_quadRotorOffset, -g_quadRotorOffset},
+      { g_quadRotorOffset, -g_quadRotorOffset},
+      {-g_quadRotorOffset,  g_quadRotorOffset},
+      { g_quadRotorOffset,  g_quadRotorOffset}
+    };
+    for(unsigned int i=0; i<4; ++i) {
+      glTranslatef(offsets[i][0] * factor_x,
+                   offsets[i][1] * factor_y, 0);
+      drawGLPoly(g_quadRotor, g_quadRotorSize, rotor_color, 0,
+                 factor_x, transparency);
+      drawGLPoly(g_quadRotor, g_quadRotorSize, white, 1,
+                 factor_x, transparency);
+      glTranslatef(-offsets[i][0] * factor_x,
+                   -offsets[i][1] * factor_y, 0);
+    }
+
+    drawGLPoly(g_quadBody, g_quadBodySize, body_color, 0,
+               factor_x, transparency);
+    if(outer_line)
+      drawGLPoly(g_quadBody, g_quadBodySize, black, outer_line,
+                 factor_x, transparency);
+    drawGLPoly(g_quadHeading, g_quadHeadingSize, white, 0,
+               factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
   else if(vehibody == "heron") {
     //ColorPack dk_gray(0.4, 0.4, 0.6);
     ColorPack dk_gray(0.5, 0.5, 0.9);
@@ -993,7 +1040,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
     drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
   }
-  else if(vehibody == "smr") {
+  else if((vehibody == "smr") || (vehibody == "smrx")) {
     //ColorPack dk_gray(0.4, 0.4, 0.6);
     ColorPack dk_gray(0.3, 0.3, 0.3);
     ColorPack lt_gray(0.6, 0.6, 0.6);
@@ -1002,6 +1049,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       factor_x *= (vlength / g_SMR_Length);
       factor_y *= (vlength / g_SMR_Length);
     }
+    
     double cx = g_SMR_CtrX * factor_x;
     double cy = g_SMR_CtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
@@ -1011,7 +1059,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_SMR_IMBody, g_SMR_IMBodySize, lt_gray, 0, factor_x, transparency);
     drawGLPoly(g_SMR_MotorA, g_SMR_MotorASize, lt_gray, 0, factor_x, transparency);
     drawGLPoly(g_SMR_MotorB, g_SMR_MotorBSize, lt_gray, 0, factor_x, transparency);
-    drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
+    if(vehibody == "smr")
+      drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
 
 
     glTranslatef(cx, cy, 0);
@@ -1056,6 +1105,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       draw_base_fin = false;
     
     drawGLPoly(g_crayBody,  g_crayBodySize, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_crayArrow,  g_crayArrowSize, fincolor, 0, factor_x, transparency);    
     if(draw_base_fin)
       drawGLPoly(g_crayBaseFinR,  g_crayBaseFinRSize, fincolor, 0, factor_x, transparency);
     drawGLPoly(g_crayFinR1,  g_crayFinR1Size, fincolor, 0, factor_x, transparency);
