@@ -4,7 +4,7 @@
 #--------------------------------------------------------
 
 SET(SRC
-  AOF_Contact.cpp
+#  AOF_Contact.cpp
   AOF_ContactX.cpp
   AOF_AttractorCPA.cpp
   AOF_AvoidCollision.cpp
@@ -28,7 +28,7 @@ SET(SRC
 )
 
 SET(HEADERS
-  AOF_Contact.h
+#  AOF_Contact.h
   AOF_ContactX.h
   AOF_AttractorCPA.h
   AOF_AvoidCollisionDepth.h
