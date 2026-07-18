@@ -8,10 +8,11 @@ include(${exports_file})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(MOOS DEFAULT_MSG exports_file)
 
-include(CMakeFindDependencyMacro)
+#include(CMakeFindDependencyMacro)   #mikerb comment this out
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_dependency(Threads REQUIRED)
+#find_dependency(Threads REQUIRED)  #mikerb switch
+find_package(Threads REQUIRED)
 
 # Support existing projects that expect to find MOOS_LIBRARIES and
 # MOOS_INCLUDE_DIRS variables.
