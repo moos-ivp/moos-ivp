@@ -65,6 +65,7 @@ public:
   
  private:
   void         handleMailAppCastRequest(const std::string&);
+  void         handleMailLoadCastRequest(const std::string&);
   bool         handleMailCommsPolicy(const std::string&);
   bool         appcastRequested();
 
@@ -99,9 +100,15 @@ protected:
   std::string  m_comms_policy;
   std::string  m_comms_policy_config;
   
-  // Map from KEY (AC requestor) to config param.
+  // Map from KEY (APPCAST requestor) to config param.
   std::map<std::string, double>       m_map_bcast_duration;
   std::map<std::string, double>       m_map_bcast_tstart;
   std::map<std::string, std::string>  m_map_bcast_thresh;  
+
+  // Map from KEY (LOADCAST requestor) to config param.
+  double  m_lcast_duration;
+  double  m_lcast_tstart;
+  double  m_lcast_thresh;
+  bool    m_lcast_isdue;
 };
 #endif
