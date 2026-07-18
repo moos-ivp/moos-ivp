@@ -1,10 +1,10 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvdColregsV19.h                                  */
+/*    ORGN: Dept of Mechanical Eng                               */
+/*    FILE: BHV_AvdColregsV22.h                                  */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
 /*    DATE: Oct 12th, 2018 (V19 from V17, plus refineries)       */
-/*    DATE: Feb 15th, 2022 (V22 from V19                         */
+/*    DATE: Feb 15th, 2022 (V22 from V19)                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -47,7 +47,7 @@ class BHV_AvdColregsV22 : public IvPContactBehavior {
   void         onIdleState();
   void         onInactiveState();
   void         onCompleteState();
-  std::string  getDebugInfo(std::string);
+  std::string  getInfo(std::string);
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
   std::string  expandMacros(std::string);

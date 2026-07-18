@@ -15,6 +15,12 @@ SET(SRC
   CPAEngine.cpp
   CPAEngineThin.cpp
   CPAEngineV15.cpp
+
+  CPXEngine.cpp
+  CPXEngineOG.cpp
+  CPXEnginePM.cpp
+  CPXEngineThin.cpp
+
   BNGEngine.cpp
   CPA_Utils.cpp
   CircularUtils.cpp
@@ -29,7 +35,7 @@ SET(SRC
   Seglr.cpp
   SeglrUtils.cpp
   PlatModel.cpp
-#  SpokeLog.cpp
+  SpokeLog.cpp
   VPlug_DropPoints.cpp
   VPlug_GeoSettings.cpp
   VPlug_GeoShapes.cpp
@@ -89,6 +95,10 @@ SET(HEADERS
   WallEngine.h
   CPAEngine.h
   CPAEngineThin.h
+  CPXEngineOG.h
+  CPXEngine.h
+  CPXEngineThin.h
+  CPXEnginePM.h
   CPA_Utils.h
   GeomUtils.h
   ArcUtils.h

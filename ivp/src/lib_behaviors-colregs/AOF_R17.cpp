@@ -29,19 +29,12 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
-AOF_R17::AOF_R17(IvPDomain gdomain) : AOF_Contact(gdomain)
+AOF_R17::AOF_R17(IvPDomain domain, CPXEngine* engine)
+  : AOF_ContactX(domain, engine)
 {
-  m_crs_ix = gdomain.getIndex("course");
-  m_spd_ix = gdomain.getIndex("speed");
-
   m_pass_mode = "neither";
-
-  m_osh = 0;
-  m_osv = 0;
-  m_osh_set = false;
-  m_osv_set = false;
 
   m_original_course = 0;
   m_original_speed = 0;
@@ -52,26 +45,18 @@ AOF_R17::AOF_R17(IvPDomain gdomain) : AOF_Contact(gdomain)
 
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R17::setParam(const string& param, double param_val)
 {
-  if(AOF_Contact::setParam(param, param_val))
+  if(AOF_ContactX::setParam(param, param_val))
     return(true);
 
-  if(param == "osh") {         // The current ownship heading
-    m_osh = param_val;
-    m_osh_set = true;
-  }
-  else if(param == "osv") {    // The current ownship speed
-    m_osv = param_val;
-    m_osv_set = true;
-  }
-  else if(param == "original_course") {   // Ownship hdg when started
+  if(param == "original_course") {  // Ownship hdg when started
     m_original_course = param_val;
     m_original_course_set = true;
   }
-  else if(param == "original_speed") {    // Ownship spd when started
+  else if(param == "original_speed") { // Ownship spd when started
     m_original_speed = param_val;
     m_original_speed_set = true;
   }
@@ -83,13 +68,10 @@ bool AOF_R17::setParam(const string& param, double param_val)
 
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R17::setParam(const string& param, const string& param_val)
 {
-  if(AOF_Contact::setParam(param, param_val))
-    return(true);
-  
   if(param == "passing_side") {
     if((param_val == "stern")        ||
        (param_val == "bow")          ||
@@ -109,17 +91,14 @@ bool AOF_R17::setParam(const string& param, const string& param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_R17::initialize()
 {
-  if(AOF_Contact::initialize() == false)
+  if(AOF_ContactX::initialize() == false)
     return(false);
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
-    return(false);
+
   if(m_pass_mode == "")
-    return(false);
-  if(!m_osh_set)
     return(false);
   if(!m_original_course_set || !m_original_speed_set)
     return(false);
@@ -128,7 +107,7 @@ bool AOF_R17::initialize()
 }
 
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalBox()
 //   Purpose: Evaluates a given <Course, Speed, Time-on-leg> tuple 
 //               given by a 3D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -181,7 +160,7 @@ double AOF_R17::evalBox(const IvPBox *b) const
 
 
 //----------------------------------------------------------------
-// Procedure: utilityHold
+// Procedure: utilityHold()
 //   Purpose: Returns a value between [0, 100]
 
 double AOF_R17::utilityHold(double eval_crs, double eval_spd) const
@@ -222,11 +201,15 @@ double AOF_R17::utilityHold(double eval_crs, double eval_spd) const
 }
 
 //----------------------------------------------------------------
-// Procedure: utilityAvoid
+// Procedure: utilityAvoid()
 //   Purpose: Returns a value between [0, 100]
 
 double AOF_R17::utilityAvoid(double eval_crs, double eval_spd) const
 {
+  // Sanity check
+  if(!m_cpa_engine)
+    return(0);
+  
   //  17(c) A power-driven vessel which takes action in a crossing
   //  situation in accordance with Rule 17(a)(ii) to avoid collision
   //  with another power-driven vessel shall, if the circumstances of
@@ -235,17 +218,21 @@ double AOF_R17::utilityAvoid(double eval_crs, double eval_spd) const
 
   // Part 1: Determine the raw CPA distance that would result from the 
   // given course and speed and configured time-on-leg.
-  double cpa_dist  = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist  = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
 
-  // Part 2: Determine a CPA discount based whether this hdg/spd crosses either
-  // the bow or stern and whether it "should" cross the bow or stern. Recall a
-  // discount or reduction in CPA ultimately means a reduced utility.
+  // Part 2: Determine a CPA discount based whether this hdg/spd
+  // crosses either the bow or stern and whether it "should" cross the
+  // bow or stern. Recall a discount or reduction in CPA ultimately
+  // means a reduced utility.
   double cpa_discount = 1.0;
 
   // kw addition
-  double rb = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
-  if(rb > 180) {
-    if(m_cpa_engine.turnsLeft(m_osh,eval_crs)) 
+  //double rb = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
+
+  double os_cn_relbng = m_cpa_engine->osToCNRelBng();
+  if(os_cn_relbng > 180) {
+    double osh = m_cpa_engine->osh();
+    if(portTurn(osh, eval_crs))
       return(0);
   }
 
@@ -259,7 +246,7 @@ double AOF_R17::utilityAvoid(double eval_crs, double eval_spd) const
 }
 
 //----------------------------------------------------------------
-// Procedure: metricCPA
+// Procedure: metricCPA()
 
 double AOF_R17::metricCPA(double eval_dist) const
 {

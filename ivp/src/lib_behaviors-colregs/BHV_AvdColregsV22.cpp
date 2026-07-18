@@ -156,8 +156,8 @@ bool BHV_AvdColregsV22::setParam(string param, string value)
   else if((param == "giveway_bow_dist") && non_neg_number) {
     if(dval < m_min_util_cpa_dist)
       dval = m_min_util_cpa_dist;
-    if(dval > m_max_util_cpa_dist)
-      dval = m_max_util_cpa_dist;
+    if(dval > m_max_util_cpa_dist *2)
+      dval = m_max_util_cpa_dist *2;
     m_giveway_bow_dist = dval;
   }
   else if((param == "turn_radius") && non_neg_number) 
@@ -403,9 +403,9 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: getDebugInfo()
+// Procedure: getInfo()
 
-string BHV_AvdColregsV22::getDebugInfo(string param)
+string BHV_AvdColregsV22::getInfo(string param)
 {
   string result;
   
@@ -587,7 +587,6 @@ void BHV_AvdColregsV22::checkModeOvertaking()
     m_avoid_submode = "starboard";
   else
     m_avoid_submode = "port";
-
 }
 
 //-----------------------------------------------------------
@@ -602,17 +601,15 @@ IvPFunction* BHV_AvdColregsV22::buildOvertakingIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  //AOF_AvoidCollision aof(m_domain);
-  AOF_R13 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", m_time_on_leg);
-  aof.setParam("passing_side", m_avoid_submode);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_R13 aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("passing_side", m_avoid_submode);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
   
-  if(!init_ok) {
+  if(!ok) {
     postEMessage("Unable to init AOF_R13.");
     return(0);
   }
@@ -626,7 +623,7 @@ IvPFunction* BHV_AvdColregsV22::buildOvertakingIPF()
 }
 
 //--------------------------------------------------------------
-// Procedure: checkModeHeadOn                          (Rule 14)
+// Procedure: checkModeHeadOn()                        (Rule 14)
 
 void BHV_AvdColregsV22::checkModeHeadOn()
 {
@@ -716,15 +713,14 @@ IvPFunction* BHV_AvdColregsV22::buildHeadOnIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  AOF_R14 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", m_time_on_leg);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_R14 aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
   
-  if(!init_ok) {
+  if(!ok) {
     postEMessage("Unable to init AOF_R14.");
     return(0);
   }
@@ -841,7 +837,7 @@ void BHV_AvdColregsV22::checkModeGiveWay()
 }
 
 //--------------------------------------------------------------
-// Procedure: buildGiveWayIPF                          (Rule 16)
+// Procedure: buildGiveWayIPF()                        (Rule 16)
 
 IvPFunction* BHV_AvdColregsV22::buildGiveWayIPF()
 {
@@ -852,26 +848,20 @@ IvPFunction* BHV_AvdColregsV22::buildGiveWayIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  AOF_R16  aof(m_domain);
-
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
+  AOF_R16 aof(m_domain, m_cpa_engine);
   bool ok = true;
   ok = ok && aof.setParam("tol", 120);
-  ok = ok && aof.setParam("osh", m_osh);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   if(!m_pts_port_turns_ok)
     ok = ok && aof.setParam("pts_port_turns_ok", "false");
   
+  ok = ok && aof.initialize();
 
-  
-  bool init_ok = ok && aof.initialize();
-
-  if(!init_ok) {
+  if(!ok) {
     string aof_msg = aof.getCatMsgsAOF();
-    postEMessage("Unable to init AOF_R16:"+aof_msg);
+    postEMessage("Unable to init AOF_R16:" + aof_msg);
     return(0);
   }
 
@@ -1243,18 +1233,15 @@ IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  AOF_CPA aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", 120);
-  aof.setParam("osh", m_osh);
-  aof.setParam("osv", m_osv);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_CPA aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
 
-  if(!init_ok) {
-    postEMessage("Unable to init AOF_AvoidCollision.");
+  if(!ok) {
+    postEMessage("Unable to init AOF_CPA.");
     return(0);
   }
 
@@ -1265,7 +1252,7 @@ IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
     RefineryCPA refinery;
     refinery.init(m_osx, m_osy, m_cnx, m_cny, m_cnh, m_cnv, m_time_on_leg,
 		  m_min_util_cpa_dist, m_max_util_cpa_dist, m_domain,
-		  &m_cpa_engine);
+		  m_cpa_engine);
     refinery.setVerbose(m_verbose);
     
     vector<IvPBox> regions;
@@ -1300,7 +1287,7 @@ IvPFunction* BHV_AvdColregsV22::buildCPA_IPF()
 
 
 //-----------------------------------------------------------
-// Procedure: getRelevance
+// Procedure: getRelevance()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 

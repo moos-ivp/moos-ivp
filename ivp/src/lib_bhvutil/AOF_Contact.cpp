@@ -30,13 +30,7 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
-//      args: gcnlat  Given Contact Latitude Position
-//      args: gcnlon  Given Contact Longitude Position
-//      args: gcncrs  Given Contact Course
-//      args: gcnspd  Given Contact Speed
-//      args: goslat  Given Ownship Latitude Position
-//      args: goslon  Given Ownship Latitude Position
+// Constructor()
 
 AOF_Contact::AOF_Contact(IvPDomain gdomain) : AOF(gdomain)
 {
@@ -56,7 +50,7 @@ AOF_Contact::AOF_Contact(IvPDomain gdomain) : AOF(gdomain)
 
   m_stat_bng_os_cn = 0;
 
-  m_cpa_engine_initialized = false;
+  m_cpa_engine = 0;
 }
 
 //----------------------------------------------------------------
@@ -66,14 +60,13 @@ AOF_Contact::AOF_Contact(IvPDomain gdomain) : AOF(gdomain)
 //            populated the trig cache once, thereby avoiding the needless
 //            recalculation of trig functions 
 
-void AOF_Contact::setCPAEngine(const CPAEngine& engine)
+void AOF_Contact::setCPAEngine(CPXEngine* engine)
 {
   m_cpa_engine = engine;
-  m_cpa_engine_initialized = true;
 }
 
 //----------------------------------------------------------------
-// Procedure: setOwnshipParams
+// Procedure: setOwnshipParams()
 
 void AOF_Contact::setOwnshipParams(double osx, double osy)
 {
@@ -85,7 +78,7 @@ void AOF_Contact::setOwnshipParams(double osx, double osy)
 }
 
 //----------------------------------------------------------------
-// Procedure: setContactParams
+// Procedure: setContactParams()
 
 void AOF_Contact::setContactParams(double cnx, double cny,
 				   double cnh, double cnv)
@@ -103,7 +96,7 @@ void AOF_Contact::setContactParams(double cnx, double cny,
 
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_Contact::setParam(const string& param, double param_val)
 {
@@ -161,7 +154,7 @@ bool AOF_Contact::setParam(const string& param, double param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_Contact::initialize()
 {
@@ -204,15 +197,6 @@ bool AOF_Contact::initialize()
 
   m_stat_bng_os_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
 
-  // Initialization will be avoided if the user has already initialized
-  // or if the CPAEngine was set already via the setCPAEngine() function.
-  // For this reason, users should make sure that setCPAEngine() is called
-  // first, before this function, to make sure that the CPAEngine is not
-  // initialized twice. Not incorrect if so, but this is inefficient since
-  // CPAEngine initialization involves the building of caches.
-  if(!m_cpa_engine_initialized)
-    m_cpa_engine.reset(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
-
   return(true);
 }
 
@@ -222,7 +206,7 @@ bool AOF_Contact::initialize()
 
 double AOF_Contact::getCNSpeedInOSPos() const
 {
-  return(m_cpa_engine.getCNSpeedInOSPos());
+  return(m_cpa_engine->cnSpdInOSPos());
 }
 
 //----------------------------------------------------------------
@@ -230,7 +214,7 @@ double AOF_Contact::getCNSpeedInOSPos() const
 
 bool AOF_Contact::aftOfContact() const
 {
-  return(m_cpa_engine.aftOfContact());
+  return(m_cpa_engine->aftOfContact());
 }
 
 //----------------------------------------------------------------
@@ -238,7 +222,7 @@ bool AOF_Contact::aftOfContact() const
 
 bool AOF_Contact::portOfContact() const
 {
-  return(m_cpa_engine.portOfContact());
+  return(m_cpa_engine->portOfContact());
 }
 
 //----------------------------------------------------------------
@@ -246,6 +230,6 @@ bool AOF_Contact::portOfContact() const
 
 double AOF_Contact::getRangeGamma() const
 {
-  return(m_cpa_engine.getRangeGamma());
+  return(m_cpa_engine->getRangeGamma());
 }
 

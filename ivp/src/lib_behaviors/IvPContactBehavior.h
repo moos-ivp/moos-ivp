@@ -30,6 +30,8 @@
 #include <vector>
 #include "IvPBehavior.h"
 #include "CPAEngine.h"
+#include "CPXEngineOG.h"
+#include "CPXEnginePM.h"
 #include "LinearExtrapolator.h"
 #include "ExFilterSet.h"
 #include "ContactStateSet.h"
@@ -45,7 +47,7 @@ public:
  public: // Override virtual funcions 
   bool  setParam(std::string, std::string);
   void  onHelmStart();
-  void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
+  //void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
   void  onEveryState(std::string new_state);
   bool  applyAbleFilter(std::string);
   std::string expandMacros(std::string);
@@ -107,9 +109,23 @@ public:
 
   LinearExtrapolator m_extrapolator;
 
+#if 0
   CPAEngine m_cpa_engine;
   CPAEngine m_rcpa_engine;
+#endif
 
+#if 1
+  CPXEngineOG m_cpa_engine_og;
+  CPXEngineOG m_rcpa_engine_og;
+
+  CPXEnginePM m_cpa_engine_pm;
+  CPXEnginePM m_rcpa_engine_pm;
+
+  CPXEngine*  m_cpa_engine;
+  CPXEngine*  m_rcpa_engine;
+
+#endif
+  
   ContactStateSet m_cnos;
 
   bool m_nav_warning_posted; 

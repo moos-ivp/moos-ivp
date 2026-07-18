@@ -117,7 +117,8 @@ public:
 
   void expand(double v);
   
-  void applyPolar(double radextra, int dim, int pts=0);
+  //void applyPolar(double radextra, int dim, int pts=0);
+  void applyPolar(double radextra, int dim, int pts, double pad=0);
   void applyColorIntensity(double intensity);
   void applyScale(double scale);
   void applyBase(double value);

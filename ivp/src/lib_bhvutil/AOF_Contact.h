@@ -28,7 +28,7 @@
 
 #include <vector>
 #include "AOF.h"
-#include "CPAEngine.h"
+#include "CPXEngine.h"
 
 class AOF_Contact: public AOF {
 public:
@@ -41,10 +41,9 @@ public: // virtual functions
   virtual bool   setParam(const std::string&, const std::string&) {return(false);}
   virtual bool   initialize();
 
-  void setCPAEngine(const CPAEngine& engine);
-  
-  void setOwnshipParams(double osx, double osy);
-  void setContactParams(double cnx, double cny, double cnh, double cnv);
+  void   setCPAEngine(CPXEngine* engine);
+  void   setOwnshipParams(double osx, double osy);
+  void   setContactParams(double cnx, double cny, double cnh, double cnv);
 
   double getCNSpeedInOSPos() const;
   double getRangeGamma() const;
@@ -75,8 +74,7 @@ protected:
 
   double m_stat_bng_os_cn;
   
-  CPAEngine m_cpa_engine;
-  bool      m_cpa_engine_initialized;
+  CPXEngine *m_cpa_engine;
 };
 
 #endif

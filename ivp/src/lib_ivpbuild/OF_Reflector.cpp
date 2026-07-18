@@ -153,8 +153,8 @@ double OF_Reflector::checkPlateaus(bool verbose) const
 	if(verbose) {
 	  pboxes[j].print();
 	  double pval = m_aof->evalBox(&pboxes[j]);
-	  cout << " --> max:" << maxval << ", ptval:" << pval << ", delta:"
-	       << delta << endl;
+	  //cout << " --> max:" << maxval << ", ptval:" << pval << ", delta:"
+	  //     << delta << endl;
 	}
       }
     }
@@ -513,7 +513,7 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
 }
 
 //-------------------------------------------------------------
-// Procedure: create
+// Procedure: create()
 
 int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 {

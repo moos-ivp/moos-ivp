@@ -156,6 +156,7 @@ double CPAEngine::getARange(double osh, double osv, double time) const
 //----------------------------------------------------------------
 // Procedure: getARangeRate()
 
+#if 0
 double CPAEngine::getARangeRate(double osh, double osv, double time) const
 {
   if((osh >= 360) || (osh < 0))
@@ -174,6 +175,7 @@ double CPAEngine::getARangeRate(double osh, double osv, double time) const
   double range_squared_rate = (2 * k2 * time) + k1;
   return(range_squared_rate);
 }
+#endif
 
 //----------------------------------------------------------------
 // Procedure: evalCPA

@@ -187,6 +187,15 @@ void WaypointEngineX::setSegList(const XYSegList& g_seglist,
 }
 
 //-----------------------------------------------------------
+// Procedure: setPrevPt()
+//      Note: Allow a user to set/hack this explicitly
+
+void WaypointEngineX::setPrevPoint(double x, double y)
+{
+  m_prevpt.set_vertex(x,y);
+}
+
+//-----------------------------------------------------------
 // Procedure: setSegList()
 //      Note: Convenience function
 
@@ -536,24 +545,52 @@ double WaypointEngineX::distToNextWpt(double osx, double osy) const
 //-----------------------------------------------------------
 // Procedure: pctToNextWpt()
 
-double WaypointEngineX::pctToNextWpt(double osx, double osy) const
+double WaypointEngineX::pctToNextWpt(double osx, double osy,
+				     bool fixpt)
 {
-  if(!m_prevpt.valid())
+  XYPoint curr_pt = m_seglist.get_point(m_curr_ix);
+  XYPoint prev_pt = m_seglist.get_last_point();
+  if(m_curr_ix > 0)
+    prev_pt = m_seglist.get_point(m_curr_ix-1);
+  
+  double dist_to_next = distPointToPoint(osx, osy, curr_pt.x(), curr_pt.y());
+  double dist_to_prev = distPointToPoint(osx, osy, prev_pt.x(), prev_pt.y());
+  double dist_total = dist_to_next + dist_to_prev; 
+
+  cout << "dist_to_next:" << doubleToString(dist_to_next,2) << endl;
+  cout << "dist_to_prev:" << doubleToString(dist_to_prev,2) << endl;
+  cout << "pct:" << doubleToString((dist_to_prev/dist_total),2) << endl;  
+  
+  if(dist_total <= 0)
     return(-1);
 
+  return(dist_to_prev / dist_total);
+
+#if 0  
+  if(!m_prevpt.valid())
+    return(-1);
+  
   double cx = getPointX();
   double cy = getPointY();
   double px = m_prevpt.x();
   double py = m_prevpt.y();  
-
+  cout << "cx:" << doubleToStringX(cx,2) << ",cy:" << doubleToStringX(cy,2) << endl;
+  cout << "px:" << doubleToStringX(px,2) << ",py:" << doubleToStringX(py,2) << endl;
+  
   double dist_to_next = distPointToPoint(osx, osy, cx, cy);
   double dist_to_prev = distPointToPoint(osx, osy, px, py);
   double dist_total = dist_to_next + dist_to_prev; 
+
+  cout << "dist_to_next:" << doubleToString(dist_to_next,2) << endl;
+  cout << "dist_to_prev:" << doubleToString(dist_to_prev,2) << endl;
+  cout << "pct:" << doubleToString((dist_to_prev/dist_total),2) << endl;  
 
   if(dist_total <= 0)
     return(-1);
 
   return(dist_to_prev / dist_total);
+#endif
+  
 }
 
 

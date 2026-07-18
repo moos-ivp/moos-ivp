@@ -187,7 +187,7 @@ void BHV_MemoryTurnLimit::addHeading(double heading,
 
 bool BHV_MemoryTurnLimit::getHeadingAvg(double& heading_avg)
 {
-  double anchor_heading; 
+  double anchor_heading = 0; 
   double heading_delta_total = 0;
 
   list<double>::iterator p;

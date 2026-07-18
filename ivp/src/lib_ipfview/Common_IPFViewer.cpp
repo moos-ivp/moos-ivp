@@ -47,7 +47,9 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_intensity    = 1.0;
   m_polar        = 0; 
 
-  m_draw_ipf     = true;
+  m_start_wid    = wid;
+  m_start_hgt    = hgt;
+  
   m_draw_pin     = true;
   m_draw_base    = true;
   m_draw_pclines = true;
@@ -100,6 +102,14 @@ void Common_IPFViewer::resize(int x, int y, int wid, int hgt)
   m_yoffset     = hgt / 3.5;
   m_grid_width  = wid  - (m_xoffset*2);
   m_grid_height = 0.5 * hgt;
+
+  // Since the viewer may have only a placeholer extent (1x1) at
+  // time of instantiation, the "starting" extents are set the
+  // first time it is set to something greater than (1x1)
+  if(m_start_wid <= 1)
+    m_start_wid = wid;
+  if(m_start_hgt <= 1)
+    m_start_hgt = hgt;
 }
 
 //-------------------------------------------------------------
@@ -109,7 +119,8 @@ bool Common_IPFViewer::setParam(string param, string value)
 {
   value = tolower(stripBlankEnds(value));
 
-  cout << "Common_IPFViewer::setParam() param: " << param << ", value:" << value << endl;
+  //cout << "Common_IPFViewer::setParam() param: " << param;
+  //cout << ", value:" << value << endl;
   
   if((param == "draw_frame") && (value == "toggle")) {
     if(!m_draw_frame) {
@@ -149,7 +160,7 @@ bool Common_IPFViewer::setParam(string param, string value)
     else if(value=="3")
       {m_xRot=-53; m_zRot=0;}
     else if(value=="4")
-      {m_xRot=-72; m_zRot=122;}
+      {m_xRot=-53; m_zRot=180;}
   }
   else if((param == "frame_color") && (value=="lighter"))
     m_frame_color.shade(0.05);
@@ -167,8 +178,6 @@ bool Common_IPFViewer::setParam(string param, string value)
   else
     return(false);
 
-  cout << "KJK m_use_refinery:" << boolToString(m_use_refinery) << endl;
-  
   redraw();
   return(true);
 }
@@ -366,22 +375,31 @@ void Common_IPFViewer::resetRadVisuals()
 {
   IvPDomain ivp_domain = m_quadset_ipf.getDomain();
 
+#if 0
   double min_extent = w();
   if(h() < min_extent)
     min_extent = h();
+#endif
+#if 1
+  double min_extent = m_start_wid;
+  if(m_start_hgt < min_extent)
+    min_extent = m_start_hgt;
+#endif
 
   m_rad_extent = min_extent;
-
+  cout << "m_rad_extent: " << doubleToString(m_rad_extent,2) << endl;
+  
   unsigned int spd_pts = ivp_domain.getVarPoints("speed");
   if(spd_pts == 0)
     m_rad_ratio = 1;
   else 
     m_rad_ratio = (min_extent / (double)(spd_pts));
+  cout << "m_rad_ratio: " << doubleToString(m_rad_ratio,2) << endl;
 }
 
 
 //-------------------------------------------------------------
-// Procedure: drawQuadSet
+// Procedure: drawQuadSet()
 
 bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
 {
@@ -392,11 +410,10 @@ bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawQuadSet1D
+// Procedure: drawQuadSet1D()
 
 void Common_IPFViewer::drawQuadSet1D()
 {
-#if 1
   double clear_red = m_clear_color.red();
   double clear_grn = m_clear_color.grn();
   double clear_blu = m_clear_color.blu();
@@ -488,7 +505,7 @@ void Common_IPFViewer::drawQuadSet1D()
   glFlush();
   glPopMatrix();
 
-#endif
+
   draw1DKeys(key_strings, key_colors);
   draw1DAxes(m_quadset_1d.getDomain());
   draw1DLabels(m_quadset_1d.getDomain());
@@ -513,7 +530,7 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawQuad
+// Procedure: drawQuad()
 
 void Common_IPFViewer::drawQuad(Quad3D q)
 {
@@ -530,7 +547,6 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   // Draw the insides
   glShadeModel(GL_SMOOTH);
   glBegin(GL_TRIANGLE_FAN);
-
 
   // Draw the first two vertices
   glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
@@ -558,7 +574,7 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 
   // Draw the last two vertices
   glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
-  glVertex3f(x2, y2, q.getHHZ());
+  glVertex3f(x2, y2, q.getHHZ()); 
   glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
   glVertex3f(x1, y1, q.getHLZ());
 
@@ -567,7 +583,8 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   // Draw the line edges of the piece
   if(m_draw_pclines && m_show_pieces) {
     glLineWidth(0.5);
-    glColor3f(1.0, 1.0, 1.0);
+    //glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.6, 0.6, 0.6);
 
     glBegin(GL_LINE_STRIP);
     glVertex3f(x0, y0, q.getLLZ());
@@ -601,7 +618,7 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawFrame
+// Procedure: drawFrame()
 
 void Common_IPFViewer::drawFrame(bool full)
 {
@@ -687,9 +704,57 @@ void Common_IPFViewer::drawFrame(bool full)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPolarFrame
+// Procedure: drawFloor()
 
-void Common_IPFViewer::drawPolarFrame(bool full)
+void Common_IPFViewer::drawFloor(double floor_wid, double floor_shade,
+				 double hash_shade)
+{
+  double w = floor_wid;
+  double b = m_frame_base;
+  //double t = -150 + (m_frame_height);
+  // shades should be in the range [0,1]
+  glColor3f(floor_shade, floor_shade, floor_shade);
+  glShadeModel(GL_FLAT);
+
+  // Either draw a full base or just the frame
+  if(m_draw_base) {
+    glBegin(GL_TRIANGLES);
+    glVertex3f(-w,-w, b); 
+    glVertex3f( w,-w, b); 
+    glVertex3f( w, w, b);
+    glVertex3f( w, w, b); 
+    glVertex3f(-w, w, b); 
+    glVertex3f(-w,-w, b);
+    glEnd();
+  }
+  
+  glColor3f(hash_shade, hash_shade, hash_shade);
+
+  int field = w;
+  int cell  = 200;
+
+  glLineWidth(1);
+  for(int i=-field; i<field; i+=cell) {
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(i,field, b+1);  
+    glVertex3f(i,-field, b+1);  
+    glEnd();
+  }    
+
+  for(int i=-field; i<field; i+=cell) {
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(field,i, b+1);  
+    glVertex3f(-field, i, b+1);  
+    glEnd();
+  }    
+
+  glFlush();
+}
+
+//-------------------------------------------------------------
+// Procedure: drawPolarFrame()
+
+void Common_IPFViewer::drawPolarFrame(double radpad)
 {
   double ctr_x = 0;
   double ctr_y = 0;
@@ -699,24 +764,30 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   double frame_grn = m_frame_color.grn();
   double frame_blu = m_frame_color.blu();
 
-  glColor3f(frame_red, frame_grn, frame_blu);
+  //glColor3f(frame_red, frame_grn, frame_blu);
+  glColor4f(0.4, 0.84, 0.4, 0.05);
   glShadeModel(GL_FLAT);
   
   vector<double> vx;
   vector<double> vy;
   for(unsigned int i=0; i<360; i++) {
     double x, y;
-    projectPoint((double)(i), m_rad_extent, ctr_x, ctr_y, x, y);
+    projectPoint((double)(i), m_rad_extent * radpad, ctr_x, ctr_y, x, y);
     vx.push_back(x);
     vy.push_back(y);
   }
   
   if(m_draw_base) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.4, 0.4, 0.4, 0.5);
     glBegin(GL_TRIANGLE_FAN);
     for(unsigned int i=0; i<vx.size(); i++)
-      glVertex3f(vx[i], vy[i], z);
-    glVertex3f(vx[0], vy[0], z);
+      glVertex3f(vx[i], vy[i], z+2);
+    glVertex3f(vx[0], vy[0], z+2);
     glEnd();
+    glDisable(GL_BLEND);
+    
   }
   
   glColor3f(frame_red, frame_grn, frame_blu);
@@ -728,8 +799,8 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   glColor3f(0.2, 0.2, 0.4);
   glBegin(GL_LINE_STRIP);
   for(unsigned int i=0; i<vx.size(); i++) 
-    glVertex3f(vx[i], vy[i], z+1); 
-  glVertex3f(vx[0], vy[0], z+1); 
+    glVertex3f(vx[i], vy[i], z+3); 
+  glVertex3f(vx[0], vy[0], z+3); 
   glEnd();
   glDisable(GL_LINE_SMOOTH);
 
@@ -738,46 +809,31 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   glEnable(GL_LINE_SMOOTH);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
   glBegin(GL_LINE_STRIP);  // North
-  glVertex3f(0, 0, z+1); 
-  glVertex3f(0, m_rad_extent, z+1); 
+  glVertex3f(0, 0, z+3); 
+  glVertex3f(0, m_rad_extent, z+3); 
   glDisable(GL_LINE_SMOOTH);
   glEnd();
 
   glBegin(GL_LINE_STRIP);  // South
-  glVertex3f(0, 0, z+1); 
-  glVertex3f(0, -m_rad_extent, z+1); 
+  glVertex3f(0, 0, z+3); 
+  glVertex3f(0, -m_rad_extent, z+3); 
   glEnd();
 
   glBegin(GL_LINE_STRIP);  // East
-  glVertex3f(0, 0, z+1); 
-  glVertex3f(m_rad_extent, 0, z+1); 
+  glVertex3f(0, 0, z+3); 
+  glVertex3f(m_rad_extent, 0, z+3); 
   glEnd();
 
   glEnable(GL_LINE_SMOOTH);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
   glBegin(GL_LINE_STRIP);  // West
-  glVertex3f(0, 0, z+1); 
-  glVertex3f(-m_rad_extent, 0, z+1); 
+  glVertex3f(0, 0, z+3); 
+  glVertex3f(-m_rad_extent, 0, z+3); 
   glEnd();
   glLineWidth(1);
   glDisable(GL_LINE_SMOOTH);
 
-  
-#if 0
-  if(full) {
-    glBegin(GL_TRIANGLES);
-    for(unsigned int i=0; i<vx.size(); i++) 
-      glVertex3f(vx[i], vy[i], t); 
-    glEnd();
-
-    glBegin(GL_LINE_STRIP);
-    for(unsigned int i=0; i<vx.size(); i++) 
-      glVertex3f(vx[i], vy[i], t); 
-    glEnd();
-  }
-#endif
-  
-  glFlush();
+   glFlush();
 }
 
 //-------------------------------------------------------------
@@ -787,7 +843,7 @@ void Common_IPFViewer::drawCenteredShip(double heading)
 {
   double z = m_frame_base;
   //double t = z + m_frame_height;
-  double t = z+1;
+  double t = z+4;
 
   ColorPack ship_color_lgt = m_ship_color;
   ColorPack ship_color_drk = m_ship_color;
@@ -838,7 +894,7 @@ void Common_IPFViewer::drawCenteredShip(double heading)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawOwnPoint
+// Procedure: drawOwnPoint()
 
 void Common_IPFViewer::drawOwnPoint()
 {
@@ -885,9 +941,11 @@ void Common_IPFViewer::toggleFrameOnTop()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawMaxPoint
+// Procedure: drawMaxPoint()
 
-void Common_IPFViewer::drawMaxPoint(double crs, double spd)
+void Common_IPFViewer::drawMaxPoint(double crs, double spd,
+				    double hgt, double psize,
+				    string pcolor)
 {
   if(m_quadset_ipf.size() == 0)
     return;
@@ -895,12 +953,15 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
   // Apply the radial extent
   spd *= m_rad_ratio;
 
-  double x,y,z=m_base_ipf+230;
+  double x,y,z=m_base_ipf + hgt;
   projectPoint(crs, spd, 0, 0, x, y);
   
-  glPointSize(2.0 * m_zoom);
+  glPointSize(psize * m_zoom);
 
-  glColor3f(1.0f, 0.5, 1.0f);
+  ColorPack cpack(pcolor);
+  
+  glColor3f(cpack.red(), cpack.grn(), cpack.blu());
+  //  glColor3f(1.0f, 0.5, 1.0f);
   glShadeModel(GL_FLAT);
 
   glEnable(GL_POINT_SMOOTH);

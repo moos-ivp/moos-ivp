@@ -286,7 +286,7 @@ void QuadSet::applyTranslation()
 //-------------------------------------------------------------
 // Procedure: applyPolar()
 
-void QuadSet::applyPolar(double rad_extra, int polar_dim)
+void QuadSet::applyPolar(double rad_extra, int polar_dim, double pad)
 {
   if((polar_dim != 1) && (polar_dim != 2))
     return;
@@ -298,7 +298,7 @@ void QuadSet::applyPolar(double rad_extra, int polar_dim)
     pts = m_ivp_domain.getVarPoints(1);
   
   for(unsigned int i=0; i<m_quads.size(); i++) 
-    m_quads[i].applyPolar(rad_extra, polar_dim, pts);
+    m_quads[i].applyPolar(rad_extra, polar_dim, pts, pad);
 }
 
 

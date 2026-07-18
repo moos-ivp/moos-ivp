@@ -30,7 +30,7 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Constructor
+// Constructor()
 
 Quad3D::Quad3D()
 {
@@ -96,7 +96,7 @@ void Quad3D::expand(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: applyPolar
+// Procedure: applyPolar()
 //   Purpose: Apply the polar translation from raw xl,..yh to cached x,y
 //            It's assumed that this cannot be changed back once it's
 //            done. If a user wants to toggle, it will involve the
@@ -104,11 +104,23 @@ void Quad3D::expand(double val)
 //            an additional four member variables would need to be
 //            added to hold and preserve the "original" xl,...yh vals.
 
-void Quad3D::applyPolar(double rad_extra, int polar_dim, int pts)
+void Quad3D::applyPolar(double rad_extra, int polar_dim, int pts, double pad)
 {
   // Sanity checks
   if((rad_extra <= 0) || (polar_dim < 1) || (polar_dim > 2) || (pts <= 0))
     return;
+
+  if(pad != 0) {
+    ll_xval -= pad;
+    hl_xval += pad;
+    hh_xval += pad;
+    lh_xval -= pad;
+
+    ll_yval -= pad;
+    hl_yval -= pad;
+    hh_yval += pad;
+    lh_yval += pad;
+  }
   
   if(polar_dim == 1) {
     double delta = 360.0 / pts;
@@ -118,10 +130,15 @@ void Quad3D::applyPolar(double rad_extra, int polar_dim, int pts)
     projectPoint(lh_xval*delta, lh_yval*rad_extra, 0, 0, lh_xval, lh_yval);
 
     for(unsigned int i=0; i<m_xin_low.size(); i++) {
+
+      m_yin_low[i] -= pad;
+      m_yin_hgh[i] += pad;
+
       projectPoint(m_xin_low[i]*delta, m_yin_low[i]*rad_extra, 0, 0,
 		   m_xin_low[i], m_yin_low[i]);
       projectPoint(m_xin_hgh[i]*delta, m_yin_hgh[i]*rad_extra, 0, 0,
 		   m_xin_hgh[i], m_yin_hgh[i]);
+
     }
 
   }
@@ -202,7 +219,7 @@ void Quad3D::applyBase(double given_base)
 }
 
 //-------------------------------------------------------------
-// Procedure: applyTranslation
+// Procedure: applyTranslation()
 
 void Quad3D::applyTranslation(double xval, double yval)
 {
@@ -351,7 +368,7 @@ double Quad3D::getBinHGH(unsigned int ix) const
 }
 
 //-------------------------------------------------------------
-// Procedure: interpolate
+// Procedure: interpolate()
 //      Note: Assumed to be invoked before applying polar and colormap
 
 void Quad3D::interpolate(double xdelta)

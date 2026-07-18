@@ -817,7 +817,6 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$(19)", randomNumString(19));
   sval = findReplace(sval, "$(20)", randomNumString(20));
 
-  
   for(unsigned int i=0; i<m_rand_vars.size(); i++) {
     string macro1 = "$(" + m_rand_vars.getVarName(i) + ")";
     string macro2 = "$[" + m_rand_vars.getVarName(i) + "]";
@@ -842,6 +841,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   unsigned int replace_amt = 0;
   bool maybe_more = true;
   while(maybe_more && (replace_amt <= replace_max)) {
+    cout << "Handle Math Expression: " << sval << endl;
     maybe_more = handleMathExpr(sval);
     replace_amt++;
   }
@@ -857,7 +857,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
 }
 
 //----------------------------------------------------------------
-// Procedure: addLogEvent
+// Procedure: addLogEvent()
 //
 // P/Tot  P/Loc  T/Total   T/Local   Variable/Var
 // -----  -----  --------  -------   ------------

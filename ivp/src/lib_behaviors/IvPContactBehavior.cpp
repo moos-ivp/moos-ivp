@@ -56,7 +56,6 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_exit_on_filter_group  = false;
   m_exit_on_filter_region = false;
 
-
   // Initialize contact pose state variables
   m_cnx = 0;
   m_cny = 0;
@@ -70,6 +69,9 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_bearing_line_info = "relevance";
 
   m_nav_warning_posted = false;
+
+  m_cpa_engine = &m_cpa_engine_og;
+  m_rcpa_engine = &m_rcpa_engine_og;
 }
 
 //-----------------------------------------------------------
@@ -187,7 +189,20 @@ bool IvPContactBehavior::setParam(string param, string param_val)
 	valid_components = false;
     }
     return(true);
-  }  
+  }
+  else if(param == "use_plat_model") {
+    if(tolower(param_val) == "true") {
+      m_cpa_engine = &m_cpa_engine_pm;
+      m_rcpa_engine = &m_rcpa_engine_pm;
+      return(true);
+    }
+    else if(tolower(param_val) == "false") {
+      m_cpa_engine = &m_cpa_engine_og;
+      m_rcpa_engine = &m_rcpa_engine_og;
+      return(true);
+    }
+  }
+  
   return(false);
 }
 
@@ -577,60 +592,67 @@ bool IvPContactBehavior::updatePlatformInfo()
   
   //==================================================================
   // Part 3: Update the useful relative vehicle information
-  
-  m_cpa_engine.reset(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
-  m_rcpa_engine.reset(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
+
+  if(m_cpa_engine && m_rcpa_engine) {
+    m_cpa_engine->reset(m_cny,m_cnx,m_cnh,m_cnv,
+			m_osy,m_osx,m_osh,m_osv);
+
+    m_rcpa_engine->reset(m_osy,m_osx,m_osh,m_osv,
+			 m_cny,m_cnx,m_cnh,m_cnv);
     
-  m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
+    m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
 
-  // range is stored in both m_contact_range and the cnos structure
-  m_cnos.set_range(m_contact_range);
+    // range is stored in both m_contact_range and the cnos structure
+    m_cnos.set_range(m_contact_range);
+    
+    m_cnos.set_os_fore_of_cn(m_cpa_engine->foreOfContact());
+    m_cnos.set_os_aft_of_cn(m_cpa_engine->aftOfContact());
+    m_cnos.set_os_port_of_cn(m_cpa_engine->portOfContact());
+    m_cnos.set_os_star_of_cn(m_cpa_engine->starOfContact());
+    
+    m_cnos.set_cn_fore_of_os(m_rcpa_engine->foreOfContact());
+    m_cnos.set_cn_aft_of_os(m_rcpa_engine->aftOfContact());
+    m_cnos.set_cn_port_of_os(m_rcpa_engine->portOfContact());
+    m_cnos.set_cn_star_of_os(m_rcpa_engine->starOfContact());
+    
+    //m_cnos.set_cn_spd_in_os_pos(m_cpa_engine->getCNSpeedInOSPos());
+    m_cnos.set_cn_spd_in_os_pos(m_cpa_engine->cnSpdInOSPos());
+    
+    m_cnos.set_os_cn_rel_bng(relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny));
+    m_cnos.set_cn_os_rel_bng(relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy));
+    //m_cnos.set_os_cn_abs_bng(m_cpa_engine->ownshipContactAbsBearing());
+    m_cnos.set_os_cn_abs_bng(m_cpa_engine->osToCNAbsBng());
+    
+    m_cnos.set_rate_of_closure(m_cpa_engine->evalROC(m_osh, m_osv));
+    m_cnos.set_bearing_rate(m_cpa_engine->bearingRate(m_osh, m_osv));
+    m_cnos.set_contact_rate(m_rcpa_engine->bearingRate(m_cnh, m_cnv));
+    
+    m_cnos.set_range_gamma(m_cpa_engine->getRangeGamma());
+    m_cnos.set_range_epsilon(m_cpa_engine->getRangeEpsilon());
+    
+    m_cnos.set_os_passes_cn(m_cpa_engine->passesPortOrStar(m_osh, m_osv));
+    m_cnos.set_os_passes_cn_port(m_cpa_engine->passesPort(m_osh, m_osv));
+    m_cnos.set_os_passes_cn_star(m_cpa_engine->passesStar(m_osh, m_osv));
+    
+    m_cnos.set_cn_passes_os(m_rcpa_engine->passesPortOrStar(m_cnh, m_cnv));
+    m_cnos.set_cn_passes_os_port(m_rcpa_engine->passesPort(m_cnh, m_cnv));
+    m_cnos.set_cn_passes_os_star(m_rcpa_engine->passesStar(m_cnh, m_cnv));
+    
+    m_cnos.set_os_crosses_cn(m_cpa_engine->crossesBowOrStern(m_osh, m_osv));
+    m_cnos.set_os_crosses_cn_stern(m_cpa_engine->crossesStern(m_osh, m_osv));
+    m_cnos.set_os_crosses_cn_bow(m_cpa_engine->crossesBow(m_osh, m_osv));
+    m_cnos.set_os_crosses_cn_bow_dist(m_cpa_engine->crossesBowDist(m_osh, m_osv));
+    
+    m_cnos.set_cn_crosses_os(m_rcpa_engine->crossesBowOrStern(m_cnh, m_cnv));
+    m_cnos.set_cn_crosses_os_stern(m_rcpa_engine->crossesStern(m_cnh, m_cnv));
+    m_cnos.set_cn_crosses_os_bow(m_rcpa_engine->crossesBow(m_cnh, m_cnv));
+    m_cnos.set_cn_crosses_os_bow_dist(m_rcpa_engine->crossesBowDist(m_cnh, m_cnv));
+    
+    m_cnos.set_os_curr_cpa_dist(m_cpa_engine->evalCPA(m_osh, m_osv, 120));
+    
+    m_cnos.set_update_ok(true);
+  }
   
-  m_cnos.set_os_fore_of_cn(m_cpa_engine.foreOfContact());
-  m_cnos.set_os_aft_of_cn(m_cpa_engine.aftOfContact());
-  m_cnos.set_os_port_of_cn(m_cpa_engine.portOfContact());
-  m_cnos.set_os_star_of_cn(m_cpa_engine.starboardOfContact());
-
-  m_cnos.set_cn_fore_of_os(m_rcpa_engine.foreOfContact());
-  m_cnos.set_cn_aft_of_os(m_rcpa_engine.aftOfContact());
-  m_cnos.set_cn_port_of_os(m_rcpa_engine.portOfContact());
-  m_cnos.set_cn_star_of_os(m_rcpa_engine.starboardOfContact());
-
-  m_cnos.set_cn_spd_in_os_pos(m_cpa_engine.getCNSpeedInOSPos());
-
-  m_cnos.set_os_cn_rel_bng(relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny));
-  m_cnos.set_cn_os_rel_bng(relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy));
-  m_cnos.set_os_cn_abs_bng(m_cpa_engine.ownshipContactAbsBearing());
-
-  m_cnos.set_rate_of_closure(m_cpa_engine.evalROC(m_osh, m_osv));
-  m_cnos.set_bearing_rate(m_cpa_engine.bearingRate(m_osh, m_osv));
-  m_cnos.set_contact_rate(m_rcpa_engine.bearingRate(m_cnh, m_cnv));
-  
-  m_cnos.set_range_gamma(m_cpa_engine.getRangeGamma());
-  m_cnos.set_range_epsilon(m_cpa_engine.getRangeEpsilon());
-
-  m_cnos.set_os_passes_cn(m_cpa_engine.passesPortOrStar(m_osh, m_osv));
-  m_cnos.set_os_passes_cn_port(m_cpa_engine.passesPort(m_osh, m_osv));
-  m_cnos.set_os_passes_cn_star(m_cpa_engine.passesStar(m_osh, m_osv));
-  
-  m_cnos.set_cn_passes_os(m_rcpa_engine.passesPortOrStar(m_cnh, m_cnv));
-  m_cnos.set_cn_passes_os_port(m_rcpa_engine.passesPort(m_cnh, m_cnv));
-  m_cnos.set_cn_passes_os_star(m_rcpa_engine.passesStar(m_cnh, m_cnv));
-  
-  m_cnos.set_os_crosses_cn(m_cpa_engine.crossesBowOrStern(m_osh, m_osv));
-  m_cnos.set_os_crosses_cn_stern(m_cpa_engine.crossesStern(m_osh, m_osv));
-  m_cnos.set_os_crosses_cn_bow(m_cpa_engine.crossesBow(m_osh, m_osv));
-  m_cnos.set_os_crosses_cn_bow_dist(m_cpa_engine.crossesBowDist(m_osh, m_osv));
-
-  m_cnos.set_cn_crosses_os(m_rcpa_engine.crossesBowOrStern(m_cnh, m_cnv));
-  m_cnos.set_cn_crosses_os_stern(m_rcpa_engine.crossesStern(m_cnh, m_cnv));
-  m_cnos.set_cn_crosses_os_bow(m_rcpa_engine.crossesBow(m_cnh, m_cnv));
-  m_cnos.set_cn_crosses_os_bow_dist(m_rcpa_engine.crossesBowDist(m_cnh, m_cnv));
-
-  m_cnos.set_os_curr_cpa_dist(m_cpa_engine.evalCPA(m_osh, m_osv, 120));
-  
-  m_cnos.set_update_ok(true);
-
   // Mark helm_iteration to further indicate the current ContactState
   // has been successfully updated for this iteration.
   m_cnos.set_helm_iter(m_helm_iter);

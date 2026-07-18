@@ -645,10 +645,6 @@ void BHV_Waypoint::onEveryState(string str)
 	setParam("point", param_val);
       }
     }
-    
-    if(m_waypts_init == "end") {
-      setParam("point", "x=0,y=40");
-    }
   }
 }
 

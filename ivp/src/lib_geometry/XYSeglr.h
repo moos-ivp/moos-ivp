@@ -53,6 +53,10 @@ public: // Setters
 public: // Getters (for settable vals)
   double getVX(unsigned int ix) const;
   double getVY(unsigned int ix) const;
+  double getVertAngle(unsigned int ix) const;
+  double getVertDist(unsigned int ix) const;
+  double getVertPDist(unsigned int ix) const;
+
   double getRayAngle() const {return(m_ray_angle);}
   double getRayLen() const   {return(m_raylen);}
   double getHeadSize() const {return(m_headsz);}
@@ -79,7 +83,7 @@ public: // Getters (analyzers)
   unsigned int size() const {return(m_vx.size());};
   
   std::string get_spec(int vertex_precision=1) const;
-  std::string get_spec_ix() const;
+  std::string get_spec_terse() const;
 
 protected:
   void init();

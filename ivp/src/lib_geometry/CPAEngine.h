@@ -77,7 +77,7 @@ public:
   bool   foreOfContact() const {return(m_stat_os_fore_of_cn);}
   bool   aftOfContact() const {return(m_stat_os_aft_of_cn);}
   bool   portOfContact() const {return(m_stat_os_port_of_cn);}
-  bool   starboardOfContact() const {return(m_stat_os_star_of_cn);}
+  bool   starOfContact() const {return(m_stat_os_star_of_cn);}
 
   double minMaxROC(double, double, double&, double&) const;
 
@@ -87,8 +87,10 @@ public:
   double ownshipContactRelBearing(double osh) const;
   double contactOwnshipRelBearing() const {return(m_stat_rel_bng_cn_os);}
 
-  double ownshipContactAbsBearing() const {return(m_stat_abs_bng_os_cn);}
+  //double ownshipContactAbsBearing() const {return(m_stat_abs_bng_os_cn);}
+  double osToCNAbsBng() const {return(m_stat_abs_bng_os_cn);}
 
+  
 
  public: // Getters for intermediate values used in other calculations
   double cnSpdToOS() const {return(m_stat_cn_to_os_spd);}
@@ -99,6 +101,7 @@ public:
   double getOSTimeGamma(double osh, double osv) const;
   double getOSTimeEpsilon(double osh, double osv) const;
   double getCNSpeedInOSPos() const {return(m_stat_cn_to_os_spd);}
+  double cnSpdInOSPos() const {return(m_stat_cn_to_os_spd);}
   double getRangeGamma() const   {return(m_stat_range_gam);}
   double getRangeEpsilon() const {return(m_stat_range_eps);}
   double getThetaGamma() const   {return(m_stat_theta_os_gam);}

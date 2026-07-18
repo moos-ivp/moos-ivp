@@ -392,8 +392,10 @@ bool BHV_LegRun::onRunStateLegMode()
   postLegPoints(true);
 
   // Part 4: Check for midflag conditions and maybe post
-  if(m_leg_count > 0) {
-    double pct_leg = 100 * m_wpteng_legs.pctToNextWpt(m_osx, m_osy);
+  if(m_leg_count >= 0) {
+    double pct_to_next_wpt = m_wpteng_legs.pctToNextWpt(m_osx, m_osy, true);
+    cout << "LR: pct_to_next_wpt:" << doubleToString(pct_to_next_wpt,2) << endl;
+    double pct_leg = 100 * pct_to_next_wpt;
     if((pct_leg > m_mid_leg_pct) && !m_mid_leg_event_yet) {
       postFlags(m_mid_leg_flags, true);
       m_mid_leg_event_yet = true;

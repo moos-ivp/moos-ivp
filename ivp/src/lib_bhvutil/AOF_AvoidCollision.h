@@ -26,13 +26,13 @@
 #ifndef AOF_AVOID_COLLISION_HEADER
 #define AOF_AVOID_COLLISION_HEADER
 
-#include "AOF_Contact.h"
-#include "CPAEngine.h"
+#include "AOF_ContactX.h"
+#include "CPXEngine.h"
 
 class IvPDomain;
-class AOF_AvoidCollision: public AOF_Contact {
+class AOF_AvoidCollision: public AOF_ContactX {
  public:
-  AOF_AvoidCollision(IvPDomain);
+  AOF_AvoidCollision(IvPDomain, CPXEngine*);
   ~AOF_AvoidCollision() {}
 
  public: // virtuals defined
@@ -44,17 +44,12 @@ class AOF_AvoidCollision: public AOF_Contact {
   double getKnownMin() const {return(0);}
   double getKnownMax() const {return(m_max_util);}
 
-  double evalROC(double osh, double osv) {
-    return(m_cpa_engine.evalROC(osh, osv));
-  }
+  double evalROC(double osh, double osv) const;
       
  protected:
   double metric(double) const;
   
  protected:
-  int    m_crs_ix;  // Index of "course" variable in IvPDomain
-  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
-
   double m_max_util;
 };
 

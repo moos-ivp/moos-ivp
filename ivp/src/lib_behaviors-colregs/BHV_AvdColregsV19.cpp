@@ -560,23 +560,23 @@ void BHV_AvdColregsV19::checkModeOvertaking()
 IvPFunction* BHV_AvdColregsV19::buildOvertakingIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, othewise the resulting ivp function will be universally
-  // negative, resulting a function with no preference in any direction.
+  // this distance, othewise the resulting ivp function will be
+  // universally negative, resulting a function with no preference in
+  // any direction.
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
   //AOF_AvoidCollision aof(m_domain);
-  AOF_R13 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", m_time_on_leg);
-  aof.setParam("passing_side", m_avoid_submode);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_R13 aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("passing_side", m_avoid_submode);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
   
-  if(!init_ok) {
+  if(!ok) {
     postEMessage("Unable to init AOF_R13.");
     return(0);
   }
@@ -674,15 +674,14 @@ IvPFunction* BHV_AvdColregsV19::buildHeadOnIPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  AOF_R14 aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", m_time_on_leg);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
+  bool ok = true;
+  AOF_R14 aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
   
-  if(!init_ok) {
+  if(!ok) {
     postEMessage("Unable to init AOF_R14.");
     return(0);
   }
@@ -791,7 +790,6 @@ void BHV_AvdColregsV19::checkModeGiveWay()
   
   if(!m_cnos.os_crosses_cn_bow_or_stern() && (os_spd_in_cn_hdg > 0))
     m_avoid_submode = "bow";
-
 }
 
 //--------------------------------------------------------------
@@ -800,47 +798,35 @@ void BHV_AvdColregsV19::checkModeGiveWay()
 IvPFunction* BHV_AvdColregsV19::buildGiveWayIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, othewise the resulting ivp function will be universally
-  // negative, resulting a function with no preference in any direction.
+  // this distance, othewise the resulting ivp function will be
+  // universally negative, resulting a function with no preference in
+  // any direction.
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  m_debug2 = "Building Giveway IPF";
-
-  AOF_R16  aof(m_domain);
-
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
   bool ok = true;
+  AOF_R16 aof(m_domain, m_cpa_engine);
   ok = ok && aof.setParam("tol", 120);
-  ok = ok && aof.setParam("osh", m_osh);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  
-  bool init_ok = ok && aof.initialize();
+  ok = ok && aof.initialize();
 
-  m_debug3 = boolToString(init_ok);
-  
-  if(!init_ok) {
-    m_debug1 = "PROBLEM Init AOF_R16!!!!";
+  if(!ok) {
     string aof_msg = aof.getCatMsgsAOF();
-    postEMessage("Unable to init AOF_R16:"+aof_msg);
+    postEMessage("Unable to init AOF_R16:" + aof_msg);
     return(0);
   }
-  m_debug4 = "GiveWay AOF initialized OK";
 
   OF_Reflector reflector(&aof, 1);
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 
-  m_debug3 = "";
   unsigned int msize = reflector.getMessageCnt();
   for(unsigned int i=0; i<msize; i++) {
     string msg = reflector.getMessage(i);
     postMessage("AOF_R16", msg);
-    m_debug3 += " # " + msg;
   }
 
   return(ipf);
@@ -1201,21 +1187,14 @@ IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
   if(m_contact_range <= m_min_util_cpa_dist)
     min_util_cpa_dist = (m_contact_range / 2);
 
-  m_debug2 = "Building CPA IPF";
+  bool ok = true;
+  AOF_CPA aof(m_domain, m_cpa_engine);
+  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.initialize();
 
-  AOF_CPA aof(m_domain);
-  aof.setOwnshipParams(m_osx, m_osy);
-  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", 120);
-  aof.setParam("osh", m_osh);
-  aof.setParam("osv", m_osv);
-  aof.setParam("collision_distance", min_util_cpa_dist);
-  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  bool init_ok = aof.initialize();
-
-  m_debug3 = boolToString(init_ok);
-  
-  if(!init_ok) {
+  if(!ok) {
     m_debug1 = "PROBLEM Init AOF_AvoidCollision!!!!";
     postEMessage("Unable to init AOF_AvoidCollision.");
     return(0);
@@ -1230,7 +1209,7 @@ IvPFunction* BHV_AvdColregsV19::buildCPA_IPF()
     RefineryCPA refinery;
     refinery.init(m_osx, m_osy, m_cnx, m_cny, m_cnh, m_cnv, m_time_on_leg,
 		  m_min_util_cpa_dist, m_max_util_cpa_dist, m_domain,
-		  &m_cpa_engine);
+		  m_cpa_engine);
     refinery.setVerbose(m_verbose);
     
     vector<IvPBox> regions;

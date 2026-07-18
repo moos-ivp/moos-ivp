@@ -30,6 +30,7 @@
 #include <string>
 #include "XYPoint.h"
 #include "XYSeglr.h"
+#include "SpokeLog.h"
 
 class PlatModel 
 {
@@ -68,14 +69,17 @@ public: // Getters configs
   double getOSY() const {return(m_osy);}
   double getOSH() const {return(m_osh);}
   double getOSV() const {return(m_osv);}
-  double getDblValue(std::string) {return(0);}
-  std::string getStrValue(std::string) {return("");}
+
   std::string getModelType() const {return(m_model_type);}
+
   bool isHolonomic() const {return(m_model_type == "holo");}
   
 public: // Getters (Model guts)
   std::vector<XYPoint> getPoints(std::string);
+  std::vector<double> getSpokeDists(std::string);
   XYSeglr getTurnSeglr(double hdg) const;
+
+  SpokeLog getClosestSpokeLog(double px, double py) const;
   
 public: // Getters of state
   bool    valid() const;
@@ -105,12 +109,16 @@ protected: // Config vars
   unsigned int m_id;
   
   // Vector ix corresponds to one unit m_spoke_degs
-  std::vector<double>  m_star_spoke_vx;
-  std::vector<double>  m_star_spoke_vy;
-  std::vector<double>  m_port_spoke_vx;
-  std::vector<double>  m_port_spoke_vy;
-  std::vector<XYSeglr> m_star_seglrs;
-  std::vector<XYSeglr> m_port_seglrs;
+  std::vector<double>   m_star_spoke_vx;
+  std::vector<double>   m_star_spoke_vy;
+  std::vector<SpokeLog> m_star_logs;
+  
+  std::vector<double>   m_port_spoke_vx;
+  std::vector<double>   m_port_spoke_vy;
+  std::vector<SpokeLog> m_port_logs;
+
+  std::vector<XYSeglr>  m_star_seglrs;
+  std::vector<XYSeglr>  m_port_seglrs;
 };
 
 PlatModel stringToPlatModel(std::string);

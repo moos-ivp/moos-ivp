@@ -20,10 +20,7 @@
 /* License along with MOOS-IvP.  If not, see                     */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
+
 #include <iostream>
 #include <cmath> 
 #include "AOF_CPA.h"
@@ -33,49 +30,42 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
-AOF_CPA::AOF_CPA(IvPDomain gdomain) 
-  : AOF_Contact(gdomain)
-{
-  m_crs_ix = gdomain.getIndex("course");
-  m_spd_ix = gdomain.getIndex("speed");
+// Constructor()
 
+AOF_CPA::AOF_CPA(IvPDomain domain, CPXEngine* engine) 
+  : AOF_ContactX(domain, engine)
+{
   m_inextremis = false;
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_CPA::setParam(const string& param, double value)
 {
-  if(AOF_Contact::setParam(param, value))
+  if(AOF_ContactX::setParam(param, value))
     return(true);
   else
     return(false);
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_CPA::setParam(const string& param, const string& value)
 {
-  if(AOF_Contact::setParam(param, value))
-    return(true);
-  else if(param == "inextremis")
+  if(param == "inextremis")
     return(setBooleanOnString(m_inextremis, value));
   else
     return(false);
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_CPA::initialize()
 {
-  if(AOF_Contact::initialize() == false)
-    return(false);
-
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
+  if(AOF_ContactX::initialize() == false)
     return(false);
 
   return(true);
@@ -83,7 +73,7 @@ bool AOF_CPA::initialize()
 
 
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalBox()
 //   Purpose: Evaluates a given <Course, Speed, Time-on-leg> tuple 
 //               given by a 3D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -92,13 +82,17 @@ bool AOF_CPA::initialize()
 
 double AOF_CPA::evalBox(const IvPBox *b) const
 {
+  // Sanity check
+  if(!m_cpa_engine)
+    return(0);
+  
   double eval_crs = 0;
   double eval_spd = 0; 
 
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
-  double cpa_dist  = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist  = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
   double eval_dist = metric(cpa_dist);
 
   return(eval_dist);
@@ -119,9 +113,4 @@ double AOF_CPA::metric(double eval_dist) const
   double tween = 25.0 + 75.0 * (eval_dist - min) / (max-min);
   return(tween);
 }
-
-
-
-
-
 

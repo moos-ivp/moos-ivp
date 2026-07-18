@@ -22,10 +22,6 @@
 /* Public License along with MOOS-IvP.  If not, see              */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 #include <iostream>
 #include <cmath> 
 #include "AOF_AvoidCollision.h"
@@ -35,39 +31,35 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
-AOF_AvoidCollision::AOF_AvoidCollision(IvPDomain gdomain) 
-  : AOF_Contact(gdomain)
-{
-  m_crs_ix = gdomain.getIndex("course");
-  m_spd_ix = gdomain.getIndex("speed");
+// Constructor()
 
+AOF_AvoidCollision::AOF_AvoidCollision(IvPDomain domain,
+				       CPXEngine* engine) 
+  : AOF_ContactX(domain, engine)
+{
   m_max_util = 100;
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_AvoidCollision::setParam(const string& param, double param_val)
 {
-  if(AOF_Contact::setParam(param, param_val))
+  if(AOF_ContactX::setParam(param, param_val))
     return(true);
   else
     return(false);
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_AvoidCollision::initialize()
 {
-  if(AOF_Contact::initialize() == false)
+  if(AOF_ContactX::initialize() == false)
     return(false);
 
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
-    return(false);
-
-  double range = hypot(m_osx-m_cnx, m_osy-m_cny);
+  double range = m_cpa_engine->getRange();
   m_max_util = metric(range);
   
   return(true);
@@ -75,7 +67,19 @@ bool AOF_AvoidCollision::initialize()
 
 
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalROC()
+
+double AOF_AvoidCollision::evalROC(double osh, double osv) const
+{
+  double roc = 0;
+  if(m_cpa_engine)
+    roc = m_cpa_engine->evalROC(osh, osv);
+
+  return(roc);
+}
+
+//----------------------------------------------------------------
+// Procedure: evalBox()
 //   Purpose: Evaluates a given <Course, Speed, Time-on-leg> tuple 
 //               given by a 3D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -90,14 +94,22 @@ double AOF_AvoidCollision::evalBox(const IvPBox *b) const
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
-  double cpa_dist  = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist = 0;
+  //cout << "spec: " << m_cpa_engine->getSpec() << endl;
+  if(m_cpa_engine)
+    cpa_dist  = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
+
+  //cout << "----" << endl;
+  //cout << "Dbb:     cpa_dist" << doubleToString(cpa_dist,4) << endl;
+
   double eval_dist = metric(cpa_dist);
 
+  //cout << "Dbb: eval_dist" << doubleToString(eval_dist,4) << endl;
   return(eval_dist);
 }
 
 //----------------------------------------------------------------
-// Procedure: metric
+// Procedure: metric()
 
 double AOF_AvoidCollision::metric(double eval_dist) const
 {

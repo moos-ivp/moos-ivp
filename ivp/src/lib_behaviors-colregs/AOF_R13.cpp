@@ -29,13 +29,11 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
-AOF_R13::AOF_R13(IvPDomain gdomain) : AOF_Contact(gdomain)
+AOF_R13::AOF_R13(IvPDomain domain, CPXEngine* engine)
+  : AOF_ContactX(domain, engine)
 {
-  m_crs_ix = gdomain.getIndex("course");
-  m_spd_ix = gdomain.getIndex("speed");
-
   m_pass_to_port     = true;
   m_passing_side_set = false;
   m_port_of_contact  = false;
@@ -43,13 +41,10 @@ AOF_R13::AOF_R13(IvPDomain gdomain) : AOF_Contact(gdomain)
 
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R13::setParam(const string& param, const string& param_val)
 {
- if(AOF_Contact::setParam(param, param_val))
-    return(true);
-
   if(param == "passing_side") {
     if(param_val == "port") {
       m_passing_side_set = true;
@@ -69,36 +64,34 @@ bool AOF_R13::setParam(const string& param, const string& param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_R13::setParam(const string& param, double param_val)
 {
-  return(AOF_Contact::setParam(param, param_val));
+  return(AOF_ContactX::setParam(param, param_val));
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_R13::initialize()
 {
-  if(AOF_Contact::initialize() == false)
-    return(false);
-
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
+  if(AOF_ContactX::initialize() == false)
     return(false);
 
   if(!m_passing_side_set)
     return(false);
-  
+
   // Calculate this here since it's the same for all evaluations
-  m_port_of_contact  = m_cpa_engine.portOfContact();
-  m_cn_to_os_rel_bng = m_cpa_engine.contactOwnshipRelBearing();
+  m_port_of_contact  = m_cpa_engine->portOfContact();
+  m_cn_to_os_rel_bng = m_cpa_engine->cnToOSRelBng();
+  //m_cn_to_os_rel_bng = m_cpa_engine.contactOwnshipRelBearing();
   
   return(true);
 }
  
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalBox()
 //   Purpose: Evaluates a given <Course, Speed, Time-on-leg> tuple 
 //               given by a 3D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -107,6 +100,10 @@ bool AOF_R13::initialize()
 
 double AOF_R13::evalBox(const IvPBox *b) const
 {
+  // Sanity Check
+  if(!m_cpa_engine)
+    return(0);
+
   // Part 1: Determine the course and speed being evaluated.
   double eval_crs = 0;
   double eval_spd = 0;
@@ -117,7 +114,7 @@ double AOF_R13::evalBox(const IvPBox *b) const
   // Part 2: Determine the raw CPA distance that would result from the 
   // given course and speed and configured time-on-leg.
   //double cpa_dist = 20;
-  double cpa_dist = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
   if(cpa_dist < m_collision_distance)
     return(0);
   
@@ -139,11 +136,11 @@ double AOF_R13::evalBox(const IvPBox *b) const
  
 
 //----------------------------------------------------------------
-// Procedure: metricCPA
+// Procedure: metricCPA()
 
 double AOF_R13::metricCPA(double eval_dist) const
 {
- double min_dist = m_collision_distance;
+  double min_dist = m_collision_distance;
   double max_dist = m_all_clear_distance;
 
   if(eval_dist > max_dist) 
@@ -159,12 +156,16 @@ double AOF_R13::metricCPA(double eval_dist) const
 
 
 //----------------------------------------------------------------
-// Procedure: metricPassesSide
+// Procedure: metricPassesSide()
 
 double AOF_R13::metricPassesSide(double utility, double hdg, double spd) const
 {
-  // Handle special case. If ownship speed is zero we declare this has no loss
-  // in utitlity.
+  // Sanity Check
+  if(!m_cpa_engine)
+    return(0);
+
+  // Handle special case. If ownship speed is zero we declare this has
+  // no loss in utitlity.
   if(spd == 0)
     return(utility);
 
@@ -172,8 +173,8 @@ double AOF_R13::metricPassesSide(double utility, double hdg, double spd) const
   //bool crosses_stern = m_cpa_engine.crossesStern(hdg, spd);
 
   if(m_pass_to_port) {
-    if(m_cpa_engine.passesStar(hdg, spd)) {
-      if(m_cpa_engine.passesPortDist(hdg, spd) < m_collision_distance)
+    if(m_cpa_engine->passesStar(hdg, spd)) {
+      if(m_cpa_engine->passesPortDist(hdg, spd) < m_collision_distance)
 	return(0);
       else
 	return(utility);
@@ -182,8 +183,8 @@ double AOF_R13::metricPassesSide(double utility, double hdg, double spd) const
       return(utility);
   }
   else {  // pass_to_port=false, passing to starboard
-    if(m_cpa_engine.passesPort(hdg, spd)) {
-      if(m_cpa_engine.passesStarDist(hdg, spd) < m_collision_distance)
+    if(m_cpa_engine->passesPort(hdg, spd)) {
+      if(m_cpa_engine->passesStarDist(hdg, spd) < m_collision_distance)
 	return(0);
       else
 	return(utility);

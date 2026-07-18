@@ -24,6 +24,7 @@
 #include <iostream>
 #include <cmath>
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 #include "SimEngine.h"
 
 using namespace std;
@@ -36,6 +37,8 @@ SimEngine::SimEngine()
   m_verbose = false;
   m_turn_spd_loss = 0.85;  // [0,1] 0:no_loss, 1:halt at full rudder
 
+  m_turn_radius = 0;
+  
   m_thrust_mode_reverse = false;
 }
 
@@ -50,13 +53,44 @@ void SimEngine::setTurnSpdLoss(double dval)
 }
 
 //-----------------------------------------------------------------
+// Procedure: setTurnRadius()
+
+bool SimEngine::setTurnRadius(double dval)
+{
+  if(dval < 0)
+    return(false);
+
+  m_turn_radius = dval;
+  return(true);
+}
+
+//-----------------------------------------------------------------
+// Procedure: setMaxSpeed()
+//      Note: The MaxSpeed, when set, will influence the min
+//            turn radius.
+
+bool SimEngine::setMaxSpeed(double dval)
+{
+  if(dval < 0)
+    return(false);
+
+  m_max_speed = dval;
+  return(true);
+}
+
+//-----------------------------------------------------------------
 // Procedure: propagate()
 
 void SimEngine::propagate(NodeRecord &record, double delta_time,
 			  double prior_heading, double prior_speed,
 			  double drift_x, double drift_y)
 {
-  double speed   = (record.getSpeed() + prior_speed) / 2;
+  // Keep a copy of the incoming record for when/if we enforce
+  // the turn limit.
+  NodeRecord prev_record = record;
+  prev_record.setHeading(prior_heading);
+  
+  double speed = (record.getSpeed() + prior_speed) / 2;
 
   double s = sin(degToRadians(prior_heading)) +
     sin(degToRadians(record.getHeading()));
@@ -91,6 +125,14 @@ void SimEngine::propagate(NodeRecord &record, double delta_time,
   record.setTimeStamp(new_time);
   record.setSpeedOG(new_sog);
   record.setHeadingOG(new_hog);
+
+  cout << "Turn Radius:" << doubleToString(m_turn_radius) << endl;
+  if(m_turn_radius > 0) {
+    cout << "PR:" << prev_record.getSpec(true) << endl;
+    cout << "R1:" << record.getSpec(true) << endl;
+    enforceTurnLimit(prev_record, record);
+    cout << "R2:" << record.getSpec(true) << endl;
+  }
 }
 
 //--------------------------------------------------------------------
@@ -326,11 +368,74 @@ void SimEngine::propagateHeadingDiffMode(NodeRecord& record,
 }
 
 
+//--------------------------------------------------------------------
+// Procedure: enforceTurnLimit()
 
+void SimEngine::enforceTurnLimit(NodeRecord record1, NodeRecord& record2)
+{
+  // Sanity check: If there was no turn, we're done
+  double osh1 = record1.getHeading();
+  double osh2 = record2.getHeading();
+  if(osh1 == osh2)
+    return;
 
+  // Part 1: If turn speed affect the turn radius, adjust here
+  double turn_radius_in_effect = m_turn_radius;
+  double osv1 = record1.getSpeed();
+  double osv2 = record2.getSpeed();
+  double osv = (osv1 + osv2)/2;
 
+  cout << "osv1:" << doubleToString(osv1,3) << endl;
+  cout << "osv2:" << doubleToString(osv2,3) << endl;
+  cout << "osv:" << doubleToString(osv,3) << endl;
+  if((m_max_speed > 0) && (osv < m_max_speed)) {
+    double pct = 1 - ((m_max_speed - osv) / m_max_speed);
+    turn_radius_in_effect = pct * m_turn_radius;
+    cout << "pct:" << doubleToString(pct,3) << endl;
+  }
+  cout << "TRIE:" << doubleToString(turn_radius_in_effect,3) << endl;
+  
+  // Part 2: Determine if the proposed turn, implied by the two
+  //         node records, will be limited, based on the
+  //         turn_radius_in_effect.
 
+  double osx1 = record1.getX();
+  double osy1 = record1.getY();
+  double osx2 = record2.getX();
+  double osy2 = record2.getY();
 
+  double dist  = hypot(osx1 - osx2, osy1 - osy2);
+  double rang  = relAng(osx1,osy1, osx2,osy2);
+  double adiff = angleDiff(rang, osh1);
+  double odivh = ((dist/(2 * turn_radius_in_effect)));
 
+  double theta_rad  = asin(odivh);
 
+  double theta = radToDegrees(theta_rad);
+  double phi = theta;
 
+  // If it does not need to be limited, we're done now.
+  if(phi >= adiff)
+    return;
+
+  // Part 3: Determine if this is a port or starboard turn          
+  bool port_turn = portTurn(osh1, osh2);
+
+  // Part 4: Determine new ownship position if limited turn
+  double phix = osh1 + phi;
+  if(port_turn)
+    phix = osh1 - phi;
+
+  projectPoint(phix, dist, osx1, osy1, osx2, osy2);
+
+  // Part 5: Determine new ownship heading if limited turn
+  if(port_turn)
+    osh2 = angle360(osh1 - phi*2);
+  else
+    osh2 = angle360(osh1 + phi*2);
+
+  // Part 6: Apply the changes to the node record.
+  record2.setX(osx2);
+  record2.setY(osy2);
+  record2.setHeading(osh2);
+}

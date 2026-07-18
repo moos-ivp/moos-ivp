@@ -24,13 +24,13 @@
 #ifndef AOF_CPA_HEADER
 #define AOF_CPA_HEADER
 
-#include "AOF_Contact.h"
+#include "AOF_ContactX.h"
 #include "CPAEngine.h"
 
 class IvPDomain;
-class AOF_CPA: public AOF_Contact {
+class AOF_CPA: public AOF_ContactX {
 public:
-  AOF_CPA(IvPDomain);
+  AOF_CPA(IvPDomain, CPXEngine*);
   ~AOF_CPA() {}
 
 public: // virtuals defined
@@ -43,18 +43,7 @@ public: // virtuals defined
   double metric(double) const;
   
  protected:
-  int    m_crs_ix;  // Index of "course" variable in IvPDomain
-  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
-
   bool   m_inextremis;
 };
 
 #endif
-
-
-
-
-
-
-
-

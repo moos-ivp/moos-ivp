@@ -40,6 +40,10 @@ public:
 
   void setVerbose(bool v=true) {m_verbose=v;}
   void setTurnSpdLoss(double);
+  bool setTurnRadius(double);
+  bool setMaxSpeed(double);
+
+  double getTurnRadius() const {return(m_turn_radius);}
   
 public:
   void propagate(NodeRecord&, double delta_time, double prior_heading,
@@ -69,12 +73,18 @@ public:
 				double rotate_speed);
 
 protected:
+  void enforceTurnLimit(NodeRecord, NodeRecord&);
+  
+protected:
   bool m_thrust_mode_reverse;
 
   double m_turn_spd_loss;
   
   TurnSpeedMap m_turn_speed_map;
 
+  double m_turn_radius;
+  double m_max_speed;
+  
   bool m_verbose;
 };
 

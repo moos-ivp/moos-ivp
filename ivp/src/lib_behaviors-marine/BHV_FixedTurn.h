@@ -81,6 +81,9 @@ protected:
   std::list<double>    m_mark_rudder;
 
   std::set<std::string> m_set_radial_segls;
+
+  double   m_last_turn_rad;
+
   
  private: // Config params
   double   m_fix_turn;   // Total delta hdg targeted
