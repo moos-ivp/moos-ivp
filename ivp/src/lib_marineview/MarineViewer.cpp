@@ -57,6 +57,7 @@
 #include "Shape_EField.h"
 #include "Shape_Square.h"
 #include "Shape_Skywalker.h"
+#include "Shape_Quadcopter.h"
 #include "Shape_Kelp.h"
 #include "XYFormatUtilsPoly.h"
 #include "BearingLine.h"
@@ -80,7 +81,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_hash_shade  = 0.65;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
-  m_textures    = new GLuint[1];
 
   //m_back_img_b_ok = false;
   //m_back_img_b_on = false;
@@ -109,7 +109,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
 MarineViewer::~MarineViewer()
 {
-   delete [] m_textures;
 }
 
 //-------------------------------------------------------------
@@ -340,6 +339,8 @@ void MarineViewer::setVerbose(bool bval)
 }
 
 
+
+
 //-------------------------------------------------------------
 // Procedure: setParam()
 
@@ -417,12 +418,13 @@ bool MarineViewer::applyTiffFiles()
     return(false);
 
   unsigned int cnt = m_tif_files.size();
+  m_textures.resize(cnt);
   
   m_back_imgs = vector<BackImg>(cnt);
   
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glGenTextures(cnt, m_textures);
+  glGenTextures(static_cast<GLsizei>(cnt), m_textures.data());
 
   for(unsigned int ix=0; ix<cnt; ix++) {
     m_back_imgs[ix].readTiff(m_tif_files[ix]);
@@ -973,6 +975,50 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     if(outer_line)
       drawGLPoly(g_skywBody, g_skywBodySize, white, outer_line, factor_x, transparency);    
     drawGLPoly(g_skywMid, g_skywMidSize, gray, 0, factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if((vehibody == "quad") ||
+          (vehibody == "quadcopter")) {
+    if(vlength > 0) {
+      factor_x *= (vlength / g_quadLength);
+      factor_y *= (vlength / g_quadLength);
+    }
+
+    ColorPack rotor_color(0.68, 0.71, 0.76);
+    ColorPack arm_color(0.43, 0.47, 0.53);
+    double cx = g_quadCtrX * factor_x;
+    double cy = g_quadCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    drawGLPoly(g_quadArmA, g_quadArmASize, arm_color, 0,
+               factor_x, transparency);
+    drawGLPoly(g_quadArmB, g_quadArmBSize, arm_color, 0,
+               factor_x, transparency);
+
+    const double offsets[4][2] = {
+      {-g_quadRotorOffset, -g_quadRotorOffset},
+      { g_quadRotorOffset, -g_quadRotorOffset},
+      {-g_quadRotorOffset,  g_quadRotorOffset},
+      { g_quadRotorOffset,  g_quadRotorOffset}
+    };
+    for(unsigned int i=0; i<4; ++i) {
+      glTranslatef(offsets[i][0] * factor_x,
+                   offsets[i][1] * factor_y, 0);
+      drawGLPoly(g_quadRotor, g_quadRotorSize, rotor_color, 0,
+                 factor_x, transparency);
+      drawGLPoly(g_quadRotor, g_quadRotorSize, white, 1,
+                 factor_x, transparency);
+      glTranslatef(-offsets[i][0] * factor_x,
+                   -offsets[i][1] * factor_y, 0);
+    }
+
+    drawGLPoly(g_quadBody, g_quadBodySize, body_color, 0,
+               factor_x, transparency);
+    if(outer_line)
+      drawGLPoly(g_quadBody, g_quadBodySize, black, outer_line,
+                 factor_x, transparency);
+    drawGLPoly(g_quadHeading, g_quadHeadingSize, white, 0,
+               factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "heron") {
