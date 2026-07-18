@@ -87,11 +87,7 @@ public: // Group C - Checks for Crossing Stern and/or Bow
 
 protected:
   bool   seglrIndex(const XYSeglr&, unsigned int,
-<<<<<<< HEAD
 		    double& osx, double& osy, double& osh, double osv,
-=======
-		    double& osx, double& osy, double& osh,
->>>>>>> c8e5d4e5a (many mods reflecting addition of platform model logic, new CPAEngine and mods to support bngview)
 		    double& cnx, double& cny, double& segt) const;
 
 protected:

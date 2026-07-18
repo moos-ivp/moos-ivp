@@ -2612,7 +2612,8 @@ bool isKnownVehicleType(const string& vehicle_type)
      (vtype == "buoy") || (vtype == "heron")  || (vtype == "swimmer") ||
      (vtype == "cray") || (vtype == "bcray")  || (vtype == "crayx") ||
      (vtype == "wamv") || (vtype == "bcrayx") || (vtype == "smr") ||
-     (vtype == "smrx") || (vtype == "skyw") || (vtype == "skywalker")) {
+     (vtype == "smrx") || (vtype == "skyw")   || (vtype == "skywalker") ||
+     (vtype == "quad") || (vtype == "quadcopter")) {
     return(true);
   }
   

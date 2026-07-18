@@ -1,8 +1,7 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Charles Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: PMGen_Holonomic.cpp                                  */
-/*    DATE: Oct 24th, 2023                                       */
+/*    FILE: TiffUtils.cpp                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,23 +20,28 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include "TiffUtils.h"
 #include "MBUtils.h"
-#include "GeomUtils.h"
-#include "AngleUtils.h"
-#include "PMGen_Holonomic.h"
 
 using namespace std;
 
-//----------------------------------------------------------------
-// Procedure: generate()
+//--------------------------------------------------------
+// Procedure: isTiffFile
 
-PlatModel PMGen_Holonomic::generate(double osx, double osy,
-				    double osh, double osv)
+bool isTiffFile(const string& filename)
 {
-  PlatModel pmodel("holo");
+  return(strEnds(filename, ".tif") || strEnds(filename, ".tiff"));
+}
 
-  pmodel.setPose(osx, osy, osh, osv);
-  pmodel.setModelType("holo");
-  
-  return(pmodel);
+//--------------------------------------------------------
+// Procedure: tiffToInfoFile
+
+string tiffToInfoFile(const string& filename)
+{
+  if(strEnds(filename, ".tiff"))
+    return(filename.substr(0, filename.length()-5) + ".info");
+  if(strEnds(filename, ".tif"))
+    return(filename.substr(0, filename.length()-4) + ".info");
+
+  return("");
 }

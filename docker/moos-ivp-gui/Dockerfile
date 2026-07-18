@@ -9,7 +9,7 @@ ENV PATH="/home/moos/moos-ivp/bin:${PATH}"
 ENV IVP_BEHAVIOR_DIRS="/home/moos/moos-ivp/lib"
 
 # Make a user to run the MOOS apps
-RUN useradd -m -p "moos" moos && usermod -a -G sudo moos
+RUN useradd -m "moos"
 
 # Set the default user
 USER moos
@@ -27,7 +27,7 @@ ARG SOURCE_DATE_EPOCH=""
 USER root
 
 # Base
-RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release sudo && apt-get clean
+RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release && apt-get clean
 
 # GUI
 RUN apt-get update -y && apt-get install -y libtiff5-dev libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxinerama-dev libxft-dev && apt-get clean

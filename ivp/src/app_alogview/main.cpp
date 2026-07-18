@@ -118,7 +118,8 @@ void help_message()
   cout << "  -v,--version    Displays the current release version        " << endl;
   cout << "  -vb, --verbose  Verbose output                              " << endl;
   cout << "                                                              " << endl;
-  cout << "  --bg=file.tiff  Specify an alternate background image.      " << endl;
+  cout << "  --bg=file.tif   Specify an alternate background image.      " << endl;
+  cout << "                  Both .tif and .tiff suffixes are supported. " << endl;
   cout << "                                                              " << endl;
   cout << "  --lp=VEH:VAR    Specify starting left log plot.             " << endl;
   cout << "  --rp=VEH:VAR    Specify starting right log plot.            " << endl;
