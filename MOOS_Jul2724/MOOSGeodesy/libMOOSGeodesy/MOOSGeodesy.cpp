@@ -32,10 +32,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+#include <cmath>
+#include <iostream>
+#include <limits>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 #include <cstring>
+#include <proj_api.h>
 
 #ifdef _WIN32
 #include <float.h>
@@ -71,12 +76,15 @@ CMOOSGeodesy::CMOOSGeodesy()
     SetOriginLongitude(0.0);
     SetOriginLatitude(0.0);
     m_iRefEllipsoid    = 23;
+    pj_utm_ = 0;
+    pj_latlong_ = 0;
 
 }
 
 CMOOSGeodesy::~CMOOSGeodesy()
 {
-
+    pj_free(pj_utm_);
+    pj_free(pj_latlong_);
 }
 
 /**
@@ -103,12 +111,43 @@ bool CMOOSGeodesy::Initialise(double lat, double lon)
     SetOriginLatitude(lat);
     SetOriginLongitude(lon);
 
-    //Translate the Origin coordinates into Northings and Eastings 
-    double tempNorth = 0.0, tempEast = 0.0;
+    pj_free(pj_utm_);
+    pj_free(pj_latlong_);
+    pj_utm_ = 0;
+    pj_latlong_ = 0;
+
     char utmZone[4];
-    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude, 
-            m_dOriginLongitude, tempNorth, 
-            tempEast, utmZone);
+    double legacyNorth = 0.0, legacyEast = 0.0;
+    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude,
+            m_dOriginLongitude, legacyNorth,
+            legacyEast, utmZone);
+
+    int zone = atoi(utmZone);
+
+    std::stringstream proj_utm;
+    proj_utm << "+proj=utm +ellps=WGS84 +zone=" << zone;
+    if(lat < 0)
+        proj_utm << " +south";
+
+    pj_utm_ = pj_init_plus(proj_utm.str().c_str());
+    if(!pj_utm_) {
+        std::cerr << "Failed to initiate utm proj" << std::endl;
+        return false;
+    }
+
+    pj_latlong_ = pj_init_plus("+proj=latlong +ellps=WGS84");
+    if(!pj_latlong_) {
+        std::cerr << "Failed to initiate latlong proj" << std::endl;
+        return false;
+    }
+
+    double tempNorth = lat * deg2rad;
+    double tempEast = lon * deg2rad;
+    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1, &tempEast, &tempNorth, NULL);
+    if(err) {
+        std::cerr << "Failed to transform datum, reason: " << pj_strerrno(err) << std::endl;
+        return false;
+    }
 
     //Then set the Origin for the Northing/Easting coordinate frame
     //Also make a note of the UTM Zone we are operating in
@@ -326,44 +365,25 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
                                     double &MetersNorth,
                                     double &MetersEast)
 {
-    //first turn the lat/lon into UTM
-    double tmpNorth = 0.0, tmpEast = 0.0;
-    double dN = 0.0, dE = 0.0; 
-    char tmpUTM[4];
+    double tmpNorth = lat * deg2rad;
+    double tmpEast = lon * deg2rad;
+    MetersNorth = std::numeric_limits<double>::quiet_NaN();
+    MetersEast = std::numeric_limits<double>::quiet_NaN();
 
-    
-
-    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
-
-    //could check for the UTMZone differing, and if so, return false
-
-    //If this is the first time through the loop,then
-    //compare the returned Northing & Easting values with the origin.
-    //This does not need to be split like into before and after first reading, but
-    //makes the calculation clearer.  Plus, can add other features like logging
-    //or publishing of value
-    if(m_bSTEP_AFTER_INIT){
-        dN = tmpNorth - GetOriginNorthing();
-        dE = tmpEast - GetOriginEasting();
-        SetMetersNorth(dN);
-        SetMetersEast(dE);
-
-        m_bSTEP_AFTER_INIT = !m_bSTEP_AFTER_INIT;
-    }else{
-        double totalNorth = tmpNorth - GetOriginNorthing();
-        dN = totalNorth - GetMetersNorth();
-        //add the increment to the current North value
-        SetMetersNorth(dN + GetMetersNorth());
-
-        double totalEast = tmpEast - GetOriginEasting();
-        dE = totalEast - GetMetersEast();
-        //add the increment to the current East value
-        SetMetersEast(dE + GetMetersEast());
+    if(!pj_latlong_ || !pj_utm_) {
+        std::cerr << "Must call Initialise before calling LatLong2LocalUTM" << std::endl;
+        return false;
     }
 
-    //This is the total distance traveled thus far, either North or East
-    MetersNorth = GetMetersNorth();
-    MetersEast = GetMetersEast();
+    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1, &tmpEast, &tmpNorth, NULL);
+    if(err) {
+        std::cerr << "Failed to transform (lat,lon) = (" << lat << "," << lon
+                  << "), reason: " << pj_strerrno(err) << std::endl;
+        return false;
+    }
+
+    MetersNorth = tmpNorth - GetOriginNorthing();
+    MetersEast = tmpEast - GetOriginEasting();
     
     return true;
 }
@@ -486,49 +506,25 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
 
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
 {
-    //written by Henrik Schmidt henrik@mit.edu
-    
-    double err = 1e20;
-    double dfx=dfX;
-    double dfy=dfY;
-    double eps = 1.0; // accuracy in m
-    
-    while (err > eps)
-    {
-        double dflat, dflon, dfnew_x, dfnew_y ;
+    double x = dfX + GetOriginEasting();
+    double y = dfY + GetOriginNorthing();
 
-        // first guess geodesic
-        if (!LocalGrid2LatLong(dfx,dfy,dflat,dflon))
-            return(false);
-        
-        // now convert latlong to UTM
-        if (!LatLong2LocalUTM(dflat,dflon,dfnew_y,dfnew_x))
-            return(false);
-        
-		// fix to segfault issue if you get diverging values
-		if(isnan(dflat) || isnan(dflon))
-		{
-			dflat = 91;
-			dflon = 181;
-			return(false);
-		}
-		
-        // how different
-        double dfdiff_x = dfnew_x -dfX;
-        double dfdiff_y = dfnew_y -dfY;
-        
-        // subtract difference and reconvert        
-        dfx -= dfdiff_x;
-        dfy -= dfdiff_y;
-        
-        err = hypot(dfnew_x-dfX,dfnew_y-dfY);
-        
-        //MOOSTrace("UTM2LatLong: error = %f\n",err); 
+    dfLat = std::numeric_limits<double>::quiet_NaN();
+    dfLong = std::numeric_limits<double>::quiet_NaN();
+
+    if(!pj_latlong_ || !pj_utm_) {
+        std::cerr << "Must call Initialise before calling UTM2LatLong" << std::endl;
+        return false;
     }
-    
-    if (!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
-        return(false);
-    
-    
- 	return true;
+
+    int err = pj_transform(pj_utm_, pj_latlong_, 1, 1, &x, &y, NULL);
+    if(err) {
+        std::cerr << "Failed to transform (x,y) = (" << dfX << "," << dfY
+                  << "), reason: " << pj_strerrno(err) << std::endl;
+        return false;
+    }
+
+    dfLat = y * rad2deg;
+    dfLong = x * rad2deg;
+    return true;
 }

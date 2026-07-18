@@ -48,6 +48,9 @@ const double rad2deg = 180.0 / PI;
 
 #define EARTH_RADIUS 6378137.0 //meters - WGS84 semi-major axis
 
+/** Forward declare PROJ4 projection */
+typedef void* projPJ;
+
 //! Implements simple geodesy calculations
 class CMOOSGeodesy
 {
@@ -82,6 +85,8 @@ private:
     double m_dOriginLatitude;
     double m_dLocalGridX;
     double m_dLocalGridY;
+    projPJ pj_utm_;
+    projPJ pj_latlong_;
 
     void SetUTMZone(const char * utmZone);
     void SetRefEllipsoid(int refEllipsoid);

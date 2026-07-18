@@ -6,6 +6,9 @@ SET(SOURCES
 
 include(PlatformDefines)
 
+include_directories(${PROJ4_INCLUDE_DIRS})
+link_directories(${PROJ4_LIB_PATH})
+
 ##########################
 # Packages / Dependencies
 set(INCLUDE_ROOTS  
@@ -66,7 +69,8 @@ cache_internal_append_unique(PROJECT_EXPORT_LIBS
 # variables
 include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
-target_link_libraries(${LIBNAME} ${${LIBNAME}_DEPEND_LIBRARIES})
+target_link_libraries(${LIBNAME} LINK_PRIVATE proj)
+target_link_libraries(${LIBNAME} LINK_PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
 
 #######################################
 # install headers
@@ -78,6 +82,5 @@ INSTALL(TARGETS ${LIBNAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
-
 
 
