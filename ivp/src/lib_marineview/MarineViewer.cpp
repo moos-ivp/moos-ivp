@@ -80,7 +80,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_hash_shade  = 0.65;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
-  m_textures    = new GLuint[1];
 
   //m_back_img_b_ok = false;
   //m_back_img_b_on = false;
@@ -109,7 +108,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
 MarineViewer::~MarineViewer()
 {
-   delete [] m_textures;
 }
 
 //-------------------------------------------------------------
@@ -419,12 +417,13 @@ bool MarineViewer::applyTiffFiles()
     return(false);
 
   unsigned int cnt = m_tif_files.size();
+  m_textures.resize(cnt);
   
   m_back_imgs = vector<BackImg>(cnt);
   
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glGenTextures(cnt, m_textures);
+  glGenTextures(static_cast<GLsizei>(cnt), m_textures.data());
 
   for(unsigned int ix=0; ix<cnt; ix++) {
     m_back_imgs[ix].readTiff(m_tif_files[ix]);
