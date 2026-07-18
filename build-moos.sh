@@ -4,6 +4,7 @@ INVOC_ABS_DIR="$(pwd)"
 SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
 MOOS_SRC_DIR="${SCRIPT_ABS_DIR}/MOOS"
 BUILD_ABS_DIR="${SCRIPT_ABS_DIR}/build/MOOS"
+MOOS_CORE_BUILD_DIR="${BUILD_ABS_DIR}/MOOSCore"
 mkdir -p "${BUILD_ABS_DIR}"
 
 
@@ -92,8 +93,8 @@ find "${MOOS_SRC_DIR}/" -type f -name "*.lo" -delete
 #===================================================================
 # Part #1:  BUILD CORE
 #===================================================================
-mkdir -p "${BUILD_ABS_DIR}/MOOSCore"
-cd "${BUILD_ABS_DIR}/MOOSCore"
+mkdir -p "${MOOS_CORE_BUILD_DIR}"
+cd "${MOOS_CORE_BUILD_DIR}"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                       \
@@ -122,6 +123,7 @@ cd "${BUILD_ABS_DIR}/MOOSEssentials"
 
 echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                          \
+      -DMOOS_DIR="${MOOS_CORE_BUILD_DIR}"                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin"  \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                     \
       "${MOOS_SRC_DIR}/MOOSEssentials"                          \
@@ -153,6 +155,7 @@ if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
     
     echo "Invoking cmake..." `pwd`
     cmake -DBUILD_CONSOLE_TOOLS=ON                               \
+	-DMOOS_DIR="${MOOS_CORE_BUILD_DIR}"                      \
 	-DFLTK_SKIP_FLUID=ON                                     \
         -DBUILD_GRAPHICAL_TOOLS=ON                               \
 	-DBUILD_UPB=ON                                           \
@@ -217,6 +220,7 @@ echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
 
 echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                 \
+      -DMOOS_DIR="${MOOS_CORE_BUILD_DIR}"                   \
       -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}             \
       -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}                     \
       "${MOOS_SRC_DIR}/MOOSGeodesy"                         \

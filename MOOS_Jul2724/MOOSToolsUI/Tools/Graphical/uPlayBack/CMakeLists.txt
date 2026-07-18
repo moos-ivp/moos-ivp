@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 # --------------------------------------------------------------
 # Indicate CMake 2.7 and above that we don't want to mix relative
@@ -33,7 +33,7 @@ IF(FLTK_FOUND)
 
     INCLUDE_DIRECTORIES(${fltkvw_DEPEND_INCLUDE_DIRS} ${fltkvw_INCLUDE_DIRS} ${MOOS_INCLUDE_DIRS} ${MOOS_DEPEND_INCLUDE_DIRS})
     
-    ADD_EXECUTABLE( ${EXEC} WIN32 MACOSX_BUNDLE ${UPLAYBACK_SRCS})   
+    ADD_EXECUTABLE( ${EXEC} WIN32 ${UPLAYBACK_SRCS})
    
     TARGET_LINK_LIBRARIES(${EXEC} ${MOOS_LIBRARIES} ${MOOS_DEPEND_LIBRARIES} ${fltkvw_LIBRARIES} ${fltkvw_DEPEND_LIBRARIES}  )
 

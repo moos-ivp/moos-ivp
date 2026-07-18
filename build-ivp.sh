@@ -130,6 +130,8 @@ BLD_ABS_DIR="${SCRIPT_ABS_DIR}/build/ivp"
 LIB_ABS_DIR="${SCRIPT_ABS_DIR}/lib"
 BIN_ABS_DIR="${SCRIPT_ABS_DIR}/bin"
 SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
+MOOS_DIR="${SCRIPT_ABS_DIR}/build/MOOS/MOOSCore"
+MOOSGEODESY_DIR="${SCRIPT_ABS_DIR}/build/MOOS/MOOSGeodesy"
 
 echo "Built files will be placed into these directories: "
 echo "  Intermediate build files: ${BLD_ABS_DIR}         "
@@ -168,6 +170,8 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DIVP_BUILD_BOT_CODE_ONLY=${BUILD_BOT_CODE_ONLY}     \
       -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
       -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"                 \
+      -DMOOS_DIR="${MOOS_DIR}"                             \
+      -DMOOSGeodesy_DIR="${MOOSGEODESY_DIR}"               \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"               \
       ${BUILD_WITH_UTM}                                    \
       ${IVP_CMAKE_FLAGS}                                   \
