@@ -23,6 +23,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cmath>
 #include "PlatModel.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
