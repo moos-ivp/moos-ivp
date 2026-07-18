@@ -1,10 +1,14 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE:                                                      */
+/*    FILE: glext.h                                              */
 /*    DATE:                                                      */
 /*                                                               */
-/* This file is part of MOOS-IvP                                 */
+/* MOOS-IvP provides only this comment block and the include     */
+/* guard below under GPLv3. From the Khronos Group copyright     */
+/* notice onward, this file contains third-party Materials       */
+/* licensed solely under the permissive Khronos terms shown    */
+/* there, not under GPLv3.                                       */
 /*                                                               */
 /* MOOS-IvP is free software: you can redistribute it and/or     */
 /* modify it under the terms of the GNU General Public License   */
