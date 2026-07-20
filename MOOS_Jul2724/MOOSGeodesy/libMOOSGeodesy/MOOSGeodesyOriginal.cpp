@@ -24,7 +24,6 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesyBackend.h"
 
 #include <math.h>
 
@@ -33,110 +32,98 @@
 #define isnan _isnan
 #endif
 
-class CMOOSGeodesyOriginal : public CMOOSGeodesyBackend
+CMOOSGeodesy::~CMOOSGeodesy()
 {
-public:
-    CMOOSGeodesyBackend* Clone() const
-    {
-        return new CMOOSGeodesyOriginal(*this);
+}
+
+bool CMOOSGeodesy::Initialise(double lat, double lon)
+{
+    // We use the WGS-84 standard reference ellipsoid.
+    SetRefEllipsoid(23);
+
+    SetOriginLatitude(lat);
+    SetOriginLongitude(lon);
+
+    double tempNorth = 0.0, tempEast = 0.0;
+    char utmZone[4];
+    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude,
+            m_dOriginLongitude, tempNorth,
+            tempEast, utmZone);
+
+    SetOriginNorthing(tempNorth);
+    SetOriginEasting(tempEast);
+    SetUTMZone(utmZone);
+    m_bSTEP_AFTER_INIT = true;
+
+    return true;
+}
+
+bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
+                                    double lon,
+                                    double &MetersNorth,
+                                    double &MetersEast)
+{
+    double tmpNorth = 0.0, tmpEast = 0.0;
+    double dN = 0.0, dE = 0.0;
+    char tmpUTM[4];
+
+    LLtoUTM(m_iRefEllipsoid, lat, lon, tmpNorth, tmpEast, tmpUTM);
+
+    if(m_bSTEP_AFTER_INIT) {
+        dN = tmpNorth - GetOriginNorthing();
+        dE = tmpEast - GetOriginEasting();
+        SetMetersNorth(dN);
+        SetMetersEast(dE);
+        m_bSTEP_AFTER_INIT = !m_bSTEP_AFTER_INIT;
+    } else {
+        double totalNorth = tmpNorth - GetOriginNorthing();
+        dN = totalNorth - GetMetersNorth();
+        SetMetersNorth(dN + GetMetersNorth());
+
+        double totalEast = tmpEast - GetOriginEasting();
+        dE = totalEast - GetMetersEast();
+        SetMetersEast(dE + GetMetersEast());
     }
 
-    bool Initialise(CMOOSGeodesy& geodesy, double lat, double lon)
-    {
-        geodesy.SetRefEllipsoid(23);
-        geodesy.SetOriginLatitude(lat);
-        geodesy.SetOriginLongitude(lon);
+    MetersNorth = GetMetersNorth();
+    MetersEast = GetMetersEast();
 
-        double north = 0.0;
-        double east = 0.0;
-        char utmZone[4];
-        geodesy.LLtoUTM(geodesy.m_iRefEllipsoid, lat, lon,
-                        north, east, utmZone);
+    return true;
+}
 
-        geodesy.SetOriginNorthing(north);
-        geodesy.SetOriginEasting(east);
-        geodesy.SetUTMZone(utmZone);
-        geodesy.m_bSTEP_AFTER_INIT = true;
-        return true;
-    }
+bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
+                               double& dfLat, double& dfLong)
+{
+    // Written by Henrik Schmidt henrik@mit.edu
+    double err = 1e20;
+    double dfx = dfX;
+    double dfy = dfY;
+    double eps = 1.0;
 
-    bool LatLong2LocalUTM(CMOOSGeodesy& geodesy,
-                          double lat, double lon,
-                          double& metersNorth, double& metersEast)
-    {
-        double north = 0.0;
-        double east = 0.0;
-        double deltaNorth = 0.0;
-        double deltaEast = 0.0;
-        char utmZone[4];
+    while(err > eps) {
+        double dflat, dflon, dfnewX, dfnewY;
 
-        geodesy.LLtoUTM(geodesy.m_iRefEllipsoid, lat, lon,
-                        north, east, utmZone);
+        if(!LocalGrid2LatLong(dfx, dfy, dflat, dflon))
+            return false;
 
-        if(geodesy.m_bSTEP_AFTER_INIT) {
-            deltaNorth = north - geodesy.GetOriginNorthing();
-            deltaEast = east - geodesy.GetOriginEasting();
-            geodesy.SetMetersNorth(deltaNorth);
-            geodesy.SetMetersEast(deltaEast);
-            geodesy.m_bSTEP_AFTER_INIT = false;
-        } else {
-            double totalNorth = north - geodesy.GetOriginNorthing();
-            deltaNorth = totalNorth - geodesy.GetMetersNorth();
-            geodesy.SetMetersNorth(deltaNorth + geodesy.GetMetersNorth());
+        if(!LatLong2LocalUTM(dflat, dflon, dfnewY, dfnewX))
+            return false;
 
-            double totalEast = east - geodesy.GetOriginEasting();
-            deltaEast = totalEast - geodesy.GetMetersEast();
-            geodesy.SetMetersEast(deltaEast + geodesy.GetMetersEast());
+        if(isnan(dflat) || isnan(dflon)) {
+            dflat = 91;
+            dflon = 181;
+            return false;
         }
 
-        metersNorth = geodesy.GetMetersNorth();
-        metersEast = geodesy.GetMetersEast();
-        return true;
+        double diffX = dfnewX - dfX;
+        double diffY = dfnewY - dfY;
+        dfx -= diffX;
+        dfy -= diffY;
+        err = hypot(dfnewX - dfX, dfnewY - dfY);
     }
 
-    bool UTM2LatLong(CMOOSGeodesy& geodesy,
-                     double x, double y, double& lat, double& lon)
-    {
-        double error = 1e20;
-        double estimateX = x;
-        double estimateY = y;
-        const double epsilon = 1.0;
-
-        while(error > epsilon) {
-            double estimateLat;
-            double estimateLon;
-            double convertedX;
-            double convertedY;
-
-            if(!geodesy.LocalGrid2LatLong(estimateX, estimateY,
-                                          estimateLat, estimateLon))
-                return false;
-
-            if(!LatLong2LocalUTM(geodesy, estimateLat, estimateLon,
-                                 convertedY, convertedX))
-                return false;
-
-            if(isnan(estimateLat) || isnan(estimateLon)) {
-                lat = 91;
-                lon = 181;
-                return false;
-            }
-
-            estimateX -= convertedX - x;
-            estimateY -= convertedY - y;
-            error = hypot(convertedX - x, convertedY - y);
-        }
-
-        return geodesy.LocalGrid2LatLong(estimateX, estimateY, lat, lon);
-    }
-
-    bool IsProj() const
-    {
+    if(!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
         return false;
-    }
-};
 
-CMOOSGeodesyBackend* CreateMOOSGeodesyOriginal()
-{
-    return new CMOOSGeodesyOriginal;
+    return true;
 }

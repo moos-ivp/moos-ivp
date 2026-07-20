@@ -32,7 +32,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesyBackend.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,89 +71,8 @@ CMOOSGeodesy::CMOOSGeodesy()
     SetOriginLongitude(0.0);
     SetOriginLatitude(0.0);
     m_iRefEllipsoid    = 23;
-    m_bSTEP_AFTER_INIT = false;
-    m_sUTMZone[0] = '\0';
-    m_backend = CreateMOOSGeodesyProj();
-}
-
-CMOOSGeodesy::CMOOSGeodesy(const CMOOSGeodesy& rhs)
-{
-    m_bSTEP_AFTER_INIT = rhs.m_bSTEP_AFTER_INIT;
-    strcpy(m_sUTMZone, rhs.m_sUTMZone);
-    m_iRefEllipsoid = rhs.m_iRefEllipsoid;
-    m_dOriginEasting = rhs.m_dOriginEasting;
-    m_dOriginNorthing = rhs.m_dOriginNorthing;
-    m_dEast = rhs.m_dEast;
-    m_dNorth = rhs.m_dNorth;
-    m_dOriginLongitude = rhs.m_dOriginLongitude;
-    m_dOriginLatitude = rhs.m_dOriginLatitude;
-    m_dLocalGridX = rhs.m_dLocalGridX;
-    m_dLocalGridY = rhs.m_dLocalGridY;
-    m_backend = rhs.m_backend->Clone();
-}
-
-CMOOSGeodesy& CMOOSGeodesy::operator=(const CMOOSGeodesy& rhs)
-{
-    if(this == &rhs)
-        return *this;
-
-    CMOOSGeodesyBackend* backend = rhs.m_backend->Clone();
-    delete m_backend;
-
-    m_bSTEP_AFTER_INIT = rhs.m_bSTEP_AFTER_INIT;
-    strcpy(m_sUTMZone, rhs.m_sUTMZone);
-    m_iRefEllipsoid = rhs.m_iRefEllipsoid;
-    m_dOriginEasting = rhs.m_dOriginEasting;
-    m_dOriginNorthing = rhs.m_dOriginNorthing;
-    m_dEast = rhs.m_dEast;
-    m_dNorth = rhs.m_dNorth;
-    m_dOriginLongitude = rhs.m_dOriginLongitude;
-    m_dOriginLatitude = rhs.m_dOriginLatitude;
-    m_dLocalGridX = rhs.m_dLocalGridX;
-    m_dLocalGridY = rhs.m_dLocalGridY;
-    m_backend = backend;
-
-    return *this;
-}
-
-CMOOSGeodesy::~CMOOSGeodesy()
-{
-    delete m_backend;
-}
-
-bool CMOOSGeodesy::Initialise(double lat, double lon)
-{
-    return Initialise(lat, lon, true);
-}
-
-bool CMOOSGeodesy::Initialise(double lat, double lon, bool useProj)
-{
-    if(m_backend->IsProj() != useProj) {
-        delete m_backend;
-        m_backend = useProj ? CreateMOOSGeodesyProj()
-                            : CreateMOOSGeodesyOriginal();
-    }
-
-    return m_backend->Initialise(*this, lat, lon);
-}
-
-bool CMOOSGeodesy::IsUsingProj() const
-{
-    return m_backend->IsProj();
-}
-
-bool CMOOSGeodesy::LatLong2LocalUTM(double lat, double lon,
-                                    double& metersNorth,
-                                    double& metersEast)
-{
-    return m_backend->LatLong2LocalUTM(*this, lat, lon,
-                                      metersNorth, metersEast);
-}
-
-bool CMOOSGeodesy::UTM2LatLong(double x, double y,
-                               double& lat, double& lon)
-{
-    return m_backend->UTM2LatLong(*this, x, y, lat, lon);
+    pj_utm_ = 0;
+    pj_latlong_ = 0;
 
 }
 

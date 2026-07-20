@@ -2,11 +2,17 @@ set(LIBNAME MOOSGeodesy)
 
 SET(SOURCES
     MOOSGeodesy.cpp
-    MOOSGeodesyOriginal.cpp
-    MOOSGeodesyProj.cpp
 )
 
 include(PlatformDefines)
+
+if(MOOSGEODESY_USE_PROJ)
+    list(APPEND SOURCES MOOSGeodesyProj.cpp)
+    include_directories(${PROJ4_INCLUDE_DIRS})
+    link_directories(${PROJ4_LIB_PATH})
+else()
+    list(APPEND SOURCES MOOSGeodesyOriginal.cpp)
+endif()
 
 ##########################
 # Packages / Dependencies
@@ -22,7 +28,7 @@ set(${LIBNAME}_DEPEND_INCLUDE_DIRS
 list(REMOVE_DUPLICATES ${LIBNAME}_DEPEND_INCLUDE_DIRS)
 
 if(UNIX)
-    set(DEPENDENCIES m ${CMAKE_DL_LIBS})
+    set(DEPENDENCIES m)
 endif(UNIX)
    
 
@@ -68,6 +74,9 @@ cache_internal_append_unique(PROJECT_EXPORT_LIBS
 # variables
 include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
+if(MOOSGEODESY_USE_PROJ)
+    target_link_libraries(${LIBNAME} LINK_PRIVATE proj)
+endif()
 target_link_libraries(${LIBNAME} LINK_PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
 
 #######################################
@@ -80,3 +89,4 @@ INSTALL(TARGETS ${LIBNAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
+

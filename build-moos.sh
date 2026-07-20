@@ -14,6 +14,7 @@ J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 
 BUILD_BOT_CODE_ONLY="OFF"
 FORCE_FULL_RASPI_BUILD=""
+MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ:-ON}"
 
 #-------------------------------------------------------------------
 #  Check for and handle command-line arguments
@@ -30,6 +31,8 @@ for ARGI; do
         printf " -k     Keep building after failed component.    \n"
 	printf " -m,    Only build minimal robot apps            \n"
 	printf " -mx,   Turn off build minimal robot apps        \n"
+        printf " --with-proj,     Use Proj in MOOSGeodesy (default)\n"
+        printf " --without-proj,  Use original MOOSGeodesy code  \n"
         printf " clean  Clean/remove any previous build.         \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
@@ -40,6 +43,10 @@ for ARGI; do
         BUILD_BOT_CODE_ONLY="ON"
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ] ; then
         FORCE_FULL_RASPI_BUILD="yes"
+    elif [ "${ARGI}" = "--with-proj" ] ; then
+        MOOSGEODESY_USE_PROJ="ON"
+    elif [ "${ARGI}" = "--without-proj" ] ; then
+        MOOSGEODESY_USE_PROJ="OFF"
     elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
@@ -176,32 +183,34 @@ fi
 #===================================================================
 # Part #4:  BUILD PROJ4
 #===================================================================
-mkdir -p "${BUILD_ABS_DIR}/proj-5.2.0"
-cd "${BUILD_ABS_DIR}/proj-5.2.0"
+if [ "${MOOSGEODESY_USE_PROJ}" = "ON" ]; then
+    mkdir -p "${BUILD_ABS_DIR}/proj-5.2.0"
+    cd "${BUILD_ABS_DIR}/proj-5.2.0"
 
-if [ ! -e lib/libproj.so -a ! -e lib/libproj.dylib -a \
-     ! -e bin/proj_5_2.dll -a ! -e bin/proj.dll ]; then
-    echo "Building shared Proj4 for runtime use by MOOSGeodesy"
+    # TODO: This will always build PROJ4, even if local OS install performed.
+    if [ ! -e lib/libproj.a ]; then
+        echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
 
-    cmake -DCMAKE_INSTALL_PREFIX:PATH=$PWD       \
-          -DBUILD_LIBPROJ_SHARED=ON              \
-          -DCMAKE_POSITION_INDEPENDENT_CODE=ON   \
-          -DPROJ_TESTS=OFF                       \
-          -DBUILD_CCT=OFF                        \
-          -DBUILD_CS2CS=OFF                      \
-          -DBUILD_GEOD=OFF                       \
-          -DBUILD_GIE=OFF                        \
-          -DBUILD_NAD2BIN=OFF                    \
-          -DBUILD_PROJ=OFF                       \
-          "${MOOS_SRC_DIR}/proj-5.2.0"           \
-        && make -j$(getconf _NPROCESSORS_ONLN)   \
-        && make install                          \
-        && echo "Done Building Proj4."
-    if [ $? -ne 0 ] ; then
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo "ERROR! Failed to build PROJ4"
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        exit 4
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$PWD       \
+              -DBUILD_LIBPROJ_SHARED=OFF             \
+              -DCMAKE_POSITION_INDEPENDENT_CODE=ON   \
+              -DPROJ_TESTS=OFF                       \
+              -DBUILD_CCT=OFF                        \
+              -DBUILD_CS2CS=OFF                      \
+              -DBUILD_GEOD=OFF                       \
+              -DBUILD_GIE=OFF                        \
+              -DBUILD_NAD2BIN=OFF                    \
+              -DBUILD_PROJ=OFF                       \
+              "${MOOS_SRC_DIR}/proj-5.2.0"           \
+            && make -j$(getconf _NPROCESSORS_ONLN)   \
+            && make install                          \
+            && echo "Done Building Proj4."
+        if [ $? -ne 0 ] ; then
+            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo "ERROR! Failed to build PROJ4"
+            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            exit 4
+        fi
     fi
 fi
 
@@ -212,9 +221,22 @@ fi
 mkdir -p "${BUILD_ABS_DIR}/MOOSGeodesy"
 cd "${BUILD_ABS_DIR}/MOOSGeodesy"
 
+PROJ4_CMAKE_ARGS=()
+if [ "${MOOSGEODESY_USE_PROJ}" = "ON" ]; then
+    PROJ4_INCLUDE_DIR="${BUILD_ABS_DIR}/proj-5.2.0/include"
+    PROJ4_LIB_DIR="${BUILD_ABS_DIR}/proj-5.2.0/lib"
+    PROJ4_CMAKE_ARGS=(
+        "-DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}"
+        "-DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}"
+    )
+    echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
+fi
+
 echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                 \
       -DMOOS_DIR="${MOOS_CORE_BUILD_DIR}"                   \
+      -DMOOSGEODESY_USE_PROJ=${MOOSGEODESY_USE_PROJ}        \
+      "${PROJ4_CMAKE_ARGS[@]}"                              \
       "${MOOS_SRC_DIR}/MOOSGeodesy"                         \
   && echo "" && echo "Invoking make..." `pwd` && echo ""    \
   && make ${CMD_ARGS}
