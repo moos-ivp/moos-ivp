@@ -48,6 +48,9 @@ const double rad2deg = 180.0 / PI;
 
 #define EARTH_RADIUS 6378137.0 //meters - WGS84 semi-major axis
 
+#define MOOSGEODESY_IMPL_PLAIN 1
+#define MOOSGEODESY_IMPL_PROJ  2
+
 /** Forward declare PROJ4 projection */
 typedef void* projPJ;
 
