@@ -83,7 +83,10 @@ fi
 if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ]; then
     MISSING=$MISSING"MOOS,";
 fi
-if [ ! -e build/MOOS/proj-5.2.0/lib/libproj.a ]; then
+if [ ! -e build/MOOS/proj-5.2.0/lib/libproj.so -a \
+     ! -e build/MOOS/proj-5.2.0/lib/libproj.dylib -a \
+     ! -e build/MOOS/proj-5.2.0/bin/proj_5_2.dll -a \
+     ! -e build/MOOS/proj-5.2.0/bin/proj.dll ]; then
     MISSING=$MISSING"proj,";
 fi
 
@@ -328,4 +331,3 @@ fi
 cd "${INVOC_ABS_DIR}"
 
 exit $RESULT
-

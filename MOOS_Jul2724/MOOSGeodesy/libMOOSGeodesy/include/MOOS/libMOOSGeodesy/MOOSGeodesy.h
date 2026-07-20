@@ -48,14 +48,17 @@ const double rad2deg = 180.0 / PI;
 
 #define EARTH_RADIUS 6378137.0 //meters - WGS84 semi-major axis
 
-/** Forward declare PROJ4 projection */
-typedef void* projPJ;
+class CMOOSGeodesyBackend;
+class CMOOSGeodesyOriginal;
+class CMOOSGeodesyProj;
 
 //! Implements simple geodesy calculations
 class CMOOSGeodesy
 {
 public:
     CMOOSGeodesy();
+    CMOOSGeodesy(const CMOOSGeodesy& rhs);
+    CMOOSGeodesy& operator=(const CMOOSGeodesy& rhs);
     virtual ~CMOOSGeodesy();
 
     double 	GetOriginNorthing();
@@ -71,9 +74,16 @@ public:
     double 	GetMetersNorth();
     double 	GetOriginLatitude();
     double 	GetOriginLongitude();
+    //! Initialise with the dynamically loaded Proj backend.
     bool 	Initialise(double lat, double lon);
+    //! Select Proj (true) or the original MOOS implementation (false).
+    bool 	Initialise(double lat, double lon, bool useProj);
+    bool        IsUsingProj() const;
 
 private:
+    friend class CMOOSGeodesyOriginal;
+    friend class CMOOSGeodesyProj;
+
     bool m_bSTEP_AFTER_INIT;
     char m_sUTMZone[4];
     int m_iRefEllipsoid;
@@ -85,8 +95,7 @@ private:
     double m_dOriginLatitude;
     double m_dLocalGridX;
     double m_dLocalGridY;
-    projPJ pj_utm_;
-    projPJ pj_latlong_;
+    CMOOSGeodesyBackend* m_backend;
 
     void SetUTMZone(const char * utmZone);
     void SetRefEllipsoid(int refEllipsoid);

@@ -32,8 +32,6 @@ include(CacheInternalHelpers)
 # We want to create dynamic libraries
 set(BUILD_SHARED_LIBS true)
 
-option(MOOSGEODESY_USE_PROJ "Use Proj for UTM coordinate transformations" ON)
-
 # Enable Doxygen build with 'make doxygen'
 option(ENABLE_DOXYGEN "Enable a 'make doc' target for Doxygen documentation")
 if (ENABLE_DOXYGEN)
