@@ -3,11 +3,7 @@
 //   MOOS - Mission Oriented Operating Suite
 //
 //   A suit of Applications and Libraries for Mobile Robotics Research
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
-//   Oxford University.
-//
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//   Copyright (C) 2026 Massachusetts Institute of Technology.
 //
 //   This file is part of a MOOS Core Component.
 //
