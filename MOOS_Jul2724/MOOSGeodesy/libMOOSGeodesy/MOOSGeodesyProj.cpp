@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdlib.h>
 
@@ -94,6 +95,9 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
                                     double &MetersNorth,
                                     double &MetersEast)
 {
+    MetersNorth = std::numeric_limits<double>::quiet_NaN();
+    MetersEast = std::numeric_limits<double>::quiet_NaN();
+
     if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling LatLong2LocalUTM"
                   << std::endl;
@@ -133,6 +137,9 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
                                double& dfLat, double& dfLong)
 {
+    dfLat = std::numeric_limits<double>::quiet_NaN();
+    dfLong = std::numeric_limits<double>::quiet_NaN();
+
     if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling UTM2LatLong"
                   << std::endl;
