@@ -21,6 +21,7 @@
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -30,17 +31,16 @@
 
 bool CMOOSGeodesy::Initialise(double lat, double lon)
 {
-    SetRefEllipsoid(23);
-    SetOriginLatitude(lat);
-    SetOriginLongitude(lon);
-
-    m_utm_projection.reset();
-    m_latlong_projection.reset();
+    if(!std::isfinite(lat) || !std::isfinite(lon) ||
+       lat < -80.0 || lat > 84.0 || lon < -180.0 || lon > 180.0) {
+        std::cerr << "Invalid datum (lat,lon) = (" << lat << "," << lon << ")"
+                  << std::endl;
+        return false;
+    }
 
     char utmZone[4];
     double legacyNorth = 0.0, legacyEast = 0.0;
-    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude,
-            m_dOriginLongitude, legacyNorth,
+    LLtoUTM(23, lat, lon, legacyNorth,
             legacyEast, utmZone);
 
     std::stringstream projUTM;
@@ -48,34 +48,43 @@ bool CMOOSGeodesy::Initialise(double lat, double lon)
     if(lat < 0)
         projUTM << " +south";
 
-    m_utm_projection = ProjectionPtr(
+    ProjectionPtr utmProjection(
         pj_init_plus(projUTM.str().c_str()), pj_free);
-    if(!m_utm_projection) {
+    if(!utmProjection) {
         std::cerr << "Failed to initiate utm proj" << std::endl;
         return false;
     }
 
-    m_latlong_projection = ProjectionPtr(
+    ProjectionPtr latlongProjection(
         pj_init_plus("+proj=latlong +ellps=WGS84"), pj_free);
-    if(!m_latlong_projection) {
+    if(!latlongProjection) {
         std::cerr << "Failed to initiate latlong proj" << std::endl;
         return false;
     }
 
     double tempNorth = lat * deg2rad;
     double tempEast = lon * deg2rad;
-    int err = pj_transform(m_latlong_projection.get(),
-                           m_utm_projection.get(), 1, 1,
+    int err = pj_transform(latlongProjection.get(),
+                           utmProjection.get(), 1, 1,
                            &tempEast, &tempNorth, NULL);
     if(err) {
         std::cerr << "Failed to transform datum, reason: "
                   << pj_strerrno(err) << std::endl;
         return false;
     }
+    if(!std::isfinite(tempEast) || !std::isfinite(tempNorth)) {
+        std::cerr << "Failed to transform datum: non-finite result" << std::endl;
+        return false;
+    }
 
+    SetRefEllipsoid(23);
+    SetOriginLatitude(lat);
+    SetOriginLongitude(lon);
     SetOriginNorthing(tempNorth);
     SetOriginEasting(tempEast);
     SetUTMZone(utmZone);
+    m_utm_projection = utmProjection;
+    m_latlong_projection = latlongProjection;
     m_bSTEP_AFTER_INIT = true;
 
     return true;
