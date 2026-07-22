@@ -23,7 +23,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <sstream>
 #include <stdlib.h>
 
@@ -95,16 +94,19 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
                                     double &MetersNorth,
                                     double &MetersEast)
 {
-    double tmpNorth = lat * deg2rad;
-    double tmpEast = lon * deg2rad;
-    MetersNorth = std::numeric_limits<double>::quiet_NaN();
-    MetersEast = std::numeric_limits<double>::quiet_NaN();
-
     if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling LatLong2LocalUTM"
                   << std::endl;
         return false;
     }
+    if(!std::isfinite(lat) || !std::isfinite(lon)) {
+        std::cerr << "Invalid (lat,lon) = (" << lat << "," << lon << ")"
+                  << std::endl;
+        return false;
+    }
+
+    double tmpNorth = lat * deg2rad;
+    double tmpEast = lon * deg2rad;
 
     int err = pj_transform(m_latlong_projection.get(),
                            m_utm_projection.get(), 1, 1,
@@ -112,6 +114,11 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
     if(err) {
         std::cerr << "Failed to transform (lat,lon) = (" << lat << "," << lon
                   << "), reason: " << pj_strerrno(err) << std::endl;
+        return false;
+    }
+    if(!std::isfinite(tmpEast) || !std::isfinite(tmpNorth)) {
+        std::cerr << "Failed to transform (lat,lon) = (" << lat << "," << lon
+                  << "): non-finite result" << std::endl;
         return false;
     }
 
@@ -126,14 +133,21 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
                                double& dfLat, double& dfLong)
 {
-    double x = dfX + GetOriginEasting();
-    double y = dfY + GetOriginNorthing();
-
-    dfLat = std::numeric_limits<double>::quiet_NaN();
-    dfLong = std::numeric_limits<double>::quiet_NaN();
-
     if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling UTM2LatLong"
+                  << std::endl;
+        return false;
+    }
+    if(!std::isfinite(dfX) || !std::isfinite(dfY)) {
+        std::cerr << "Invalid (x,y) = (" << dfX << "," << dfY << ")"
+                  << std::endl;
+        return false;
+    }
+
+    double x = dfX + GetOriginEasting();
+    double y = dfY + GetOriginNorthing();
+    if(!std::isfinite(x) || !std::isfinite(y)) {
+        std::cerr << "Invalid (x,y) = (" << dfX << "," << dfY << ")"
                   << std::endl;
         return false;
     }
@@ -143,6 +157,11 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
     if(err) {
         std::cerr << "Failed to transform (x,y) = (" << dfX << "," << dfY
                   << "), reason: " << pj_strerrno(err) << std::endl;
+        return false;
+    }
+    if(!std::isfinite(x) || !std::isfinite(y)) {
+        std::cerr << "Failed to transform (x,y) = (" << dfX << "," << dfY
+                  << "): non-finite result" << std::endl;
         return false;
     }
 
