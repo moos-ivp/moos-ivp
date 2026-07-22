@@ -114,8 +114,10 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
         return false;
     }
 
-    MetersNorth = tmpNorth - GetOriginNorthing();
-    MetersEast = tmpEast - GetOriginEasting();
+    SetMetersNorth(tmpNorth - GetOriginNorthing());
+    SetMetersEast(tmpEast - GetOriginEasting());
+    MetersNorth = GetMetersNorth();
+    MetersEast = GetMetersEast();
 
     return true;
 }
