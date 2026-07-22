@@ -32,22 +32,14 @@
 
 #include <proj_api.h>
 
-CMOOSGeodesy::~CMOOSGeodesy()
-{
-    pj_free(pj_utm_);
-    pj_free(pj_latlong_);
-}
-
 bool CMOOSGeodesy::Initialise(double lat, double lon)
 {
     SetRefEllipsoid(23);
     SetOriginLatitude(lat);
     SetOriginLongitude(lon);
 
-    pj_free(pj_utm_);
-    pj_free(pj_latlong_);
-    pj_utm_ = 0;
-    pj_latlong_ = 0;
+    m_utm_projection.reset();
+    m_latlong_projection.reset();
 
     char utmZone[4];
     double legacyNorth = 0.0, legacyEast = 0.0;
@@ -60,21 +52,24 @@ bool CMOOSGeodesy::Initialise(double lat, double lon)
     if(lat < 0)
         projUTM << " +south";
 
-    pj_utm_ = pj_init_plus(projUTM.str().c_str());
-    if(!pj_utm_) {
+    m_utm_projection = ProjectionPtr(
+        pj_init_plus(projUTM.str().c_str()), pj_free);
+    if(!m_utm_projection) {
         std::cerr << "Failed to initiate utm proj" << std::endl;
         return false;
     }
 
-    pj_latlong_ = pj_init_plus("+proj=latlong +ellps=WGS84");
-    if(!pj_latlong_) {
+    m_latlong_projection = ProjectionPtr(
+        pj_init_plus("+proj=latlong +ellps=WGS84"), pj_free);
+    if(!m_latlong_projection) {
         std::cerr << "Failed to initiate latlong proj" << std::endl;
         return false;
     }
 
     double tempNorth = lat * deg2rad;
     double tempEast = lon * deg2rad;
-    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1,
+    int err = pj_transform(m_latlong_projection.get(),
+                           m_utm_projection.get(), 1, 1,
                            &tempEast, &tempNorth, NULL);
     if(err) {
         std::cerr << "Failed to transform datum, reason: "
@@ -100,13 +95,14 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
     MetersNorth = std::numeric_limits<double>::quiet_NaN();
     MetersEast = std::numeric_limits<double>::quiet_NaN();
 
-    if(!pj_latlong_ || !pj_utm_) {
+    if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling LatLong2LocalUTM"
                   << std::endl;
         return false;
     }
 
-    int err = pj_transform(pj_latlong_, pj_utm_, 1, 1,
+    int err = pj_transform(m_latlong_projection.get(),
+                           m_utm_projection.get(), 1, 1,
                            &tmpEast, &tmpNorth, NULL);
     if(err) {
         std::cerr << "Failed to transform (lat,lon) = (" << lat << "," << lon
@@ -131,13 +127,14 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
     dfLat = std::numeric_limits<double>::quiet_NaN();
     dfLong = std::numeric_limits<double>::quiet_NaN();
 
-    if(!pj_latlong_ || !pj_utm_) {
+    if(!m_latlong_projection || !m_utm_projection) {
         std::cerr << "Must call Initialise before calling UTM2LatLong"
                   << std::endl;
         return false;
     }
 
-    int err = pj_transform(pj_utm_, pj_latlong_, 1, 1, &x, &y, NULL);
+    int err = pj_transform(m_utm_projection.get(),
+                           m_latlong_projection.get(), 1, 1, &x, &y, NULL);
     if(err) {
         std::cerr << "Failed to transform (x,y) = (" << dfX << "," << dfY
                   << "), reason: " << pj_strerrno(err) << std::endl;

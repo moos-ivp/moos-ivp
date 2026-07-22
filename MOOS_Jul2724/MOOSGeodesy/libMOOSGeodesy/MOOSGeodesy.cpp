@@ -60,21 +60,21 @@ Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of
 //////////////////////////////////////////////////////////////////////
 
 CMOOSGeodesy::CMOOSGeodesy()
+  : m_bSTEP_AFTER_INIT(false),
+    m_sUTMZone(),
+    m_iRefEllipsoid(23),
+    m_dOriginEasting(0.0),
+    m_dOriginNorthing(0.0),
+    m_dEast(0.0),
+    m_dNorth(0.0),
+    m_dOriginLongitude(0.0),
+    m_dOriginLatitude(0.0),
+    m_dLocalGridX(0.0),
+    m_dLocalGridY(0.0)
 {
-    //create the variables by Zeroing
-    SetMetersNorth(0.0);
-    SetMetersEast(0.0);
-    SetLocalGridX(0.0);
-    SetLocalGridY(0.0);
-    SetOriginNorthing(0.0);
-    SetOriginEasting(0.0);
-    SetOriginLongitude(0.0);
-    SetOriginLatitude(0.0);
-    m_iRefEllipsoid    = 23;
-    pj_utm_ = 0;
-    pj_latlong_ = 0;
-
 }
+
+CMOOSGeodesy::~CMOOSGeodesy() = default;
 
 double CMOOSGeodesy::GetOriginLongitude()
 {

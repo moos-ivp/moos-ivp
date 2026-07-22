@@ -32,10 +32,6 @@
 #define isnan _isnan
 #endif
 
-CMOOSGeodesy::~CMOOSGeodesy()
-{
-}
-
 bool CMOOSGeodesy::Initialise(double lat, double lon)
 {
     // We use the WGS-84 standard reference ellipsoid.

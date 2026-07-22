@@ -38,6 +38,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <memory>
+
 #ifndef PI
     #define  PI 3.14159265
 #endif
@@ -50,9 +52,6 @@ const double rad2deg = 180.0 / PI;
 
 #define MOOSGEODESY_IMPL_PLAIN 1
 #define MOOSGEODESY_IMPL_PROJ  2
-
-/** Forward declare PROJ4 projection */
-typedef void* projPJ;
 
 //! Implements simple geodesy calculations
 class CMOOSGeodesy
@@ -77,6 +76,10 @@ public:
     bool 	Initialise(double lat, double lon);
 
 private:
+    typedef std::shared_ptr<void> ProjectionPtr;
+
+    ProjectionPtr m_utm_projection;
+    ProjectionPtr m_latlong_projection;
     bool m_bSTEP_AFTER_INIT;
     char m_sUTMZone[4];
     int m_iRefEllipsoid;
@@ -88,9 +91,6 @@ private:
     double m_dOriginLatitude;
     double m_dLocalGridX;
     double m_dLocalGridY;
-    projPJ pj_utm_;
-    projPJ pj_latlong_;
-
     void SetUTMZone(const char * utmZone);
     void SetRefEllipsoid(int refEllipsoid);
     void SetOriginEasting(double East);
