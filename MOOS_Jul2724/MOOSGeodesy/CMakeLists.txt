@@ -14,6 +14,9 @@ endif(COMMAND cmake_policy)
 set(PROJECTNAME MOOSGeodesy)
 project(${PROJECTNAME})
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
@@ -31,6 +34,22 @@ include(CacheInternalHelpers)
 
 # We want to create dynamic libraries
 set(BUILD_SHARED_LIBS true)
+
+find_path(PROJ4_INCLUDE_DIR
+    NAMES proj_api.h
+    HINTS ${PROJ4_INCLUDE_DIRS}
+)
+find_library(PROJ4_LIBRARY
+    NAMES proj
+    HINTS ${PROJ4_LIB_PATH}
+)
+
+option(MOOSGEODESY_USE_PROJ "Use Proj for UTM coordinate transformations" ON)
+
+if(MOOSGEODESY_USE_PROJ AND NOT (PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY))
+    message(FATAL_ERROR
+        "MOOSGEODESY_USE_PROJ requires Proj with the proj_api.h API")
+endif()
 
 # Enable Doxygen build with 'make doxygen'
 option(ENABLE_DOXYGEN "Enable a 'make doc' target for Doxygen documentation")
@@ -95,4 +114,3 @@ if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" GREATER 2.7)
 endif()
 
 endif()
-

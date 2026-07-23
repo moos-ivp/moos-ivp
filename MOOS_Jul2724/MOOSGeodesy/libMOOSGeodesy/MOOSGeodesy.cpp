@@ -60,68 +60,21 @@ Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of
 //////////////////////////////////////////////////////////////////////
 
 CMOOSGeodesy::CMOOSGeodesy()
+  : m_bSTEP_AFTER_INIT(false),
+    m_sUTMZone(),
+    m_iRefEllipsoid(23),
+    m_dOriginEasting(0.0),
+    m_dOriginNorthing(0.0),
+    m_dEast(0.0),
+    m_dNorth(0.0),
+    m_dOriginLongitude(0.0),
+    m_dOriginLatitude(0.0),
+    m_dLocalGridX(0.0),
+    m_dLocalGridY(0.0)
 {
-    //create the variables by Zeroing
-    SetMetersNorth(0.0);
-    SetMetersEast(0.0);
-    SetLocalGridX(0.0);
-    SetLocalGridY(0.0);
-    SetOriginNorthing(0.0);
-    SetOriginEasting(0.0);
-    SetOriginLongitude(0.0);
-    SetOriginLatitude(0.0);
-    m_iRefEllipsoid    = 23;
-
 }
 
-CMOOSGeodesy::~CMOOSGeodesy()
-{
-
-}
-
-/**
-*This method is called to set the Origins of the Coordinate system
-*being used by the vehicle for a mission.  This class will store the
-*vehicle's position in Northings and Eastings.  This allows for tracking the
-*vehicle as if it were operating on a grid.
-*
-*@param lat the Latitude of where the vehicle is as it begins a mission
-*@param lon the Longitude of where the vehicle is as it begins a mission
-*
-*@return only returns true at the moment, no reason as to why it should fail
-*        perhaps some way of checking UTM zones vs a list of some sort? 
-*/
-
-bool CMOOSGeodesy::Initialise(double lat, double lon)
-{
-    //We will use the WGS-84 standard Reference Ellipsoid
-    //This can be modified by a client if they desire with 
-    //@see MOOSGeodesy.h
-    SetRefEllipsoid(23);
-
-    //Set the Origin of the local Grid Coordinate System
-    SetOriginLatitude(lat);
-    SetOriginLongitude(lon);
-
-    //Translate the Origin coordinates into Northings and Eastings 
-    double tempNorth = 0.0, tempEast = 0.0;
-    char utmZone[4];
-    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude, 
-            m_dOriginLongitude, tempNorth, 
-            tempEast, utmZone);
-
-    //Then set the Origin for the Northing/Easting coordinate frame
-    //Also make a note of the UTM Zone we are operating in
-    SetOriginNorthing(tempNorth);
-    SetOriginEasting(tempEast);
-    SetUTMZone(utmZone);
-
-    //We set this flag to indicate that the first calculation of distance
-    //traveled is with respect to the origin coordinates.
-    m_bSTEP_AFTER_INIT = true;
-
-    return true;
-}
+CMOOSGeodesy::~CMOOSGeodesy() = default;
 
 double CMOOSGeodesy::GetOriginLongitude()
 {
@@ -299,75 +252,6 @@ char * CMOOSGeodesy::GetUTMZone()
     return m_sUTMZone;
 }
 
-/**
-*This method is the interface to this class and allows the client to 
-*query the amount of ground covered with respect to the origin where the
-*origin is defined as a point in the UTM grid where we got an initial 
-*GPS fix that we defined to be the origin.  What this method does not take
-*into account is the curvature of the reference ellipsoid at a particular
-*Lat/Lon value.  Curvature influences the deltaX and deltaY that this method
-*calculates for determining the overall distance traveled wrt the origin.
-*Therefore, at Lat/Lon values that are significantly far enough (~300km) away from
-*the origin of the UTM grid (0,0), a shift in one dimension, i.e. just along
-*Latitude, or just along Longitude, does not map to a corresponding one
-*dimensional shift in our "local" grid where we should be seeing just a 
-*deltaX or deltaY result in moving in only one direction.  Instead, we have
-*observed that moving just .0001 degrees in Longitude (~1m in local) results in both
-*a deltaX that is coupled to a deltaY.  
-*
-*@param lat The current Latitude the vehicle is at
-*@param lon The current Longitude the vehicle is at
-*@param MetersNorth The distance in meters traveled North wrt to Origin
-*@param MetersEast The distance in meters traveled East wrt to Origin
-*/
-
-bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
-                                    double lon, 
-                                    double &MetersNorth,
-                                    double &MetersEast)
-{
-    //first turn the lat/lon into UTM
-    double tmpNorth = 0.0, tmpEast = 0.0;
-    double dN = 0.0, dE = 0.0; 
-    char tmpUTM[4];
-
-    
-
-    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
-
-    //could check for the UTMZone differing, and if so, return false
-
-    //If this is the first time through the loop,then
-    //compare the returned Northing & Easting values with the origin.
-    //This does not need to be split like into before and after first reading, but
-    //makes the calculation clearer.  Plus, can add other features like logging
-    //or publishing of value
-    if(m_bSTEP_AFTER_INIT){
-        dN = tmpNorth - GetOriginNorthing();
-        dE = tmpEast - GetOriginEasting();
-        SetMetersNorth(dN);
-        SetMetersEast(dE);
-
-        m_bSTEP_AFTER_INIT = !m_bSTEP_AFTER_INIT;
-    }else{
-        double totalNorth = tmpNorth - GetOriginNorthing();
-        dN = totalNorth - GetMetersNorth();
-        //add the increment to the current North value
-        SetMetersNorth(dN + GetMetersNorth());
-
-        double totalEast = tmpEast - GetOriginEasting();
-        dE = totalEast - GetMetersEast();
-        //add the increment to the current East value
-        SetMetersEast(dE + GetMetersEast());
-    }
-
-    //This is the total distance traveled thus far, either North or East
-    MetersNorth = GetMetersNorth();
-    MetersEast = GetMetersEast();
-    
-    return true;
-}
-
 double CMOOSGeodesy::GetOriginEasting()
 {
     return m_dOriginEasting;
@@ -481,54 +365,4 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
     }
 
     return true;
-}
-
-
-bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
-{
-    //written by Henrik Schmidt henrik@mit.edu
-    
-    double err = 1e20;
-    double dfx=dfX;
-    double dfy=dfY;
-    double eps = 1.0; // accuracy in m
-    
-    while (err > eps)
-    {
-        double dflat, dflon, dfnew_x, dfnew_y ;
-
-        // first guess geodesic
-        if (!LocalGrid2LatLong(dfx,dfy,dflat,dflon))
-            return(false);
-        
-        // now convert latlong to UTM
-        if (!LatLong2LocalUTM(dflat,dflon,dfnew_y,dfnew_x))
-            return(false);
-        
-		// fix to segfault issue if you get diverging values
-		if(isnan(dflat) || isnan(dflon))
-		{
-			dflat = 91;
-			dflon = 181;
-			return(false);
-		}
-		
-        // how different
-        double dfdiff_x = dfnew_x -dfX;
-        double dfdiff_y = dfnew_y -dfY;
-        
-        // subtract difference and reconvert        
-        dfx -= dfdiff_x;
-        dfy -= dfdiff_y;
-        
-        err = hypot(dfnew_x-dfX,dfnew_y-dfY);
-        
-        //MOOSTrace("UTM2LatLong: error = %f\n",err); 
-    }
-    
-    if (!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
-        return(false);
-    
-    
- 	return true;
 }
