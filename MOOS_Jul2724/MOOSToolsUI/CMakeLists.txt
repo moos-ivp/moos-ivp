@@ -14,6 +14,12 @@ endif(COMMAND cmake_policy)
 set(PROJECTNAME GUIMOOS)
 project(${PROJECTNAME})
 
+# Preserve the standalone MOOSToolsUI default while allowing embedders to
+# request ordinary executables.  MOOS-IvP sets this OFF in build-moos.sh so
+# the graphical tools continue to land in its common bin directory.
+option(MOOSTOOLSUI_BUILD_MACOS_BUNDLES
+  "Build graphical tools as macOS application bundles" ON)
+
 if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 endif()
