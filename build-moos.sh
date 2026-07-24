@@ -168,6 +168,7 @@ if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
 	-DBUILD_UPB=ON                                           \
 	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
 	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
+	-DMOOSTOOLSUI_BUILD_MACOS_BUNDLES=OFF \
 	-DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
         "${MOOS_SRC_DIR}/MOOSToolsUI"                            \
       && echo "" && echo "Invoking make..." `pwd` && echo ""     \

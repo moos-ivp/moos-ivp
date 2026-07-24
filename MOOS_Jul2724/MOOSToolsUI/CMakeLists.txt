@@ -14,6 +14,9 @@ endif(COMMAND cmake_policy)
 set(PROJECTNAME GUIMOOS)
 project(${PROJECTNAME})
 
+option(MOOSTOOLSUI_BUILD_MACOS_BUNDLES
+  "Build graphical tools as macOS application bundles" ON)
+
 if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 endif()
