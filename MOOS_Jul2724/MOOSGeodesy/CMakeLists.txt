@@ -67,6 +67,24 @@ if(MOOSGEODESY_USE_PROJ)
     endif()
 
     if(MOOSGEODESY_FETCH_PROJ_REQUIRED)
+        if(NOT DEFINED CPM_SOURCE_CACHE AND
+           NOT DEFINED ENV{CPM_SOURCE_CACHE})
+            if(DEFINED ENV{XDG_CACHE_HOME} AND
+               IS_ABSOLUTE "$ENV{XDG_CACHE_HOME}")
+                set(CPM_SOURCE_CACHE "$ENV{XDG_CACHE_HOME}/CPM"
+                    CACHE PATH "Directory to download CPM dependencies")
+            elseif(DEFINED ENV{HOME} AND IS_ABSOLUTE "$ENV{HOME}")
+                set(CPM_SOURCE_CACHE "$ENV{HOME}/.cache/CPM"
+                    CACHE PATH "Directory to download CPM dependencies")
+            endif()
+        endif()
+
+        if(NOT DEFINED CPM_USE_NAMED_CACHE_DIRECTORIES AND
+           NOT DEFINED ENV{CPM_USE_NAMED_CACHE_DIRECTORIES})
+            set(CPM_USE_NAMED_CACHE_DIRECTORIES ON CACHE BOOL
+                "Use additional directory of package name in CPM cache")
+        endif()
+
         include(CPM)
 
         # MOOSGeodesy uses the legacy proj_api.h API, which was removed in
