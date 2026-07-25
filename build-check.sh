@@ -83,10 +83,6 @@ fi
 if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ]; then
     MISSING=$MISSING"MOOS,";
 fi
-if [ ! -e build/MOOS/MOOSGeodesy/_deps/proj-build/lib/libproj.a ]; then
-    MISSING=$MISSING"proj,";
-fi
-
 if [[ "$MISSING" == *, ]]; then
     MISSING_ALL=$MISSING_ALL$MISSING
     MISSING_MOOS_LIBS="${MISSING%?}";

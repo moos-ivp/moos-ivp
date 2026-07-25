@@ -15,6 +15,7 @@ J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_BOT_CODE_ONLY="OFF"
 FORCE_FULL_RASPI_BUILD=""
 MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ:-ON}"
+MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ:-auto}"
 
 #-------------------------------------------------------------------
 #  Check for and handle command-line arguments
@@ -33,6 +34,7 @@ for ARGI; do
 	printf " -mx,   Turn off build minimal robot apps        \n"
         printf " --with-proj,     Use Proj in MOOSGeodesy (default)\n"
         printf " --without-proj,  Use original MOOSGeodesy code  \n"
+        printf " --fetch-proj=MODE  Fetch Proj: auto (default), on, or off\n"
         printf " clean  Clean/remove any previous build.         \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
@@ -47,6 +49,12 @@ for ARGI; do
         MOOSGEODESY_USE_PROJ="ON"
     elif [ "${ARGI}" = "--without-proj" ] ; then
         MOOSGEODESY_USE_PROJ="OFF"
+    elif [[ "${ARGI}" == --fetch-proj=* ]] ; then
+        MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
+        if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
+            echo "ERROR! --fetch-proj must be auto, on, or off"
+            exit 1
+        fi
     elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
@@ -191,6 +199,7 @@ echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                 \
       -DMOOS_DIR="${MOOS_CORE_BUILD_DIR}"                   \
       -DMOOSGEODESY_USE_PROJ=${MOOSGEODESY_USE_PROJ}        \
+      -DMOOSGEODESY_FETCH_PROJ=${MOOSGEODESY_FETCH_PROJ}    \
       "${MOOS_SRC_DIR}/MOOSGeodesy"                         \
   && echo "" && echo "Invoking make..." `pwd` && echo ""    \
   && make ${CMD_ARGS}

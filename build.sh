@@ -4,6 +4,8 @@ CLEAN="no"
 
 BUILD_BOT_CODE_ONLY="OFF"
 FORCE_FULL_RASPI_BUILD=""
+MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ:-ON}"
+MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ:-auto}"
 
 #-------------------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -17,6 +19,12 @@ for ARGI; do
 	echo "    Only build minimal robot apps             "
 	echo "  --minrobotx, -mx                            "
 	echo "    Override min-robot default on Raspbian    "
+        echo "  --with-proj                                 "
+        echo "    Use Proj in MOOSGeodesy (default)         "
+        echo "  --without-proj                              "
+        echo "    Use original MOOSGeodesy code             "
+        echo "  --fetch-proj=MODE                           "
+        echo "    Fetch Proj: auto (default), on, or off    "
 	echo "  --clean, -c, clean                          "
 	echo "    Removes all build, bin, library files     "
 	exit 0
@@ -28,6 +36,16 @@ for ARGI; do
         BUILD_BOT_CODE_ONLY="ON"
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ]; then
         FORCE_FULL_RASPI_BUILD="yes"
+    elif [ "${ARGI}" = "--with-proj" ]; then
+        MOOSGEODESY_USE_PROJ="ON"
+    elif [ "${ARGI}" = "--without-proj" ]; then
+        MOOSGEODESY_USE_PROJ="OFF"
+    elif [[ "${ARGI}" == --fetch-proj=* ]]; then
+        MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
+        if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
+            echo "ERROR! --fetch-proj must be auto, on, or off"
+            exit 1
+        fi
     fi
 done
 
@@ -64,13 +82,17 @@ elif [ ${BUILD_BOT_CODE_ONLY} = "ON" ] ; then
     echo "===========================================================" 
     echo "BUILDING MOOS and IvP code in min-robot mode (no GUI Apps) " 
     echo "===========================================================" 
-    ./build-moos.sh -m && ./build-ivp.sh -m
+    MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ}" \
+    MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ}" \
+        ./build-moos.sh -m && ./build-ivp.sh -m
     RESULT=$?
 else 
     echo "=========================================" 
     echo "BUILDING All MOOS and IvP code           " 
     echo "=========================================" 
-    ./build-moos.sh -mx && ./build-ivp.sh -mx 
+    MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ}" \
+    MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ}" \
+        ./build-moos.sh -mx && ./build-ivp.sh -mx
     RESULT=$?
 fi
 
