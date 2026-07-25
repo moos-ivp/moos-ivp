@@ -19,12 +19,8 @@ for ARGI; do
 	echo "    Only build minimal robot apps             "
 	echo "  --minrobotx, -mx                            "
 	echo "    Override min-robot default on Raspbian    "
-        echo "  --with-proj                                 "
-        echo "    Use Proj in MOOSGeodesy (default)         "
-        echo "  --without-proj                              "
-        echo "    Use original MOOSGeodesy code             "
-        echo "  --fetch-proj=MODE                           "
-        echo "    Fetch Proj: auto (default), on, or off    "
+        echo "  --with-proj=MODE                            "
+        echo "    Use Proj; fetch mode: auto (default), on, or off"
 	echo "  --clean, -c, clean                          "
 	echo "    Removes all build, bin, library files     "
 	exit 0
@@ -36,14 +32,11 @@ for ARGI; do
         BUILD_BOT_CODE_ONLY="ON"
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ]; then
         FORCE_FULL_RASPI_BUILD="yes"
-    elif [ "${ARGI}" = "--with-proj" ]; then
+    elif [[ "${ARGI}" == --with-proj=* ]]; then
         MOOSGEODESY_USE_PROJ="ON"
-    elif [ "${ARGI}" = "--without-proj" ]; then
-        MOOSGEODESY_USE_PROJ="OFF"
-    elif [[ "${ARGI}" == --fetch-proj=* ]]; then
         MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
         if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
-            echo "ERROR! --fetch-proj must be auto, on, or off"
+            echo "ERROR! --with-proj must be auto, on, or off"
             exit 1
         fi
     fi
