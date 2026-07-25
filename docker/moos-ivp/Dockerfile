@@ -9,7 +9,7 @@ ENV PATH="/home/moos/moos-ivp/bin:${PATH}"
 ENV IVP_BEHAVIOR_DIRS="/home/moos/moos-ivp/lib"
 
 # Install required MOOS dependencies
-RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release && apt-get clean
+RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release git && apt-get clean
 
 # Make a user to run the MOOS apps
 RUN useradd -m "moos"
