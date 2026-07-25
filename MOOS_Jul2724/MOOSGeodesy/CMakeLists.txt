@@ -67,13 +67,14 @@ if(MOOSGEODESY_USE_PROJ)
     endif()
 
     if(MOOSGEODESY_FETCH_PROJ_REQUIRED)
-        include(FetchContent)
+        include(CPM)
 
         # MOOSGeodesy uses the legacy proj_api.h API, which was removed in
         # later PROJ releases. The patch makes the upstream 5.2.0 build
         # embeddable and compatible with current CMake releases.
-        FetchContent_Declare(
-            proj
+        CPMAddPackage(
+            NAME proj
+            VERSION 5.2.0
             GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
             GIT_TAG 5.2.0
             GIT_SHALLOW TRUE
@@ -83,18 +84,17 @@ if(MOOSGEODESY_USE_PROJ)
                 "-DPATCH_WORKING_DIRECTORY=<SOURCE_DIR>"
                 -P
                 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGitPatch.cmake"
+            OPTIONS
+                "BUILD_LIBPROJ_SHARED OFF"
+                "PROJ_TESTS OFF"
+                "BUILD_CCT OFF"
+                "BUILD_CS2CS OFF"
+                "BUILD_GEOD OFF"
+                "BUILD_GIE OFF"
+                "BUILD_NAD2BIN OFF"
+                "BUILD_PROJ OFF"
         )
 
-        set(BUILD_LIBPROJ_SHARED OFF CACHE BOOL "" FORCE)
-        set(PROJ_TESTS OFF CACHE BOOL "" FORCE)
-        set(BUILD_CCT OFF CACHE BOOL "" FORCE)
-        set(BUILD_CS2CS OFF CACHE BOOL "" FORCE)
-        set(BUILD_GEOD OFF CACHE BOOL "" FORCE)
-        set(BUILD_GIE OFF CACHE BOOL "" FORCE)
-        set(BUILD_NAD2BIN OFF CACHE BOOL "" FORCE)
-        set(BUILD_PROJ OFF CACHE BOOL "" FORCE)
-
-        FetchContent_MakeAvailable(proj)
         set_target_properties(proj PROPERTIES POSITION_INDEPENDENT_CODE ON)
         set(MOOSGEODESY_PROJ_INCLUDE_DIR ${proj_SOURCE_DIR}/src)
         set(MOOSGEODESY_PROJ_LIBRARY proj)
