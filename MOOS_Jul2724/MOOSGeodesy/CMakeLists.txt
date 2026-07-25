@@ -93,15 +93,16 @@ if(MOOSGEODESY_USE_PROJ)
         CPMAddPackage(
             NAME proj
             VERSION 5.2.0
-            GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
-            GIT_TAG 5.2.0
-            GIT_SHALLOW TRUE
+            URL_HASH
+                SHA256=11958654f92314ba4fd72fb697d975d2a9c22cd7eb3545798019b099f8285d91
             PATCH_COMMAND
                 "${CMAKE_COMMAND}"
                 "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/cmake/proj-5.2.0.patch"
                 "-DPATCH_WORKING_DIRECTORY=<SOURCE_DIR>"
                 -P
                 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGitPatch.cmake"
+            URL
+                https://github.com/OSGeo/PROJ/archive/refs/tags/5.2.0.tar.gz
             OPTIONS
                 "BUILD_LIBPROJ_SHARED OFF"
                 "PROJ_TESTS OFF"
@@ -116,7 +117,7 @@ if(MOOSGEODESY_USE_PROJ)
         set_target_properties(proj PROPERTIES POSITION_INDEPENDENT_CODE ON)
         set(MOOSGEODESY_PROJ_INCLUDE_DIR ${proj_SOURCE_DIR}/src)
         set(MOOSGEODESY_PROJ_LIBRARY proj)
-        message(STATUS "MOOSGeodesy: using fetched PROJ 5.2.0")
+        message(STATUS "MOOSGeodesy: using fetched PROJ")
     elseif(PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY)
         set(MOOSGEODESY_PROJ_INCLUDE_DIR ${PROJ4_INCLUDE_DIR})
         set(MOOSGEODESY_PROJ_LIBRARY ${PROJ4_LIBRARY})
