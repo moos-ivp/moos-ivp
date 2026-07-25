@@ -4,8 +4,6 @@ CLEAN="no"
 
 BUILD_BOT_CODE_ONLY="OFF"
 FORCE_FULL_RASPI_BUILD=""
-MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ:-ON}"
-MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ:-auto}"
 
 #-------------------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -33,12 +31,8 @@ for ARGI; do
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ]; then
         FORCE_FULL_RASPI_BUILD="yes"
     elif [[ "${ARGI}" == --with-proj=* ]]; then
-        MOOSGEODESY_USE_PROJ="ON"
-        MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
-        if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
-            echo "ERROR! --with-proj must be auto, on, or off"
-            exit 1
-        fi
+        export MOOSGEODESY_USE_PROJ="ON"
+        export MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
     fi
 done
 
@@ -75,17 +69,13 @@ elif [ ${BUILD_BOT_CODE_ONLY} = "ON" ] ; then
     echo "===========================================================" 
     echo "BUILDING MOOS and IvP code in min-robot mode (no GUI Apps) " 
     echo "===========================================================" 
-    MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ}" \
-    MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ}" \
-        ./build-moos.sh -m && ./build-ivp.sh -m
+    ./build-moos.sh -m && ./build-ivp.sh -m
     RESULT=$?
 else 
     echo "=========================================" 
     echo "BUILDING All MOOS and IvP code           " 
     echo "=========================================" 
-    MOOSGEODESY_USE_PROJ="${MOOSGEODESY_USE_PROJ}" \
-    MOOSGEODESY_FETCH_PROJ="${MOOSGEODESY_FETCH_PROJ}" \
-        ./build-moos.sh -mx && ./build-ivp.sh -mx
+    ./build-moos.sh -mx && ./build-ivp.sh -mx
     RESULT=$?
 fi
 

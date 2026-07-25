@@ -46,16 +46,13 @@ for ARGI; do
     elif [[ "${ARGI}" == --with-proj=* ]] ; then
         MOOSGEODESY_USE_PROJ="ON"
         MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
-        if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
-            echo "ERROR! --with-proj must be auto, on, or off"
-            exit 1
-        fi
     elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
 	CMD_ARGS=$CMD_ARGS" "$ARGI
     fi
 done
+
 CMD_ARGS+=" "$J_ARGS
 
 #-------------------------------------------------------------- 
