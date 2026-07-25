@@ -870,6 +870,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
     else if(param == "content_mode") 
       handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "refresh_mode")
+      handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "realmcast_channel")
 	handled = m_realm_repo->setOnStartPreferences(value);
     else if(param == "infocast_font_size") 
@@ -1479,4 +1481,3 @@ bool PMV_MOOSApp::buildReport()
   
   return(true);
 }
-
