@@ -5,7 +5,7 @@
 ###########################################################
 
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.14)
 
 if(COMMAND cmake_policy)
    cmake_policy(SET CMP0003 NEW)
@@ -35,20 +35,35 @@ include(CacheInternalHelpers)
 # We want to create dynamic libraries
 set(BUILD_SHARED_LIBS true)
 
-find_path(PROJ4_INCLUDE_DIR
-    NAMES proj_api.h
-    HINTS ${PROJ4_INCLUDE_DIRS}
-)
-find_library(PROJ4_LIBRARY
-    NAMES proj
-    HINTS ${PROJ4_LIB_PATH}
-)
-
 option(MOOSGEODESY_USE_PROJ "Use Proj for UTM coordinate transformations" ON)
 
-if(MOOSGEODESY_USE_PROJ AND NOT (PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY))
-    message(FATAL_ERROR
-        "MOOSGEODESY_USE_PROJ requires Proj with the proj_api.h API")
+if(MOOSGEODESY_USE_PROJ)
+    include(FetchContent)
+
+    # MOOSGeodesy uses the legacy proj_api.h API, which was removed in
+    # later PROJ releases. The patch makes the upstream 5.2.0 build
+    # embeddable and compatible with current CMake releases.
+    FetchContent_Declare(
+        proj
+        GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
+        GIT_TAG 5.2.0
+        GIT_SHALLOW TRUE
+        PATCH_COMMAND
+            git apply
+            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/proj-5.2.0.patch
+    )
+
+    set(BUILD_LIBPROJ_SHARED OFF CACHE BOOL "" FORCE)
+    set(PROJ_TESTS OFF CACHE BOOL "" FORCE)
+    set(BUILD_CCT OFF CACHE BOOL "" FORCE)
+    set(BUILD_CS2CS OFF CACHE BOOL "" FORCE)
+    set(BUILD_GEOD OFF CACHE BOOL "" FORCE)
+    set(BUILD_GIE OFF CACHE BOOL "" FORCE)
+    set(BUILD_NAD2BIN OFF CACHE BOOL "" FORCE)
+    set(BUILD_PROJ OFF CACHE BOOL "" FORCE)
+
+    FetchContent_MakeAvailable(proj)
+    set_target_properties(proj PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # Enable Doxygen build with 'make doxygen'
