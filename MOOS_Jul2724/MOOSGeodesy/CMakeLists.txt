@@ -78,8 +78,11 @@ if(MOOSGEODESY_USE_PROJ)
             GIT_TAG 5.2.0
             GIT_SHALLOW TRUE
             PATCH_COMMAND
-                git apply
-                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/proj-5.2.0.patch
+                "${CMAKE_COMMAND}"
+                "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/cmake/proj-5.2.0.patch"
+                "-DPATCH_WORKING_DIRECTORY=<SOURCE_DIR>"
+                -P
+                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGitPatch.cmake"
         )
 
         set(BUILD_LIBPROJ_SHARED OFF CACHE BOOL "" FORCE)
