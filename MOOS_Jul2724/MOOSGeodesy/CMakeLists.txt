@@ -100,7 +100,7 @@ if(MOOSGEODESY_USE_PROJ)
                 "-DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/cmake/proj-5.2.0.patch"
                 "-DPATCH_WORKING_DIRECTORY=<SOURCE_DIR>"
                 -P
-                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGitPatch.cmake"
+                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyPatch.cmake"
             URL
                 https://github.com/OSGeo/PROJ/archive/refs/tags/5.2.0.tar.gz
             OPTIONS

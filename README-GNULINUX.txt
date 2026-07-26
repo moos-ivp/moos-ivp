@@ -19,6 +19,7 @@ Packages you probably already have installed:
   g++        - GNU C++ compiler
   subversion - Advanced version control system
   cmake      - cross-platform, open-source make system
+  patch      - apply source code patches
   xterm      - X terminal application 
 
 Additional packages:
@@ -34,7 +35,7 @@ Additional packages:
   
 To do it all, cut and paste this:
 
-  sudo apt install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng12-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev espeak
+  sudo apt install g++ subversion xterm cmake patch libfltk1.3-dev freeglut3-dev libpng12-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev espeak
 
 
 NOTE: As of this date we are no longer including FLTK as part of the 
