@@ -35,5 +35,6 @@ RUN apt-get update -y && apt-get install -y libtiff5-dev libfltk1.3-dev freeglut
 USER moos
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build.sh
-
+RUN cd "$HOME/moos-ivp" \
+    && ./build.sh \
+    && rm -rf -- "$HOME/.cache"
