@@ -32,7 +32,8 @@ for ARGI; do
         printf " -k     Keep building after failed component.    \n"
 	printf " -m,    Only build minimal robot apps            \n"
 	printf " -mx,   Turn off build minimal robot apps        \n"
-        printf " --with-proj=MODE  Use Proj; fetch mode: auto (default), on, or off\n"
+        printf " --with-proj=MODE  Use Proj: on (default) or off \n"
+        printf " --fetch-proj=MODE  Fetch Proj: auto (default), on, or off\n"
         printf " clean  Clean/remove any previous build.         \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
@@ -44,8 +45,17 @@ for ARGI; do
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ] ; then
         FORCE_FULL_RASPI_BUILD="yes"
     elif [[ "${ARGI}" == --with-proj=* ]] ; then
-        MOOSGEODESY_USE_PROJ="ON"
+        MOOSGEODESY_USE_PROJ="${ARGI#*=}"
+        if [[ ! "${MOOSGEODESY_USE_PROJ}" =~ ^(on|off)$ ]]; then
+            echo "ERROR! --with-proj must be on or off"
+            exit 1
+        fi
+    elif [[ "${ARGI}" == --fetch-proj=* ]] ; then
         MOOSGEODESY_FETCH_PROJ="${ARGI#*=}"
+        if [[ ! "${MOOSGEODESY_FETCH_PROJ}" =~ ^(auto|on|off)$ ]]; then
+            echo "ERROR! --fetch-proj must be auto, on, or off"
+            exit 1
+        fi
     elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
