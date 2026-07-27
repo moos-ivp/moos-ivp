@@ -29,7 +29,7 @@ jobs:
       if: matrix.os-type == 'debian'
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y cmake build-essential git libtiff5-dev libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxinerama-dev libxft-dev
+        sudo apt-get install -y cmake build-essential patch libtiff5-dev libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxinerama-dev libxft-dev
 
     - name: Install Dependencies - Mac OS X
       if: matrix.os-type == 'darwin'
