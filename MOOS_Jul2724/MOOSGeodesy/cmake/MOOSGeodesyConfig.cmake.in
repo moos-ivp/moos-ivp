@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/MOOSGeodesyTargets.cmake")
+
+set(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
+set_and_check(
+    MOOSGeodesy_INCLUDE_DIRS
+    "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@"
+)
+set_and_check(
+    MOOSGeodesy_LIBRARY_PATH
+    "@PACKAGE_CMAKE_INSTALL_LIBDIR@"
+)
+
+check_required_components(MOOSGeodesy)
