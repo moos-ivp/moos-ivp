@@ -59,10 +59,8 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 # Part 3: FINDING MOOSGeodesy' HEADERS AND LIBRARIES...  
 #=====================================================================
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
-find_package(MOOSGeodesy)
-IF(TARGET MOOSGeodesy::MOOSGeodesy)
-  SET(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
-ENDIF()
+find_package(MOOSGeodesy CONFIG REQUIRED)
+SET(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
 #link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
