@@ -121,8 +121,7 @@ void showExampleConfigAndExit()
   blk("  grid_viewable_all        = true  // {TRUE, false}             ");
   blk("  grid_viewable_labels     = true  // {TRUE, false}             ");
   blk("  grid_opaqueness          = 0.3   // {0.1, 0.2, ..., 1.0}      ");
-  blk("  datum_viewable_all       = true  // {TRUE, false}             ");
-  blk("  datum_viewable_labels    = true  // {TRUE, false}             ");
+  blk("  datum_viewable           = true  // {TRUE, false}             ");
   blk("  marker_viewable_all      = true  // {TRUE, false}             ");
   blk("  marker_viewable_labels   = true  // {TRUE, false}             ");
   blk("  oparea_viewable_all      = true  // {TRUE, false}             ");
@@ -144,7 +143,7 @@ void showExampleConfigAndExit()
   blk("  vehicles_inactive_color = yellow // {red,white,blue,green}    ");
   blk("  trails_viewable         = true   // {TRUE, false}             ");
   blk("  trails_color            = white  // {WHITE, yellow, green}    ");
-  blk("  bearing_lines           = true   // {TRUE, false}             ");
+  blk("  bearing_lines_viewable  = true   // {TRUE, false}             ");
   blk("                                                                ");
   blk("  // InfoCasting Pull-Down Menu                                 ");
   blk("  infocast_viewable    = true     // {TRUE, false}              ");

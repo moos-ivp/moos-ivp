@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6db2d93..84ad9bf 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,7 +9,7 @@
+ #################################################################################
+ # General settings
+ #################################################################################
+-cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+ 
+ # For historic reasons, the CMake PROJECT-NAME is PROJ4
+ project(PROJ4 LANGUAGES C CXX)
+@@ -164,5 +164,7 @@ add_subdirectory(nad)
+ add_subdirectory(src)
+ add_subdirectory(man)
+ add_subdirectory(cmake)
+-add_subdirectory(test)
++if(PROJ_TESTS)
++    add_subdirectory(test)
++endif()
+ 

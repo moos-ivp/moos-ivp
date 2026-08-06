@@ -27,7 +27,7 @@ ARG SOURCE_DATE_EPOCH=""
 USER root
 
 # Base
-RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release && apt-get clean
+RUN apt-get update -y && apt-get install -y cmake build-essential lsb-release patch && apt-get clean
 
 # GUI
 RUN apt-get update -y && apt-get install -y libtiff5-dev libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxinerama-dev libxft-dev && apt-get clean
@@ -35,5 +35,6 @@ RUN apt-get update -y && apt-get install -y libtiff5-dev libfltk1.3-dev freeglut
 USER moos
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build.sh
-
+RUN cd "$HOME/moos-ivp" \
+    && ./build.sh \
+    && rm -rf -- "$HOME/.cache"

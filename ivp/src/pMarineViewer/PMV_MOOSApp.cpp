@@ -870,6 +870,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
     else if(param == "content_mode") 
       handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "refresh_mode")
+      handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "realmcast_channel")
 	handled = m_realm_repo->setOnStartPreferences(value);
     else if(param == "infocast_font_size") 
@@ -877,6 +879,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if(param == "appcast_color_scheme") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "realmcast_color_scheme") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if((param == "realmcast_show_source")        ||
+	    (param == "realmcast_show_community")     ||
+	    (param == "realmcast_show_subscriptions") ||
+	    (param == "realmcast_show_masked")        ||
+	    (param == "realmcast_wrap_content")       ||
+	    (param == "realmcast_trunc_content")      ||
+	    (param == "realmcast_time_format_utc"))
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "full_screen") 
       handled = m_gui->setRadioCastAttrib(param, value);
@@ -1479,4 +1489,3 @@ bool PMV_MOOSApp::buildReport()
   
   return(true);
 }
-
