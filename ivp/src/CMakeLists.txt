@@ -82,6 +82,37 @@ ENDIF()
 
 message("----------------------------------------Use UTM:" ${USE_UTM})
 
+#=====================================================================
+# Part 4a: Normalize external library targets used by exported targets
+#=====================================================================
+IF(IVP_BUILD_GUI_CODE)
+  SET(FLTK_SKIP_FLUID ON)
+  SET(FLTK_SKIP_FORMS ON)
+  SET(FLTK_SKIP_IMAGES ON)
+  FIND_PACKAGE(FLTK REQUIRED)
+  FIND_PACKAGE(OpenGL REQUIRED)
+  FIND_PACKAGE(TIFF REQUIRED)
+
+  # FLTK 1.4 supplies fltk::fltk, while the FLTK 1.3 packages shipped by
+  # supported Ubuntu and Debian releases expose only variables. Create the
+  # modern target in the latter case, following CMake's FindFLTK guidance:
+  # https://cmake.org/cmake/help/latest/module/FindFLTK.html
+  IF(NOT TARGET fltk::fltk)
+    ADD_LIBRARY(fltk::fltk INTERFACE IMPORTED)
+    SET_TARGET_PROPERTIES(fltk::fltk PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${FLTK_INCLUDE_DIR}"
+      INTERFACE_LINK_LIBRARIES "${FLTK_LIBRARIES}")
+  ENDIF()
+
+  ADD_LIBRARY(ivp_fltk INTERFACE)
+  TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE fltk::fltk)
+  IF(TARGET fltk::fltk_gl)
+    TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE fltk::fltk_gl)
+  ENDIF()
+  TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE OpenGL::GL)
+
+ENDIF()
+
 
 #=====================================================================
 # Part 5: Tell CMake/C++ where to find libs/headers from packages
