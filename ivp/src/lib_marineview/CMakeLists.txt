@@ -31,6 +31,8 @@ SET(CMAKE_CXX_FLAGS "-DDATA_DIRX=${ESCAPED_DATA_DIRX} ${CMAKE_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
 
 ADD_LIBRARY(marineview ${SRC})
+TARGET_LINK_LIBRARIES(marineview PUBLIC
+  "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>")
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
