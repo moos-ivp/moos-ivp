@@ -57,37 +57,35 @@ set(${LIBNAME}_LIBRARIES
 list(REMOVE_DUPLICATES ${LIBNAME}_LIBRARIES)
 
 
-######################################
-#export the library - this is picked up and used by the chunk of
-#script at the end of the top level CMakeLists.txt file
-cache_internal_append_unique(PROJECT_EXPORT_LIBS 
-    ${LIBNAME}
-)
-
-
-
 #######################################
 # Create the library
 # This is boilerplate.  Any extra libs you want to link should be in the '..._DEPEND_...'
 # variables
-include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
+add_library(MOOSGeodesy::MOOSGeodesy ALIAS ${LIBNAME})
+target_include_directories(${LIBNAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 if(MOOSGEODESY_USE_PROJ)
     target_compile_definitions(${LIBNAME} PUBLIC MOOSGEODESY_IMPL=MOOSGEODESY_IMPL_PROJ)
     target_include_directories(${LIBNAME} PRIVATE ${PROJ4_INCLUDE_DIR})
-    target_link_libraries(${LIBNAME} LINK_PRIVATE ${PROJ4_LIBRARY})
+    target_link_libraries(${LIBNAME} PRIVATE ${PROJ4_LIBRARY})
 else()
     target_compile_definitions(${LIBNAME} PUBLIC MOOSGEODESY_IMPL=MOOSGEODESY_IMPL_PLAIN)
 endif()
-target_link_libraries(${LIBNAME} LINK_PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
+target_link_libraries(${LIBNAME} PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
 
 #######################################
 # install headers
-install(DIRECTORY ${INCLUDE_ROOTS} DESTINATION ${CMAKE_INSTALL_PREFIX} FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILES_MATCHING PATTERN "*.h")
 
 
 # install libraries
 INSTALL(TARGETS ${LIBNAME}
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  EXPORT MOOSGeodesyTargets
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )

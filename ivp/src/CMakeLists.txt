@@ -60,6 +60,9 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 #=====================================================================
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
 find_package(MOOSGeodesy)
+IF(TARGET MOOSGeodesy::MOOSGeodesy)
+  SET(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
+ENDIF()
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
 #link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
