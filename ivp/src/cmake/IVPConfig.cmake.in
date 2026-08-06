@@ -1,0 +1,44 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(MOOS 10.0)
+find_dependency(MOOSGeodesy CONFIG)
+
+if(@IVP_PACKAGE_HAS_GUI@)
+  set(FLTK_SKIP_FLUID ON)
+  set(FLTK_SKIP_FORMS ON)
+  set(FLTK_SKIP_IMAGES ON)
+  find_dependency(FLTK)
+  find_dependency(OpenGL)
+  find_dependency(TIFF)
+
+  # Match the build-tree fallback for FLTK 1.3 packages, which do not export
+  # the modern fltk::fltk target. This is the compatibility pattern documented
+  # by CMake's FindFLTK module:
+  # https://cmake.org/cmake/help/latest/module/FindFLTK.html
+  if(NOT TARGET fltk::fltk)
+    add_library(fltk::fltk INTERFACE IMPORTED)
+    set_target_properties(fltk::fltk PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${FLTK_INCLUDE_DIR}"
+      INTERFACE_LINK_LIBRARIES "${FLTK_LIBRARIES}")
+  endif()
+
+  if(NOT TARGET IVP::FLTK)
+    add_library(IVP::FLTK INTERFACE IMPORTED)
+    target_link_libraries(IVP::FLTK INTERFACE fltk::fltk)
+    if(TARGET fltk::fltk_gl)
+      target_link_libraries(IVP::FLTK INTERFACE fltk::fltk_gl)
+    endif()
+    target_link_libraries(IVP::FLTK INTERFACE OpenGL::GL)
+  endif()
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/IVPTargets.cmake")
+
+# Compatibility variables for projects that have not migrated fully to
+# imported targets. New consumers should prefer the IVP:: targets.
+set(IVP_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/ivp")
+set(IVP_LIBRARIES "@IVP_PACKAGE_TARGETS@")
+
+check_required_components(IVP)

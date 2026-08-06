@@ -18,5 +18,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(evalutil ${SRC})
-
+IVP_ADD_LIBRARY(evalutil ${SRC})
+TARGET_LINK_LIBRARIES(evalutil
+  PUBLIC logic mbutil
+  PRIVATE apputil)

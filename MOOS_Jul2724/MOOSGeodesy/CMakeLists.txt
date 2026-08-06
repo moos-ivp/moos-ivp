@@ -149,77 +149,52 @@ IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC"  )
 ENDIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 add_subdirectory(libMOOSGeodesy)
-
-#########################
-# Installable CMake package
-#########################
-
-include(CMakePackageConfigHelpers)
-
-set(MOOSGEODESY_INSTALL_CMAKEDIR
-    "${CMAKE_INSTALL_LIBDIR}/cmake/MOOSGeodesy")
-
-configure_package_config_file(
-    "cmake/MOOSGeodesyConfig.cmake.in"
-    "${PROJECT_BINARY_DIR}/install/MOOSGeodesyConfig.cmake"
-    INSTALL_DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
-    PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
-)
-
-install(
-    EXPORT MOOSGeodesyTargets
-    FILE MOOSGeodesyTargets.cmake
-    NAMESPACE MOOSGeodesy::
-    DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
-)
-
-install(
-    FILES "${PROJECT_BINARY_DIR}/install/MOOSGeodesyConfig.cmake"
-    DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
-)
-
 
 #########################
 # Config Script Creation
 #########################
 
-# Add your library's name to PROJECT_EXPORT_LIBS if you wish to have it exported
-# (This is a CACHE INTERNAL variable)
-option(ENABLE_EXPORT "do you want CMake to record this build so other projects can find it " ON)
+set(MOOSGEODESY_CONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/MOOSGeodesy")
 
+# Make the independently built source tree directly consumable.
+export(EXPORT MOOSGeodesyTargets
+    NAMESPACE MOOSGeodesy::
+    FILE "${PROJECT_BINARY_DIR}/MOOSGeodesyTargets.cmake")
+
+set(MOOSGEODESY_CONFIG_INCLUDE_DIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/libMOOSGeodesy/include")
+configure_package_config_file(
+    "cmake/ProjectConfig.cmake.in"
+    "${PROJECT_BINARY_DIR}/MOOSGeodesyConfig.cmake"
+    INSTALL_DESTINATION "."
+    INSTALL_PREFIX "${PROJECT_BINARY_DIR}"
+    PATH_VARS MOOSGEODESY_CONFIG_INCLUDE_DIR)
+
+# Install a relocatable package alongside the library.
+install(EXPORT MOOSGeodesyTargets
+    NAMESPACE MOOSGeodesy::
+    FILE MOOSGeodesyTargets.cmake
+    DESTINATION "${MOOSGEODESY_CONFIG_INSTALL_DIR}")
+
+set(MOOSGEODESY_CONFIG_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+configure_package_config_file(
+    "cmake/ProjectConfig.cmake.in"
+    "${PROJECT_BINARY_DIR}/MOOSGeodesyInstallConfig.cmake"
+    INSTALL_DESTINATION "${MOOSGEODESY_CONFIG_INSTALL_DIR}"
+    PATH_VARS MOOSGEODESY_CONFIG_INCLUDE_DIR)
+install(FILES "${PROJECT_BINARY_DIR}/MOOSGeodesyInstallConfig.cmake"
+    RENAME MOOSGeodesyConfig.cmake
+    DESTINATION "${MOOSGEODESY_CONFIG_INSTALL_DIR}")
+
+option(ENABLE_EXPORT
+    "Cause CMake to record this build so other projects can find it" ON)
 if(ENABLE_EXPORT)
-   message(STATUS "location of this build will be exported, set ENABLE_EXPORT to OFF if you don't want this and delete ~/.cmake/projects/MOOS ")
-if (PROJECT_EXPORT_LIBS)
-    
-    message(STATUS "PROJECT_EXPORT_LIBS = ${PROJECT_EXPORT_LIBS}")
-    
-    # Provide a cmake config script for the build directory
-    export(TARGETS
-        ${PROJECT_EXPORT_LIBS}
-        FILE
-        Use${PROJECTNAME}.cmake
-    )
-
-    set(CONFIG_FILE "${PROJECT_BINARY_DIR}/${PROJECTNAME}Config.cmake")
-    configure_file( "cmake/ProjectConfig.cmake.in" ${CONFIG_FILE} @ONLY )
-    
-    # Append libary specific lines to the generated config script
-    foreach(EXPORT_LIB ${PROJECT_EXPORT_LIBS})
-        file(APPEND ${CONFIG_FILE} "\n# Export variables for ${EXPORT_LIB} Library\n")
-        file(APPEND ${CONFIG_FILE} "set(${EXPORT_LIB}_LIBRARIES \"${${EXPORT_LIB}_LIBRARIES}\")\n")
-        file(APPEND ${CONFIG_FILE} "set(${EXPORT_LIB}_INCLUDE_DIRS \"${${EXPORT_LIB}_INCLUDE_DIRS}\")\n")
-        file(APPEND ${CONFIG_FILE} "set(${EXPORT_LIB}_DEPEND_LIBRARIES \"${${EXPORT_LIB}_DEPEND_LIBRARIES}\")\n")
-        file(APPEND ${CONFIG_FILE} "set(${EXPORT_LIB}_DEPEND_INCLUDE_DIRS \"${${EXPORT_LIB}_DEPEND_INCLUDE_DIRS}\")\n")
-    endforeach()
-
-endif()
-
-
-# Stick build location in the central CMake user package registry, so that it may be easily found
-if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" GREATER 2.7)
-  export(PACKAGE ${PROJECTNAME})
-endif()
-
+    message(STATUS "Location of this build will be exported. Set ENABLE_EXPORT "
+                   "to OFF to disable the CMake user package registry entry.")
+    export(PACKAGE MOOSGeodesy)
 endif()

@@ -12,5 +12,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(geodaid ${SRC})
-
+IVP_ADD_LIBRARY(geodaid ${SRC})
+TARGET_LINK_LIBRARIES(geodaid
+  PUBLIC contacts MOOSGeodesy::MOOSGeodesy
+  PRIVATE geometry mbutil)

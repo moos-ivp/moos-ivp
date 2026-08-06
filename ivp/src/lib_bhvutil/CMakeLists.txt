@@ -52,5 +52,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(bhvutil ${SRC})
-
+IVP_ADD_LIBRARY(bhvutil ${SRC})
+TARGET_LINK_LIBRARIES(bhvutil
+  PUBLIC contacts geometry ivpbuild ivpcore mbutil
+  PRIVATE turngeo)

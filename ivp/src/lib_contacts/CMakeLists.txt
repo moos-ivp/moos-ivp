@@ -18,5 +18,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(contacts ${SRC})
-
+IVP_ADD_LIBRARY(contacts ${SRC})
+TARGET_LINK_LIBRARIES(contacts
+  PRIVATE geometry mbutil)

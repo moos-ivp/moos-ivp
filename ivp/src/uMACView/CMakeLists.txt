@@ -17,13 +17,13 @@ IF (${APPLE})
       ADD_EXECUTABLE(uMACView ${SRC})
       # Install Targets
       INSTALL(TARGETS uMACView
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        RUNTIME DESTINATION bin
       )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uMACView ${SRC})
       # Install Targets
       INSTALL(TARGETS uMACView
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+         RUNTIME DESTINATION bin
       )
 ENDIF (${APPLE})
 

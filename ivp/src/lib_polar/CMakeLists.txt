@@ -16,5 +16,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(polar ${SRC})
-
+IVP_ADD_LIBRARY(polar ${SRC})
+TARGET_LINK_LIBRARIES(polar
+  PUBLIC geometry
+  PRIVATE mbutil)

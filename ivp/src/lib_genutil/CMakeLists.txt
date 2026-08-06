@@ -8,5 +8,6 @@ FILE(GLOB SRC *.cpp)
 FILE(GLOB HEADERS *.h)
 
 # Build Library
-ADD_LIBRARY(genutil ${SRC})
-
+IVP_ADD_LIBRARY(genutil ${SRC})
+TARGET_LINK_LIBRARIES(genutil
+  PUBLIC MOOS::MOOS)

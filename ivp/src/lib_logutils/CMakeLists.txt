@@ -55,5 +55,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(logutils ${SRC})
-
+IVP_ADD_LIBRARY(logutils ${SRC})
+TARGET_LINK_LIBRARIES(logutils
+  PUBLIC encounters geometry helmivp ivpbuild ivpcore mbutil
+  PRIVATE apputil contacts)

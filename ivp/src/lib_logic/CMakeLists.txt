@@ -24,5 +24,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(logic ${SRC})
-
+IVP_ADD_LIBRARY(logic ${SRC})
+TARGET_LINK_LIBRARIES(logic
+  PRIVATE mbutil)
