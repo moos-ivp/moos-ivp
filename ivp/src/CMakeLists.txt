@@ -293,12 +293,7 @@ FOREACH(A ${IVP_APPS_TO_BUILD_DEPRECATED})
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)
 
-#=====================================================================
-# make install (tes 2012-05-08)
-#=====================================================================
-
-install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION bin USE_SOURCE_PERMISSIONS)
 install(DIRECTORY ${IVP_LIB_DIRECTORY}/ DESTINATION lib)
 
 message("Include directory: ${IVP_INC_DIRECTORY}")
