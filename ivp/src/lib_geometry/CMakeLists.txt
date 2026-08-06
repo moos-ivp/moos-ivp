@@ -158,9 +158,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(geometry ${SRC})
-
-TARGET_LINK_LIBRARIES( geometry
-   mbutil
-   )
-
+IVP_ADD_LIBRARY(geometry ${SRC})
+TARGET_LINK_LIBRARIES(geometry
+  PUBLIC mbutil MOOSGeodesy::MOOSGeodesy)

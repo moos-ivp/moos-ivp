@@ -16,10 +16,12 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(zaicview ${SRC})
+IVP_ADD_LIBRARY(zaicview ${SRC})
+TARGET_LINK_LIBRARIES(zaicview
+  PUBLIC ivpcore
+    "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>"
+  PRIVATE geometry ivpbuild mbutil)
 
-TARGET_LINK_LIBRARIES(zaicview PUBLIC
-  "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>")
 IF (${APPLE})
     SET_TARGET_PROPERTIES(zaicview
         PROPERTIES

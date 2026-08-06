@@ -61,5 +61,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(mbutil ${SRC})
-
+IVP_ADD_LIBRARY(mbutil ${SRC})
+IF(UNIX)
+  TARGET_LINK_LIBRARIES(mbutil PRIVATE m)
+ENDIF()

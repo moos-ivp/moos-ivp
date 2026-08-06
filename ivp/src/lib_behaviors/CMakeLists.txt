@@ -25,5 +25,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(behaviors ${SRC})
-
+IVP_ADD_LIBRARY(behaviors ${SRC})
+TARGET_LINK_LIBRARIES(behaviors
+  PUBLIC bhvutil geometry helmivp ivpcore logic mbutil
+  PRIVATE ivpbuild)

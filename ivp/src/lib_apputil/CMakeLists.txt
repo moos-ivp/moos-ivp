@@ -22,5 +22,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(apputil ${SRC})
-
+IVP_ADD_LIBRARY(apputil ${SRC})
+TARGET_LINK_LIBRARIES(apputil
+  PUBLIC mbutil MOOS::MOOS)

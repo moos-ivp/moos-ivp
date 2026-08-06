@@ -25,5 +25,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(ivpcore ${SRC})
-
+IVP_ADD_LIBRARY(ivpcore ${SRC})
+IF(UNIX)
+  TARGET_LINK_LIBRARIES(ivpcore PRIVATE m)
+ENDIF()

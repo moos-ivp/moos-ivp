@@ -9,4 +9,7 @@ SET(SRC
 )
 
 # Build Library
-ADD_LIBRARY(marine_pid ${SRC})
+IVP_ADD_LIBRARY(marine_pid ${SRC})
+TARGET_LINK_LIBRARIES(marine_pid
+  PUBLIC mbutil
+  PRIVATE geometry MOOS::MOOS)

@@ -2,6 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 PROJECT(IVP)
 
+INCLUDE(CMakePackageConfigHelpers)
+
 #======================================================================
 # Part 1: Set Compiler Flags
 #======================================================================
@@ -275,6 +277,20 @@ message("IVP_LIBS_TO_BUILD: ${IVP_LIBS_TO_BUILD}")
 
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 
+# Create an exported IvP library with the common build/install include paths.
+# Each library declares its own link dependencies in its CMakeLists.txt.
+FUNCTION(IVP_ADD_LIBRARY TARGET_NAME)
+  ADD_LIBRARY(${TARGET_NAME} ${ARGN})
+  TARGET_INCLUDE_DIRECTORIES(${TARGET_NAME} PUBLIC
+    $<BUILD_INTERFACE:${IVP_INC_DIRECTORY}/ivp>
+    $<INSTALL_INTERFACE:include/ivp>)
+  INSTALL(TARGETS ${TARGET_NAME}
+    EXPORT IVPTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin)
+ENDFUNCTION()
+
 #=====================================================================
 # Part 9: Add CMake subdirs for each library and application
 #=====================================================================
@@ -307,3 +323,32 @@ endforeach()
 
 install(DIRECTORY ${IVP_INC_DIRECTORY}/ DESTINATION include
   FILES_MATCHING REGEX .*\\.h)
+
+# Generate the files consumed by downstream projects using
+# `find_package(IVP CONFIG)`. IVPTargets.cmake exposes the installed libraries
+# as IVP::<library>, while IVPConfig.cmake locates IVP's external dependencies
+# and provides the legacy IVP_INCLUDE_DIRS and IVP_LIBRARIES variables.
+SET(IVP_CMAKE_INSTALL_DIR lib/cmake/IVP)
+SET(IVP_PACKAGE_HAS_GUI ${IVP_BUILD_GUI_CODE})
+SET(IVP_PACKAGE_TARGETS "")
+
+# Convert the source-directory names (for example, lib_mbutil) into the
+# namespaced imported targets that the installed package advertises.
+FOREACH(L ${IVP_LIBS_TO_BUILD})
+  STRING(REGEX REPLACE "^lib_" "" IVP_TARGET_NAME "${L}")
+  LIST(APPEND IVP_PACKAGE_TARGETS "IVP::${IVP_TARGET_NAME}")
+ENDFOREACH()
+
+# Substitute the build's optional-GUI setting and install location into the
+# package configuration file before installing it alongside the target export.
+CONFIGURE_PACKAGE_CONFIG_FILE(
+  ${IVP_SOURCE_DIR}/cmake/IVPConfig.cmake.in
+  ${IVP_BINARY_DIR}/IVPConfig.cmake
+  INSTALL_DESTINATION ${IVP_CMAKE_INSTALL_DIR})
+
+INSTALL(EXPORT IVPTargets
+  FILE IVPTargets.cmake
+  NAMESPACE IVP::
+  DESTINATION ${IVP_CMAKE_INSTALL_DIR})
+INSTALL(FILES ${IVP_BINARY_DIR}/IVPConfig.cmake
+  DESTINATION ${IVP_CMAKE_INSTALL_DIR})
