@@ -39,6 +39,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   ivpbuild 
   ivpcore
   ivpsolve 
+  gen_poly
   geometry
   apputil
   mbutil 

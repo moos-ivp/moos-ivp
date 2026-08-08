@@ -23,7 +23,7 @@ SET(SRC
   BHV_OpRegion.cpp
   BHV_OpRegionRecover.cpp
   BHV_OpRegionV24.cpp
-#  BHV_OpRegionV26.cpp
+  BHV_OpRegionV26.cpp
   BHV_PeriodicSpeed.cpp
   BHV_PeriodicSurface.cpp
   BHV_RStationKeep.cpp

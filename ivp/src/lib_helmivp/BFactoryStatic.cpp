@@ -36,6 +36,7 @@
 #include "BHV_OpRegion.h"
 #include "BHV_OpRegionRecover.h"
 #include "BHV_OpRegionV24.h"
+#include "BHV_OpRegionV26.h"
 #include "BHV_MaxDepth.h"
 #include "BHV_MaxSpeed.h"
 #include "BHV_ConstantDepth.h"
@@ -152,6 +153,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_OpRegionRecover(m_domain);
   else if(bhv_name == "BHV_OpRegionV24")
     bhv = new BHV_OpRegionV24(m_domain);
+  else if(bhv_name == "BHV_OpRegionV26")
+    bhv = new BHV_OpRegionV26(m_domain);
   else if(bhv_name == "BHV_Waypoint")
     bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_LegRun")
