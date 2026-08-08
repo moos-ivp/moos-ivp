@@ -23,6 +23,7 @@ SET(SRC
   BHV_OpRegion.cpp
   BHV_OpRegionRecover.cpp
   BHV_OpRegionV24.cpp
+#  BHV_OpRegionV26.cpp
   BHV_PeriodicSpeed.cpp
   BHV_PeriodicSurface.cpp
   BHV_RStationKeep.cpp
@@ -50,6 +51,7 @@ SET(HEADERS
   BHV_AbortToPoint.h
   BHV_AvoidCollision.h
   BHV_AvoidObstacleV24.h
+  BHV_AvoidObstacleV26.h
   BHV_ConstantDepth.h
   BHV_ConstantHeading.h
   BHV_ConstantSpeed.h

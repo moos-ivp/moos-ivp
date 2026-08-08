@@ -825,7 +825,7 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
 
 //---------------------------------------------------------------
 // Procedure: line_intersects
-//   Purpose: Return true if the given segment intercepts the 
+//   Purpose: Return true if the given line intercepts the 
 //            polygon. Checks are made whether the line crosses
 //            any of the polygon edges. Under normal circumstances,
 //            a line will either (a) not intersect, or (b) intersect

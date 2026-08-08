@@ -2738,7 +2738,10 @@ double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
   
   return(cpa);
 }
-  
+
+
+
+
 //---------------------------------------------------------------
 // Procedure: randPointOnSeg()
 //   Purpose: Given a line segment, return a random point on the
