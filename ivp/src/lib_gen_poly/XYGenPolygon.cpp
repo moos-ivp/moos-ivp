@@ -477,3 +477,44 @@ double XYGenPolygon::distPtToEnterGP(double px, double py)
   return(min_dist);
 }
 
+//---------------------------------------------------------------
+// Procedure: distRayToEnterGP()
+//   Purpose: Calculate the distance of the given point to the
+//            closest line segment, AT THE GIVEN ANGLE.
+//      Note: Unlike the cousin of this function without the angle
+//            argument, this function may actually return -1, if 
+//            ray does intersect the gpoly anywhere.
+
+double XYGenPolygon::distRayToEnterGP(double px, double py,
+				      double ray_angle)
+{
+  // Edge cases
+  if(contains(px,py))
+    return(0);  
+  if(m_segl_border.size() < 2)
+    return(-1);
+  
+  double min_dist = -1;
+  for(unsigned int i=0; i<m_segl_border.size(); i++) {
+    // get first vertex of the ith edge
+    double x1 = m_segl_border.get_vx(i);
+    double y1 = m_segl_border.get_vy(i);
+    // get second vertex of the ith edge
+    double x2 = m_segl_border.get_vx(0);
+    double y2 = m_segl_border.get_vy(0);
+    if((i+1) < m_segl_border.size()) {
+      x2 = m_segl_border.get_vx(i+1);
+      y2 = m_segl_border.get_vy(i+1);
+    }
+
+    // determine if it crosses that edge
+    double dist = distPointToSeg(x1,y1,x2,y2, px,py, ray_angle);
+    if(dist > 0) {
+      if((min_dist < 0) || (dist < min_dist))
+	min_dist = dist;
+    }
+  }
+  
+  return(min_dist);
+}
+

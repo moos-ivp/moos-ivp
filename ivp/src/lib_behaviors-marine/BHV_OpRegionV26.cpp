@@ -129,7 +129,6 @@ bool BHV_OpRegionV26::setParam(string param, string val)
   else if(param == "breach_dist")
     return(setNonNegDoubleOnString(m_breach_dist, val));
 
-#if 0
   else if((param == "recover_spd") || (param == "recover_speed"))
     return(setPosDoubleOnString(m_recover_spd, val));
   else if(param == "reset")
@@ -138,15 +137,26 @@ bool BHV_OpRegionV26::setParam(string param, string val)
     return(setBooleanOnString(m_trigger_on_poly_entry, val));
   else if(param == "trigger_entry_time") 
     return(setNonNegDoubleOnString(m_trigger_entry_time, val));
-  else if(param == "trigger_exit_time") 
-    return(setNonNegDoubleOnString(m_trigger_exit_time, val));
-  else if(param == "breached_poly_flag") 
-    return(addFlagOnString(m_breached_poly_flags, val));
+  else if(param == "trigger_breach_time") 
+    return(setNonNegDoubleOnString(m_trigger_breach_time, val));
+
+  else if(param == "entering_flag") 
+    return(addFlagOnString(m_entering_flags, val));
+  else if(param == "enteringx_flag") 
+    return(addFlagOnString(m_enteringx_flags, val));
+
+  else if(param == "contained_flag") 
+    return(addFlagOnString(m_contained_flags, val));
+  else if(param == "containedx_flag") 
+    return(addFlagOnString(m_containedx_flags, val));
+
+  else if(param == "breached_flag") 
+    return(addFlagOnString(m_breached_flags, val));
+
   else if(param == "lapsed_flag") 
-    return(addFlagOnString(m_save_flags, val));
+    return(addFlagOnString(m_lapsed_flags, val));
   else if(param == "lapsedx_flag") 
-    return(addFlagOnString(m_savex_flags, val));
-#endif
+    return(addFlagOnString(m_lapsedx_flags, val));
 
   else if(param == "visual_hints") 
     return(m_hints.setHints(val));
@@ -212,7 +222,6 @@ IvPFunction *BHV_OpRegionV26::onRunState()
 
 IvPFunction *BHV_OpRegionV26::buildOF()
 {
-#if 0
   //=========================================================
   // Part 1: Preliminaries
   //=========================================================
@@ -222,7 +231,7 @@ IvPFunction *BHV_OpRegionV26::buildOF()
   // Note we don't set to false if currently not heading to poly. Once
   // set to true it stays true until we get back inside the poly. 
 
-  double curr_hdg_dist_to_poly = m_save_poly.dist_to_poly(m_osx, m_osy, m_osh);
+  double curr_hdg_dist_to_poly = m_core_poly.distRayToEnterGP(m_osx, m_osy, m_osh);
   if(curr_hdg_dist_to_poly != -1) {
     m_heading_to_poly = true;
     m_committed_turn = "none";
@@ -284,12 +293,12 @@ IvPFunction *BHV_OpRegionV26::buildOF()
     ipf = coupler.couple(ipf_hdg, ipf_spd, 5, 95);
   
 
-  //#if 0
+#if 0
   if(m_heading_to_poly)
     ipf = coupler.couple(ipf_hdg, ipf_spd, 95, 5);
   else
     ipf = coupler.couple(ipf_hdg, ipf_spd, 50, 50);
-  //#endif
+#endif
   
   if(!ipf)
     postWMessage("Failure on the CRS_SPD COUPLER");
@@ -297,8 +306,6 @@ IvPFunction *BHV_OpRegionV26::buildOF()
     ipf->setPWT(m_priority_wt);
   
   return(ipf);
-#endif
-  return(0);
 }
 
 //-----------------------------------------------------------
@@ -351,6 +358,7 @@ void BHV_OpRegionV26::handleStateEntering()
 void BHV_OpRegionV26::updateState()
 {
   bool contained = m_core_poly.contains(m_osx, m_osy);
+  postRepeatableMessage("V26_IN", contained);
 
   if(contained)
     m_state = "contained";
@@ -364,6 +372,7 @@ void BHV_OpRegionV26::updateState()
     else
       m_state = "lapsed";
   }
+  postRepeatableMessage("V26_STATE", m_state);
   
   if(m_state == "contained") {
     // If entering the poly, note the time of entry
@@ -394,7 +403,7 @@ void BHV_OpRegionV26::updateState()
     m_time_contained_start = 0;
     m_time_contained_total = 0;
     m_time_breached_start = 0;
-    m_time_breached_start = 0;
+    m_time_breached_total = 0;
    }
 
   if(m_state == "breached") {
@@ -406,8 +415,8 @@ void BHV_OpRegionV26::updateState()
 
     m_time_contained_start = 0;
     m_time_contained_total = 0;
-    m_time_breached_start = 0;
-    m_time_breached_start = 0;
+    m_time_lapsed_start = 0;
+    m_time_lapsed_total = 0;
    }
 }
 
@@ -420,35 +429,6 @@ bool BHV_OpRegionV26::updateInfoIn()
   if(!ok)
     return(false);
   
-#if 0
-  bool ok1, ok2, ok3, ok4;
-  double osx = getBufferDoubleVal("NAV_X", ok1);
-  double osy = getBufferDoubleVal("NAV_Y", ok2);
-  double osv = getBufferDoubleVal("NAV_SPEED", ok3);
-  double osh = getBufferDoubleVal("NAV_HEADING", ok4);
-
-  string msg;
-  if(!ok1) 
-    msg = "No ownship NAV_X (" + m_us_name + ") in info_buffer";
-  if(!ok2) 
-    msg = "No ownship NAV_Y (" + m_us_name + ") in info_buffer";
-  if(!ok3) 
-    msg = "No ownship NAV_SPEED (" + m_us_name + ") in info_buffer";
-  if(!ok4) 
-    msg = "No ownship NAV_HEADING (" + m_us_name + ") in info_buffer";
-
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2 || !ok3 || !ok4) {
-    postEMessage(msg);
-    return(false);
-  }
-
-  m_osx = osx;
-  m_osy = osy;
-  m_osv = osv;
-  m_osh = osh;
-#endif
-  
   if(getBufferVarUpdated(m_dynamic_region_var)) {
     bool ok;
     string new_poly_core = getBufferStringVal(m_dynamic_region_var, ok);
@@ -457,7 +437,6 @@ bool BHV_OpRegionV26::updateInfoIn()
     if(!ok)
       return(false);
   }
-
   return(true);
 }
 
@@ -467,45 +446,6 @@ bool BHV_OpRegionV26::updateInfoIn()
 
 bool BHV_OpRegionV26::updateRegionPolys()
 {
-#if 0
-  // Sanity check: If save_dist or halt_dist is being used
-  // then core_poly must have been provided and be convex.
-  if((m_save_dist >= 0) || (m_halt_dist >= 0)) {
-    if(m_core_polys.size() == 0)
-      return(false);
-  }
-
-  m_save_polys.clear();
-  m_halt_polys.clear();
-  
-  for(unsigned int i=0; i<m_core_polys.size(); i++) {
-    XYPolygon core_poly = m_core_polys[i];
-    XYPolygon save_poly = core_poly;
-    XYPolygon halt_poly = core_poly;
-    
-    if(m_save_dist > 0) {
-      XYPolyExpander expander;
-      expander.setPoly(core_poly);
-      expander.setDegreeDelta(15);
-      save_poly = expander.getBufferPoly(m_save_dist);
-      string label = "opreg_save" + uintToString(i);
-      label += "_" + getOwnshipName();
-      save_poly.set_label(label);
-      m_save_polys.push_back(save_poly);
-    }
-  
-    if(m_halt_dist > 0) {
-      XYPolyExpander expander;
-      expander.setPoly(m_core_poly);
-      expander.setDegreeDelta(15);
-      m_halt_poly = expander.getBufferPoly(m_halt_dist);
-      string label = "opreg_halt" + uintToString(i);
-      label += "_" + getOwnshipName();
-      halt_poly.set_label(label);
-      m_halt_polys.push_back(halt_poly);
-    }
-  }
-#endif
   return(true);
 }
 
@@ -529,6 +469,12 @@ void BHV_OpRegionV26::postViewablePolys()
 
 void BHV_OpRegionV26::postViewableRegion()
 {
+  XYSegList segl_border = m_core_poly.getSegList();
+  if(segl_border.size() > 1) {
+    segl_border.add_vertex(segl_border.get_vx(0), segl_border.get_vy(0));
+    postMessage("VIEW_SEGLIST", segl_border.get_spec(3));
+  }
+  
   vector<XYPolygon> polys = m_core_poly.getCoverPolys();
   for(unsigned int i=0; i<polys.size(); i++) {
     applyHints(polys[i], m_hints, "core");
@@ -543,16 +489,12 @@ void BHV_OpRegionV26::postViewableRegion()
 
 void BHV_OpRegionV26::postErasablePolys()
 {
-#if 0
-  for(unsigned int i=0; i<m_core_polys[i].size(); i++)
-    postMessage("VIEW_POLYGON", m_core_polys[i].get_spec_inactive());
-
-  for(unsigned int i=0; i<m_save_polys[i].size(); i++)
-    postMessage("VIEW_POLYGON", m_save_polys[i].get_spec_inactive());
-
-  for(unsigned int i=0; i<m_halt_polys[i].size(); i++)
-    postMessage("VIEW_POLYGON", m_halt_polys[i].get_spec_inactive());
-#endif
+  XYSegList segl_border = m_core_poly.getSegList();
+  postMessage("VIEW_SEGLIST", segl_border.get_spec_inactive());
+  
+  vector<XYPolygon> polys = m_core_poly.getCoverPolys();
+  for(unsigned int i=0; i<polys.size(); i++) 
+    postMessage("VIEW_POLYGON", polys[i].get_spec_inactive());
 }
 
 //-----------------------------------------------------------
@@ -576,14 +518,13 @@ bool BHV_OpRegionV26::handleConfigReset(string val)
 
 void BHV_OpRegionV26::updateRangeCache()
 {
-#if 0
   // Step 1: Clear the current caches and sanity check
   m_heading_cache.clear();
   m_range_cache.clear();
   m_range_cache_norm.clear();
   m_range_cache_norm_no_lft.clear();
   m_range_cache_norm_no_rgt.clear();
-  if(m_save_poly.size() == 0)
+  if(m_core_poly.valid() == 0)
     return;
   
   // Step 2: Get the IvP Domain index for later use. Most likely the 
@@ -614,7 +555,7 @@ void BHV_OpRegionV26::updateRangeCache()
   // distance to the containent polygon for each possible heading.
   for(unsigned int i=0; i<hdg_pts; i++) {
     double heading = m_domain.getVal(hdg_ix, i);
-    double dist_to_region = m_save_poly.dist_to_poly(m_osx, m_osy, heading);
+    double dist_to_region = m_core_poly.distRayToEnterGP(m_osx, m_osy, heading);
     m_heading_cache[i] = heading;
     m_range_cache[i]   = dist_to_region;
   }
@@ -668,7 +609,6 @@ void BHV_OpRegionV26::updateRangeCache()
     else
       m_range_cache_norm_no_rgt[i] = m_range_cache_norm[i];
   }
-#endif
 }
 
 //-----------------------------------------------------------
@@ -717,7 +657,6 @@ string BHV_OpRegionV26::determineInitialTurn()
 bool BHV_OpRegionV26::setCorePolyBoundary(string str)
 {
   XYGenPolygon gpoly = stringToGenPoly(str);
-
   if(!gpoly.valid())
     return(false);
   

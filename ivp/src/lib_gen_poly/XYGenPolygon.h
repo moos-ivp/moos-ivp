@@ -4,6 +4,7 @@
 /*    FILE: XYGenPolygon.h                                       */
 /*    DATE: Oct 16th, 2020                                       */
 /*    DATE: Nov 27th, 2025                                       */
+/*    DATE: Aug 7th, 2026                                        */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
 /* implied to use, copy, modify, and distribute this software    */
@@ -63,6 +64,7 @@ public:
   double   distSeglrToExitGP(const XYSeglr& seglr);  
 
   double   distPtToEnterGP(double x1, double x2);
+  double   distRayToEnterGP(double px, double py, double ray_angle);
   
 protected:
   XYSegList m_segl_border; 
