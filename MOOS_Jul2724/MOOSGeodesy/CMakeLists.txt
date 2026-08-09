@@ -14,6 +14,8 @@ endif(COMMAND cmake_policy)
 set(PROJECTNAME MOOSGeodesy)
 project(${PROJECTNAME})
 
+include(GNUInstallDirs)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -149,6 +151,34 @@ ENDIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 
 
 add_subdirectory(libMOOSGeodesy)
+
+#########################
+# Installable CMake package
+#########################
+
+include(CMakePackageConfigHelpers)
+
+set(MOOSGEODESY_INSTALL_CMAKEDIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/MOOSGeodesy")
+
+configure_package_config_file(
+    "cmake/MOOSGeodesyConfig.cmake.in"
+    "${PROJECT_BINARY_DIR}/install/MOOSGeodesyConfig.cmake"
+    INSTALL_DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
+)
+
+install(
+    EXPORT MOOSGeodesyTargets
+    FILE MOOSGeodesyTargets.cmake
+    NAMESPACE MOOSGeodesy::
+    DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
+)
+
+install(
+    FILES "${PROJECT_BINARY_DIR}/install/MOOSGeodesyConfig.cmake"
+    DESTINATION "${MOOSGEODESY_INSTALL_CMAKEDIR}"
+)
 
 
 #########################
