@@ -322,6 +322,7 @@ bool XYObject::expired(double curr_time) const
     return(false);
 
   double elapsed = curr_time - m_time;
+
   if(elapsed <= m_duration)
     return(false);
 

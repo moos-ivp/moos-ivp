@@ -143,10 +143,10 @@ void PMV_Viewer::draw()
     const map<string, XYMarker>& markers = m_geoshapes_map.getMarkers(vnames[i]);
     const map<string, XYTextBox>& textboxes = m_geoshapes_map.getTextBoxes(vnames[i]);
 
-    drawPolygons(polys);
+    drawPolygons(polys, m_curr_time);
     drawGrids(grids);
     drawConvexGrids(cgrids);
-    drawSegLists(segls);
+    drawSegLists(segls, m_curr_time);
     drawSeglrs(seglrs);
     drawCircles(circles, m_curr_time);
     drawOvals(ovals, m_curr_time);

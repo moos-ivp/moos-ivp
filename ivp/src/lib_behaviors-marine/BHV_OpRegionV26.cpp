@@ -110,6 +110,8 @@ void BHV_OpRegionV26::reInitStateVars()
   m_state = "unset";
   m_prev_state = "unset";
 
+  m_visuals_posted_utc = 0;
+  
   m_committed_turn = "none";  // Always none, left, or right
 }
 
@@ -469,16 +471,35 @@ void BHV_OpRegionV26::postViewablePolys()
 
 void BHV_OpRegionV26::postViewableRegion()
 {
+  double elapsed = getBufferCurrTime() - m_visuals_posted_utc;
+
+  postMessage("V26_ELAPSED", elapsed);
+  if(elapsed < 30)
+    return;
+
+  m_visuals_posted_utc = getBufferCurrTime();
+  
   XYSegList segl_border = m_core_poly.getSegList();
   if(segl_border.size() > 1) {
     segl_border.add_vertex(segl_border.get_vx(0), segl_border.get_vy(0));
-    postMessage("VIEW_SEGLIST", segl_border.get_spec(3));
+    segl_border.set_label("opborder");
+    segl_border.set_duration(60);
+    postRepeatableMessage("VIEW_SEGLIST", segl_border.get_spec(3));
   }
   
   vector<XYPolygon> polys = m_core_poly.getCoverPolys();
   for(unsigned int i=0; i<polys.size(); i++) {
-    applyHints(polys[i], m_hints, "core");
-    postMessage("VIEW_POLYGON", polys[i].get_spec(3));
+    XYPolygon poly = polys[i];
+    poly.set_color("fill", "gray10");
+    poly.set_color("label", "off");
+    poly.set_label("cp" + uintToString(i));
+    poly.set_color("vertex", "white");
+    poly.set_vertex_size(5);
+    poly.set_transparency(0.9);
+    poly.set_color("edge", "gray20");
+    segl_border.set_duration(60);
+    //applyHints(polys[i], m_hints, "core");
+    postMessage("VIEW_POLYGON", poly.get_spec(3));
   }
 }
 
@@ -490,11 +511,15 @@ void BHV_OpRegionV26::postViewableRegion()
 void BHV_OpRegionV26::postErasablePolys()
 {
   XYSegList segl_border = m_core_poly.getSegList();
+  segl_border.set_label("opborder");
   postMessage("VIEW_SEGLIST", segl_border.get_spec_inactive());
   
   vector<XYPolygon> polys = m_core_poly.getCoverPolys();
-  for(unsigned int i=0; i<polys.size(); i++) 
+  for(unsigned int i=0; i<polys.size(); i++) {
+    XYPolygon poly = polys[i];
+    poly.set_label("cp" + uintToString(i));
     postMessage("VIEW_POLYGON", polys[i].get_spec_inactive());
+  }
 }
 
 //-----------------------------------------------------------

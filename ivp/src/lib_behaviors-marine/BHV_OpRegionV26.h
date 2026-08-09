@@ -74,10 +74,9 @@ class BHV_OpRegionV26 : public IvPBehavior {
   double       m_lapse_dist;
   double       m_breach_dist;
 
-  
-  double    m_trigger_entry_time;
-  double    m_trigger_breach_time;
-  bool      m_trigger_on_poly_entry;
+  double      m_trigger_entry_time;
+  double      m_trigger_breach_time;
+  bool        m_trigger_on_poly_entry;
 
   std::string m_dynamic_region_var;  
 
@@ -91,8 +90,8 @@ class BHV_OpRegionV26 : public IvPBehavior {
   std::vector<VarDataPair>  m_containedx_flags;
   std::vector<VarDataPair>  m_entering_flags;
   std::vector<VarDataPair>  m_enteringx_flags;
-
-  bool m_save_flags_posted;
+  
+  HintHolder m_hints;  // Visual hints 
   
  protected: // State Variables
   std::string m_state;
@@ -105,8 +104,8 @@ class BHV_OpRegionV26 : public IvPBehavior {
   double      m_time_lapsed_total;
   double      m_time_breached_start;
   double      m_time_breached_total;
-  
-  HintHolder m_hints;  // Visual hints 
+
+  double      m_visuals_posted_utc;
   
  protected: // State Vars for recovering
   
