@@ -30,7 +30,15 @@ if(@IVP_PACKAGE_HAS_GUI@)
     if(TARGET fltk::fltk_gl)
       target_link_libraries(IVP::FLTK INTERFACE fltk::fltk_gl)
     endif()
-    target_link_libraries(IVP::FLTK INTERFACE OpenGL::GL)
+
+    if(TARGET OpenGL::GL)
+      # FindOpenGL did not provide the OpenGL::GL imported target until CMake 3.8
+      target_link_libraries(IVP::FLTK INTERFACE OpenGL::GL)
+    else()
+      # Fallback to the legacy variables
+      target_include_directories(IVP::FLTK INTERFACE "${OPENGL_INCLUDE_DIR}")
+      target_link_libraries(IVP::FLTK INTERFACE "${OPENGL_gl_LIBRARY}")
+    endif()
   endif()
 endif()
 
