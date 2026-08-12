@@ -19,7 +19,7 @@ SET(HEADERS
 # Build Library
 IVP_ADD_LIBRARY(ucommand ${SRC})
 TARGET_LINK_LIBRARIES(ucommand
-  PRIVATE apputil mbutil
-    "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>")
+  PUBLIC "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>"
+  PRIVATE apputil mbutil)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
