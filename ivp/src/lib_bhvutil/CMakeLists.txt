@@ -14,6 +14,7 @@ SET(SRC
   AOF_CutRangeCPA.cpp
   AOF_Shadow.cpp
   AOF_Waypoint.cpp
+  AOF_OpRegion.cpp
   LoiterEngine.cpp
   ObShipModelV24.cpp
   ExFilterSet.cpp

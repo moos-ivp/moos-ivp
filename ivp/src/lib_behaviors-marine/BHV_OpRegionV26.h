@@ -38,8 +38,8 @@ class BHV_OpRegionV26 : public IvPBehavior {
   
   bool   setParam(std::string, std::string);
   void   onSetParamComplete();
-  void   onRunToIdleState() {postErasablePolys();}
-  void   onIdleToRunState() {postViewablePolys();}
+  void   onRunToIdleState() {}
+  void   onIdleToRunState() {postErasableRegion();}
 
   IvPFunction* onRunState();
 
@@ -48,39 +48,45 @@ class BHV_OpRegionV26 : public IvPBehavior {
   bool   handleConfigReset(std::string);
 
   void   updateState();
+  void   updateContainedRngs();
+
   void   handleStateLapsed();
   void   handleStateBreached();
   void   handleStateContained();
   void   handleStateEntering();
   
-  bool   polygonVerify();
-  void   postViewablePolys();
-  void   postErasablePolys();
   void   postViewableRegion();
   void   postErasableRegion();
   bool   updateInfoIn();
 
-  bool   updateRegionPolys();
   void   updateRangeCache();
 
   std::string  expandMacros(std::string);
   std::string  determineInitialTurn();
-  IvPFunction* buildOF();
+  IvPFunction* buildOF_Recover();
+  IvPFunction* buildOF_StayIn();
 
   bool   setCorePolyBoundary(std::string);
   
  protected: // Config Vars (region)
   XYGenPolygon m_core_poly;
-  double       m_lapse_dist;
-  double       m_breach_dist;
 
-  double      m_trigger_entry_time;
-  double      m_trigger_breach_time;
-  bool        m_trigger_on_poly_entry;
+  double   m_lapse_dist;
+  double   m_breach_dist;
+
+  double   m_min_util_eta;
+  double   m_max_util_eta;
+  
+  double   m_trigger_entry_time;
+  double   m_trigger_breach_time;
+  bool     m_trigger_on_poly_entry;
 
   std::string m_dynamic_region_var;  
 
   double m_recover_spd;
+
+  bool m_get_back_enabled;
+  bool m_stay_in_enabled;
   
   // Allow for flags to be depending on state, prev_state
   std::vector<VarDataPair>  m_breached_flags;
@@ -98,6 +104,12 @@ class BHV_OpRegionV26 : public IvPBehavior {
   std::string m_prev_state;
   bool        m_contained_ever;
 
+  double      m_abs_rng_to_exit;
+  double      m_bng_rng_to_exit;
+  double      m_mix_rng_to_exit;
+  
+  double      m_time_entering_start;
+  double      m_time_entering_total;
   double      m_time_contained_start;
   double      m_time_contained_total;
   double      m_time_lapsed_start;

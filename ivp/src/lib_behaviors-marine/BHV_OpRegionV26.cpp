@@ -26,6 +26,7 @@
 #include <cmath> 
 #include <cstdlib>
 #include "BHV_OpRegionV26.h"
+#include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "VarDataPairUtils.h"
@@ -38,6 +39,7 @@
 #include "ZAIC_PEAK.h"
 #include "BuildUtils.h"
 #include "OF_Coupler.h"
+#include "AOF_OpRegion.h"
 
 using namespace std;
 
@@ -48,13 +50,21 @@ BHV_OpRegionV26::BHV_OpRegionV26(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   m_domain = subDomain(m_domain, "course,speed");  
-  m_descriptor = "opregz";
+  this->setParam("m_descriptor", "opregz");
+  this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
+  this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
 
   // ==================================================
   // PART 1: Init config vars
   // ==================================================
   m_lapse_dist  = 5;
   m_breach_dist = 15;
+
+  m_min_util_eta = 10;
+  m_max_util_eta = 30;
+
+  m_get_back_enabled = true;
+  m_stay_in_enabled = true;
   
   // Visual Hint Defaults for the leg/turn paths
   m_hints.setMeasure("vertex_size", 0);
@@ -62,7 +72,12 @@ BHV_OpRegionV26::BHV_OpRegionV26(IvPDomain gdomain) :
   m_hints.setColor("vertex_color", "gray50");
   m_hints.setColor("edge_color", "gray50");
   m_hints.setColor("label_color", "off");
-  m_hints.setColor("core_edge_color", "gray30");
+
+  m_hints.setMeasure("cover_transparency", 0.05);
+  m_hints.setMeasure("cover_vertex_size", 5);
+  m_hints.setColor("cover_fill_color", "gray95");
+  m_hints.setColor("cover_vertex_color", "white");
+  m_hints.setColor("cover_edge_color", "gray20");
 
   // Declare if poly is enabled immediately (default) or
   // triggered only when the vehicle first enters poly.
@@ -99,6 +114,8 @@ void BHV_OpRegionV26::reInitStateVars()
 {
   // Time stamps for calculating how long the vehicle has been
   // in a particular state.
+  m_time_entering_start = 0;
+  m_time_entering_total = 0;
   m_time_contained_start = 0;
   m_time_contained_total = 0;
   m_time_lapsed_start = 0;
@@ -113,6 +130,10 @@ void BHV_OpRegionV26::reInitStateVars()
   m_visuals_posted_utc = 0;
   
   m_committed_turn = "none";  // Always none, left, or right
+
+  m_abs_rng_to_exit = -1;  // Rng to oparea border in any direc-tino
+  m_bng_rng_to_exit = -1;  // Rng to oparea border in osh dir
+  m_mix_rng_to_exit = -1;  // Weighted mix/avg between rng vals
 }
 
 //-----------------------------------------------------------
@@ -130,6 +151,16 @@ bool BHV_OpRegionV26::setParam(string param, string val)
     return(setNonNegDoubleOnString(m_lapse_dist, val));
   else if(param == "breach_dist")
     return(setNonNegDoubleOnString(m_breach_dist, val));
+
+  else if(param == "get_back_enabled") 
+    return(setBooleanOnString(m_get_back_enabled, val));
+  else if(param == "stay_in_enabled") 
+    return(setBooleanOnString(m_stay_in_enabled, val));
+
+  else if(param == "min_util_eta")
+    return(setNonNegDoubleOnString(m_min_util_eta, val));
+  else if(param == "max_util_eta")
+    return(setNonNegDoubleOnString(m_max_util_eta, val));
 
   else if((param == "recover_spd") || (param == "recover_speed"))
     return(setPosDoubleOnString(m_recover_spd, val));
@@ -177,8 +208,6 @@ bool BHV_OpRegionV26::setParam(string param, string val)
 
 void BHV_OpRegionV26::onSetParamComplete()
 {
-  updateRegionPolys();
-  postViewablePolys();
   postConfigStatus();
 }
 
@@ -201,7 +230,8 @@ IvPFunction *BHV_OpRegionV26::onRunState()
   // which flags are posted.
   m_prev_state = m_state;
   updateState();
-
+  updateContainedRngs();
+  
   if(m_state == "entering")
     handleStateEntering();
   else if(m_state == "contained")
@@ -212,17 +242,19 @@ IvPFunction *BHV_OpRegionV26::onRunState()
     handleStateBreached();
 
   // Only in lapsed state will an IvPFunction be created
-  if(m_state != "lapsed")
-    return(0);
+  if((m_state == "contained") && m_stay_in_enabled)
+    return(buildOF_StayIn());
+
+  else if((m_state == "lapsed") && m_get_back_enabled)
+    return(buildOF_Recover());
     
-  IvPFunction *ipf = buildOF();
-  return(ipf);
+  return(0);
 }
   
 //-----------------------------------------------------------
-// Procedure: buildOF()
+// Procedure: buildOF_Recover()
 
-IvPFunction *BHV_OpRegionV26::buildOF()
+IvPFunction *BHV_OpRegionV26::buildOF_Recover()
 {
   //=========================================================
   // Part 1: Preliminaries
@@ -280,9 +312,11 @@ IvPFunction *BHV_OpRegionV26::buildOF()
   }
 
   OF_Coupler coupler;
-
   IvPFunction *ipf = 0;
 
+  ipf = coupler.couple(ipf_hdg, ipf_spd, 50, 50);
+
+#if 0
   if((m_helm_iter % 5) == 0)
     ipf = coupler.couple(ipf_hdg, ipf_spd, 95, 5);
   else if((m_helm_iter % 5) == 1)
@@ -293,6 +327,7 @@ IvPFunction *BHV_OpRegionV26::buildOF()
     ipf = coupler.couple(ipf_hdg, ipf_spd, 20, 80);
   else if((m_helm_iter % 5) == 4)
     ipf = coupler.couple(ipf_hdg, ipf_spd, 5, 95);
+#endif
   
 
 #if 0
@@ -309,6 +344,43 @@ IvPFunction *BHV_OpRegionV26::buildOF()
   
   return(ipf);
 }
+
+//-----------------------------------------------------------
+// Procedure: buildOF_StayIn()
+
+IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
+{
+  AOF_OpRegion aof(m_domain);
+
+  // osx, osy, osh, osv embedded in the plat model
+  aof.setPlatModel(m_plat_model);
+  aof.setGenPoly(m_core_poly);
+  aof.setParam("min_util_eta", m_min_util_eta);
+  aof.setParam("max_util_eta", m_max_util_eta);
+  bool ok = aof.initialize();
+
+  if(!ok) {
+    postEMessage("Unable to init AOF_OpRegion.");
+    cout << "Unable to init AOF_OpRegion." << endl;
+
+    //list<string> msgs = aof.getMsgsAOF();
+    //list<string>::iterator p;
+    //for(p=msgs.begin(); p!=msgs.end(); p++)
+    //  cout << "aof Msg: " << *p << endl;
+
+    return(0);
+  }    
+
+  OF_Reflector reflector(&aof, 1);
+  m_domain = subDomain(m_domain, "course,speed");
+
+  reflector.create(m_build_info);
+  IvPFunction *ipf = reflector.extractIvPFunction();
+  ipf->setPWT(m_priority_wt);
+
+  return(ipf);
+}
+
 
 //-----------------------------------------------------------
 // Procedure: handleStateBreached()
@@ -375,7 +447,28 @@ void BHV_OpRegionV26::updateState()
       m_state = "lapsed";
   }
   postRepeatableMessage("V26_STATE", m_state);
+
+  // One of these will be set below to non-zero
+  m_time_entering_total  = 0;
+  m_time_contained_total = 0;
+  m_time_lapsed_total    = 0;
+  m_time_breached_total  = 0;
+
   
+  // Update state variables related to contained state
+  if(m_state == "entering") {
+    if(m_time_entering_start == 0)
+      m_time_entering_start = getBufferCurrTime();
+    
+    // Determine accumulated time in contained state
+    m_time_entering_total = getBufferCurrTime() - m_time_entering_start;
+
+    m_time_contained_start = 0;
+    m_time_lapsed_start = 0;
+    m_time_breached_start = 0;
+  }
+
+  // Update state variables related to contained state
   if(m_state == "contained") {
     // If entering the poly, note the time of entry
     if(m_time_contained_start == 0)
@@ -388,10 +481,9 @@ void BHV_OpRegionV26::updateState()
     if(m_time_contained_total >= m_trigger_entry_time)
       m_contained_ever = true;
 
-    m_time_lapsed_start = 0;
-    m_time_lapsed_total = 0;
+    m_time_entering_start = 0;
+    m_time_lapsed_start   = 0;
     m_time_breached_start = 0;
-    m_time_breached_total = 0;
    }
 
   if(m_state == "lapsed") {
@@ -400,12 +492,11 @@ void BHV_OpRegionV26::updateState()
       m_time_lapsed_start = getBufferCurrTime();
     
     // Determine accumulated time in lapsed state
-    m_time_lapsed_total = getBufferCurrTime() - m_time_lapsed_start;
+    m_time_lapsed_total    = getBufferCurrTime() - m_time_lapsed_start;
 
+    m_time_entering_start  = 0;
     m_time_contained_start = 0;
-    m_time_contained_total = 0;
-    m_time_breached_start = 0;
-    m_time_breached_total = 0;
+    m_time_breached_start  = 0;
    }
 
   if(m_state == "breached") {
@@ -415,12 +506,31 @@ void BHV_OpRegionV26::updateState()
     // Determine accumulated time in breached state
     m_time_breached_total = getBufferCurrTime() - m_time_breached_start;
 
+    m_time_entering_start  = 0;
     m_time_contained_start = 0;
-    m_time_contained_total = 0;
-    m_time_lapsed_start = 0;
-    m_time_lapsed_total = 0;
+    m_time_lapsed_start    = 0;
    }
+
 }
+
+//-----------------------------------------------------------
+// Procedure: updateContainedRngs()
+
+void BHV_OpRegionV26::updateContainedRngs()
+{
+  m_abs_rng_to_exit = -1;
+  m_bng_rng_to_exit = -1;
+  m_mix_rng_to_exit = -1;
+
+  if(m_state == "contained") {
+    m_abs_rng_to_exit = m_core_poly.distPtToExitGP(m_osx, m_osy);
+    m_bng_rng_to_exit = m_core_poly.distRayToExitGP(m_osx, m_osy, m_osh);
+    m_mix_rng_to_exit = (m_abs_rng_to_exit + m_bng_rng_to_exit) / 2;
+    if(m_mix_rng_to_exit > (m_abs_rng_to_exit * 2))
+      m_mix_rng_to_exit = m_abs_rng_to_exit * 2;
+  }
+}
+
 
 //-----------------------------------------------------------
 // Procedure: updateInfoIn()
@@ -444,36 +554,11 @@ bool BHV_OpRegionV26::updateInfoIn()
 
 
 //-----------------------------------------------------------
-// Procedure: updateRegionPolys()
-
-bool BHV_OpRegionV26::updateRegionPolys()
-{
-  return(true);
-}
-
-//-----------------------------------------------------------
-// Procedure: postViewablePolys()
-//      Note: Even if the polygon is posted on each iteration, the
-//            helm will filter out unnecessary duplicate posts.
-
-void BHV_OpRegionV26::postViewablePolys()
-{
-#if 0
-  for(unsigned int i=0; i<m_core_polys.size(); i++) {
-    applyHints(m_core_polys[i], m_hints, "core");
-    postMessage("VIEW_POLYGON", m_core_polys[i].get_spec(3));
-  }
-#endif
-}
-
-//-----------------------------------------------------------
 // Procedure: postViewableRegion()
 
 void BHV_OpRegionV26::postViewableRegion()
 {
   double elapsed = getBufferCurrTime() - m_visuals_posted_utc;
-
-  postMessage("V26_ELAPSED", elapsed);
   if(elapsed < 30)
     return;
 
@@ -484,31 +569,25 @@ void BHV_OpRegionV26::postViewableRegion()
     segl_border.add_vertex(segl_border.get_vx(0), segl_border.get_vy(0));
     segl_border.set_label("opborder");
     segl_border.set_duration(60);
+    applyHints(segl_border, m_hints, "border");
     postRepeatableMessage("VIEW_SEGLIST", segl_border.get_spec(3));
   }
   
   vector<XYPolygon> polys = m_core_poly.getCoverPolys();
   for(unsigned int i=0; i<polys.size(); i++) {
-    XYPolygon poly = polys[i];
-    poly.set_color("fill", "gray10");
-    poly.set_color("label", "off");
-    poly.set_label("cp" + uintToString(i));
-    poly.set_color("vertex", "white");
-    poly.set_vertex_size(5);
-    poly.set_transparency(0.9);
-    poly.set_color("edge", "gray20");
-    segl_border.set_duration(60);
-    //applyHints(polys[i], m_hints, "core");
-    postMessage("VIEW_POLYGON", poly.get_spec(3));
+    polys[i].set_label("cp" + uintToString(i));
+    polys[i].set_duration(60);
+    applyHints(polys[i], m_hints, "cover");
+    postMessage("VIEW_POLYGON", polys[i].get_spec(3));
   }
 }
 
 //-----------------------------------------------------------
-// Procedure: postErasablePolys()
+// Procedure: postErasableRegion()
 //      Note: Even if the polygon is posted on each iteration, the
 //            helm will filter out unnecessary duplicate posts.
 
-void BHV_OpRegionV26::postErasablePolys()
+void BHV_OpRegionV26::postErasableRegion()
 {
   XYSegList segl_border = m_core_poly.getSegList();
   segl_border.set_label("opborder");
@@ -706,87 +785,36 @@ string BHV_OpRegionV26::expandMacros(string sdata)
   sdata = macroExpand(sdata, "EXIT_DIST", exit_dist);
   sdata = macroExpand(sdata, "ENTRY_DIST", entry_dist);
   
-#if 0
-  // =======================================================
-  // Expand configuration parameters
-  // =======================================================
-  if(strContains(sdata, "CORE_POLY")) {
-    if(m_core_polys.size() > 0)
-      sdata = macroExpand(sdata, "CORE_POLY", m_core_polys[0].get_spec());
-  }
-  
-  sdata = macroExpand(sdata, "SAVE_DIST", m_save_dist);
-  sdata = macroExpand(sdata, "HALT_DIST", m_halt_dist);
-
-  sdata = macroExpand(sdata, "SAVE_POLY", m_save_poly.get_spec());
-  sdata = macroExpand(sdata, "HALT_POLY", m_halt_poly.get_spec());
-
   // =======================================================
   // Expand Behavior State
   // =======================================================
+  sdata = macroExpand(sdata, "SECS_CONTAINED",  m_time_contained_total);
+  sdata = macroExpand(sdata, "SECS_LAPSED", m_time_lapsed_total);
+  sdata = macroExpand(sdata, "SECS_ENTERING", m_time_entering_total);
+  sdata = macroExpand(sdata, "SECS_BREACHED", m_time_breached_total);
 
-  sdata = macroExpand(sdata, "SECS_IN_HALT_POLY",  m_secs_in_halt_poly);
-  sdata = macroExpand(sdata, "SECS_OUT_HALT_POLY", m_secs_out_halt_poly);
-  sdata = macroExpand(sdata, "SECS_OUT_SAVE_POLY", m_secs_out_save_poly);
-
-  if(m_max_time > 0) {
-    double elapsed = getBufferCurrTime() - m_start_time;
-    double time_remaining = m_max_time - elapsed;
-    if(time_remaining < 0)
-      time_remaining = 0;
-    sdata = macroExpand(sdata, "TIME_LEFT", time_remaining);
-  }
-  
   // =======================================================
   // Expand Behavior State (DIST and ETA to Polys)
   // =======================================================
   // NOTE: For distance and ETA macros, we take steps to avoid
   // calculation of values by first checking if macros present.
-  
-  if(strContains(sdata, "DIST") || strContains(sdata, "ETA")) {
+  if(strContains(sdata, "DIST")) {
+    if(strContains(sdata, "EXIT")) {
+      sdata = macroExpand(sdata, "ABS_DIST_TO_EXIT", m_abs_rng_to_exit);
+      sdata = macroExpand(sdata, "BNG_DIST_TO_EXIT", m_bng_rng_to_exit);
+      sdata = macroExpand(sdata, "MIX_DIST_TO_EXIT", m_mix_rng_to_exit);
 
-    double max_osv = getMaxOSV();
-
-    if(strContains(sdata, "CORE")) {
-      double dist_to_core = distToOutOfPolys(m_core_polys);
-      double trdist_to_core = trDistToOutOfPolys(m_core_polys);
-      sdata = macroExpand(sdata, "DIST_TO_CORE", dist_to_core);
-      sdata = macroExpand(sdata, "TRAJ_DIST_TO_CORE", trdist_to_core);
+      double max_osv = getMaxOSV();
       if(max_osv > 0) {
-	double core_eta   = dist_to_core / max_osv;
-	double trcore_eta = trdist_to_core / max_osv;
-	sdata = macroExpand(sdata, "ETA_TO_CORE", core_eta);
-	sdata = macroExpand(sdata, "TRAJ_ETA_TO_CORE", trcore_eta);
+	double abs_exit_eta   = m_abs_rng_to_exit / max_osv;
+	double bng_exit_eta   = m_bng_rng_to_exit / max_osv;
+	double mix_exit_eta   = m_mix_rng_to_exit / max_osv;
+	sdata = macroExpand(sdata, "ABS_ETA_TO_EXIT", abs_exit_eta);
+	sdata = macroExpand(sdata, "BNG_ETA_TO_EXIT", bng_exit_eta);
+	sdata = macroExpand(sdata, "MIX_ETA_TO_EXIT", mix_exit_eta);
       }
     }
-    
-    if(strContains(sdata, "SAVE")) {
-      double dist_to_save = m_save_poly.dist_to_poly(m_osx, m_osy);
-      double trdist_to_save = m_save_poly.dist_to_poly(m_osx, m_osy, m_osh);
-      sdata = macroExpand(sdata, "DIST_TO_SAVE", dist_to_save);
-      sdata = macroExpand(sdata, "TRAJ_DIST_TO_SAVE", trdist_to_save);
-      if(max_osv > 0) {
-	double save_eta = dist_to_save / max_osv;
-	double trsave_eta = trdist_to_save / max_osv;
-	sdata = macroExpand(sdata, "ETA_TO_SAVE", save_eta);
-	sdata = macroExpand(sdata, "TRAJ_ETA_TO_SAVE", trsave_eta);
-      }
-    }      
-
-    if(strContains(sdata, "HALT")) {
-      double dist_to_halt = m_halt_poly.dist_to_poly(m_osx, m_osy);
-      double trdist_to_halt = m_halt_poly.dist_to_poly(m_osx, m_osy, m_osh);
-      sdata = macroExpand(sdata, "DIST_TO_HALT", dist_to_halt);
-      sdata = macroExpand(sdata, "TRAJ_DIST_TO_HALT", trdist_to_halt);
-      if(max_osv > 0) {
-	double halt_eta = dist_to_halt / max_osv;
-	double trhalt_eta = trdist_to_halt / max_osv;
-	sdata = macroExpand(sdata, "ETA_TO_HALT", halt_eta);
-	sdata = macroExpand(sdata, "TRAJ_ETA_TO_HALT", trhalt_eta);
-      }
-    }      
   }
-#endif
   return(sdata);
 }
 

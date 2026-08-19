@@ -284,13 +284,47 @@ XYGenPolygon stringToGenPoly(string full_str)
 
 //---------------------------------------------------------------
 // Procedure: distSegToExitGP()
+
+double XYGenPolygon::distPtToExitGP(double px, double py) const
+{
+  // Assumption test
+  if(!contains(px,py))
+    return(0);  
+
+  if(m_segl_border.size() < 3)
+    return(0);
+  
+  double min_dist = -1;
+  for(unsigned int i=0; i<m_segl_border.size(); i++) {
+    // get first vertex of the ith edge
+    double x1 = m_segl_border.get_vx(i);
+    double y1 = m_segl_border.get_vy(i);
+    // get second vertex of the ith edge
+    double x2 = m_segl_border.get_vx(0);
+    double y2 = m_segl_border.get_vy(0);
+    if((i+1) < m_segl_border.size()) {
+      x2 = m_segl_border.get_vx(i+1);
+      y2 = m_segl_border.get_vy(i+1);
+    }
+
+    // determine if it crosses that edge and where
+    bool dist = distPointToSeg(x1,y1,x2,y2, px,py);
+    if((min_dist < 0) || (dist < min_dist))
+      min_dist = dist;
+  }
+  
+  return(min_dist);
+}
+
+//---------------------------------------------------------------
+// Procedure: distSegToExitGP()
 //   Purpose: Calculate the length of the line segment x1,y1,x2,y2
 //            that is in the genpoly, starting from x1,y1.
 //      Note: Assumes first vertex (x1,y1) is in the genpoly. 
 
 double XYGenPolygon::distSegToExitGP(double x1, double y1,
 				     double x2, double y2,
-				     bool& exited)
+				     bool& exited) const
 {
   // We set exited=true unless both vertices are within the genpoly
   exited = true;
@@ -335,13 +369,41 @@ double XYGenPolygon::distSegToExitGP(double x1, double y1,
 }
 
 //---------------------------------------------------------------
-// Procedure: distSegToExitGP()
+// Procedure: distSeglToExitGP()
+//   Purpose: Calculate the length of the segl that is in the
+//            genpoly, starting from the first vertex of the segl.
+
+double XYGenPolygon::distSeglToExitGP(const XYSegList& segl,
+				      bool& exited) const
+{
+  // Sanity check proper segl
+  if(!segl.valid()) 
+    return(-3);
+
+  double total_dist = 0;
+
+  // Part 1: Calculate base seglist distance
+  for(unsigned int i=0; (i<segl.size() && !exited); i++) {
+    double x1 = segl.get_vx(i);
+    double y1 = segl.get_vy(i);
+    if((i+1) < segl.size()) {
+      double x2 = segl.get_vx(i+1);
+      double y2 = segl.get_vy(i+1);
+      double dist = distSegToExitGP(x1,y1,x2,y2, exited);
+      total_dist += dist;
+    }
+  }
+  return(total_dist);
+}
+
+//---------------------------------------------------------------
+// Procedure: distRayToExitGP()
 //   Purpose: Calculate the length of the ray, rx,ry,ray_angle
 //            that is in the genpoly, starting from rx,ry.
 //      Note: Assumes first ray base (rx,ry) is in the genpoly. 
 
 double XYGenPolygon::distRayToExitGP(double rx, double ry,
-				     double ray_angle)
+				     double ray_angle) const
 {
   // Assumptions test
   if(!contains(rx,ry))
@@ -375,39 +437,11 @@ double XYGenPolygon::distRayToExitGP(double rx, double ry,
 
 
 //---------------------------------------------------------------
-// Procedure: distSeglToExitGP()
-//   Purpose: Calculate the length of the segl that is in the
-//            genpoly, starting from the first vertex of the segl.
-
-double XYGenPolygon::distSeglToExitGP(const XYSegList& segl,
-				      bool& exited)
-{
-  // Sanity check proper segl
-  if(!segl.valid()) 
-    return(-3);
-
-  double total_dist = 0;
-
-  // Part 1: Calculate base seglist distance
-  for(unsigned int i=0; (i<segl.size() && !exited); i++) {
-    double x1 = segl.get_vx(i);
-    double y1 = segl.get_vy(i);
-    if((i+1) < segl.size()) {
-      double x2 = segl.get_vx(i+1);
-      double y2 = segl.get_vy(i+1);
-      double dist = distSegToExitGP(x1,y1,x2,y2, exited);
-      total_dist += dist;
-    }
-  }
-  return(total_dist);
-}
-
-//---------------------------------------------------------------
 // Procedure: distSeglrToExitGP()
 //   Purpose: Calculate the length of the seglr that is in the
 //            genpoly, starting from the first vertex of the seglr.
 
-double XYGenPolygon::distSeglrToExitGP(const XYSeglr& seglr)
+double XYGenPolygon::distSeglrToExitGP(const XYSeglr& seglr) const
 {
   // Sanity check proper seglr
   if(!seglr.valid()) 
@@ -439,7 +473,7 @@ double XYGenPolygon::distSeglrToExitGP(const XYSeglr& seglr)
 //   Purpose: Calculate the distance of the given point to the
 //            closest line segment.
 
-double XYGenPolygon::distPtToEnterGP(double px, double py)
+double XYGenPolygon::distPtToEnterGP(double px, double py) const
 {
   // Edge cases
   if(contains(px,py))
@@ -486,7 +520,7 @@ double XYGenPolygon::distPtToEnterGP(double px, double py)
 //            ray does intersect the gpoly anywhere.
 
 double XYGenPolygon::distRayToEnterGP(double px, double py,
-				      double ray_angle)
+				      double ray_angle) const
 {
   // Edge cases
   if(contains(px,py))

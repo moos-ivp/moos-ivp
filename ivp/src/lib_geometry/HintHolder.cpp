@@ -286,5 +286,10 @@ void applyHints(XYPolygon& poly, const HintHolder& hints, string prefix)
     poly.set_vertex_size(hints.getMeasure(prefix + "vertex_size"));
   else if(hints.hasMeasure("vertex_size"))
     poly.set_vertex_size(hints.getMeasure("vertex_size"));
+
+  if(hints.hasMeasure(prefix + "transparency"))
+    poly.set_transparency(hints.getMeasure(prefix + "transparency"));
+  else if(hints.hasMeasure("transparency"))
+    poly.set_transparency(hints.getMeasure("transparency"));
 }
 
