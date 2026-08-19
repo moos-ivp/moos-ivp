@@ -87,12 +87,7 @@ SET(HEADERS
   BHV_FixedTurn.h
 ) 
 
-ADD_LIBRARY(behaviors-marine ${SRC})
-
+IVP_ADD_LIBRARY(behaviors-marine ${SRC})
 TARGET_LINK_LIBRARIES(behaviors-marine
-   mbutil
-   helmivp
-   behaviors
-   geometry
-)
-
+  PUBLIC behaviors bhvutil geometry mbutil
+  PRIVATE helmivp ivpbuild ivpcore logic)

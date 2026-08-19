@@ -29,12 +29,7 @@ SET(HEADERS
   AOF_CPA.h
 ) 
 
-ADD_LIBRARY(behaviors-colregs ${SRC})
-
+IVP_ADD_LIBRARY(behaviors-colregs ${SRC})
 TARGET_LINK_LIBRARIES(behaviors-colregs
-   mbutil
-   helmivp
-   behaviors
-   geometry
-   )
-
+  PUBLIC behaviors bhvutil geometry
+  PRIVATE ivpbuild ivpcore logic mbutil)

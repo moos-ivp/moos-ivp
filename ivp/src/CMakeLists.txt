@@ -1,6 +1,8 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
 PROJECT(IVP)
+
+INCLUDE(CMakePackageConfigHelpers)
 
 #======================================================================
 # Part 1: Set Compiler Flags
@@ -59,7 +61,8 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 # Part 3: FINDING MOOSGeodesy' HEADERS AND LIBRARIES...  
 #=====================================================================
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
-find_package(MOOSGeodesy)
+find_package(MOOSGeodesy CONFIG REQUIRED)
+SET(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
 #link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
@@ -80,6 +83,45 @@ IF("${USE_UTM}" STREQUAL "ON")
 ENDIF()
 
 message("----------------------------------------Use UTM:" ${USE_UTM})
+
+#=====================================================================
+# Part 4a: Normalize external library targets used by exported targets
+#=====================================================================
+IF(IVP_BUILD_GUI_CODE)
+  SET(FLTK_SKIP_FLUID ON)
+  SET(FLTK_SKIP_FORMS ON)
+  SET(FLTK_SKIP_IMAGES ON)
+  FIND_PACKAGE(FLTK REQUIRED)
+  FIND_PACKAGE(OpenGL REQUIRED)
+  FIND_PACKAGE(TIFF REQUIRED)
+
+  # FLTK 1.4 supplies fltk::fltk, while the FLTK 1.3 packages shipped by
+  # supported Ubuntu and Debian releases expose only variables. Create the
+  # modern target in the latter case, following CMake's FindFLTK guidance:
+  # https://cmake.org/cmake/help/latest/module/FindFLTK.html
+  IF(NOT TARGET fltk::fltk)
+    ADD_LIBRARY(fltk::fltk INTERFACE IMPORTED)
+    SET_TARGET_PROPERTIES(fltk::fltk PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${FLTK_INCLUDE_DIR}"
+      INTERFACE_LINK_LIBRARIES "${FLTK_LIBRARIES}")
+  ENDIF()
+
+  ADD_LIBRARY(ivp_fltk INTERFACE)
+  TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE fltk::fltk)
+  IF(TARGET fltk::fltk_gl)
+    TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE fltk::fltk_gl)
+  ENDIF()
+
+  IF(TARGET OpenGL::GL)
+    # FindOpenGL did not provide the OpenGL::GL imported target until CMake 3.8
+    TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE OpenGL::GL)
+  ELSE()
+    # Fallback to the legacy variables
+    TARGET_INCLUDE_DIRECTORIES(ivp_fltk INTERFACE "${OPENGL_INCLUDE_DIR}")
+    TARGET_LINK_LIBRARIES(ivp_fltk INTERFACE "${OPENGL_gl_LIBRARY}")
+  ENDIF()
+
+ENDIF()
 
 
 #=====================================================================
@@ -244,6 +286,20 @@ message("IVP_LIBS_TO_BUILD: ${IVP_LIBS_TO_BUILD}")
 
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 
+# Create an exported IvP library with the common build/install include paths.
+# Each library declares its own link dependencies in its CMakeLists.txt.
+FUNCTION(IVP_ADD_LIBRARY TARGET_NAME)
+  ADD_LIBRARY(${TARGET_NAME} ${ARGN})
+  TARGET_INCLUDE_DIRECTORIES(${TARGET_NAME} PUBLIC
+    $<BUILD_INTERFACE:${IVP_INC_DIRECTORY}/ivp>
+    $<INSTALL_INTERFACE:include/ivp>)
+  INSTALL(TARGETS ${TARGET_NAME}
+    EXPORT IVPTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin)
+ENDFUNCTION()
+
 #=====================================================================
 # Part 9: Add CMake subdirs for each library and application
 #=====================================================================
@@ -262,13 +318,8 @@ FOREACH(A ${IVP_APPS_TO_BUILD_DEPRECATED})
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)
 
-#=====================================================================
-# make install (tes 2012-05-08)
-#=====================================================================
-
-install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-install(DIRECTORY ${IVP_LIB_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION bin USE_SOURCE_PERMISSIONS)
+install(DIRECTORY ${IVP_LIB_DIRECTORY}/ DESTINATION lib)
 
 message("Include directory: ${IVP_INC_DIRECTORY}")
 file(GLOB_RECURSE INCLUDE_FILES RELATIVE ${IVP_SOURCE_DIR} lib_*/*.h)
@@ -279,5 +330,34 @@ foreach(I ${INCLUDE_FILES})
   endif()
 endforeach()
 
-install(DIRECTORY ${IVP_INC_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+install(DIRECTORY ${IVP_INC_DIRECTORY}/ DESTINATION include
   FILES_MATCHING REGEX .*\\.h)
+
+# Generate the files consumed by downstream projects using
+# `find_package(IVP CONFIG)`. IVPTargets.cmake exposes the installed libraries
+# as IVP::<library>, while IVPConfig.cmake locates IVP's external dependencies
+# and provides the legacy IVP_INCLUDE_DIRS and IVP_LIBRARIES variables.
+SET(IVP_CMAKE_INSTALL_DIR lib/cmake/IVP)
+SET(IVP_PACKAGE_HAS_GUI ${IVP_BUILD_GUI_CODE})
+SET(IVP_PACKAGE_TARGETS "")
+
+# Convert the source-directory names (for example, lib_mbutil) into the
+# namespaced imported targets that the installed package advertises.
+FOREACH(L ${IVP_LIBS_TO_BUILD})
+  STRING(REGEX REPLACE "^lib_" "" IVP_TARGET_NAME "${L}")
+  LIST(APPEND IVP_PACKAGE_TARGETS "IVP::${IVP_TARGET_NAME}")
+ENDFOREACH()
+
+# Substitute the build's optional-GUI setting and install location into the
+# package configuration file before installing it alongside the target export.
+CONFIGURE_PACKAGE_CONFIG_FILE(
+  ${IVP_SOURCE_DIR}/cmake/IVPConfig.cmake.in
+  ${IVP_BINARY_DIR}/IVPConfig.cmake
+  INSTALL_DESTINATION ${IVP_CMAKE_INSTALL_DIR})
+
+INSTALL(EXPORT IVPTargets
+  FILE IVPTargets.cmake
+  NAMESPACE IVP::
+  DESTINATION ${IVP_CMAKE_INSTALL_DIR})
+INSTALL(FILES ${IVP_BINARY_DIR}/IVPConfig.cmake
+  DESTINATION ${IVP_CMAKE_INSTALL_DIR})

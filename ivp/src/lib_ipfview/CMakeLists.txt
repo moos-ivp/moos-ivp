@@ -30,7 +30,10 @@ SET(HEADERS
 
 
 # Build Library
-ADD_LIBRARY(ipfview ${SRC})
+IVP_ADD_LIBRARY(ipfview ${SRC})
+TARGET_LINK_LIBRARIES(ipfview
+  PUBLIC ivpbuild ivpcore ivpsolve mbutil
+    "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>"
+  PRIVATE geometry)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
-

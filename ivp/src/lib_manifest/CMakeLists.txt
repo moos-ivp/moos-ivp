@@ -8,5 +8,6 @@ SET(SRC
   ManifestSet.cpp
   Populator_ManifestSet.cpp)
 
-ADD_LIBRARY(manifest ${SRC})
-
+IVP_ADD_LIBRARY(manifest ${SRC})
+TARGET_LINK_LIBRARIES(manifest
+  PRIVATE mbutil)

@@ -20,5 +20,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(ivpsolve ${SRC})
-
+IVP_ADD_LIBRARY(ivpsolve ${SRC})
+TARGET_LINK_LIBRARIES(ivpsolve
+  PUBLIC ivpcore
+  PRIVATE ivpbuild mbutil)

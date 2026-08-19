@@ -14,5 +14,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(survey ${SRC})
-
+IVP_ADD_LIBRARY(survey ${SRC})
+TARGET_LINK_LIBRARIES(survey
+  PUBLIC geometry)

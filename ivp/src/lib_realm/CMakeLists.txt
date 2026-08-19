@@ -24,5 +24,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(realm ${SRC})
-
+IVP_ADD_LIBRARY(realm ${SRC})
+TARGET_LINK_LIBRARIES(realm
+  PUBLIC apputil
+  PRIVATE mbutil)

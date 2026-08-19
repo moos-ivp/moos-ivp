@@ -16,5 +16,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(turngeo ${SRC})
-
+IVP_ADD_LIBRARY(turngeo ${SRC})
+TARGET_LINK_LIBRARIES(turngeo
+  PUBLIC geometry
+  PRIVATE mbutil)

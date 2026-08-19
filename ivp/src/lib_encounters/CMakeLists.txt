@@ -12,5 +12,6 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(encounters ${SRC})
-
+IVP_ADD_LIBRARY(encounters ${SRC})
+TARGET_LINK_LIBRARIES(encounters
+  PRIVATE mbutil)

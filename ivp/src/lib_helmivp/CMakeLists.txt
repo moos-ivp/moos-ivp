@@ -39,5 +39,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(helmivp ${SRC})
-
+IVP_ADD_LIBRARY(helmivp ${SRC})
+TARGET_LINK_LIBRARIES(helmivp
+  PUBLIC behaviors geometry ivpcore logic mbutil
+  PRIVATE behaviors-colregs behaviors-marine dep_behaviors genutil ivpbuild ${CMAKE_DL_LIBS})

@@ -20,5 +20,8 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(ufield ${SRC})
-
+IVP_ADD_LIBRARY(ufield ${SRC})
+TARGET_LINK_LIBRARIES(ufield PRIVATE mbutil)
+IF(WIN32)
+  TARGET_LINK_LIBRARIES(ufield PRIVATE ws2_32)
+ENDIF()

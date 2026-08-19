@@ -30,7 +30,11 @@ SET(CMAKE_CXX_FLAGS "-DDATA_DIR=${ESCAPED_DATA_DIR} ${CMAKE_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS "-DDATA_DIRX=${ESCAPED_DATA_DIRX} ${CMAKE_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type ")
 
-ADD_LIBRARY(marineview ${SRC})
+IVP_ADD_LIBRARY(marineview ${SRC})
+TARGET_LINK_LIBRARIES(marineview
+  PUBLIC contacts geodaid geometry mbutil MOOSGeodesy::MOOSGeodesy
+    "$<BUILD_INTERFACE:ivp_fltk>$<INSTALL_INTERFACE:IVP::FLTK>"
+  PRIVATE TIFF::TIFF)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
@@ -43,4 +47,3 @@ IF (${APPLE})
 ELSE (${APPLE})	    
     ADD_DEFINITIONS(-DOPSYS_IS_LINUX=1)
 ENDIF (${APPLE})
-

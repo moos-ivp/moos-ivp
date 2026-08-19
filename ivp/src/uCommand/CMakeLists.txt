@@ -21,13 +21,13 @@ IF (${APPLE})
       ADD_EXECUTABLE(uCommand ${SRC})
       # Install Targets
       INSTALL(TARGETS uCommand
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        RUNTIME DESTINATION bin
       )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uCommand ${SRC})
       # Install Targets
       INSTALL(TARGETS uCommand
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+         RUNTIME DESTINATION bin
       )
 ENDIF (${APPLE})
 

@@ -76,7 +76,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(ivpbuild ${SRC})
-TARGET_LINK_LIBRARIES(ivpbuild ivpcore geometry)
-
-
+IVP_ADD_LIBRARY(ivpbuild ${SRC})
+TARGET_LINK_LIBRARIES(ivpbuild
+  PUBLIC ivpcore ivpsolve
+  PRIVATE geometry mbutil)

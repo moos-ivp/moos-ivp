@@ -14,5 +14,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(obstacles ${SRC})
-
+IVP_ADD_LIBRARY(obstacles ${SRC})
+TARGET_LINK_LIBRARIES(obstacles
+  PUBLIC geometry
+  PRIVATE mbutil)

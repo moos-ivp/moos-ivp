@@ -1,11 +1,23 @@
-# Configuration file for @PROJECTNAME@ library.
+@PACKAGE_INIT@
 
-# Pick up the auto-generated file which knows how to add the library targets
-# This will mean that we don't have to supply full paths for the libraries
-set(exports_file "@CMAKE_CURRENT_BINARY_DIR@/Use@PROJECTNAME@.cmake")
-if (EXISTS ${exports_file})
-  message(STATUS "CMake is running ${exports_file}")
-  include(${exports_file})
-endif ()
+include("${CMAKE_CURRENT_LIST_DIR}/MOOSGeodesyTargets.cmake")
 
-# Project specific variables are dynamically inserted here
+# Compatibility target and variables for projects that have not migrated to
+# the namespaced imported target.
+if(NOT TARGET MOOSGeodesy)
+    add_library(MOOSGeodesy INTERFACE IMPORTED)
+    set_property(TARGET MOOSGeodesy PROPERTY
+        INTERFACE_LINK_LIBRARIES MOOSGeodesy::MOOSGeodesy)
+endif()
+
+set(MOOSGeodesy_LIBRARIES MOOSGeodesy)
+set_and_check(MOOSGeodesy_INCLUDE_DIRS
+    "@PACKAGE_MOOSGEODESY_CONFIG_INCLUDE_DIR@")
+set(MOOSGeodesy_DEPEND_INCLUDE_DIRS "${MOOSGeodesy_INCLUDE_DIRS}")
+if(UNIX)
+    set(MOOSGeodesy_DEPEND_LIBRARIES m)
+else()
+    set(MOOSGeodesy_DEPEND_LIBRARIES "")
+endif()
+
+check_required_components(MOOSGeodesy)

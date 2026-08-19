@@ -28,12 +28,7 @@ SET(HEADERS
   RefineryObAvoid.h
 ) 
 
-ADD_LIBRARY(dep_behaviors ${SRC})
-
+IVP_ADD_LIBRARY(dep_behaviors ${SRC})
 TARGET_LINK_LIBRARIES(dep_behaviors
-   mbutil
-   helmivp
-   behaviors
-   geometry
-   )
-
+  PUBLIC behaviors geometry ivpbuild ivpcore mbutil
+  PRIVATE bhvutil logic)
