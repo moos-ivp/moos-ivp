@@ -80,6 +80,7 @@ public: // Getters (analyzers)
   double getAvgY() const {return((getMaxY()-getMinY())/2);};
 
   XYSegList getBaseSegList() const;
+  XYSegList getDistSegList(double) const;
   unsigned int size() const {return(m_vx.size());};
   
   std::string get_spec(int vertex_precision=1) const;

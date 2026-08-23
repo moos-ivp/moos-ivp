@@ -89,6 +89,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
   if((bhv_name == "BHV_OpRegion")        ||
      (bhv_name == "BHV_OpRegionRecover") || 
      (bhv_name == "BHV_OpRegionV24")     || 
+     (bhv_name == "BHV_OpRegionV26")     || 
      (bhv_name == "BHV_Waypoint")        || 
      (bhv_name == "BHV_LegRun")          || 
      (bhv_name == "BHV_ZigZag")          || 

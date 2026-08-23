@@ -66,6 +66,10 @@ public:
   
   double   distPtToEnterGP(double px, double py) const;
   double   distRayToEnterGP(double px, double py, double ray_angle) const;
+
+  double   cpaSegToGP(double x1, double y1, double x2, double y2) const;
+  double   cpaSeglToGP(const XYSegList&, bool verbose=false) const;
+  double   cpaSeglrToGP(const XYSeglr&, double dist, bool verbose=false) const;
   
 protected:
   XYSegList m_segl_border; 

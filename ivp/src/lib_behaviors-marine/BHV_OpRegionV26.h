@@ -76,6 +76,13 @@ class BHV_OpRegionV26 : public IvPBehavior {
 
   double   m_min_util_eta;
   double   m_max_util_eta;
+  double   m_min_util_cpa;
+  double   m_max_util_cpa;
+  double   m_cpa_window;
+
+  bool     m_eta_factored;
+  bool     m_cpa_factored;
+
   
   double   m_trigger_entry_time;
   double   m_trigger_breach_time;
@@ -116,7 +123,8 @@ class BHV_OpRegionV26 : public IvPBehavior {
   double      m_time_lapsed_total;
   double      m_time_breached_start;
   double      m_time_breached_total;
-
+  bool        m_breached_flags_posted;
+  
   double      m_visuals_posted_utc;
   
  protected: // State Vars for recovering

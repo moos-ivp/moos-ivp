@@ -46,17 +46,26 @@ public:
   double getKnownMax() const {return(100);}
 
   void   setGenPoly(XYGenPolygon gpoly) {m_gpoly=gpoly;}
-
   void   setPlatModel(PlatModel pm) {m_plat_model=pm;}
   
   bool   initialize();
 
+protected:
+  double evalUtilETA(double, double) const;
+  double evalUtilCPA(double, double) const;
+  
  private: // Config variables
   XYGenPolygon m_gpoly;
   PlatModel    m_plat_model;
 
   double m_min_util_eta;
   double m_max_util_eta;
+  double m_min_util_cpa;
+  double m_max_util_cpa;
+  double m_cpa_window;
+
+  bool   m_eta_factored;
+  bool   m_cpa_factored;
   
  private: // State variables
   int  m_crs_ix;  // Index of "course" variable in IvPDomain
@@ -64,6 +73,9 @@ public:
   
   bool m_min_util_eta_is_set;
   bool m_max_util_eta_is_set;
+  bool m_min_util_cpa_is_set;
+  bool m_max_util_cpa_is_set;
+  bool m_cpa_window_is_set;
 };
 
 #endif

@@ -2740,6 +2740,70 @@ double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
 }
 
 
+//---------------------------------------------------------------
+// Procedure: getDistSegList()
+//   Purpose: Given a distance, return a seglist that of that dist
+//            derived from the seglr. 
+
+XYSegList getDistSegList(const XYSeglr seglr, double tdist) 
+{
+  XYSegList segl;
+  if(!seglr.valid())      // ensure m_vx, m_vy are not size=0
+    return(segl);
+
+  
+  // Part 1: address the base of the seglr. If the target dist
+  // is longer than the base seglist, then use the whole base
+  // seglist. Otherwise determine the portion of the base segl
+  // that satisfies the target tdist, and return that.
+  
+  XYSegList base_segl = seglr.getBaseSegList();
+
+  if(tdist >= base_segl.length())
+    segl = base_segl;
+  else {
+    double dist_so_far = 0;
+    double x0 = seglr.getVX(0);
+    double y0 = seglr.getVY(0);
+    segl.add_vertex(x0, y0);
+    for(unsigned int i=0; i<seglr.size()-1; i++) {
+      double x1 = seglr.getVX(i);
+      double y1 = seglr.getVY(i);
+      double x2 = seglr.getVX(i+1);
+      double y2 = seglr.getVY(i+1);
+      double idist = hypot(x1-x2,y1-y2);
+      if((dist_so_far + idist) <= tdist) {
+	segl.add_vertex(x2,y2);
+	dist_so_far += idist;
+      }
+      else {
+	double togo_dist = (tdist - dist_so_far);
+	double relang = relAng(x1,y1,x2,y2);
+	double nx,ny;
+	projectPoint(relang, togo_dist, x1,y1, nx,ny);
+	segl.add_vertex(nx,ny);
+	return(segl);
+      }
+    }
+  }
+  
+  // Paret 2: If we get this far, then the target distance (tdist) is
+  // longer than the whole based seglist. So we grab the rest from the
+  // ray.
+
+  double togo_dist = tdist - segl.length();
+  if(togo_dist > 0) {
+    double endx = seglr.getRayBaseX();
+    double endy = seglr.getRayBaseY();
+    double ray_angle = seglr.getRayAngle();
+    double nx,ny;
+    projectPoint(ray_angle, togo_dist, endx,endy, nx,ny);
+    segl.add_vertex(nx,ny);
+  }
+      
+  return(segl);
+}
+
 
 
 //---------------------------------------------------------------

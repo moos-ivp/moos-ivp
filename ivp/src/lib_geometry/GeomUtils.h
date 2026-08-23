@@ -231,6 +231,8 @@ double stemDistSeglFromPoint(const XYSegList& segl,
 
 XYPoint randPointOnSeg(double x1, double y1, double x2, double y2);
 
+XYSegList getDistSegList(XYSeglr seglr, double dist);
+
 
 
 // DEPRECATED INTERFACES

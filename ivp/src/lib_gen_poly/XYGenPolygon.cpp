@@ -308,7 +308,7 @@ double XYGenPolygon::distPtToExitGP(double px, double py) const
     }
 
     // determine if it crosses that edge and where
-    bool dist = distPointToSeg(x1,y1,x2,y2, px,py);
+    double dist = distPointToSeg(x1,y1,x2,y2, px,py);
     if((min_dist < 0) || (dist < min_dist))
       min_dist = dist;
   }
@@ -330,7 +330,7 @@ double XYGenPolygon::distSegToExitGP(double x1, double y1,
   exited = true;
 
   // Assumption test
-  if(!contains(x1,y2))
+  if(!contains(x1,y1))
     return(0);  
 
   if(m_segl_border.size() < 3)
@@ -550,5 +550,122 @@ double XYGenPolygon::distRayToEnterGP(double px, double py,
   }
   
   return(min_dist);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: cpaSegToGP()
+//   Purpose: Calculate the closest point of approach (CPA) from 
+//            the given line segment to the border of the GP,
+//            by calculating the CPA to each edge on the GP and
+//            taking the min
+
+
+double XYGenPolygon::cpaSegToGP(double x1, double y1,
+				double x2, double y2) const
+{
+  if(m_segl_border.size() < 2)
+    return(-1);
+  
+  double min_dist = -1;
+  for(unsigned int i=0; i<m_segl_border.size(); i++) {
+
+    // get first vertex of the ith edge
+    double x3 = m_segl_border.get_vx(i);
+    double y3 = m_segl_border.get_vy(i);
+
+    // get second vertex of the ith edge
+    double x4 = m_segl_border.get_vx(0);
+    double y4 = m_segl_border.get_vy(0);
+    if((i+1) < m_segl_border.size()) {
+      x4 = m_segl_border.get_vx(i+1);
+      y4 = m_segl_border.get_vy(i+1);
+    }
+
+    // determine if it crosses that edge
+    double dist = distSegToSeg(x1,y1,x2,y2, x3,y3,x4,y4);
+    if(dist > 0) {
+      if((min_dist < 0) || (dist < min_dist))
+	min_dist = dist;
+    }
+  }
+  
+  return(min_dist);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: cpaSeglToGP()
+//   Purpose: Calculate the closest point of approach (CPA) from 
+//            the given SegList to the border of the GP, by
+//            calculating the CPA to each edge on the GP from and
+//            each edge in the SegList and then taking the min.
+
+
+double XYGenPolygon::cpaSeglToGP(const XYSegList& segl,
+				 bool verbose) const
+{
+  if(m_segl_border.size() < 2)
+    return(-1);
+
+  // Sanity check
+  if(segl.size() == 0)
+    return(-1);
+
+  // Edge case
+  if(segl.size() == 1) {
+    double x1 = segl.get_vx(0);
+    double y1 = segl.get_vy(0);
+    double x2 = segl.get_vx(0);
+    double y2 = segl.get_vy(0);
+    double dist = cpaSegToGP(x1,y1,x2,y2);
+    return(dist);
+  }
+  
+  double min_dist = -1;
+  for(unsigned int i=0; i<segl.size()-1; i++) {
+    // get segment
+    double x1 = segl.get_vx(i);
+    double y1 = segl.get_vy(i);
+    double x2 = segl.get_vx(i+1);
+    double y2 = segl.get_vy(i+1);
+
+    // determine dist of seg to (all edges of) GenPoly
+    double dist = cpaSegToGP(x1,y1,x2,y2);
+    if(verbose)
+      cout << "dist[" << i << "]:" << doubleToString(dist) << endl;
+    if(dist > 0) {
+      if((min_dist < 0) || (dist < min_dist))
+	min_dist = dist;
+    }
+  }
+  
+  return(min_dist);
+}
+
+//---------------------------------------------------------------
+// Procedure: cpaSeglrToGP()
+//   Purpose: Calculate the closest point of approach (CPA) from 
+//            the given Seglr to the border of the GP, for a given
+//            seglr length/distance. By setting the distance, this
+//            defines seglist portion of the seglr.
+//            Calculate CPA for each edge of the seglist to each
+//            edge on the GP, and then taking the min.
+
+
+double XYGenPolygon::cpaSeglrToGP(const XYSeglr& seglr,
+				  double dist,
+				  bool verbose) const
+{
+  if(m_segl_border.size() < 2)
+    return(-1);
+
+  // Get the portion of the seglr out to length=dist
+  XYSegList segl = getDistSegList(seglr, dist);
+
+  if(verbose)
+    cout << " gp: segl: " << segl.get_spec() << endl;
+
+  return(cpaSeglToGP(segl));
 }
 

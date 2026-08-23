@@ -63,8 +63,15 @@ BHV_OpRegionV26::BHV_OpRegionV26(IvPDomain gdomain) :
   m_min_util_eta = 10;
   m_max_util_eta = 30;
 
+  m_min_util_cpa = 4;
+  m_max_util_cpa = 10;
+  m_cpa_window = 10;
+
   m_get_back_enabled = true;
   m_stay_in_enabled = true;
+
+  m_cpa_factored = true;
+  m_eta_factored = true;
   
   // Visual Hint Defaults for the leg/turn paths
   m_hints.setMeasure("vertex_size", 0);
@@ -131,6 +138,8 @@ void BHV_OpRegionV26::reInitStateVars()
   
   m_committed_turn = "none";  // Always none, left, or right
 
+  m_breached_flags_posted = false;
+  
   m_abs_rng_to_exit = -1;  // Rng to oparea border in any direc-tino
   m_bng_rng_to_exit = -1;  // Rng to oparea border in osh dir
   m_mix_rng_to_exit = -1;  // Weighted mix/avg between rng vals
@@ -157,10 +166,22 @@ bool BHV_OpRegionV26::setParam(string param, string val)
   else if(param == "stay_in_enabled") 
     return(setBooleanOnString(m_stay_in_enabled, val));
 
+  else if(param == "eta_factored") 
+    return(setBooleanOnString(m_eta_factored, val));
+  else if(param == "cpa_factored") 
+    return(setBooleanOnString(m_cpa_factored, val));
+
   else if(param == "min_util_eta")
     return(setNonNegDoubleOnString(m_min_util_eta, val));
   else if(param == "max_util_eta")
     return(setNonNegDoubleOnString(m_max_util_eta, val));
+
+  else if(param == "min_util_cpa")
+    return(setNonNegDoubleOnString(m_min_util_cpa, val));
+  else if(param == "max_util_cpa")
+    return(setNonNegDoubleOnString(m_max_util_cpa, val));
+  else if(param == "cpa_window")
+    return(setNonNegDoubleOnString(m_cpa_window, val));
 
   else if((param == "recover_spd") || (param == "recover_speed"))
     return(setPosDoubleOnString(m_recover_spd, val));
@@ -208,6 +229,11 @@ bool BHV_OpRegionV26::setParam(string param, string val)
 
 void BHV_OpRegionV26::onSetParamComplete()
 {
+  if(!m_eta_factored && !m_cpa_factored) {
+    if(m_stay_in_enabled)
+      postWMessage("Not valid configs for staying in OpRegion");
+  }
+  
   postConfigStatus();
 }
 
@@ -355,9 +381,20 @@ IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
   // osx, osy, osh, osv embedded in the plat model
   aof.setPlatModel(m_plat_model);
   aof.setGenPoly(m_core_poly);
-  aof.setParam("min_util_eta", m_min_util_eta);
-  aof.setParam("max_util_eta", m_max_util_eta);
-  bool ok = aof.initialize();
+
+  bool ok = true;
+  ok = ok && aof.setParam("min_util_eta", m_min_util_eta);
+  ok = ok && aof.setParam("max_util_eta", m_max_util_eta);
+  ok = ok && aof.setParam("min_util_cpa", m_min_util_cpa);
+  ok = ok && aof.setParam("max_util_cpa", m_max_util_cpa);
+  ok = ok && aof.setParam("cpa_window", m_cpa_window);
+
+  string s_eta_factored = boolToString(m_eta_factored);
+  string s_cpa_factored = boolToString(m_cpa_factored);
+
+  ok = ok && aof.setParam("eta_factored", s_eta_factored);
+  ok = ok && aof.setParam("cpa_factored", s_cpa_factored);
+  ok = aof.initialize();
 
   if(!ok) {
     postEMessage("Unable to init AOF_OpRegion.");
@@ -378,6 +415,9 @@ IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
   IvPFunction *ipf = reflector.extractIvPFunction();
   ipf->setPWT(m_priority_wt);
 
+  cout << "BHV_OpRegionV26 m_min_util_cpa=" << doubleToString(m_min_util_cpa,2) << endl;
+  cout << "BHV_OpRegionV26 m_max_util_cpa=" << doubleToString(m_max_util_cpa,2) << endl;
+  
   return(ipf);
 }
 
@@ -390,8 +430,11 @@ void BHV_OpRegionV26::handleStateBreached()
   if(m_time_breached_total < m_trigger_breach_time)
     return;
 
-  if(m_prev_state != "breached")
+  if(!m_breached_flags_posted) {
     postFlags(m_breached_flags);
+    m_breached_flags_posted = true;
+  }
+  
   postEMessage("OpRegion HaltPoly Failure");
 }
 

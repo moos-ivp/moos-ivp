@@ -164,7 +164,6 @@ void XYSeglr::setCacheCPAPoint(XYPoint point)
   if(point.valid())
     m_cpa_pt = point;
 }
-
 //---------------------------------------------------------------
 // Procedure: valid()
 
@@ -215,7 +214,6 @@ XYSegList XYSeglr::getBaseSegList() const
 
   return(segl);
 }
-
 
 //---------------------------------------------------------------
 // Procedure: getVX()
