@@ -297,11 +297,9 @@ void REPLAY_GUI::augmentMenu()
 
 int REPLAY_GUI::handle(int event) 
 {
-  cout << "111" << endl;
   double lp_curr_time = 0;
   switch(event) {
   case FL_KEYDOWN:
-    cout << "Fl::event_keyA:" << Fl::event_key() << endl;
     // Handle the Space Bar Key for pausing playback
     if(Fl::event_key() == 32) 
       cb_Streaming_i(2);
@@ -348,29 +346,21 @@ int REPLAY_GUI::handle(int event)
       return(Fl_Window::handle(event));
     return(1);
   case FL_PUSH:
-    cout << "Fl::event_keyB:" << Fl::event_key() << endl;
     Fl_Window::handle(event);
-    cout << "222" << endl;
     if(inLogPlotViewer()) {
-      cout << "333" << endl;
       lp_curr_time = lp_viewer->getCurrTime();
-      cout << "444" << endl;
       np_viewer->setCurrTime(lp_curr_time);
-      cout << "555" << endl;
       np_viewer->redraw();
-      cout << "666" << endl;
       updateTimeSubGUI();
     }
 
     return(1);
     break;
   case FL_RELEASE:
-    cout << "Fl::event_keyC:" << Fl::event_key() << endl;
     updateXY();
     return(1);
     break;
   default:
-    cout << "Fl::event_keyD:" << Fl::event_key() << endl;
     return(Fl_Window::handle(event));
   }
 }

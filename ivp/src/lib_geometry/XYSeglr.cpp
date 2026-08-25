@@ -406,15 +406,15 @@ string XYSeglr::get_spec(int precision) const
   string spec = "pts={";
 
   for(unsigned int i=0; i<m_vx.size(); i++) {
-    string sx = doubleToString(m_vx[i], precision);
-    string sy = doubleToString(m_vy[i], precision);
+    string sx = doubleToStringX(m_vx[i], precision);
+    string sy = doubleToStringX(m_vy[i], precision);
 
     string pair = sx + "," + sy;
     if(i>0)
       spec += ":";
     spec += pair;
   }
-  spec += "},ray=" + doubleToString(m_ray_angle, precision);
+  spec += "},ray=" + doubleToStringX(m_ray_angle, precision);
 
   string obj_spec = XYObject::get_spec();
 
