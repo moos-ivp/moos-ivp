@@ -162,6 +162,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
 
   else if(param == "rng_flag")
     return(handleParamRangeFlag(val));
+  else if(param == "spd_regulate")
+    return(handleParamSpdRegulate(val));
   else if(param == "cpa_flag")
     return(addFlagOnString(m_cpa_flags, val));
   else if(param == "visual_hints")
@@ -221,6 +223,33 @@ bool BHV_AvoidObstacleV24::handleParamRangeFlag(string str)
     m_rng_thresh.push_back(thresh);
 
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleParamSpdRegulate()
+//   Example: min_spd=1, max_spd=11, max_discount=60
+
+bool BHV_AvoidObstacleV24::handleParamSpdRegulate(string str)
+{
+  double min_spd = -1;
+  double max_spd = -1;
+  double max_discount = -1;
+  
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i],'=');
+    string value = svector[i];
+    if(param == "min_spd")
+      min_spd = atof(value.c_str());
+    else if(param == "max_spd")
+      max_spd = atof(value.c_str());
+    else if(param == "max_discount")
+      max_discount = atof(value.c_str());
+  }
+  bool ok = m_obship_model.setSpdRegulation(min_spd, max_spd,
+					    max_discount);
+
+  return(ok);
 }
 
 //-----------------------------------------------------------
