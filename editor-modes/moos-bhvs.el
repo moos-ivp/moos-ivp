@@ -49,6 +49,8 @@
 
        '("BHV_OpRegionV24" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_altitude_flag" "breached_depth_flag" "breached_poly_flag" "breached_time_flag" "core_poly" "save_poly" "halt_poly" "draw_halt_status" "draw_save_statue" "save_flag" "savex_flag" "halt_dist" "save_dist" "dynamic_region_var" "recover_spd" "recover_speed" "draw_path_loop" )
 
+       '("BHV_OpRegionV26" "trigger_entry_time" "trigger_exit_time" "visual_hints" "core_poly" "lapse_dist" "breach_dist" "contained_flag" "containedx_flag" "entering_flag" "enteringx_flag" "breached_flag" "recover_spd" "recover_speed" "lapsed_flag" "lapsedx_flag" "stay_in" "get_back")
+
        '("BHV_OpRegion" "post_mapping" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_altitude_flag" "breached_depth_flag" "breached_poly_flag" "breached_time_flag" "reset_var" "time_remaining_var" "opregion_poly_var")
 
        '("BHV_OpRegionRecover" "post_mapping" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_poly_flag" "reset_var" "opregion_poly_var" "dynamic_region_var" "buffer_dist")
