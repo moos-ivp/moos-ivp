@@ -53,6 +53,8 @@ class ObShipModelV24
   void   setPlatModel(PlatModel tm);
 
   void   setSideLock(bool v) {m_side_lock=v;}
+
+  bool   setSpdRegulation(double, double, double);
   
  public: // Setters that may generate health warnings
   std::string  setGutPoly(XYPolygon);
@@ -147,6 +149,9 @@ class ObShipModelV24
 
   void   updateBngExtremes();
 
+  bool   isSpdRegulated() const;
+  double spdRegulate(double) const;
+  
   std::string getVSource() const {return(m_gut_poly.get_vsource());}
   
 protected:
@@ -181,7 +186,11 @@ protected:
   bool   m_side_lock;
   
   std::set<std::string> m_set_params;
-  
+
+  double m_sreg_min_spd;      // m/s
+  double m_sreg_max_spd;      // m/s
+  double m_sreg_max_discount; // m/s
+
  private: // State (derived) variables
   XYPolygon m_mid_poly;
   XYPolygon m_rim_poly;

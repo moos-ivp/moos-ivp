@@ -56,7 +56,8 @@ public:
   
  protected: 
   bool   handleParamRangeFlag(std::string);
-
+  bool   handleParamSpdRegulate(std::string);
+  
   double getRelevance();
   bool   updatePlatformInfo();
   void   postViewablePolygons();

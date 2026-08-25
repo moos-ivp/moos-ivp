@@ -56,6 +56,10 @@ ObShipModelV24::ObShipModelV24(double osx, double osy,
 
   m_completed_dist = 50;
 
+  m_sreg_min_spd = -1;
+  m_sreg_max_spd = -1;
+  m_sreg_max_discount = -1;
+  
   // Set the precision for rounding/expanding the obstacle_buff
   // polygon. Affects the work involved for CPA calculations
   m_obuff_rdegs = 30;
@@ -159,6 +163,32 @@ void ObShipModelV24::setPlatModel(PlatModel plat_model)
 {
   m_plat_model = plat_model;
   m_stale_cache = true;
+}
+
+// ----------------------------------------------------------
+// Procedure: setSpdRegulation()
+
+bool ObShipModelV24::setSpdRegulation(double min_spd,
+				      double max_spd,
+				      double max_discount)
+{
+  // Ensure min/max spds are both >= 0
+  if((min_spd < 0) || (max_spd < 0))
+    return(false);
+
+  // Ensure the spd range is >= 0
+  if(min_spd >= max_spd)
+    return(false);
+
+  // Ensure the discount percent is between [0,100]
+  if((max_discount < 0) || (max_discount > 100))
+    return(false);
+
+  m_sreg_min_spd = min_spd;
+  m_sreg_max_spd = max_spd;
+  m_sreg_max_discount = max_discount;
+  
+  return(true);
 }
 
 // ----------------------------------------------------------
@@ -703,7 +733,12 @@ double ObShipModelV24::evalHdgSpd(double hdg, double spd,
     if(passing_side != m_passing_side)
       return(0);
   }
-    
+ 
+  // For evaluation of spd regulation use the average of the current
+  // vehicle speed and the candidate maneuver spd.
+  double eval_spd = (getOSV() + spd) / 2;
+  
+  vpct = spdRegulate(eval_spd); // mikerb Aug2526
   
   double min_util_cpa = vpct * m_min_util_cpa;
   double max_util_cpa = vpct * m_max_util_cpa;
@@ -959,6 +994,86 @@ bool ObShipModelV24::updateDynamic()
   
   return(true);
 }
+
+//-----------------------------------------------------------
+// Procedure: isSpdRegulated()
+
+bool ObShipModelV24::isSpdRegulated() const
+{
+  // Ensure min/max spds are both >= 0
+  if((m_sreg_min_spd < 0) || (m_sreg_max_spd < 0))
+    return(false);
+
+  // Ensure the spd range is >= 0
+  if(m_sreg_min_spd >= m_sreg_max_spd)
+    return(false);
+
+  // Ensure the discount percent is between [0,100]
+  if((m_sreg_max_discount < 0) || (m_sreg_max_discount > 100))
+    return(false);
+
+  return(true);
+}
+  
+//-----------------------------------------------------------
+// Procedure: spdRegulate()
+//   Returns: A value between [0.0, 1.0] b
+//  Examples: Given sreg_min=1, sreg_max=11, max_discount=50
+//         a: given_spd=6,  rval=0.75  (50%  of 50% = 25%.  1-0.25=0.75)
+//         b: given_spd=1,  rval=0.50  (100% of 50% = 50%.  1-0.50=0.50)
+//         d: given_spd=12, rval=1.00  (0%   of 50% = 0%.   1-0.00=1.00)
+//         d: given_spd=3,  rval=0.90  (80%  of 50% = 40%.  1-0.40=0.60)
+//         e: given_spd=9,  rval=0.90  (20%  of 50% = 10%.  1-0.10=0.90)
+// 
+//      Note: A return value of 1 indicates there is NO speed
+//            regulation.
+
+double ObShipModelV24::spdRegulate(double given_spd) const
+{
+  // Sanity check: Ensure spd regulation is enabled
+  if(!isSpdRegulated())
+    return(1);
+
+  // Sanity check: Recheck the range is >= 0 
+  double spd_range = m_sreg_max_spd - m_sreg_min_spd;
+  if(spd_range <= 0)
+    return(1);
+
+  // ----------------------------------------------------------------
+  // Part 1: Determine the percentage [0,1] of the available discount
+  // ----------------------------------------------------------------
+  double pct_discount = 0;  // Be conservative, no discount
+  // No discount
+  if(given_spd > m_sreg_max_spd)
+    pct_discount = 0;
+
+  // Full discount
+  if(given_spd < m_sreg_min_spd)
+    pct_discount = 1;
+
+  // Stuff in between no and full discount (0,1)
+  // eg sreg_max_spd=11 - given_spd=3. delta=8
+  double delta = m_sreg_max_spd - given_spd;  
+
+  // eg delta=8 / rng=10. pct_discount=0.8
+  pct_discount = delta / spd_range;           
+
+  // ----------------------------------------------------------------
+  // Part 2: Convert pct discount to pct of original full value
+  // ----------------------------------------------------------------
+  // eg pct=0.8 * 50% = 40%.
+  double applied_discount = pct_discount * m_sreg_max_discount; 
+
+  // eg 40% becomes 0.4
+  applied_discount = applied_discount / 100;
+
+  // eg a 10% (.1) discount meant 90% (0.9) of original value
+  // eg 0.1 becomes 0.9
+  double retval = 1 - applied_discount; 
+
+  return(retval);
+}
+  
 
 //-----------------------------------------------------------
 // Procedure: updateBngExtremes()
