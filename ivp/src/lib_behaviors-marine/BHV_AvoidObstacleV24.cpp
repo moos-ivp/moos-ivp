@@ -134,6 +134,10 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   }
   else if(param == "allowable_ttc")
     config_result = m_obship_model.setAllowableTTC(dval);
+  else if(param == "allstop_ttc")
+    config_result = m_obship_model.setAllStopTTC(dval);
+  else if(param == "allstop_range")
+    config_result = m_obship_model.setAllStopRange(dval);
   else if((param == "min_util_cpa_dist") && non_neg_number)
     config_result = m_obship_model.setMinUtilCPA(dval);
   else if((param == "max_util_cpa_dist") && non_neg_number)
@@ -418,10 +422,52 @@ void BHV_AvoidObstacleV24::onIdleToRunState()
 }
 
 //-----------------------------------------------------------
+// Procedure: checkForAllStop()
+
+bool BHV_AvoidObstacleV24::checkForAllStop()
+{
+  double allstop_ttc = m_obship_model.getAllStopTTC();
+  // Note allstop_ttc=-1 if this feature is not enabled (default)  
+  if(allstop_ttc > 0) {
+    // Note ttc=-1 if osh is not on a course to intercept
+    double ttc = m_obship_model.getTTC();
+    if((ttc >= 0) && (ttc < allstop_ttc)) {
+      string msg = "Allstop: allstop ttc breached.";
+      msg += " ttc=" + doubleToStringX(ttc,2);
+      postEMessage(msg);      
+      return(true);
+    }
+  }
+
+  double allstop_range = m_obship_model.getAllStopRange();
+  // Note allstop_rng=-1 if this feature is not enabled (default)  
+  if(allstop_range > 0) {
+    // Note rng=-1 if osh is not on a course to intercept
+    double rng = m_obship_model.getRangeToMidPoly();
+    if((rng >= 0) && (rng < allstop_range)) {
+      string msg = "Allstop: allstop range breached.";
+      msg += " range=" + doubleToStringX(rng,2);
+      postEMessage(msg);      
+      return(true);
+    }
+  }
+
+  
+  return(false);
+    
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onRunState()
 
 IvPFunction *BHV_AvoidObstacleV24::onRunState() 
-{  
+{
+  // Part 0: Check for all-stop conditions
+  bool allstop = checkForAllStop();
+  if(allstop) 
+    return(0);
+  
   // Part 1: Handle if obstacle has been resolved
   if(m_resolved_pending) {
     setComplete();
@@ -686,6 +732,7 @@ void BHV_AvoidObstacleV24::postConfigStatus()
   double min_util_cpa   = m_obship_model.getMinUtilCPA();
   double max_util_cpa   = m_obship_model.getMaxUtilCPA();
   double allowable_ttc  = m_obship_model.getAllowableTTC();
+  double allstop_ttc    = m_obship_model.getAllStopTTC();
   
   str += ",allowable_ttc="  + doubleToString(allowable_ttc,2);
   str += ",min_util_cpa="   + doubleToString(min_util_cpa,2);
@@ -693,6 +740,7 @@ void BHV_AvoidObstacleV24::postConfigStatus()
   str += ",pwt_outer_dist=" + doubleToString(pwt_outer_dist,2);
   str += ",pwt_inner_dist=" + doubleToString(pwt_inner_dist,2);
   str += ",completed_dist=" + doubleToString(completed_dist,2);
+  str += ",allstop_ttc="    + doubleToString(allstop_ttc,2);
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
@@ -710,6 +758,8 @@ double BHV_AvoidObstacleV24::getDoubleInfo(string str)
     return(m_obship_model.getOSH());
   else if(str == "allowable_ttc")
     return(m_obship_model.getAllowableTTC());
+  else if(str == "allstop_ttc")
+    return(m_obship_model.getAllStopTTC());
   else if(str == "pwt_outer_dist")
     return(m_obship_model.getPwtOuterDist());
   else if(str == "pwt_inner_dist")
@@ -737,6 +787,9 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   // =======================================================
   // Then expand the macros unique to this behavior
   // =======================================================
+  if(strContains(sdata, "$[TTC]"))
+    sdata = macroExpand(sdata, "TTC", m_obship_model.getTTC());
+    
   if(strContains(sdata, "$[RNG]"))
     sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
     
