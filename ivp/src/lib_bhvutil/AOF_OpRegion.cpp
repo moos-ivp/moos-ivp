@@ -56,7 +56,6 @@ AOF_OpRegion::AOF_OpRegion(IvPDomain gdomain) :
   m_min_util_cpa_is_set = false;
   m_max_util_cpa_is_set = false;
   m_cpa_window_is_set = false;
-
   m_rng_to_border = -1;
 }
 
@@ -110,6 +109,8 @@ bool AOF_OpRegion::setParam(const string& param, const string& value)
 
 bool AOF_OpRegion::initialize()
 {
+  cout << "AOF_OpRegion eta_factored: " << boolToString(m_eta_factored) << endl;
+  
   // Part 1: Sanity Checks
   if(m_crs_ix == -1) 
     return(postMsgAOF("crs_ix is not set"));
@@ -172,7 +173,6 @@ double AOF_OpRegion::evalBox(const IvPBox *b) const
   double util_cpa = 0;
   if(m_cpa_factored)
     util_cpa = evalUtilCPA(eval_crs, eval_spd);
-      
 
   // Part 2: Combine the two forms of util if applicable
   double final_util = 0;
@@ -209,6 +209,7 @@ double AOF_OpRegion::evalUtilETA(double eval_crs,
   XYSeglr seglr = m_plat_model.getTurnSeglr(eval_crs);
   double  dist_to_exit = m_gpoly.distSeglrToExitGP(seglr);
   double  eta = dist_to_exit / eval_spd;
+
 
   if(eta < m_min_util_eta)
     return(min_util);
@@ -247,12 +248,7 @@ double AOF_OpRegion::evalUtilCPA(double eval_crs,
   else {
     XYSeglr seglr = m_plat_model.getTurnSeglr(eval_crs);
     double cpa_eval_dist = eval_spd * m_cpa_window;
-
     cpa = m_gpoly.cpaSeglrToGP(seglr, cpa_eval_dist);
-    //cout << "c:" << doubleToStringX(eval_crs,1);
-    //cout << ", v:" << doubleToStringX(eval_spd,2);
-    //cout << ", d:" << doubleToString(cpa_eval_dist,2);  
-    //cout << ", cpa:" << doubleToString(cpa,2);
   }
   
   if(cpa < m_min_util_cpa)
@@ -263,12 +259,10 @@ double AOF_OpRegion::evalUtilCPA(double eval_crs,
   double range = m_max_util_cpa - m_min_util_cpa;
   if(range <= 0)
     return(0);
-
   
   double part = cpa - m_min_util_cpa;
   double pct  = part / range;
   double rval = pct * rng_util;
 
-  //cout << ", util:" << doubleToString(rval,2) << endl;
   return(rval);
 }

@@ -966,7 +966,7 @@ BehaviorReport BehaviorSet::produceOFX(unsigned int ix,
 
 
 //------------------------------------------------------------
-// Procedure: stateOK
+// Procedure: stateOK()
 
 bool BehaviorSet::stateOK(unsigned int ix)
 {

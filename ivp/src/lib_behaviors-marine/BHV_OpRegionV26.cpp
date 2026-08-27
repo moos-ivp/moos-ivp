@@ -179,6 +179,7 @@ bool BHV_OpRegionV26::setParam(string param, string val)
   else if((param == "min_util_cpa_dist") || (param == "min_util_cpa"))
     return(setNonNegDoubleOnString(m_min_util_cpa, val));
   else if((param == "max_util_cpa_dist") || (param == "max_util_cpa"))
+
     return(setNonNegDoubleOnString(m_max_util_cpa, val));
   else if(param == "cpa_window")
     return(setNonNegDoubleOnString(m_cpa_window, val));
@@ -382,12 +383,9 @@ IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
   aof.setPlatModel(m_plat_model);
   aof.setGenPoly(m_core_poly);
 
-  cout << "m_min_util_cpa=" << doubleToString(m_min_util_cpa,2) << endl;
-  cout << "m_max_util_cpa=" << doubleToString(m_max_util_cpa,2) << endl;
   bool ok = true;
   ok = ok && aof.setParam("min_util_eta", m_min_util_eta);
   ok = ok && aof.setParam("max_util_eta", m_max_util_eta);
-
   ok = ok && aof.setParam("min_util_cpa", m_min_util_cpa);
   ok = ok && aof.setParam("max_util_cpa", m_max_util_cpa);
   ok = ok && aof.setParam("cpa_window", m_cpa_window);
@@ -412,6 +410,9 @@ IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
   IvPFunction *ipf = reflector.extractIvPFunction();
   ipf->setPWT(m_priority_wt);
 
+  cout << "BHV_OpRegionV26 m_min_util_cpa=" << doubleToString(m_min_util_cpa,2) << endl;
+  cout << "BHV_OpRegionV26 m_max_util_cpa=" << doubleToString(m_max_util_cpa,2) << endl;
+  
   return(ipf);
 }
 

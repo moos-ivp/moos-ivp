@@ -609,8 +609,6 @@ double XYGenPolygon::cpaSeglrToGP(const XYSeglr& seglr,
   return(cpaSeglToGP(segl));
 }
 
-
-
 //---------------------------------------------------------------
 // Procedure: distPtToGP()
 //   Purpose: Calculate the distance of the given point to the

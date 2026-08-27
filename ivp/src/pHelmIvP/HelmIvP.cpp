@@ -82,7 +82,8 @@ HelmIvP::HelmIvP()
   m_standby_last_heartbeat = 0;
 
   m_allow_override  = true;
-  m_park_on_allstop = false;
+  m_park_on_allstop = true; // Default change to true aug2626
+  //m_park_on_allstop = false;
 
   m_ibuffer_curr_time_updated = false;
 

@@ -53,6 +53,8 @@ ObShipModelV24::ObShipModelV24(double osx, double osy,
   m_pwt_inner_dist = 10;
   m_pwt_outer_dist = 50;
   m_allowable_ttc  = 20;
+  m_allstop_ttc    = -1;
+  m_allstop_range  = -1;
 
   m_completed_dist = 50;
 
@@ -451,6 +453,55 @@ string ObShipModelV24::setAllowableTTC(double val)
 }
 
 // ----------------------------------------------------------
+// Procedure: setAllStopTTC()
+
+string ObShipModelV24::setAllStopTTC(double val)
+{
+  if(val < 0)
+    return("allstop_ttc cannot be a negative number");
+
+  m_allstop_ttc = val;
+  m_set_params.insert("allstop_ttc");
+
+  return("");
+}
+
+// ----------------------------------------------------------
+// Procedure: setAllStopRange()
+
+string ObShipModelV24::setAllStopRange(double val)
+{
+  if(val < 0)
+    return("allstop_range cannot be a negative number");
+
+  m_allstop_range = val;
+  m_set_params.insert("allstop_range");
+
+  return("");
+}
+
+// ----------------------------------------------------------
+// Procedure: getTTC()
+
+double ObShipModelV24::getTTC() const
+{
+  double osv = getOSV();
+  if(osv <= 0)
+    return(-1);
+  
+  double osx = getOSX();
+  double osy = getOSY();
+  double osh = getOSH();
+  double dist_to_poly = m_mid_poly.dist_to_poly(osx, osy, osh);
+  if(dist_to_poly < 0)
+    return(-1);
+  
+  double ttc = osv * dist_to_poly; 
+
+  return(ttc);
+}
+
+// ----------------------------------------------------------
 // Procedure: paramIsSet()
 
 bool ObShipModelV24::paramIsSet(string param) const
@@ -650,6 +701,7 @@ void ObShipModelV24::print(string key) const
   cout << "pwt_inner_dist: " << m_pwt_inner_dist << endl;
   cout << "pwt_outer_dist: " << m_pwt_outer_dist << endl;
   cout << "m_allowable_ttc: " << m_allowable_ttc << endl;
+  cout << "m_allstop_ttc: " << m_allstop_ttc << endl;
   cout << "m_completed_dist: " << m_completed_dist << endl;
   cout << "gut_poly: " << m_gut_poly.get_spec() << endl; 
   cout << "mid_poly: " << m_mid_poly.get_spec() << endl; 
@@ -674,7 +726,7 @@ void ObShipModelV24::printBnds() const
 // Procedure: rayCPA()
 
 double ObShipModelV24::rayCPA(double hdg,
-			    double& rx, double &ry) const
+			      double& rx, double &ry) const
 {
   double osx = getOSX();
   double osy = getOSY();
@@ -790,6 +842,18 @@ void ObShipModelV24::setCachedVals(bool force)
   
   m_stale_cache = false;
 }
+
+// ----------------------------------------------------------
+// Procedure: getRangeToMidPoly()
+
+double ObShipModelV24::getRangeToMidPoly() const
+{
+  double osx = getOSX();
+  double osy = getOSY();
+  double range = m_mid_poly.dist_to_poly(osx, osy);
+  return(range);
+}
+
 
 // ---------------------------------- PROTECTED -------------
 // Procedure: fillTurnCache()                      

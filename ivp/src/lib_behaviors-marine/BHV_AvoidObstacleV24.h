@@ -63,6 +63,7 @@ public:
   void   postViewablePolygons();
   void   postErasablePolygons();
   void   initVisualHints();
+  bool   checkForAllStop();
   
   bool   applyBuffer();
   IvPFunction* buildOF();

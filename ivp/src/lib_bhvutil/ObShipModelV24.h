@@ -65,6 +65,8 @@ class ObShipModelV24
   std::string  setMinUtilCPA(double);
   std::string  setMaxUtilCPA(double);
   std::string  setAllowableTTC(double);
+  std::string  setAllStopTTC(double);
+  std::string  setAllStopRange(double);
 
   void   print(std::string key="") const;
   void   printBnds() const;
@@ -86,6 +88,8 @@ class ObShipModelV24
   double getMaxUtilCPAFlex() const  {return(m_max_util_cpa_flex);}
 
   double getAllowableTTC() const    {return(m_allowable_ttc);}
+  double getAllStopTTC() const      {return(m_allstop_ttc);}
+  double getAllStopRange() const    {return(m_allstop_range);}
   double getCompletedDist() const   {return(m_completed_dist);}
   double getOBuffRDegs() const      {return(m_obuff_rdegs);}
   XYPolygon getGutPoly() const     {return(m_gut_poly);}
@@ -102,6 +106,7 @@ class ObShipModelV24
   XYPolygon getRimPoly() const {return(m_rim_poly);}
   std::string getPassingSide() const   {return(m_passing_side);}
 
+  double getRangeToMidPoly() const;
   double getRange() const           {return(m_range);}
   double getRangeInOSH() const      {return(m_range_in_osh);}
 
@@ -115,6 +120,7 @@ class ObShipModelV24
   unsigned int getRimBngHitCount() const   {return(m_rim_bng_hit_count);}
   unsigned int getRimBngUnhitCount() const {return(m_rim_bng_unhit_count);}
 
+  double getTTC() const; 
   
   double getGutBngMinDistToPoly() const {return(m_gut_bng_min_dist_to_poly);}
   double getGutBngMaxDistToPoly() const {return(m_gut_bng_max_dist_to_poly);}
@@ -174,6 +180,8 @@ protected:
   double m_pwt_inner_dist;
   double m_pwt_outer_dist;
   double m_allowable_ttc;
+  double m_allstop_ttc;
+  double m_allstop_range;
   double m_completed_dist;
   
   double m_obuff_rdegs;
