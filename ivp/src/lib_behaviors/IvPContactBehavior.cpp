@@ -527,7 +527,8 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_cny = getLedgerInfoDbl(m_contact, "y", ok2);
   m_cnh = getLedgerInfoDbl(m_contact, "hdg", ok3);
   m_cnv = getLedgerInfoDbl(m_contact, "spd", ok4);
-
+  m_cnh = angle360(m_cnh);
+  
   double cnutc = getLedgerInfoDbl(m_contact, "utc", ok5);
   
   if(!ok1 || !ok2 || !ok3 || !ok4) {    
