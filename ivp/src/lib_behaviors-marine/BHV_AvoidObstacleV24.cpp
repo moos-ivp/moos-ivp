@@ -64,6 +64,8 @@ BHV_AvoidObstacleV24::BHV_AvoidObstacleV24(IvPDomain gdomain) :
   m_draw_buff_min_poly = true;
   m_draw_buff_max_poly = true;
   
+  m_side_lock_allowed = false;
+
   // Initialize state vars
   m_obstacle_relevance = 0;
 
@@ -151,6 +153,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
 
   else if(param == "holonomic_ok") 
     return(setBooleanOnString(m_holonomic_ok, val));
+  else if(param == "sidelock_allowed") 
+    return(setBooleanOnString(m_side_lock_allowed, val));
   else if(param == "draw_buff_min_poly") 
     return(setBooleanOnString(m_draw_buff_min_poly, val));
   else if(param == "draw_buff_max_poly") 
@@ -586,7 +590,8 @@ double BHV_AvoidObstacleV24::getRelevance()
     return(0);
 
   if(range_relevance > 0.6) {
-    if(m_side_lock == "") {
+    // NOTE: m_side_lock can be set only if m_side_lock_allowed is true
+    if(m_side_lock_allowed && (m_side_lock == "")) {
       if(m_obship_model.getPassingSide() == "star")
 	m_side_lock = "port";
       else if(m_obship_model.getPassingSide() == "port")
@@ -605,9 +610,6 @@ double BHV_AvoidObstacleV24::getRelevance()
   else
     m_obship_model.setSideLock(true);
 
-  cout << "BHV_AvoidObstacleV24::getRelevance() side_lock: " << m_side_lock << endl;
-  cout << "BHV_AvoidObstacleV24::getRelevance() " << doubleToString(range_relevance,2) << endl;
-  
   // Part 2: Possibly apply the grade scale to the raw distance
   double relevance = range_relevance;
   if(m_pwt_grade == "quadratic")
@@ -895,9 +897,9 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   // Check 4: If obstacle vsource has been set then MUST 
   // match, regardless of other filter factors
   else if(vsource != "") {
-    cout << "vsource:" << vsource << endl;
+    //cout << "vsource:" << vsource << endl;
     string poly_vsource = m_obship_model.getVSource();
-    cout << "poly_vsource" << poly_vsource << endl;
+    //cout << "poly_vsource" << poly_vsource << endl;
     if(tolower(vsource) != tolower(poly_vsource))
       return(true); // Return true since syntax if fine
   }

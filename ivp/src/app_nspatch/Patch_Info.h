@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: PatchApplicator.h                                    */
-/*    DATE: July 4th, 2025                                       */
+/*    FILE: Expander_Info.h                                      */
+/*    DATE: Jan 19th 2011                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -20,49 +20,23 @@
 /* License along with MOOS-IvP.  If not, see                     */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
+ 
+#ifndef EXPANDER_INFO_HEADER
+#define EXPANDER_INFO_HEADER
 
-#ifndef PATCH_APPLICATOR_HEADER
-#define PATCH_APPLICATOR_HEADER
+void showSynopsis();
+void showHelpAndExit();
+void showExampleAndExit();
+void showManualAndExit();
+void showReleaseInfoAndExit();
 
-#include <vector>
-#include <string>
+#endif
 
-class PatchApplicator
-{
- public:
-  PatchApplicator();
-  ~PatchApplicator() {}
 
-  bool addXMoosFile(std::string); // patch file
-  bool setStemMoosFile(std::string);
-  bool setTargMoosFile(std::string);
-  
-  bool addXBhvFile(std::string); // patch file
-  bool setStemBhvFile(std::string);
-  bool setTargBhvFile(std::string);
-  
-  bool applyPatch();
-  void setVerbose() {m_verbose=true;}
 
-  bool hasStemMoos() {return(m_file_stem_moos != "");}
-  bool hasStemBhv()  {return(m_file_stem_bhv != "");}
-  
- protected:
-  bool applyPatchMoos();
-  bool applyPatchBhv();
-  void printConfig();
-  
- private:
-  std::vector<std::string> m_files_xmoos; //patch files
-  std::string              m_file_stem_moos;
-  std::string              m_file_targ_moos;
 
-  std::vector<std::string> m_files_xbhv; // patch files
-  std::string              m_file_stem_bhv;
-  std::string              m_file_targ_bhv;
 
-  bool m_verbose;
-};
 
-#endif 
+
+
 
