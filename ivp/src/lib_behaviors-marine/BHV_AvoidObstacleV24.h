@@ -86,6 +86,8 @@ public:
   bool m_draw_buff_max_poly;
 
   bool m_holonomic_ok;
+
+  bool m_side_lock_allowed;
   
  protected: // State variables
 

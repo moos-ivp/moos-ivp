@@ -27,6 +27,7 @@
 #include "ReleaseInfo.h"
 #include "Populator_MOOSFile.h"
 #include "PatchApplicator.h"
+#include "Patch_Info.h"
 
 using namespace std;
 
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       showHelpAndExit();
+    if((argi=="-m") || (argi == "--man") || (argi=="-man"))
+      showManualAndExit();
     else if((argi=="--version") || (argi=="-version")) {
       showReleaseInfo("nspatch", "gpl");
       return(0);
@@ -57,6 +60,8 @@ int main(int argc, char *argv[])
     else if(strEnds(argi, ".xbhv"))
       papp.addXBhvFile(argi);
 
+    // If --stem=file arg is used, then handle the file
+    // as definitely a stem file, regardless of all
     else if(strBegins(argi, "--stem=")) {
       string stem_file = argi.substr(7);
       if(strEnds(stem_file, ".moos"))
@@ -75,6 +80,26 @@ int main(int argc, char *argv[])
 	papp.setTargBhvFile(targ_file);
     }
       
+    // If arg ends in .moos, there is ambiguity as to whether the user
+    // wants this to be a stem or targ file. If the stem file is not
+    // set, treat as a stem. Otherwise treat as targ moos file.
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moosx")) {
+      if(!papp.hasStemMoos())
+	papp.setStemMoosFile(argi);
+      else
+	papp.setTargMoosFile(argi);
+    }
+
+    // If arg ends in .bhv, there is ambiguity as to whether the user
+    // wants this to be a stem or targ file. If the stem bhv file is
+    // not set, treat as a stem. Otherwise treat as targ bhv file.
+    else if(strEnds(argi, ".bhv") || strEnds(argi, ".bhvx")) {
+      if(!papp.hasStemBhv())
+	papp.setStemBhvFile(argi);
+      else
+	papp.setTargBhvFile(argi);
+    }
+    
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
       cout << "Use --help for usage. Exiting.   " << endl;
@@ -85,49 +110,4 @@ int main(int argc, char *argv[])
   papp.applyPatch();
 
   return(0);
-}
-
-//------------------------------------------------------------
-// Procedure: showHelpAndExit()
-
-void showHelpAndExit()
-{
-  cout << "Usage: " << endl;
-  cout << "  nspatch stem_file patch_file targ_file [OPTIONS]          " << endl;
-  cout << "                                                            " << endl;
-  cout << "Synopsis:                                                   " << endl;
-  cout << "  Apply a given patch file to a given stem file, to make a  " << endl;
-  cout << "  new target file. Supported file types are mission (.moos) " << endl;
-  cout << "  files or behavior (.bhv) files. The objective is to make a" << endl;
-  cout << "  new mission from an existing (stem) mission by providing  " << endl;
-  cout << "  the patch file (difference) applied to overwrite or       " << endl;
-  cout << "  augment portions of the stem mission.                     " << endl;
-  cout << "                                                            " << endl;
-  cout << "  Mandatory arguments: a stem file, one or more patch files " << endl;
-  cout << "  and a target file. nspatch will work with either MOOS or  " << endl;
-  cout << "  behavior files, but not both, in any given invocation.    " << endl;
-  cout << "                                                            " << endl;
-  cout << "  Note: Files ending in .xmoos are interpreted to be patch  " << endl;
-  cout << "        files in .moos format. Files ending in .xbhv are    " << endl;
-  cout << "        interpreted to be behavior files.                   " << endl;
-  cout << "                                                            " << endl;
-  cout << "Options:                                                    " << endl;
-  cout << "  -h,--help       Displays this help message                " << endl;
-  cout << "  -v,--version    Display current release version           " << endl;
-  cout << "  --verbose       Write verbose output.                     " << endl;
-  cout << "                                                            " << endl;
-  cout << "  --stem=stem.moos  Stem moos or behavior file              " << endl;
-  cout << "  --targ=targ.moos  Target moos or behavior file            " << endl;
-  cout << "                                                            " << endl;
-  cout << "Returns:                                                    " << endl;
-  cout << "  0 if ok                                                   " << endl;
-  cout << "  1 if not ok                                               " << endl;
-  cout << "                                                            " << endl;
-  cout << "Further Notes:                                              " << endl;
-  cout << "  (1) The order of arguments is irrelevent.                 " << endl;
-  cout << "Examples:                                                   " << endl;
-  cout << "  $ nspatch --stem=stem.moos patch.xmoos --targ=targ.moosx  " << endl;
-  cout << "  $ nspatch --stem=stem.bhv patch.xbhv --targ=targ.bhvx     " << endl;
-  cout << endl;
-  exit(0);
 }

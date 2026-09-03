@@ -269,9 +269,7 @@ void ObShipModelV24::setOBuffRDegs(double dval)
 
 string ObShipModelV24::setGutPoly(string polystr)
 {
-  cout << "str1:" << polystr << endl;
   XYPolygon new_poly = string2Poly(polystr);
-  cout << "str2:" << new_poly.get_spec() << endl;
   return(setGutPoly(new_poly));
 }
 
@@ -551,8 +549,6 @@ double ObShipModelV24::getRangeRelevance()
   if(m_pwt_outer_dist < m_pwt_inner_dist)
     return(0);
 
-  //cout << "m_range: " << m_range << endl;
-  
   // Part 2: Now the easy range cases: when the obstacle is outside 
   //         the min or max priority weight ranges
   if(m_range >= m_pwt_outer_dist)
@@ -567,24 +563,25 @@ double ObShipModelV24::getRangeRelevance()
       return(0);
     pct = (m_pwt_outer_dist - m_range) / drange;
   }
-
-  //cout << "initial pct:" << pct << endl;
   
+  return(pct);
+
+  // Disabled below. May return to this minor optimization
+  // in the future.
+#if 0 
   // Part 4: Discount based on bearing to obstacle. Or full
   // weight if gut_poly is dead ahead.
 
-  
   double osx = getOSX();
   double osy = getOSY();
   double osh = getOSH();
 
-  
   // Part 4A: Edge cases: if for some reason the calc of gut
   // bng min/max not completed, or if all headings will hit.
   double bmin, bmax;
   bearingMinMaxToPoly(osx, osy, m_gut_poly, bmin, bmax);
-  //cout << "bng_min: " << doubleToStringX(bmin) << endl;
-  //cout << "bng_max: " << doubleToStringX(bmax) << endl;
+  cout << "bng_min: " << doubleToStringX(bmin) << endl;
+  cout << "bng_max: " << doubleToStringX(bmax) << endl;
 
   // Part 4C: If obstacle is dead ahead (angle wrap)
   if(bmin > bmax)
@@ -603,14 +600,12 @@ double ObShipModelV24::getRangeRelevance()
   if(cos_theta < 0)
     cos_theta = 0;
 
-  //cout << "osh: " << osh << endl;
-  //cout << "angle_diff1:" << angle_diff1 << endl;
-  //cout << "angle_diff2:" << angle_diff2 << endl;
-  //cout << "theta:" << theta << endl;
-  //cout << "theta_rad:" << theta_rad << endl;
-  //cout << "cos_theta:" << cos_theta << endl;
-  
-  
+  cout << "osh: " << osh << endl;
+  cout << "angle_diff1:" << angle_diff1 << endl;
+  cout << "angle_diff2:" << angle_diff2 << endl;
+  cout << "theta:" << theta << endl;
+  cout << "theta_rad:" << theta_rad << endl;
+  cout << "cos_theta:" << cos_theta << endl;
   
   //cout << "pct: " << pct << endl;
   double pct2 = cos_theta * pct;
@@ -620,6 +615,7 @@ double ObShipModelV24::getRangeRelevance()
   //cout << "new_new_pct: " << pct2 << endl;
 
   return(pct2);
+#endif
 }
 
 // ----------------------------------------------------------
