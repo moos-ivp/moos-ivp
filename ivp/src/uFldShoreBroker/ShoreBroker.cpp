@@ -385,8 +385,19 @@ void ShoreBroker::handleMailNodePing(const string& info)
     reportRunWarning(status);
   }
     
-  if((m_keyword != "") && (m_keyword != hrecord.getKeyword()))
+  if((m_keyword != "") && (m_keyword != hrecord.getKeyword())) {
+    // A ping carries the pShare input routes this broker will be told to
+    // send to, so enrolling a node whose keyword does not match means
+    // bridging mission traffic to an address chosen by the sender.  When a
+    // keyword is configured, a mismatch is a refusal, not a status string.
     status = "keyword_mismatch";
+    hrecord.setStatus(status);
+    reportRunWarning("Refused NODE_BROKER_PING from " +
+		     hrecord.getCommunity() + ": " + status);
+    reportEvent("Refused ping from " + hrecord.getCommunity() +
+		" (keyword mismatch)");
+    return;
+  }
   hrecord.setStatus(status);
 
   string ping_time = hrecord.getTimeStamp();
