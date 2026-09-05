@@ -521,6 +521,8 @@ string StringToIvPContext(const string& str)
   cix++;
 
   string rstring = cstr_buff;
+  delete [] cstr_buff;
+
   return(rstring);
 }
 
