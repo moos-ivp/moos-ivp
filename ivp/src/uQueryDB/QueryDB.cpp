@@ -60,7 +60,7 @@ bool QueryDB::setServerPort(string str)
   if(!isNumber(str))
     return(false);
 
-  m_sServerPort = atoi(str.c_str());
+  m_lServerPort = atoi(str.c_str());
   return(true);
 }
 
@@ -446,6 +446,5 @@ bool QueryDB::buildReport()
 
   return(true);
 }
-
 
 
