@@ -23,6 +23,10 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cerrno>
+#include <cstring>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <cstdio>
 #include <cmath>
 #include "MBUtils.h"
@@ -605,10 +609,10 @@ bool SplitHandler::handlePreCheckSplitDir()
 
   // Part 3: Create and Verify the split directory.
   // Make the base directory
-  string cmd = "mkdir " + basedir;
-  int result = system(cmd.c_str());
-  if(result != 0) 
-    cout << "Possible err in SplitHandler syscmd mkdir" << endl;
+  int result = mkdir(basedir.c_str(), 0755);
+  if(result != 0)
+    cout << "Possible err in SplitHandler mkdir: "
+	 << strerror(errno) << endl;
 
   
   // Ensure that the base directory has indeed been created.
