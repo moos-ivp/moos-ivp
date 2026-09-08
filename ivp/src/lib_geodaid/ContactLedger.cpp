@@ -38,7 +38,7 @@ ContactLedger::ContactLedger(unsigned int history_size)
 {
   // Config vars
   m_history_size = history_size;
-  m_max_contacts = 200;
+  m_max_contacts = CONTACT_LEDGER_DEFAULT_MAX_CONTACTS;
 
   // Stale node and extrapolation policy
   m_extrap_mode      = 0;   // 0:off, 1:hdg, 2:cog

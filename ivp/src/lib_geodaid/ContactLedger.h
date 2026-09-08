@@ -24,6 +24,10 @@
 #ifndef CONTACT_LEDGER_HEADER
 #define CONTACT_LEDGER_HEADER
 
+#ifndef CONTACT_LEDGER_DEFAULT_MAX_CONTACTS
+#define CONTACT_LEDGER_DEFAULT_MAX_CONTACTS 200
+#endif
+
 #include <set>
 #include <string>
 #include <vector>
