@@ -56,6 +56,8 @@ AOF_OpRegion::AOF_OpRegion(IvPDomain gdomain) :
   m_min_util_cpa_is_set = false;
   m_max_util_cpa_is_set = false;
   m_cpa_window_is_set = false;
+
+  m_rng_to_border = -1;
 }
 
 //----------------------------------------------------------------
@@ -108,8 +110,6 @@ bool AOF_OpRegion::setParam(const string& param, const string& value)
 
 bool AOF_OpRegion::initialize()
 {
-  cout << "AOF_OpRegion eta_factored: " << boolToString(m_eta_factored) << endl;
-  
   // Part 1: Sanity Checks
   if(m_crs_ix == -1) 
     return(postMsgAOF("crs_ix is not set"));
@@ -127,7 +127,23 @@ bool AOF_OpRegion::initialize()
   // osx, osy, osh, osv embedded in the plat model
   if(!m_plat_model.valid()) 
     return(postMsgAOF("Invalid PlatModel"));
+  
+  double osx = m_plat_model.getOSX();
+  double osy = m_plat_model.getOSY();
+  m_rng_to_border = m_gpoly.distPtToGP(osx, osy);
 
+  if(m_rng_to_border < m_max_util_cpa) {
+    m_max_util_cpa = m_rng_to_border - 1;
+    if(m_max_util_cpa < 0)
+      m_max_util_cpa = 0;
+  }
+
+  if(m_rng_to_border < m_min_util_cpa) {
+    m_min_util_cpa = m_rng_to_border - 1;
+    if(m_min_util_cpa < 0)
+      m_min_util_cpa = 0;
+  }
+  
   return(true);
 }
 
@@ -154,14 +170,8 @@ double AOF_OpRegion::evalBox(const IvPBox *b) const
     util_eta = evalUtilETA(eval_crs, eval_spd);
 
   double util_cpa = 0;
-  if(m_cpa_factored) {
+  if(m_cpa_factored)
     util_cpa = evalUtilCPA(eval_crs, eval_spd);
-    if(eval_spd > 3) {
-      cout << "eval_crs=" << doubleToStringX(eval_crs,1);
-      cout << ", eval_spd=" << doubleToString(eval_spd,1);
-      cout << ", util_cpa=" << doubleToString(util_cpa) << endl;
-    }
-  }
       
 
   // Part 2: Combine the two forms of util if applicable
@@ -180,9 +190,6 @@ double AOF_OpRegion::evalBox(const IvPBox *b) const
     }
   }
 
-  if(eval_spd > 3)
-    cout << "final_util=" << doubleToString(final_util,2) << endl;
-  
   return(final_util);
 }
 
@@ -203,11 +210,6 @@ double AOF_OpRegion::evalUtilETA(double eval_crs,
   double  dist_to_exit = m_gpoly.distSeglrToExitGP(seglr);
   double  eta = dist_to_exit / eval_spd;
 
-  //cout << "e crs: " << doubleToString(eval_crs) << endl;
-  //cout << "e seglr: " << seglr.get_spec() << endl; 
-  //cout << "e eta: " << doubleToString(eta) << endl;
-
-  
   if(eta < m_min_util_eta)
     return(min_util);
   else if(eta >= m_max_util_eta)
@@ -236,29 +238,23 @@ double AOF_OpRegion::evalUtilCPA(double eval_crs,
   // Sanity check
   if(rng_util <= 0)
     return(0);
+
+  double cpa = 0;
+    
+  // Special case eval_spd is zero
+  if((eval_spd <= 0) || (m_cpa_window <= 0))
+    cpa = m_rng_to_border;
+  else {
+    XYSeglr seglr = m_plat_model.getTurnSeglr(eval_crs);
+    double cpa_eval_dist = eval_spd * m_cpa_window;
+
+    cpa = m_gpoly.cpaSeglrToGP(seglr, cpa_eval_dist);
+    //cout << "c:" << doubleToStringX(eval_crs,1);
+    //cout << ", v:" << doubleToStringX(eval_spd,2);
+    //cout << ", d:" << doubleToString(cpa_eval_dist,2);  
+    //cout << ", cpa:" << doubleToString(cpa,2);
+  }
   
-
-  XYSeglr seglr = m_plat_model.getTurnSeglr(eval_crs);
-
-  double cpa_eval_dist = eval_spd * m_cpa_window;
-
-  bool verbose = false;
-  if(eval_spd > 3) {
-    cout << endl;
-    verbose = true;
-  }
-  double cpa = m_gpoly.cpaSeglrToGP(seglr, cpa_eval_dist, verbose);
-
-  if(eval_spd > 3) {
-    cout << "crs: " << doubleToStringX(eval_crs,1);
-    cout << ", spd: " << doubleToString(eval_spd,1) << endl;
-    cout << "seglr: " << seglr.get_spec() << endl; 
-    cout << "dist: " << cpa_eval_dist << endl; 
-    cout << "cpa: " << doubleToString(cpa) << endl;
-    cout << "min_util_cpa=" << doubleToStringX(m_min_util_cpa,1);
-    cout << ", max_util_cpa=" << doubleToStringX(m_max_util_cpa,1);
-  }
-
   if(cpa < m_min_util_cpa)
     return(min_util);
   else if(cpa >= m_max_util_cpa)
@@ -273,12 +269,6 @@ double AOF_OpRegion::evalUtilCPA(double eval_crs,
   double pct  = part / range;
   double rval = pct * rng_util;
 
-  if(eval_spd > 3) {
-    cout << "range=" << doubleToString(range);
-    cout << ",rng_util=" << doubleToString(rng_util);
-    cout << ",part=" << doubleToString(part,2);
-    cout << ",pct=" << doubleToString(pct,2);
-    cout << ",rval=" << doubleToString(pct,2) << endl;
-  }
+  //cout << ", util:" << doubleToString(rval,2) << endl;
   return(rval);
 }

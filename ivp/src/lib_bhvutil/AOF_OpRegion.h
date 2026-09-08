@@ -76,6 +76,9 @@ protected:
   bool m_min_util_cpa_is_set;
   bool m_max_util_cpa_is_set;
   bool m_cpa_window_is_set;
+  
+  // Current distance of ownship to the gpoly border.
+  double m_rng_to_border;
 };
 
 #endif
