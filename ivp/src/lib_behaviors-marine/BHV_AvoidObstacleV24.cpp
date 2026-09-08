@@ -795,7 +795,7 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
     
   if(strContains(sdata, "$[MID_TTC]"))
     sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getMidTTC());
-    
+
   if(strContains(sdata, "$[RNG]"))
     sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
     

@@ -109,8 +109,6 @@ bool AOF_OpRegion::setParam(const string& param, const string& value)
 
 bool AOF_OpRegion::initialize()
 {
-  cout << "AOF_OpRegion eta_factored: " << boolToString(m_eta_factored) << endl;
-  
   // Part 1: Sanity Checks
   if(m_crs_ix == -1) 
     return(postMsgAOF("crs_ix is not set"));
@@ -210,7 +208,6 @@ double AOF_OpRegion::evalUtilETA(double eval_crs,
   double  dist_to_exit = m_gpoly.distSeglrToExitGP(seglr);
   double  eta = dist_to_exit / eval_spd;
 
-
   if(eta < m_min_util_eta)
     return(min_util);
   else if(eta >= m_max_util_eta)
@@ -259,7 +256,7 @@ double AOF_OpRegion::evalUtilCPA(double eval_crs,
   double range = m_max_util_cpa - m_min_util_cpa;
   if(range <= 0)
     return(0);
-  
+
   double part = cpa - m_min_util_cpa;
   double pct  = part / range;
   double rval = pct * rng_util;

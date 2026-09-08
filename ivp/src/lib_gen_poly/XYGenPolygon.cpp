@@ -288,6 +288,7 @@ double XYGenPolygon::distPtToExitGP(double px, double py) const
   if(!contains(px,py))
     return(0);  
 
+
   return(distPtToGP(px, py));
 }
 
@@ -646,4 +647,3 @@ double XYGenPolygon::distPtToGP(double px, double py) const
   
   return(min_dist);
 }
-
