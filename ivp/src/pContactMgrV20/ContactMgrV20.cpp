@@ -332,6 +332,8 @@ bool ContactMgrV20::OnStartUp()
       reportConfigWarning("Invalid alert config:" + alert_id);
   }
 
+  m_ledger.setMaxContacts(0); // We handle culling on our own
+
   registerVariables();
   return(true);
 }
