@@ -479,9 +479,36 @@ string ObShipModelV24::setAllStopRange(double val)
 }
 
 // ----------------------------------------------------------
-// Procedure: getTTC()
+// Procedure: getGutTTC()
+//   Purpose: Get time to collision given the current ownship
+//            position, heading and speed, and the location of
+//            the Gut Poly.
 
-double ObShipModelV24::getTTC() const
+double ObShipModelV24::getGutTTC() const
+{
+  double osv = getOSV();
+  if(osv <= 0)
+    return(-1);
+  
+  double osx = getOSX();
+  double osy = getOSY();
+  double osh = getOSH();
+  double dist_to_poly = m_gut_poly.dist_to_poly(osx, osy, osh);
+  if(dist_to_poly < 0)
+    return(-1);
+  
+  double ttc = osv * dist_to_poly; 
+
+  return(ttc);
+}
+
+// ----------------------------------------------------------
+// Procedure: getMidTTC()
+//   Purpose: Get time to collision given the current ownship
+//            position, heading and speed, and the location of
+//            the Mid Poly.
+
+double ObShipModelV24::getMidTTC() const
 {
   double osv = getOSV();
   if(osv <= 0)

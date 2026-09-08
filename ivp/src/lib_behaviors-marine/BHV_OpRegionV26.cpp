@@ -176,9 +176,10 @@ bool BHV_OpRegionV26::setParam(string param, string val)
   else if(param == "max_util_eta")
     return(setNonNegDoubleOnString(m_max_util_eta, val));
 
-  else if(param == "min_util_cpa")
+  else if((param == "min_util_cpa_dist") || (param == "min_util_cpa"))
     return(setNonNegDoubleOnString(m_min_util_cpa, val));
-  else if(param == "max_util_cpa")
+  else if((param == "max_util_cpa_dist") || (param == "max_util_cpa"))
+
     return(setNonNegDoubleOnString(m_max_util_cpa, val));
   else if(param == "cpa_window")
     return(setNonNegDoubleOnString(m_cpa_window, val));
@@ -399,12 +400,6 @@ IvPFunction *BHV_OpRegionV26::buildOF_StayIn()
   if(!ok) {
     postEMessage("Unable to init AOF_OpRegion.");
     cout << "Unable to init AOF_OpRegion." << endl;
-
-    //list<string> msgs = aof.getMsgsAOF();
-    //list<string>::iterator p;
-    //for(p=msgs.begin(); p!=msgs.end(); p++)
-    //  cout << "aof Msg: " << *p << endl;
-
     return(0);
   }    
 

@@ -434,7 +434,7 @@ bool BHV_AvoidObstacleV24::checkForAllStop()
   // Note allstop_ttc=-1 if this feature is not enabled (default)  
   if(allstop_ttc > 0) {
     // Note ttc=-1 if osh is not on a course to intercept
-    double ttc = m_obship_model.getTTC();
+    double ttc = m_obship_model.getGutTTC();
     if((ttc >= 0) && (ttc < allstop_ttc)) {
       string msg = "Allstop: allstop ttc breached.";
       msg += " ttc=" + doubleToStringX(ttc,2);
@@ -447,7 +447,8 @@ bool BHV_AvoidObstacleV24::checkForAllStop()
   // Note allstop_rng=-1 if this feature is not enabled (default)  
   if(allstop_range > 0) {
     // Note rng=-1 if osh is not on a course to intercept
-    double rng = m_obship_model.getRangeToMidPoly();
+    //double rng = m_obship_model.getRangeToMidPoly(); // Change to gut mikerb
+    double rng = m_obship_model.getRangeToGutPoly();
     if((rng >= 0) && (rng < allstop_range)) {
       string msg = "Allstop: allstop range breached.";
       msg += " range=" + doubleToStringX(rng,2);
@@ -789,11 +790,17 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   // =======================================================
   // Then expand the macros unique to this behavior
   // =======================================================
-  if(strContains(sdata, "$[TTC]"))
-    sdata = macroExpand(sdata, "TTC", m_obship_model.getTTC());
+  if(strContains(sdata, "$[GUT_TTC]"))
+    sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getGutTTC());
     
+  if(strContains(sdata, "$[MID_TTC]"))
+    sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getMidTTC());
+
   if(strContains(sdata, "$[RNG]"))
     sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
+    
+  if(strContains(sdata, "$[MID_RNG]"))
+    sdata = macroExpand(sdata, "MID_RNG", m_obship_model.getRangeToMidPoly());
     
   if(strContains(sdata, "$[BNG]"))
     sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentBng());

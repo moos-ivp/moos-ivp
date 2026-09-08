@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;*****************************************************************;
 ;*    NAME: Jacob Gerlach and Michael Benjamin                   *;
 ;*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     *;
