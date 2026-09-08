@@ -227,12 +227,13 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   
   string vname = record.getName();
 
-  // A report for a contact we have never heard of creates a new entry, and
-  // the name is chosen by whoever published the report.  Refuse a new one
-  // once the ledger is full; reports for contacts already in it are still
-  // accepted, so an established field keeps working.
-  if((m_max_contacts > 0) && (m_map_records_rep.count(vname) == 0) &&
-     (m_map_records_rep.size() >= m_max_contacts)) {
+  // Refuse a new contact once the ledger is full.
+  // Reports for contacts already in it are still accepted, so an established field keeps working.
+  if (
+    (m_max_contacts > 0) // limit is enabled
+    && (m_map_records_rep.count(vname) == 0) // new contact
+    && (m_map_records_rep.size() >= m_max_contacts) // ledger is full
+  ) { 
     whynot += "Ledger full (" + uintToString(m_max_contacts) + " contacts).";
     return("");
   }
