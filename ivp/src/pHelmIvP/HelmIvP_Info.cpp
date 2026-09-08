@@ -124,6 +124,9 @@ void showExampleConfigAndExit()
   blk("  // Insist that at least one non-constraint behavior be active ");
   blk("  goals_mandatory      = true  "," // or {true,FALSE}           ");
   blk("                                                                ");
+  blk("  // Bound distinct NODE_REPORT and AIS_REPORT contact names.   ");
+  blk("  contact_max_count    = 200   "," // Default is 200            ");
+  blk("                                                                ");
   blk("  // Allow unfound bhv directories to not be a problem.         ");
   blk("  bhv_dir_not_found_ok = true "," // or {true,FALSE}            ");
   blk("                                                                ");
@@ -213,7 +216,6 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pHelmIvP", "gpl");
   exit(0);
 }
-
 
 
 
