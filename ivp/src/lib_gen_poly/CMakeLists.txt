@@ -6,11 +6,13 @@
 SET(SRC
   XYGenPolygon.cpp
   GPUtils.cpp
+  CoverEngine.cpp
 )
 
 SET(HEADERS
   XYGenPolygon.h
   GPUtils.h
+  CoverEngine.h
 )
 
 # Build Library
