@@ -37,6 +37,7 @@ using namespace std;
 
 ShoreBroker::ShoreBroker()
 {
+  m_max_node_count   = 100;
   // Initialize config variables
   m_warning_on_stale = false;
 
@@ -161,6 +162,12 @@ bool ShoreBroker::OnStartUp()
       handleConfigQBridge(value);
     else if(param == "keyword") 
       m_keyword = value;
+    else if(param == "max_node_count") {
+      if(isNumber(value) && (atoi(value.c_str()) > 0))
+	m_max_node_count = (unsigned int)(atoi(value.c_str()));
+      else
+	handled = false;
+    }
     else if(param == "auto_bridge_realmcast") 
       handled = setBooleanOnString(auto_bridge_realmcast, value);
     else if(param == "auto_bridge_appcast") 
@@ -454,6 +461,15 @@ void ShoreBroker::handleMailNodePing(const string& info)
       m_node_host_records[j].setStatus(status);
       return;
     }
+  }
+
+  // Refuse to enrol a new community once the ceiling is reached.  Existing
+  // nodes above keep being updated; only growth is stopped.
+  if(m_node_host_records.size() >= m_max_node_count) {
+    reportRunWarning("Refused NODE_BROKER_PING from " +
+		     hrecord.getCommunity() + ": max_node_count (" +
+		     uintToString(m_max_node_count) + ") reached");
+    return;
   }
 
   string config = "src=NODE_BROKER_ACK_$V, alias=NODE_BROKER_ACK";

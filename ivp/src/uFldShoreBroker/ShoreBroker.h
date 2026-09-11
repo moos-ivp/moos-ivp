@@ -73,6 +73,12 @@ class ShoreBroker : public AppCastingMOOSApp
 
   std::string m_keyword;
 
+  // Ceiling on how many distinct communities may be enrolled.  Each one adds
+  // an entry to six parallel vectors which are then walked every pass, and
+  // nothing ever removes an entry, so an unauthenticated sender can grow the
+  // work this app does per iteration without bound.
+  unsigned int m_max_node_count;
+
   bool m_warning_on_stale;
 
   std::set<std::string> m_set_qbridge_vars;
