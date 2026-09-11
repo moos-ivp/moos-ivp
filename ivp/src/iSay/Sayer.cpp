@@ -23,7 +23,9 @@
 
 #include <cstdlib>
 #include <iterator>
+#include <vector>
 #include "MBUtils.h"
+#include "ProcessUtils.h"
 #include "VoiceUtils.h"
 #include "fileutil.h"
 #include "ACTable.h"
@@ -322,6 +324,7 @@ bool Sayer::sayUtterance()
   string srce  = utter.getSource();
   string text  = utter.getText();
   string file  = utter.getFile();
+  vector<string> argv;
   string cmd;
   //-------------------------------------------------
   // Case 1: Utterance is in the form of text
@@ -339,24 +342,33 @@ bool Sayer::sayUtterance()
     if(text != "")
       reportEvent("Say:" + text);
     
-    // Build the system command string (OSX)
+    // Build a program and literal argument vector (OSX).
     if((m_os_mode == "osx") || (m_os_mode == "both")) {
-      cmd  = "say -r " + str_rate;
-      if(voice != "")
-	cmd += " -v " + voice;
+      argv.push_back("say");
+      argv.push_back("-r");
+      argv.push_back(str_rate);
+      if(voice != "") {
+	argv.push_back("-v");
+	argv.push_back(voice);
+      }
 
       // Ex: $ say "[[volm 2]] Hello"
       if(m_volume != 1)
 	text = "[[volm " + doubleToStringX(m_volume) + "]] " + text;
 
-      cmd += " \"" + text + "\" ";
+      argv.push_back(text);
     }
-    // Build the system command string (Linux)
+    // Build a program and literal argument vector (Linux).
     else if((m_os_mode == "linux") || (m_os_mode == "both")) {
-      cmd = "espeak -s " + str_rate;
-      if(voice != "")
-	cmd += " -v " + voice;
-      cmd += "--stdin \"" + text + "\" ";
+      argv.push_back("espeak");
+      argv.push_back("-s");
+      argv.push_back(str_rate);
+      if(voice != "") {
+	argv.push_back("-v");
+	argv.push_back(voice);
+      }
+      argv.push_back("--stdin");
+      argv.push_back(text);
     }
 
   }
@@ -389,14 +401,18 @@ bool Sayer::sayUtterance()
       return(false);
     }
 
-    // Build the system command string (OSX)
+    // Build a program and literal argument vector (OSX).
     if((m_os_mode == "osx") || (m_os_mode == "both")) {
-      cmd = "afplay -v " + doubleToString(m_volume);
-      cmd += " " + found_file;
+      argv.push_back("afplay");
+      argv.push_back("-v");
+      argv.push_back(doubleToString(m_volume));
+      argv.push_back(found_file);
     }
-    // Build the system command string (Linux)
-    else if((m_os_mode == "linux") || (m_os_mode == "both"))
-      cmd = "aplay " + found_file;
+    // Build a program and literal argument vector (Linux).
+    else if((m_os_mode == "linux") || (m_os_mode == "both")) {
+      argv.push_back("aplay");
+      argv.push_back(found_file);
+    }
     
   }
   else {
@@ -404,19 +420,22 @@ bool Sayer::sayUtterance()
     return(false);
   }
 
-  // By adding an ampersand at the end of the command line, it runs the 
-  // job in the background thus returning immediately.
-  if(m_interval_policy == "from_start")
-    cmd += " &";
+  if(argv.empty()) {
+    reportRunWarning("No audio command configured for os_mode=" + m_os_mode);
+    return(false);
+  }
 
-  // We don't check the act on the result, but we get it anyway to avoid
-  // a compiler warning.
-  int result;
+  for(unsigned int i=0; i<argv.size(); i++) {
+    if(i > 0)
+      cmd += " ";
+    cmd += argv[i];
+  }
+
   Notify("ISAY_DEBUGA", cmd);
-  result = system(cmd.c_str());
+  bool result = runProcess(argv, m_interval_policy == "from_start");
   Notify("ISAY_DEBUGB", cmd);
 
-  if(result != 0) 
+  if(!result)
     cout << "Possible error in the iSay syscmd:" << cmd << endl;
 
   return(true);
