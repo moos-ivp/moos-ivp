@@ -57,11 +57,19 @@ bool setVarDataPairOnString(VarDataPair& pair, string str)
   if((str.at(0) == '@') || (str.at(0) == '<') || (str.at(0) == '>'))
     post_tag = tolower(biteStringX(str, ' '));
 
+  // The string had no separator and was bitten
+  if(str == "")
+    return(false);
+
   // Part 3: Check for Destination tag
   string dest_tag;
   if(str.at(0) == '#') {
     biteStringX(str, '#');
     dest_tag = tolower(biteStringX(str, ' '));
+
+    // as above
+    if(str == "")
+      return(false);
   }
   
   // Part 4: Check for conditional
