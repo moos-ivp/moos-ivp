@@ -222,13 +222,15 @@ vector<IvPFunction*> readFunctions(const string& str)
 PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
 {
   if(f==0) return(0);
+
+  // The header dimension is used to size boxes while the domain sizes the
+  // PDMap grid. They must agree before either is constructed.
+  if((dim != (int)domain.size()) || (boxCount < 0) || (deg < 0))
+    return(0);
   
-  // Pretend we care about the fscanf result to avoid compiler warning
-  int result = 0;
   char c;
-  result = fscanf(f, "%c", &c);
-  if(result == 0)
-    cout << "matching failure" << endl;
+  if(fscanf(f, "%c", &c) != 1)
+    return(0);
   if(c == 'B') 
     ungetc(c, f);
   else
@@ -240,43 +242,53 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
 
   PDMap *pdmap = new PDMap(boxCount, domain, deg);
 
-  // Bounds read from the file are used to index the grid built below, so they
-  // have to lie inside the domain.  Anything else is not a short read, it is
-  // an unusable function.
-  int dim_pts[dim];
-  for(d=0; d<dim; d++)
-    dim_pts[d] = (d < (int)domain.size()) ? domain.getVarPoints(d) : 0;
-
   IvPBox gelbox(dim);
   if(c == 'G') {
     for(d=0; d<dim; d++) {
-      result = fscanf(f, "%d ", &low);
-      result = fscanf(f, "%d ", &high);
-      if((low < 0) || (high < low) || (high >= dim_pts[d])) {
+      if((fscanf(f, "%d ", &low) != 1) ||
+	 (fscanf(f, "%d ", &high) != 1)) {
+	delete pdmap;
+	return(0);
+      }
+      int dim_pts = domain.getVarPoints(d);
+      if((low < 0) || (high < low) || (high >= dim_pts)) {
 	delete pdmap;
 	return(0);
       }
       gelbox.setPTS(d, low, high);
     }
-    pdmap->setGelBox(gelbox);
+    if(!pdmap->setGelBox(gelbox)) {
+      delete pdmap;
+      return(0);
+    }
   }
 
   for(int i=0; i<boxCount; i++) {
-    result = fscanf(f, "%c ", &c);
-    if(fscanf(f, "%d ", &wtc) != 1)
-      break;
+    if((fscanf(f, "%c ", &c) != 1) || (c != 'B') ||
+       (fscanf(f, "%d ", &wtc) != 1)) {
+      delete pdmap;
+      return(0);
+    }
     IvPBox *newbox = new IvPBox(dim, deg);
 
-    // wtc comes from the file but the box was sized from dim and deg, so a
-    // larger figure would write past the end of newbox's weight array
-    if((wtc < 0) || (wtc > newbox->getWtc()))
-      wtc = newbox->getWtc();
+    // The serialized weight count must match the storage allocated from the
+    // header. Accepting a mismatch would either overrun the array or leave a
+    // partially initialized box in the map.
+    if(wtc != newbox->getWtc()) {
+      delete newbox;
+      delete pdmap;
+      return(0);
+    }
 
     for(d=0; d<dim; d++) {
-      // width limits must match the buffers below, or a long token is a
-      // stack overflow
-      result = fscanf(f, "%79s ", lowBuff);
-      result = fscanf(f, "%79s ", highBuff);
+      // Field widths match the buffers, and failed reads are rejected before
+      // their contents are inspected.
+      if((fscanf(f, "%79s ", lowBuff) != 1) ||
+	 (fscanf(f, "%79s ", highBuff) != 1)) {
+	delete newbox;
+	delete pdmap;
+	return(0);
+      }
       if(lowBuff[0]=='X') {         // Check for bound Xclusive
 	newbox->bd(d, 0) = 0;       // bound. If X is first char
 	lowBuff[0] = '+';           // set bound to exclusive (0)
@@ -287,7 +299,8 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
       }
       low = atoi(lowBuff);
       high = atoi(highBuff);
-      if((low < 0) || (high < low) || (high >= dim_pts[d])) {
+      int dim_pts = domain.getVarPoints(d);
+      if((low < 0) || (high < low) || (high >= dim_pts)) {
 	delete newbox;
 	delete pdmap;
 	return(0);
@@ -295,7 +308,11 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
       newbox->setPTS(d, low, high);
     }
     for(d=0; d<wtc; d++) {
-      result = fscanf(f, "%499s ", buff);
+      if(fscanf(f, "%499s ", buff) != 1) {
+	delete newbox;
+	delete pdmap;
+	return(0);
+      }
       newbox->wt(d) = atof(buff);
     }
     pdmap->bx(i) = newbox;
@@ -384,9 +401,6 @@ void printZAIC_PEAK(ZAIC_PEAK zaic)
     cout << "  Maxutil: "   << maxutil << endl;
   }
 }
-
-
-
 
 
 
