@@ -296,21 +296,27 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
   const char *cstr = str.c_str();
   cstr += 2; // to account for H, in the header
 
+  // Every scan below is of the form while(*cstr != ','), which does not stop
+  // at the terminating NUL, so each one needs an explicit end-of-string test.
+
   // Determine the length of the context string
   int cstr_len = 0;
-  while(*cstr != ',') {
+  while((*cstr != ',') && (*cstr != '\0')) {
     cstr_len = cstr_len * 10;
     cstr_len += (int)(*cstr-48);
     ++cstr;
   }
   ++cstr;
 
-  // Determine the context string, if any
+  // Determine the context string, if any.  cstr_len is the declared length,
+  // i.e. the capacity of the buffer, so copy only what fits.
+  if(cstr_len < 0)
+    return(0);
   char *cstr_buff = new char[cstr_len+10];
   int  cbix = 0;
-  while(*cstr != ',') {
-    cstr_buff[cbix] = *cstr;
-    cbix++;
+  while((*cstr != ',') && (*cstr != '\0')) {
+    if(cbix < cstr_len)
+      cstr_buff[cbix++] = *cstr;
     ++cstr;
   }
   cstr_buff[cbix] = '\0';
@@ -318,7 +324,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
 
   // Determine the number of dimensions
   int dim = 0;
-  while(*cstr != ',') {
+  while((*cstr != ',') && (*cstr != '\0')) {
     dim = dim * 10;
     dim += (int)(*cstr-48);
     ++cstr;
@@ -327,7 +333,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
 
   // Determine the number of pieces
   int pcs = 0;
-  while(*cstr != ',') {
+  while((*cstr != ',') && (*cstr != '\0')) {
     pcs = pcs * 10;
     pcs += (int)(*cstr-48);
     ++cstr;
@@ -336,7 +342,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
    
   // Determine the degree
   int deg = 0;
-  while(*cstr != ',') {
+  while((*cstr != ',') && (*cstr != '\0')) {
     deg = deg * 10;
     deg += (int)(*cstr-48);
     ++cstr;
@@ -347,7 +353,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
   double pwt  = 0.0;
   double frac = 0.1;
   bool   left_of_decimal = true;
-  while(*cstr != ',') {
+  while((*cstr != ',') && (*cstr != '\0')) {
     if(*cstr == '.') {
       left_of_decimal = false;
     }
@@ -369,11 +375,13 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
   cstr += 2;
   char buff[5000];
   int  bix = 0;
-  while(*cstr != ',') {
-    buff[bix] = *cstr;
-    if(buff[bix] == ';')
-      buff[bix] = ',';
-    bix++;
+  while((*cstr != ',') && (*cstr != '\0')) {
+    if(bix < (int)sizeof(buff)-1) {
+      buff[bix] = *cstr;
+      if(buff[bix] == ';')
+        buff[bix] = ',';
+      bix++;
+    }
     ++cstr;
   }
   buff[bix] = '\0';
@@ -387,7 +395,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
   for(d=0; d<dim; d++) {
     // Determine the grid length for this dimension
     int val = 0;
-    while(*cstr != ',') {
+    while((*cstr != ',') && (*cstr != '\0')) {
       val = val * 10;
       val += (int)(*cstr-48);
       ++cstr;
@@ -412,7 +420,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
 
       // Determine the low value
       int low = 0;
-      while(*cstr != ',') {
+      while((*cstr != ',') && (*cstr != '\0')) {
 	low = low * 10;
 	low += (int)(*cstr-48);
 	++cstr;
@@ -426,7 +434,7 @@ IvPFunction *StringToIvPFunctionMK(const string& str)
       }
       // Determine the high value
       int hgh = 0;
-      while(*cstr != ',') {
+      while((*cstr != ',') && (*cstr != '\0')) {
 	hgh = hgh * 10;
 	hgh += (int)(*cstr-48);
 	++cstr;
