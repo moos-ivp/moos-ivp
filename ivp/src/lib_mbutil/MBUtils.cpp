@@ -1697,7 +1697,7 @@ bool isQuoted(const string& str)
   if(len < 2)
     return(false);
 
-  if((mod_str[0] == '"') && (mod_str[str.length()-1] == '"'))
+  if((mod_str[0] == '"') && (mod_str[len-1] == '"'))
     return(true);
   return(false);
 }
@@ -1714,7 +1714,7 @@ bool isBraced(const string& str)
   if(len < 2)
     return(false);
 
-  if((mod_str[0] == '{') && (mod_str[str.length()-1] == '}'))
+  if((mod_str[0] == '{') && (mod_str[len-1] == '}'))
     return(true);
   return(false);
 }
@@ -1731,7 +1731,7 @@ bool isChevroned(const string& str)
   if(len < 2)
     return(false);
   
-  if((mod_str[0] == '<') && (mod_str[str.length()-1] == '>'))
+  if((mod_str[0] == '<') && (mod_str[len-1] == '>'))
     return(true);
   return(false);
 }
