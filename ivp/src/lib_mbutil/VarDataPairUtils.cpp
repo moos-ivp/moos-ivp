@@ -57,9 +57,7 @@ bool setVarDataPairOnString(VarDataPair& pair, string str)
   if((str.at(0) == '@') || (str.at(0) == '<') || (str.at(0) == '>'))
     post_tag = tolower(biteStringX(str, ' '));
 
-  // biteStringX() on a string with no separator consumes the whole thing, so
-  // the check at the top of this function no longer tells us anything: str
-  // may be empty from here on and str.at(0) would throw std::out_of_range.
+  // The string had no separator and was bitten
   if(str == "")
     return(false);
 
