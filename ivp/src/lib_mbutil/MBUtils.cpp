@@ -1697,9 +1697,6 @@ bool isQuoted(const string& str)
   if(len < 2)
     return(false);
 
-  // index the stripped string with its own length: str is longer whenever
-  // stripBlankEnds() removed anything, and mod_str[str.length()-1] is then a
-  // read past the end of mod_str
   if((mod_str[0] == '"') && (mod_str[len-1] == '"'))
     return(true);
   return(false);
@@ -1717,7 +1714,6 @@ bool isBraced(const string& str)
   if(len < 2)
     return(false);
 
-  // as above: mod_str must be indexed with its own length, not str's
   if((mod_str[0] == '{') && (mod_str[len-1] == '}'))
     return(true);
   return(false);
@@ -1735,7 +1731,6 @@ bool isChevroned(const string& str)
   if(len < 2)
     return(false);
   
-  // as above: mod_str must be indexed with its own length, not str's
   if((mod_str[0] == '<') && (mod_str[len-1] == '>'))
     return(true);
   return(false);
