@@ -222,38 +222,38 @@ vector<IvPFunction*> readFunctions(const string& str)
 PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
 {
   if(f==0) return(0);
-
+  
   // The header dimension is used to size boxes while the domain sizes the
   // PDMap grid. They must agree before either is constructed.
   if((dim != (int)domain.size()) || (boxCount < 0) || (deg < 0))
-    return(0);
+  return(0);
   
   char c;
-  if(fscanf(f, "%c", &c) != 1)
-    return(0);
-  if(c == 'B') 
+  if(fscanf(f, "%c", &c) != 1) return(0);
+  
+  if(c == 'B') {
     ungetc(c, f);
-  else
-    if(c != 'G')
-      return(0);
-
+  } else if(c != 'G') {
+    return(0);
+  }
+  
   int     d, low, high, wtc;
   char    buff[500], lowBuff[80], highBuff[80];
-
+  
   PDMap *pdmap = new PDMap(boxCount, domain, deg);
-
+  
   IvPBox gelbox(dim);
   if(c == 'G') {
     for(d=0; d<dim; d++) {
       if((fscanf(f, "%d ", &low) != 1) ||
-	 (fscanf(f, "%d ", &high) != 1)) {
-	delete pdmap;
-	return(0);
+      (fscanf(f, "%d ", &high) != 1)) {
+        delete pdmap;
+        return(0);
       }
       int dim_pts = domain.getVarPoints(d);
       if((low < 0) || (high < low) || (high >= dim_pts)) {
-	delete pdmap;
-	return(0);
+        delete pdmap;
+        return(0);
       }
       gelbox.setPTS(d, low, high);
     }
@@ -262,15 +262,15 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
       return(0);
     }
   }
-
+  
   for(int i=0; i<boxCount; i++) {
     if((fscanf(f, "%c ", &c) != 1) || (c != 'B') ||
-       (fscanf(f, "%d ", &wtc) != 1)) {
+    (fscanf(f, "%d ", &wtc) != 1)) {
       delete pdmap;
       return(0);
     }
     IvPBox *newbox = new IvPBox(dim, deg);
-
+    
     // The serialized weight count must match the storage allocated from the
     // header. Accepting a mismatch would either overrun the array or leave a
     // partially initialized box in the map.
@@ -279,39 +279,39 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
       delete pdmap;
       return(0);
     }
-
+    
     for(d=0; d<dim; d++) {
       // Field widths match the buffers, and failed reads are rejected before
       // their contents are inspected.
       if((fscanf(f, "%79s ", lowBuff) != 1) ||
-	 (fscanf(f, "%79s ", highBuff) != 1)) {
-	delete newbox;
-	delete pdmap;
-	return(0);
+      (fscanf(f, "%79s ", highBuff) != 1)) {
+        delete newbox;
+        delete pdmap;
+        return(0);
       }
       if(lowBuff[0]=='X') {         // Check for bound Xclusive
-	newbox->bd(d, 0) = 0;       // bound. If X is first char
-	lowBuff[0] = '+';           // set bound to exclusive (0)
+        newbox->bd(d, 0) = 0;       // bound. If X is first char
+        lowBuff[0] = '+';           // set bound to exclusive (0)
       }                             // and convert that X to a '+'.
       if(highBuff[0]=='X') {        // The '+' will be effectively
-	newbox->bd(d, 1) = 0;       // ignored by the atoi function.
-	highBuff[0] = '+';
+        newbox->bd(d, 1) = 0;       // ignored by the atoi function.
+        highBuff[0] = '+';
       }
       low = atoi(lowBuff);
       high = atoi(highBuff);
       int dim_pts = domain.getVarPoints(d);
       if((low < 0) || (high < low) || (high >= dim_pts)) {
-	delete newbox;
-	delete pdmap;
-	return(0);
+        delete newbox;
+        delete pdmap;
+        return(0);
       }
       newbox->setPTS(d, low, high);
     }
     for(d=0; d<wtc; d++) {
       if(fscanf(f, "%499s ", buff) != 1) {
-	delete newbox;
-	delete pdmap;
-	return(0);
+        delete newbox;
+        delete pdmap;
+        return(0);
       }
       newbox->wt(d) = atof(buff);
     }
