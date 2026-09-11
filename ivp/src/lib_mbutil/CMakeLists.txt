@@ -30,6 +30,7 @@ SET(SRC
   LatLonFormatUtils.cpp
   OpenURL.cpp
   BundleOut.cpp
+  ProcessUtils.cpp
   )
 
 SET(HEADERS
@@ -58,6 +59,7 @@ SET(HEADERS
   LatLonFormatUtils.h
   OpenURL.h
   BundleOut.h
+  ProcessUtils.h
 )
 
 # Build Library
