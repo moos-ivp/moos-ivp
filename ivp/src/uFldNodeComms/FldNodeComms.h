@@ -119,6 +119,10 @@ protected:
  
  protected: // State variables
   ContactLedger m_ledger;
+
+  // Ceiling on how many distinct nodes may occupy the ledger.  The node
+  // report distribution is all-pairs, so this bounds work as well as memory.
+  unsigned int  m_max_node_count;
   
   // Holds last time posted local share, if enabled, for each vname
   std::map<std::string, double>  m_map_lshare_tstamp;     
