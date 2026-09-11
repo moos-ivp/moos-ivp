@@ -356,12 +356,7 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg,
   if(new_message.getSourceApp() == "")
     new_message.setSourceApp(msg_src);
 
-  // Part 3b: The src_node field decides which ledger entry the range,
-  // staleness and group checks below are evaluated against, and which node
-  // the recipient believes sent the message.  It is a field in the message
-  // body, so a publisher can put any node's name in it.  The community the
-  // message actually arrived from is set by the MOOSDB, so require the two to
-  // agree unless a deployment has turned that off.
+  // Part 3b: Bind src_node to the MOOSDB community unless disabled.
   if(m_bind_msg_src_to_community && (msg_community != "") &&
      !MOOSStrCmp(new_message.getSourceNode(), msg_community)) {
     m_rejected_msg_source++;
