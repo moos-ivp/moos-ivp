@@ -140,10 +140,12 @@ vector<IvPFunction*> readFunctions(const string& str)
     if(c == 'F') {
       int buff_ix = 0;
       while(c != '\n') {
-	result = fscanf(f, "%c", &c);
+	// fscanf() leaves c unchanged at end of file, so without this the
+	// loop never terminates on a truncated file
+	if(fscanf(f, "%c", &c) != 1)
+	  break;
 	if(buff_ix < MAX_LINE_LENGTH-1)
-	  buff[buff_ix] = c;
-	buff_ix++;
+	  buff[buff_ix++] = c;
       }
       buff[buff_ix] = '\0';
     }
@@ -180,10 +182,11 @@ vector<IvPFunction*> readFunctions(const string& str)
     if(c == 'A') {
       int buff_ix = 0;
       while(c != '\n') {
-	result = fscanf(f, "%c", &c);
-	if(buff_ix < MAX_LINE_LENGTH)
-	  buff[buff_ix] = c;
-	buff_ix++;
+	// as above: stop at end of file, and leave room for the terminator
+	if(fscanf(f, "%c", &c) != 1)
+	  break;
+	if(buff_ix < MAX_LINE_LENGTH-1)
+	  buff[buff_ix++] = c;
       }
       buff[buff_ix] = '\0';
       contextStr = buff;
@@ -196,6 +199,14 @@ vector<IvPFunction*> readFunctions(const string& str)
     IvPDomain domain = stringToDomain(domain_str);
     
     PDMap *pdmap = readPDMap(f, dim, boxCount, domain, degree);
+
+    // readPDMap() returns null on a file it cannot make sense of, and
+    // IvPFunction's constructor asserts on a null pdmap
+    if(!pdmap) {
+      fclose(f);
+      return(rvector);
+    }
+
     IvPFunction *new_of = new IvPFunction(pdmap);
     new_of->setContextStr(contextStr);
     new_of->setPWT(pwt);
@@ -212,54 +223,96 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
 {
   if(f==0) return(0);
   
-  // Pretend we care about the fscanf result to avoid compiler warning
-  int result = 0;
+  // The header dimension is used to size boxes while the domain sizes the
+  // PDMap grid. They must agree before either is constructed.
+  if((dim != (int)domain.size()) || (boxCount < 0) || (deg < 0))
+  return(0);
+  
   char c;
-  result = fscanf(f, "%c", &c);
-  if(result == 0)
-    cout << "matching failure" << endl;
-  if(c == 'B') 
+  if(fscanf(f, "%c", &c) != 1) return(0);
+  
+  if(c == 'B') {
     ungetc(c, f);
-  else
-    if(c != 'G')
-      return(0);
-
+  } else if(c != 'G') {
+    return(0);
+  }
+  
   int     d, low, high, wtc;
   char    buff[500], lowBuff[80], highBuff[80];
-
+  
   PDMap *pdmap = new PDMap(boxCount, domain, deg);
-
+  
   IvPBox gelbox(dim);
   if(c == 'G') {
     for(d=0; d<dim; d++) {
-      result = fscanf(f, "%d ", &low);
-      result = fscanf(f, "%d ", &high);
+      if((fscanf(f, "%d ", &low) != 1) ||
+      (fscanf(f, "%d ", &high) != 1)) {
+        delete pdmap;
+        return(0);
+      }
+      int dim_pts = domain.getVarPoints(d);
+      if((low < 0) || (high < low) || (high >= dim_pts)) {
+        delete pdmap;
+        return(0);
+      }
       gelbox.setPTS(d, low, high);
     }
-    pdmap->setGelBox(gelbox);
+    if(!pdmap->setGelBox(gelbox)) {
+      delete pdmap;
+      return(0);
+    }
   }
-
+  
   for(int i=0; i<boxCount; i++) {
-    result = fscanf(f, "%c ", &c);
-    result = fscanf(f, "%d ", &wtc);
+    if((fscanf(f, "%c ", &c) != 1) || (c != 'B') ||
+    (fscanf(f, "%d ", &wtc) != 1)) {
+      delete pdmap;
+      return(0);
+    }
     IvPBox *newbox = new IvPBox(dim, deg);
+    
+    // The serialized weight count must match the storage allocated from the
+    // header. Accepting a mismatch would either overrun the array or leave a
+    // partially initialized box in the map.
+    if(wtc != newbox->getWtc()) {
+      delete newbox;
+      delete pdmap;
+      return(0);
+    }
+    
     for(d=0; d<dim; d++) {
-      result = fscanf(f, "%s ", lowBuff);
-      result = fscanf(f, "%s ", highBuff);
+      // Field widths match the buffers, and failed reads are rejected before
+      // their contents are inspected.
+      if((fscanf(f, "%79s ", lowBuff) != 1) ||
+      (fscanf(f, "%79s ", highBuff) != 1)) {
+        delete newbox;
+        delete pdmap;
+        return(0);
+      }
       if(lowBuff[0]=='X') {         // Check for bound Xclusive
-	newbox->bd(d, 0) = 0;       // bound. If X is first char
-	lowBuff[0] = '+';           // set bound to exclusive (0)
+        newbox->bd(d, 0) = 0;       // bound. If X is first char
+        lowBuff[0] = '+';           // set bound to exclusive (0)
       }                             // and convert that X to a '+'.
       if(highBuff[0]=='X') {        // The '+' will be effectively
-	newbox->bd(d, 1) = 0;       // ignored by the atoi function.
-	highBuff[0] = '+';
+        newbox->bd(d, 1) = 0;       // ignored by the atoi function.
+        highBuff[0] = '+';
       }
       low = atoi(lowBuff);
       high = atoi(highBuff);
+      int dim_pts = domain.getVarPoints(d);
+      if((low < 0) || (high < low) || (high >= dim_pts)) {
+        delete newbox;
+        delete pdmap;
+        return(0);
+      }
       newbox->setPTS(d, low, high);
     }
     for(d=0; d<wtc; d++) {
-      result = fscanf(f, "%s ", buff);
+      if(fscanf(f, "%499s ", buff) != 1) {
+        delete newbox;
+        delete pdmap;
+        return(0);
+      }
       newbox->wt(d) = atof(buff);
     }
     pdmap->bx(i) = newbox;
@@ -348,9 +401,6 @@ void printZAIC_PEAK(ZAIC_PEAK zaic)
     cout << "  Maxutil: "   << maxutil << endl;
   }
 }
-
-
-
 
 
 
