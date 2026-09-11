@@ -1127,6 +1127,9 @@ bool FldNodeComms::buildReport()
   m_msgs << "======================================" << endl;
 
   m_msgs << "    Total Msgs Received: " << m_total_messages_rcvd << endl;
+  if (m_bind_msg_src_to_community) {
+    m_msgs << "  Total Source-Rejected: " << m_rejected_msg_source << endl;
+  }
   map<string, unsigned int>::iterator q;
   for(q=m_map_messages_rcvd.begin(); q!=m_map_messages_rcvd.end(); q++) {
     string vname = q->first;
