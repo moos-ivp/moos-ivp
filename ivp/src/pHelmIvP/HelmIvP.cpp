@@ -1267,6 +1267,7 @@ bool HelmIvP::OnStartUp()
   
   // default secs to remove stale contact behavior
   double contact_max_age = 45; 
+  unsigned int contact_max_count = m_ledger.getMaxContacts();
   
   vector<string> behavior_dirs;
 
@@ -1312,6 +1313,8 @@ bool HelmIvP::OnStartUp()
       handled = setDoubleOnString(m_nav_grace, value);
     else if(param == "CONTACT_MAX_AGE")
       handled = setDoubleRngOnString(contact_max_age, value, 10, 1800);
+    else if(param == "CONTACT_MAX_COUNT")
+      handled = setPosUIntOnString(contact_max_count, value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
     else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
@@ -1332,6 +1335,7 @@ bool HelmIvP::OnStartUp()
   m_ledger.setCurrTimeUTC(m_curr_time);
   m_ledger.setGeodesy(geodesy);
   m_ledger.setStaleThresh(contact_max_age);
+  m_ledger.setMaxContacts(contact_max_count);
   
   if(m_seed_random)
     seedRandom();
