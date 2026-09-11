@@ -828,6 +828,48 @@ string toupper(const string& str)
 }
 
 //----------------------------------------------------------------
+// Procedure: safeFileName()
+//   Purpose: Convert arbitrary text to a portable, single filename component.
+//            Unsafe characters are replaced, dot-only names are rejected, and
+//            Windows reserved device names are prefixed.
+
+string safeFileName(const string& str, const string& reserved_prefix)
+{
+  string result;
+  bool all_dots = true;
+
+  for(unsigned int i=0; i<str.length(); i++) {
+    char c = str[i];
+    bool keep = ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) ||
+                ((c >= '0') && (c <= '9')) || (c == '_') || (c == '-') ||
+                (c == '.');
+    result += keep ? c : '_';
+    if(!keep || (c != '.'))
+      all_dots = false;
+  }
+
+  if(result == "" || all_dots)
+    return("");
+
+  string stem = result;
+  string::size_type dot = stem.find('.');
+  if(dot != string::npos)
+    stem = stem.substr(0, dot);
+
+  const char *reserved[] = {"CON", "PRN", "AUX", "NUL",
+			    "COM1", "COM2", "COM3", "COM4", "COM5",
+			    "COM6", "COM7", "COM8", "COM9",
+			    "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
+			    "LPT6", "LPT7", "LPT8", "LPT9", 0};
+  for(unsigned int i=0; reserved[i]; i++) {
+    if(toupper(stem) == reserved[i])
+      return(reserved_prefix + result);
+  }
+
+  return(result);
+}
+
+//----------------------------------------------------------------
 // Procedure: truncString()
 
 string truncString(const string& str, unsigned int newlen, string style)
@@ -2994,4 +3036,3 @@ string digitsOnly(const string& str)
 }
 
   
-

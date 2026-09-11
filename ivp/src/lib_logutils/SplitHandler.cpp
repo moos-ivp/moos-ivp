@@ -76,60 +76,6 @@ SplitHandler::SplitHandler(string alog_file)
 //--------------------------------------------------------
 // Procedure: handle()
 
-//----------------------------------------------------------------
-// Procedure: safeVarFileName()
-//   Purpose: A variable name is simply the second whitespace delimited field
-//            of an .alog line, i.e. it is whatever the file says it is, and
-//            it is used below to build the path of a file which is opened for
-//            writing.  Replacing '/' alone is not enough: a backslash, a
-//            ".." segment or a drive prefix all resolve outside the split
-//            directory on Windows, and a Windows reserved device name is not
-//            a file at all.
-//
-//            Keep only characters which can appear in a MOOS variable name,
-//            refuse a name which is empty or is nothing but dots, and prefix
-//            the reserved device names so they cannot be addressed.
-
-static std::string safeVarFileName(const std::string& varname)
-{
-  std::string out;
-  bool all_dots = true;
-
-  for(unsigned int i=0; i<varname.length(); i++) {
-    char c = varname[i];
-    bool keep = ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) ||
-                ((c >= '0') && (c <= '9')) || (c == '_') || (c == '-') ||
-                (c == '.');
-    out += keep ? c : '_';
-    if(keep && (c != '.'))
-      all_dots = false;
-    if(!keep)
-      all_dots = false;
-  }
-
-  if(out == "")
-    return("");
-  if(all_dots)
-    return("");
-
-  // Windows reserved device names, with or without an extension
-  const char *reserved[] = {"CON","PRN","AUX","NUL",
-			    "COM1","COM2","COM3","COM4","COM5",
-			    "COM6","COM7","COM8","COM9",
-			    "LPT1","LPT2","LPT3","LPT4","LPT5",
-			    "LPT6","LPT7","LPT8","LPT9", 0};
-  std::string stem = out;
-  std::string::size_type dot = stem.find('.');
-  if(dot != std::string::npos)
-    stem = stem.substr(0, dot);
-  for(unsigned int i=0; reserved[i]; i++) {
-    if(toupper(stem) == reserved[i])
-      return("var_" + out);
-  }
-
-  return(out);
-}
-
 bool SplitHandler::handle()
 {
   bool ok = true;
@@ -245,7 +191,7 @@ bool SplitHandler::handleMakeSplitFiles()
     
     // The name becomes part of a file path, so reduce it to something which
     // cannot leave the split directory or name a device
-    varname = safeVarFileName(varname);
+    varname = safeFileName(varname, "var_");
     if(varname == "")
       continue;
     
@@ -721,4 +667,3 @@ string SplitHandler::nodeRecordToViewVessel(string str)
   return(view_vessel_str);
   
 }
-
