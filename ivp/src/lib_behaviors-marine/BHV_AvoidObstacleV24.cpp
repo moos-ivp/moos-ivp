@@ -239,6 +239,16 @@ bool BHV_AvoidObstacleV24::handleParamRangeFlag(string str)
 
 bool BHV_AvoidObstacleV24::handleParamSpdRegulate(string str)
 {
+  // Case A: If the string is just true/false, handle as such
+  if(isBoolean(str)) {
+    bool bval = false;
+    if(tolower(str) == "true")
+      bval = true;
+    m_obship_model.enableSpdRegulation(bval);
+    return(true);
+  }
+
+  // Case B: String contains the numerical settings
   double min_spd = -1;
   double max_spd = -1;
   double max_discount = -1;

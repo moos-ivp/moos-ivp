@@ -33,6 +33,8 @@ public:
   MOOSFile();
   virtual ~MOOSFile() {};
 
+  void setKey(std::string key) {m_key=key;}
+  
 public: // building from input file
   void addLine(std::string app, std::string line);
   void addPatchLine(std::string app, std::string patch_line);
@@ -55,6 +57,8 @@ protected: // utility
  protected: 
 
   std::string m_curr_block;
+
+  std::string m_key;
   
   // Keyed on appname, or "global" for global params
   std::map<std::string, std::vector<std::string> > m_blocks;

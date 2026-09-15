@@ -90,7 +90,8 @@ bool PatchApplicator::applyPatchMoos()
   if(!ok2)
     return(false);
   MOOSFile stem_file = pop_stem_file.getMOOSFile();
-
+  stem_file.setKey(m_key);
+  
   // =====================================================
   // Part 3: Apply the patch file to the stem file
   // =====================================================
@@ -134,6 +135,7 @@ bool PatchApplicator::applyPatchBhv()
   if(!ok2)
     return(false);
   BHVFile stem_file = pop_stem_file.getBHVFile();
+  stem_file.setKey(m_key);
 
   // =====================================================
   // Part 3: Apply the patch file to the stem file
