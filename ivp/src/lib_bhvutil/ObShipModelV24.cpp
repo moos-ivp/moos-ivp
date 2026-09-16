@@ -4,6 +4,7 @@
 /*    FILE: ObShipModelV24.cpp                                   */
 /*    DATE: Sep 6th, 2019                                        */
 /*    DATE: Jul 31st, 2023 ObShipModelX with PlatModel           */
+/*    DATE: Sep 1st, 2026  Speed regulation                      */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -61,6 +62,7 @@ ObShipModelV24::ObShipModelV24(double osx, double osy,
   m_sreg_min_spd = -1;
   m_sreg_max_spd = -1;
   m_sreg_max_discount = -1;
+  m_sreg_enabled = true;
   
   // Set the precision for rounding/expanding the obstacle_buff
   // polygon. Affects the work involved for CPA calculations
@@ -1084,9 +1086,24 @@ bool ObShipModelV24::updateDynamic()
 
 //-----------------------------------------------------------
 // Procedure: isSpdRegulated()
+//      Note: The Boolean sreg_enabled is true by default. This
+//            ObShipModel is speed regulated if sreg_enabled is
+//            true *and* it has legal values set.
+// 
+//            The idea is that, to start with, speed regulation
+//            is not enabled because the numerical parameters are
+//            not set. When they are set, then it is enabled. 
+//            
+//            It can simultaneously be configured with the
+//            Boolean sreg_enabled false. This allows the user
+//            of this class to toggle speed regulation without
+//            having to remember the numerical values.
 
 bool ObShipModelV24::isSpdRegulated() const
 {
+  if(!m_sreg_enabled)
+    return(false);
+  
   // Ensure min/max spds are both >= 0
   if((m_sreg_min_spd < 0) || (m_sreg_max_spd < 0))
     return(false);

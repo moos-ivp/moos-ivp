@@ -67,7 +67,7 @@ void MOOSFile::applyBlock(string app, vector<string> lines)
 {
   if(m_blocks.count(app) == 0) {
     m_blocks["global"].push_back("");    
-    m_blocks["global"].push_back("//----------------------------------");    
+    m_blocks["global"].push_back("//----------------------------------");
     m_blocks["global"].push_back("// " + app + " Config Block");    
     m_blocks["global"].push_back("");    
     m_blocks["global"].push_back("new_block_drx="+app);
@@ -84,6 +84,22 @@ void MOOSFile::applyBlock(string app, vector<string> lines)
 
 void MOOSFile::applyLine(string app, string line)
 {
+  // If this MOOSFile has a key set, and if the line begins
+  // with @key, then reject any line the doesnt key match. If
+  // keymatch, remove the @key component from the line before
+  // proceeding.
+  if(m_key != "") {
+    string kapp = stripBlankEnds(app);
+    if(strBegins(kapp, "#")) {
+      biteString(kapp, '#');
+      string key = biteString(kapp, ' ');
+      if(m_key != key)
+	return;
+      else
+	app = kapp;
+    }
+  }
+
   string line_copy = line;
   string line_param;
   if(app != "ANTLER")

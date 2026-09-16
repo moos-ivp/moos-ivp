@@ -55,6 +55,7 @@ class ObShipModelV24
   void   setSideLock(bool v) {m_side_lock=v;}
 
   bool   setSpdRegulation(double, double, double);
+  void   enableSpdRegulation(bool v) {m_sreg_enabled=v;}
   
  public: // Setters that may generate health warnings
   std::string  setGutPoly(XYPolygon);
@@ -200,7 +201,8 @@ protected:
   double m_sreg_min_spd;      // m/s
   double m_sreg_max_spd;      // m/s
   double m_sreg_max_discount; // m/s
-
+  bool   m_sreg_enabled;
+  
  private: // State (derived) variables
   XYPolygon m_mid_poly;
   XYPolygon m_rim_poly;

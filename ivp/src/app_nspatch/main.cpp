@@ -60,6 +60,11 @@ int main(int argc, char *argv[])
     else if(strEnds(argi, ".xbhv"))
       papp.addXBhvFile(argi);
 
+    else if(strBegins(argi, "--key=")) {
+      string key_str = argi.substr(6);
+      papp.setKey(key_str);
+    }
+      
     // If --stem=file arg is used, then handle the file
     // as definitely a stem file, regardless of all
     else if(strBegins(argi, "--stem=")) {
