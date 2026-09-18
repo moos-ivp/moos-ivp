@@ -16,7 +16,7 @@ SET(HEADERS
 )
 
 # Build Library
-ADD_LIBRARY(gen_poly ${SRC})
+IVP_ADD_LIBRARY(gen_poly ${SRC})
 
 TARGET_LINK_LIBRARIES(gen_poly
    mbutil
