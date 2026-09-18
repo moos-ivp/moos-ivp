@@ -92,32 +92,52 @@ bool Demuxer::addMuxPacket(const string& str, double time_stamp,
   // is labeled not up-to-date by setting demuxed=false. 
   m_demuxed = false;
 
+  // The header is read from a MOOS variable, so nothing about it can be
+  // assumed: the delimiters may be missing and the numbers may be anything.
+  const int slen = (int)str.length();
+
   // Determine the "ID" of the string
   int cix = 2;
   string str_id = "";
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     str_id += str[cix];
     cix++;
   }
+  if(cix >= slen)
+    return(false);
 
   // Determine the number of total packets
   cix++;
   int str_total = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
+    if((str[cix] < '0') || (str[cix] > '9'))
+      return(false);
     str_total *= 10;
     str_total += (int)(str[cix]-48);
+    if(str_total > MAX_MUX_PACKETS)
+      return(false);
     cix++;
   }
+  if((cix >= slen) || (str_total < 1))
+    return(false);
 
   // Determine the index of this packet
   cix++;
   int str_ix = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
+    if((str[cix] < '0') || (str[cix] > '9'))
+      return(false);
     str_ix *= 10;
     str_ix += (int)(str[cix]-48);
+    if(str_ix > str_total)
+      return(false);
     cix++;
   }
+  if(cix >= slen)
+    return(false);
   str_ix--;
+  if(str_ix < 0)
+    return(false);
   cix++;
   
   string str_body = str.c_str() + cix;
