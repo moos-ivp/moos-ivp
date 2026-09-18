@@ -279,8 +279,6 @@ bool MarinePID::Iterate()
 
   m_paused = false;
 
-  if(thrust ==0)
-    rudder = 0;
   Notify("DESIRED_RUDDER", rudder);
   Notify("DESIRED_THRUST", thrust);
   m_current_thrust = thrust;
