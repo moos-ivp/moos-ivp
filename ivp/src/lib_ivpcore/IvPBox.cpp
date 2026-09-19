@@ -42,6 +42,13 @@ using namespace std;
 
 IvPBox::IvPBox(int g_dim, int g_degree)
 {
+  // m_dim and m_degree are short ints, so a large g_dim silently becomes a
+  // small or negative dimension and the arrays below are never allocated
+  // while the caller still writes through them.  Treat anything which does
+  // not survive the narrowing as an empty box.
+  if((g_dim < 0) || (g_dim > 32767) || (g_degree < 0) || (g_degree > 32767))
+    g_dim = g_degree = 0;
+
   m_dim     = (short int) g_dim;
   m_degree  = (short int) g_degree;
   m_pts     = 0;

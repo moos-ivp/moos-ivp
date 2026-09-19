@@ -58,6 +58,10 @@ PDMap::PDMap(int g_boxCount, const IvPDomain& g_domain, int g_degree)
 {
   assert(g_degree >= 0);
 
+  // a negative count would be passed straight to new IvPBox*[]
+  if(g_boxCount < 0)
+    g_boxCount = 0;
+
   m_boxCount = g_boxCount;
   m_domain   = g_domain;
   m_degree   = g_degree;
