@@ -115,6 +115,16 @@ bool PipeWay::valid() const
   if(m_client == "")
     return(false);
 
+  // The duration decides how long this pipeway keeps being serialised and
+  // published on every interval, and it comes from the request.
+  if((m_duration < 0) || (m_duration > MAX_PIPEWAY_DURATION))
+    return(false);
+
+  // The variable list is a ':' separated list in the request with no length
+  // of its own, and every variable is rendered every interval.
+  if(m_vars.size() > MAX_PIPEWAY_VARS)
+    return(false);
+
   return(true);
 }
 

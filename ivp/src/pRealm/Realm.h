@@ -116,6 +116,10 @@ class Realm : public AppCastingMOOSApp
   // Key is the client, e.g., pmv, umview 
   std::map<std::string, PipeWay> m_map_pipeways;
 
+  // Ceiling on how many distinct clients may hold a pipeway.  Each one is
+  // serialised and published on every interval.
+  unsigned int m_max_pipeways;
+
   std::map<std::string, double> m_map_var_last_wcast;
 
   std::string m_last_post_summary_info;

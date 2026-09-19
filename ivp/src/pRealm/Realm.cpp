@@ -35,6 +35,7 @@ using namespace std;
 
 Realm::Realm()
 {
+  m_max_pipeways = 64;
   // Init Config Variables
   m_msg_max_hist = 10;
 
@@ -289,6 +290,16 @@ void Realm::handleMailRealmCastReq(string sval)
   string client = pipeway.getClient();
 
   if(m_map_pipeways.count(client) == 0) {
+    // The client name is simply a string in the request, so it is a map key
+    // an unauthenticated publisher chooses.  Each entry is serialised and
+    // published on every interval, so refuse a new one once the ceiling is
+    // reached; existing clients keep being refreshed.
+    if(m_map_pipeways.size() >= m_max_pipeways) {
+      reportRunWarning("Refused RealmCastReq from " + client +
+		       ": max_pipeways (" + uintToString(m_max_pipeways) +
+		       ") reached");
+      return;
+    }
     m_map_pipeways[client] = pipeway;
   }
   else {  
