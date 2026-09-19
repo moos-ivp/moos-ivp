@@ -68,6 +68,12 @@ class NodeBroker : public AppCastingMOOSApp
   // Index on below vectors is a host to try as shoreside
   std::vector<std::string>  m_shore_community;
   std::vector<std::string>  m_shore_routes;
+
+  // May a TRY_SHORE_HOST arriving on the bus add a shore route?  Off unless
+  // the mission file asks for it: any client of the MOOSDB can publish that
+  // variable, and a new route makes this node bridge its configured
+  // variables to the address in it.
+  bool m_accept_try_shore_host;
   std::vector<unsigned int> m_shore_pings_sent;
   std::vector<unsigned int> m_shore_pings_ack;
   std::vector<std::string>  m_shore_ipaddr;
