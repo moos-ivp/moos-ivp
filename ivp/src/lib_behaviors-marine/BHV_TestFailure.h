@@ -37,11 +37,11 @@ public:
  protected:
   bool   m_failure_crash;
   bool   m_failure_burn;
+  bool   m_failure_triggered;
   double m_failure_burn_time;
 };
 
 #endif
-
 
 
 
