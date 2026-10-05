@@ -23,6 +23,10 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cerrno>
+#include <cstring>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <cstdio>
 #include <cmath>
 #include "MBUtils.h"
@@ -185,8 +189,11 @@ bool SplitHandler::handleMakeSplitFiles()
     // Otherwise handle a normal line
     string varname = getVarName(line_raw);
     
-    // Replace slashes in variable names - filesystems get confused
-    varname = findReplace(varname, "/", "_");
+    // The name becomes part of a file path, so reduce it to something which
+    // cannot leave the split directory or name a device
+    varname = safeFileName(varname, "var_");
+    if(varname == "")
+      continue;
     
     // Reject any line that doesn't begin with a number
     string one_char = line_raw.substr(0,1);
@@ -605,10 +612,10 @@ bool SplitHandler::handlePreCheckSplitDir()
 
   // Part 3: Create and Verify the split directory.
   // Make the base directory
-  string cmd = "mkdir " + basedir;
-  int result = system(cmd.c_str());
-  if(result != 0) 
-    cout << "Possible err in SplitHandler syscmd mkdir" << endl;
+  int result = mkdir(basedir.c_str(), 0755);
+  if(result != 0)
+    cout << "Possible err in SplitHandler mkdir: "
+	 << strerror(errno) << endl;
 
   
   // Ensure that the base directory has indeed been created.
@@ -660,4 +667,3 @@ string SplitHandler::nodeRecordToViewVessel(string str)
   return(view_vessel_str);
   
 }
-

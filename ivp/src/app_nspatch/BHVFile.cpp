@@ -126,6 +126,22 @@ void BHVFile::applyBlock(string bhv, vector<string> lines)
 
 void BHVFile::applyLine(string bhvname, string line)
 {
+   // If this BHVFile has a key set, and if the line begins
+  // with @key, then reject any line the does not key match.
+  // If keymatch, remove the @key component from the line 
+  // before proceeding.
+   if(m_key != "") {
+    string bname = stripBlankEnds(bhvname);
+    if(strBegins(bname, "#")) {
+      biteString(bname, '#');
+      string key = biteString(bname, ' ');
+      if(m_key != key)
+	return;
+      else
+	bhvname = bname;
+    }
+  }
+  
   string lcopy = line;
   string param = biteStringX(lcopy, '=');
 
@@ -333,10 +349,16 @@ BHVFile BHVFile::applyToStemFile(BHVFile stem_file)
   // Apply patch lines if any
   map<string, vector<string> >::iterator q;
   for(q=m_patch_lines.begin(); q!=m_patch_lines.end(); q++) {
-    string bhv = q->first;
+    string bhv = stripBlankEnds(q->first);
+    
+    // If patchline has key (@abe BHV_Waypoint@transit::param=val)
+    // then strip the key from the behavior name
+    //if(strBegins(bhv, "@"))
+    //  biteStringX(bhv, ' ');
+    
     vector<string> patch_lines = q->second;
     for(unsigned int i=0; i<patch_lines.size(); i++)
-    targ_file.applyLine(bhv, patch_lines[i]);
+      targ_file.applyLine(bhv, patch_lines[i]);
   }
 
   return(targ_file);

@@ -38,6 +38,7 @@ ContactLedger::ContactLedger(unsigned int history_size)
 {
   // Config vars
   m_history_size = history_size;
+  m_max_contacts = CONTACT_LEDGER_DEFAULT_MAX_CONTACTS;
 
   // Stale node and extrapolation policy
   m_extrap_mode      = 0;   // 0:off, 1:hdg, 2:cog
@@ -225,6 +226,17 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   m_total_reports++;
   
   string vname = record.getName();
+
+  // Refuse a new contact once the ledger is full.
+  // Reports for contacts already in it are still accepted, so an established field keeps working.
+  if (
+    (m_max_contacts > 0) // limit is enabled
+    && (m_map_records_rep.count(vname) == 0) // new contact
+    && (m_map_records_rep.size() >= m_max_contacts) // ledger is full
+  ) { 
+    whynot += "Ledger full (" + uintToString(m_max_contacts) + " contacts).";
+    return("");
+  }
   
   m_total_reports_valid++;
 

@@ -55,6 +55,7 @@ class ObShipModelV24
   void   setSideLock(bool v) {m_side_lock=v;}
 
   bool   setSpdRegulation(double, double, double);
+  void   enableSpdRegulation(bool v) {m_sreg_enabled=v;}
   
  public: // Setters that may generate health warnings
   std::string  setGutPoly(XYPolygon);
@@ -107,6 +108,7 @@ class ObShipModelV24
   std::string getPassingSide() const   {return(m_passing_side);}
 
   double getRangeToMidPoly() const;
+  double getRangeToGutPoly() const  {return(m_range);}
   double getRange() const           {return(m_range);}
   double getRangeInOSH() const      {return(m_range_in_osh);}
 
@@ -120,7 +122,8 @@ class ObShipModelV24
   unsigned int getRimBngHitCount() const   {return(m_rim_bng_hit_count);}
   unsigned int getRimBngUnhitCount() const {return(m_rim_bng_unhit_count);}
 
-  double getTTC() const; 
+  double getGutTTC() const; 
+  double getMidTTC() const; 
   
   double getGutBngMinDistToPoly() const {return(m_gut_bng_min_dist_to_poly);}
   double getGutBngMaxDistToPoly() const {return(m_gut_bng_max_dist_to_poly);}
@@ -198,7 +201,8 @@ protected:
   double m_sreg_min_spd;      // m/s
   double m_sreg_max_spd;      // m/s
   double m_sreg_max_discount; // m/s
-
+  bool   m_sreg_enabled;
+  
  private: // State (derived) variables
   XYPolygon m_mid_poly;
   XYPolygon m_rim_poly;

@@ -12,10 +12,8 @@ SET(SRC
 ADD_EXECUTABLE(pMapMarkers ${SRC})
 
 TARGET_LINK_LIBRARIES(pMapMarkers
-   ${MOOS_LIBRARIES}
    apputil
    geometry
    mbutil
-   m
    pthread)
 

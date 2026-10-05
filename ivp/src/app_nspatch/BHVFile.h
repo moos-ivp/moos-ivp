@@ -33,6 +33,8 @@ public:
   BHVFile();
   virtual ~BHVFile() {};
 
+  void setKey(std::string key) {m_key=key;}
+
 public: // building from input file
   std::string addLine(std::string bhvname, std::string line);
 
@@ -59,6 +61,8 @@ protected: // utility
  protected: 
 
   std::string m_curr_block;
+  
+  std::string m_key;
   
   // Ordered vector of "initialize MOOSVar=value" lines
   std::vector<std::string> m_init_lines;

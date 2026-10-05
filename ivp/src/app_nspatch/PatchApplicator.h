@@ -36,6 +36,7 @@ class PatchApplicator
   bool addXMoosFile(std::string); // patch file
   bool setStemMoosFile(std::string);
   bool setTargMoosFile(std::string);
+  void setKey(std::string key) {m_key=key;} 
   
   bool addXBhvFile(std::string); // patch file
   bool setStemBhvFile(std::string);
@@ -43,6 +44,9 @@ class PatchApplicator
   
   bool applyPatch();
   void setVerbose() {m_verbose=true;}
+
+  bool hasStemMoos() {return(m_file_stem_moos != "");}
+  bool hasStemBhv()  {return(m_file_stem_bhv != "");}
   
  protected:
   bool applyPatchMoos();
@@ -58,6 +62,8 @@ class PatchApplicator
   std::string              m_file_stem_bhv;
   std::string              m_file_targ_bhv;
 
+  std::string m_key;
+  
   bool m_verbose;
 };
 

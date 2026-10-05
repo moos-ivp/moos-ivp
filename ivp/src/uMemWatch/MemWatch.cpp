@@ -23,8 +23,11 @@
 
 #include <cstdlib>
 #include <iterator>
+#include <cstdio>
+#include <vector>
 #include "MBUtils.h"
 #include "ACTable.h"
+#include "ProcessUtils.h"
 #include "MemWatch.h"
 #include "FileBuffer.h"
 
@@ -173,23 +176,21 @@ void MemWatch::measureMemory()
   if(ix >= m_app.size())
     ix = 0;
 
-  // Part 2: Build the system call from the app and pid info
-  //         Make the system call
+  // Part 2: Run appmem & write output to file
   string app = m_app[ix];
   string pid = m_pid[ix];
-  string tmp_file = ".mem_info_" + tolower(app) + "_" + pid;
-  string syscall = "appmem.sh --pid=" + m_pid[ix];
-  syscall += " > " + tmp_file;  
-  system(syscall.c_str());
+  string tmp_file = ".mem_info_" + safeFileName(tolower(app)) + "_" +
+                    safeFileName(pid);
+  vector<string> argv;
+  argv.push_back("appmem.sh");
+  argv.push_back("--pid=" + pid);
+  runProcessToFile(argv, tmp_file);
 
   // Part 3: Get the output of the system call
   vector<string> lines = fileBuffer(tmp_file);
+  remove(tmp_file.c_str());
   if(lines.size() == 0)
     return;
-
-  // Part 4: Remove temporary file holding first sys call output
-  string syscall_rm = "rm -f " + tmp_file + " &";
-  system(syscall_rm.c_str());
   
   // Part 5: Intpret the output. Normall this is just an integer
   //         representing the mem size in Kilobytes. But we also
@@ -418,8 +419,5 @@ bool MemWatch::buildReport()
   
   return(true);
 }
-
-
-
 
 

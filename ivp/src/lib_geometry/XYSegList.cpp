@@ -375,6 +375,32 @@ void XYSegList::new_centroid(double new_cx, double new_cy)
 
 bool XYSegList::is_clockwise() const
 {
+  // Sanity check
+  if(m_vx.size() != m_vy.size())
+    return(false);
+  if(m_vx.size() < 3)
+    return(false);
+
+  double total = 0;
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    double x1 = m_vx[i];
+    double y1 = m_vy[i];
+    double x2 = m_vx[0];
+    double y2 = m_vy[0];
+    if((i+1) < m_vx.size()) {
+      x2 = m_vx[i+1];
+      y2 = m_vy[i+1];
+    }
+    total += ((x1 * y2) - (x2 * y1));
+  }
+
+  if(total > 0)
+    return(false);
+
+  return(true);
+}    
+
+#if 0
   unsigned int i, vsize = m_vx.size();
   if(vsize < 3)
     return(false);
@@ -405,6 +431,8 @@ bool XYSegList::is_clockwise() const
 
   return(clockwise);
 }
+#endif  
+
 
 
 

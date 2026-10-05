@@ -64,6 +64,8 @@ BHV_AvoidObstacleV24::BHV_AvoidObstacleV24(IvPDomain gdomain) :
   m_draw_buff_min_poly = true;
   m_draw_buff_max_poly = true;
   
+  m_side_lock_allowed = false;
+
   // Initialize state vars
   m_obstacle_relevance = 0;
 
@@ -151,6 +153,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
 
   else if(param == "holonomic_ok") 
     return(setBooleanOnString(m_holonomic_ok, val));
+  else if(param == "sidelock_allowed") 
+    return(setBooleanOnString(m_side_lock_allowed, val));
   else if(param == "draw_buff_min_poly") 
     return(setBooleanOnString(m_draw_buff_min_poly, val));
   else if(param == "draw_buff_max_poly") 
@@ -235,6 +239,16 @@ bool BHV_AvoidObstacleV24::handleParamRangeFlag(string str)
 
 bool BHV_AvoidObstacleV24::handleParamSpdRegulate(string str)
 {
+  // Case A: If the string is just true/false, handle as such
+  if(isBoolean(str)) {
+    bool bval = false;
+    if(tolower(str) == "true")
+      bval = true;
+    m_obship_model.enableSpdRegulation(bval);
+    return(true);
+  }
+
+  // Case B: String contains the numerical settings
   double min_spd = -1;
   double max_spd = -1;
   double max_discount = -1;
@@ -430,7 +444,7 @@ bool BHV_AvoidObstacleV24::checkForAllStop()
   // Note allstop_ttc=-1 if this feature is not enabled (default)  
   if(allstop_ttc > 0) {
     // Note ttc=-1 if osh is not on a course to intercept
-    double ttc = m_obship_model.getTTC();
+    double ttc = m_obship_model.getGutTTC();
     if((ttc >= 0) && (ttc < allstop_ttc)) {
       string msg = "Allstop: allstop ttc breached.";
       msg += " ttc=" + doubleToStringX(ttc,2);
@@ -443,7 +457,8 @@ bool BHV_AvoidObstacleV24::checkForAllStop()
   // Note allstop_rng=-1 if this feature is not enabled (default)  
   if(allstop_range > 0) {
     // Note rng=-1 if osh is not on a course to intercept
-    double rng = m_obship_model.getRangeToMidPoly();
+    //double rng = m_obship_model.getRangeToMidPoly(); // Change to gut mikerb
+    double rng = m_obship_model.getRangeToGutPoly();
     if((rng >= 0) && (rng < allstop_range)) {
       string msg = "Allstop: allstop range breached.";
       msg += " range=" + doubleToStringX(rng,2);
@@ -586,7 +601,8 @@ double BHV_AvoidObstacleV24::getRelevance()
     return(0);
 
   if(range_relevance > 0.6) {
-    if(m_side_lock == "") {
+    // NOTE: m_side_lock can be set only if m_side_lock_allowed is true
+    if(m_side_lock_allowed && (m_side_lock == "")) {
       if(m_obship_model.getPassingSide() == "star")
 	m_side_lock = "port";
       else if(m_obship_model.getPassingSide() == "port")
@@ -605,9 +621,6 @@ double BHV_AvoidObstacleV24::getRelevance()
   else
     m_obship_model.setSideLock(true);
 
-  cout << "BHV_AvoidObstacleV24::getRelevance() side_lock: " << m_side_lock << endl;
-  cout << "BHV_AvoidObstacleV24::getRelevance() " << doubleToString(range_relevance,2) << endl;
-  
   // Part 2: Possibly apply the grade scale to the raw distance
   double relevance = range_relevance;
   if(m_pwt_grade == "quadratic")
@@ -787,11 +800,17 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   // =======================================================
   // Then expand the macros unique to this behavior
   // =======================================================
-  if(strContains(sdata, "$[TTC]"))
-    sdata = macroExpand(sdata, "TTC", m_obship_model.getTTC());
+  if(strContains(sdata, "$[GUT_TTC]"))
+    sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getGutTTC());
     
+  if(strContains(sdata, "$[MID_TTC]"))
+    sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getMidTTC());
+
   if(strContains(sdata, "$[RNG]"))
     sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
+    
+  if(strContains(sdata, "$[MID_RNG]"))
+    sdata = macroExpand(sdata, "MID_RNG", m_obship_model.getRangeToMidPoly());
     
   if(strContains(sdata, "$[BNG]"))
     sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentBng());
@@ -895,9 +914,9 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   // Check 4: If obstacle vsource has been set then MUST 
   // match, regardless of other filter factors
   else if(vsource != "") {
-    cout << "vsource:" << vsource << endl;
+    //cout << "vsource:" << vsource << endl;
     string poly_vsource = m_obship_model.getVSource();
-    cout << "poly_vsource" << poly_vsource << endl;
+    //cout << "poly_vsource" << poly_vsource << endl;
     if(tolower(vsource) != tolower(poly_vsource))
       return(true); // Return true since syntax if fine
   }
