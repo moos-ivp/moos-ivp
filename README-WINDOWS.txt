@@ -93,7 +93,7 @@ Additional packages and development libraries:
 
 To do it all, cut and paste this:
 
-   sudo apt install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev
+   sudo apt install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxft-dev libxinerama-dev libtiff-dev
 
 
 ==============================================================================
