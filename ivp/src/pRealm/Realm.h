@@ -51,6 +51,7 @@ class Realm : public AppCastingMOOSApp
  protected: // Auxilliary functions
 
   void buildRealmCast();
+  void removeExpiredPipeways(bool preserve_grace=true);
   bool buildRealmCastChannel(PipeWay);
   bool buildWatchCast(PipeWay);
   void buildRealmCastSummary();
