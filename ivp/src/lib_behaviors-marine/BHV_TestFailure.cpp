@@ -21,11 +21,10 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <cstdlib>
+#include <chrono>
 #include <assert.h>
 #include <cstdlib>
 #include "MBUtils.h"
-#include "MBTimer.h"
 #include "BHV_TestFailure.h"
 
 using namespace std;
@@ -39,6 +38,7 @@ BHV_TestFailure::BHV_TestFailure(IvPDomain gdomain) : IvPBehavior(gdomain)
 
   m_failure_crash = true;
   m_failure_burn  = false;
+  m_failure_triggered = false;
   m_failure_burn_time = 3;  // seconds
 }
 
@@ -76,22 +76,19 @@ bool BHV_TestFailure::setParam(string param, string val)
 
 void BHV_TestFailure::onCompleteState()
 {
+  if(m_failure_triggered)
+    return;
+
+  m_failure_triggered = true;
+
   if(m_failure_crash)
     assert(0);
   else if(m_failure_burn) {
-    MBTimer timer;
-    timer.start();
-    bool done = false;
-    while(!done) {
-      double elapsed_time = timer.get_float_wall_time();
-      if(elapsed_time > m_failure_burn_time)
-	done = true;
-    }
-    timer.stop();
+    const auto start_time = std::chrono::steady_clock::now();
+    while(std::chrono::duration<double>(std::chrono::steady_clock::now() -
+				       start_time).count() <= m_failure_burn_time) {}
   }
 }
-
-
 
 
 
