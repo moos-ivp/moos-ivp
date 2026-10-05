@@ -41,7 +41,7 @@ FldNodeComms::FldNodeComms()
   // Ceiling on how many distinct nodes we will track.  The distribution
   // below is all-pairs, so this bounds the work per pass as well as the
   // memory.
-  m_max_node_count   = 100;
+  m_max_node_count   = 200;
 
   // The default range within which reports are sent between nodes
   m_comms_range      = 100;
