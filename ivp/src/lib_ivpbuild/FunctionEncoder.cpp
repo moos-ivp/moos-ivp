@@ -297,9 +297,8 @@ IvPFunction *StringToIvPFunction(const string& str)
 
   int cix = 2; // To account for the H, in the header
 
-  // Every field below is read from a MOOS variable, so the string may end at
-  // any point and any field may be longer than the buffer it is copied into.
-  // slen bounds every scan; the copies below bound themselves.
+  // the payload arrives in a MOOS variable, so its length is the only honest
+  // upper bound on anything the payload declares about itself
   const int slen = (int)str.length();
 
   // Determine the length of the context string
@@ -331,6 +330,10 @@ IvPFunction *StringToIvPFunction(const string& str)
   while((cix < slen) && (str[cix] != ',')) {
     dim = dim * 10;
     dim += (int)(str[cix]-48);
+    if(dim > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
@@ -340,6 +343,10 @@ IvPFunction *StringToIvPFunction(const string& str)
   while((cix < slen) && (str[cix] != ',')) {
     pcs = pcs * 10;
     pcs += (int)(str[cix]-48);
+    if(pcs > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
@@ -349,6 +356,10 @@ IvPFunction *StringToIvPFunction(const string& str)
   while((cix < slen) && (str[cix] != ',')) {
     deg = deg * 10;
     deg += (int)(str[cix]-48);
+    if(deg > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
@@ -412,6 +423,22 @@ IvPFunction *StringToIvPFunction(const string& str)
     }
     cix++;
     gelbox.setPTS(d,0,val);
+  }
+
+  // dim, pcs and deg all arrive in the payload, accumulated digit by digit
+  // with no ceiling, and are then used as allocation sizes and loop bounds:
+  // PDMap allocates new IvPBox*[pcs], each IvPBox allocates arrays of dim and
+  // of (deg*dim)+1, and IvPBox narrows the dimension to a short int on the
+  // way.  Check them against something before any of that happens.
+  //
+  // The bound on pcs is the length of the payload itself: every piece has to
+  // contribute at least a low bound, a high bound and a coefficient, so a
+  // string of slen bytes cannot honestly describe more than slen pieces.
+  if((dim < 1) || (dim > MAX_IPF_DIMENSIONS) ||
+     (deg < 0) || (deg > MAX_IPF_DEGREE) ||
+     (pcs < 1) || (pcs > slen)) {
+    delete [] cstr_buff;
+    return(0);
   }
 
   // Build the PDMap

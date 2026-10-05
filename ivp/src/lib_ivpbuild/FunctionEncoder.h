@@ -30,6 +30,12 @@
 #include "IvPFunction.h"
 
 // Convert an IvPFunction to string represntation
+// Ceilings on what a serialised IvP function may declare about itself.  Both
+// figures are far above any real function: IvP domains are one to three
+// dimensions and the pieces are linear or quadratic.
+#define MAX_IPF_DIMENSIONS 16
+#define MAX_IPF_DEGREE     8
+
 std::string IvPFunctionToString(IvPFunction*);
 
 // Convert an IvPFunction to a vector of strings
