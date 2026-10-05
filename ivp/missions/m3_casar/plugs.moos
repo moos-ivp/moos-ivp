@@ -26,7 +26,7 @@ ProcessConfig = pShare
   AppTick    = 2
   CommsTick  = 2
 
-  input = route =  localhost:$(PSHARE_PORT), white_list=DEPLOY & MOOS_MANUAL_OVERRIDE & NODE_BROKER_ACK & APPCAST_REQ 
+  input = route =  localhost:$(PSHARE_PORT)
 }
 
 <tag><uProcessWatch>
