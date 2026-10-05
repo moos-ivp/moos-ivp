@@ -122,6 +122,9 @@ ProcessConfig = uFldNodeComms
   MIN_MSG_INTERVAL = 20
   MAX_MSG_LENGTH   = 10
 
+  // pMarineViewer publishes NODE_MESSAGEs on behalf of vehicles.
+  BIND_MSG_SRC_TO_COMMUNITY = false
+
   GROUPS           = true
 }
 

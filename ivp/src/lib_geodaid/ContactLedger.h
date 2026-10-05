@@ -24,6 +24,10 @@
 #ifndef CONTACT_LEDGER_HEADER
 #define CONTACT_LEDGER_HEADER
 
+#ifndef CONTACT_LEDGER_DEFAULT_MAX_CONTACTS
+#define CONTACT_LEDGER_DEFAULT_MAX_CONTACTS 500
+#endif
+
 #include <set>
 #include <string>
 #include <vector>
@@ -46,6 +50,9 @@ public: // General configuration
   void extrapolate(double utc=0);
   void setActiveVName(std::string vname); 
   void setHistorySize(unsigned int v) {m_history_size=v;}
+
+  void setMaxContacts(unsigned int v) {m_max_contacts=v;}
+  unsigned int getMaxContacts() const  {return(m_max_contacts);}
 
 public: // Config stale node and extrapolation policy
   bool setExtrapPolicy(std::string);
@@ -131,6 +138,7 @@ protected: // Config vars
   int    m_extrap_mode;      // 0:off, 1:hdg, 2:cog
   
   unsigned int m_history_size;
+  unsigned int m_max_contacts;
 
   std::string m_active_vname;
     

@@ -12,7 +12,8 @@ SET(SRC
   Populator_BHVFile.cpp
   Populator_MOOSFile.cpp
   main.cpp
-  PatchApplicator.cpp)
+  PatchApplicator.cpp
+  Patch_Info.cpp)
 
 ADD_EXECUTABLE(nspatch ${SRC})
    

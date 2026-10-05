@@ -387,14 +387,12 @@ void Common_IPFViewer::resetRadVisuals()
 #endif
 
   m_rad_extent = min_extent;
-  cout << "m_rad_extent: " << doubleToString(m_rad_extent,2) << endl;
   
   unsigned int spd_pts = ivp_domain.getVarPoints("speed");
   if(spd_pts == 0)
     m_rad_ratio = 1;
   else 
     m_rad_ratio = (min_extent / (double)(spd_pts));
-  cout << "m_rad_ratio: " << doubleToString(m_rad_ratio,2) << endl;
 }
 
 

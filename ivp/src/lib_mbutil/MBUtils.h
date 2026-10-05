@@ -82,6 +82,8 @@ std::string stripBlankEnds(const std::string&);
 std::string stripBlankEnd(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);
+std::string safeFileName(const std::string& str,
+			 const std::string& reserved_prefix = "file_");
 std::string truncString(const std::string&, unsigned int newlen, 
 			std::string="");
 std::string boolToString(bool);
@@ -222,4 +224,3 @@ bool isValidTurn(const std::string&);
 std::string digitsOnly(const std::string&);
 
 #endif
-

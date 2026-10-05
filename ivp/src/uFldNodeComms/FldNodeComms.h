@@ -51,7 +51,8 @@ class FldNodeComms : public AppCastingMOOSApp
  protected:
   void registerVariables();
   bool handleMailNodeReport(const std::string& str, std::string& whynot);
-  bool handleMailNodeMessage(const std::string& str, const std::string& src);
+  bool handleMailNodeMessage(const std::string& str, const std::string& src,
+			     const std::string& community);
   bool handleMailAckMessage(const std::string& str);
   bool handleMailCommsRange(double);
   bool handleStealth(const std::string&);
@@ -122,6 +123,13 @@ protected:
 
   // Ceiling on how many distinct nodes may occupy the ledger
   unsigned int  m_max_node_count;
+  
+  // Must the src_node in a NODE_MESSAGE match the community the message
+  // actually came from?  A NODE_MESSAGE is relayed by the bridges, whose
+  // messages legitimately carry a foreign community, so this can be turned
+  // off for a deployment which relies on that.
+  bool          m_bind_msg_src_to_community;
+  unsigned int  m_rejected_msg_source;
   
   // Holds last time posted local share, if enabled, for each vname
   std::map<std::string, double>  m_map_lshare_tstamp;     
