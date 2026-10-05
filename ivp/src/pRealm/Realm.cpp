@@ -290,6 +290,20 @@ void Realm::handleMailRealmCastReq(string sval)
   string client = pipeway.getClient();
 
   if(m_map_pipeways.count(client) == 0) {
+    // Preserve the expiration grace period while there is room, but reclaim
+    // inactive pipeways before refusing a new client at the ceiling.
+    if(m_map_pipeways.size() >= m_max_pipeways) {
+      map<string, PipeWay>::iterator p = m_map_pipeways.begin();
+      while(p != m_map_pipeways.end()) {
+        if(p->second.timeUntilExpire(m_curr_time) <= 0) {
+          map<string, PipeWay>::iterator expired = p++;
+          m_map_pipeways.erase(expired);
+        }
+        else
+          ++p;
+      }
+    }
+
     // The client name is simply a string in the request, so it is a map key
     // an unauthenticated publisher chooses.  Each entry is serialised and
     // published on every interval, so refuse a new one once the ceiling is
