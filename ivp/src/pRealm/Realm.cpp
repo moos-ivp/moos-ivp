@@ -295,10 +295,8 @@ void Realm::handleMailRealmCastReq(string sval)
     if(m_map_pipeways.size() >= m_max_pipeways)
       removeExpiredPipeways(false);
 
-    // The client name is simply a string in the request, so it is a map key
-    // an unauthenticated publisher chooses.  Each entry is serialised and
-    // published on every interval, so refuse a new one once the ceiling is
-    // reached; existing clients keep being refreshed.
+    // Refuse new clients once we're at or past the max
+    // This protects us from rogue requests consuming too much CPU / memory
     if(m_map_pipeways.size() >= m_max_pipeways) {
       reportRunWarning("Refused RealmCastReq from " + client +
 		       ": max_pipeways (" + uintToString(m_max_pipeways) +
