@@ -121,6 +121,9 @@ protected:
  protected: // State variables
   ContactLedger m_ledger;
 
+  // Ceiling on how many distinct nodes may occupy the ledger
+  unsigned int  m_max_node_count;
+  
   // Must the src_node in a NODE_MESSAGE match the community the message
   // actually came from?  A NODE_MESSAGE is relayed by the bridges, whose
   // messages legitimately carry a foreign community, so this can be turned

@@ -297,21 +297,29 @@ IvPFunction *StringToIvPFunction(const string& str)
 
   int cix = 2; // To account for the H, in the header
 
+  // the payload arrives in a MOOS variable, so its length is the only honest
+  // upper bound on anything the payload declares about itself
+  const int slen = (int)str.length();
+
   // Determine the length of the context string
   int cstr_len = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     cstr_len = cstr_len * 10;
     cstr_len += (int)(str[cix]-48);
     cix++;
   }
   cix++;
 
-  // Determine the context string, if any
+  // Determine the context string, if any.  cstr_len is the declared length,
+  // i.e. the capacity of the buffer; the field itself may be longer, so copy
+  // only what fits and skip the rest rather than running off the end.
+  if(cstr_len < 0)
+    return(0);
   char *cstr_buff = new char[cstr_len+10];
   int  cbix = 0;
-  while(str[cix] != ',') {
-    cstr_buff[cbix] = str[cix];
-    cbix++;
+  while((cix < slen) && (str[cix] != ',')) {
+    if(cbix < cstr_len)
+      cstr_buff[cbix++] = str[cix];
     cix++;
   }
   cstr_buff[cbix] = '\0';
@@ -319,27 +327,39 @@ IvPFunction *StringToIvPFunction(const string& str)
 
   // Determine the number of dimensions
   int dim = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     dim = dim * 10;
     dim += (int)(str[cix]-48);
+    if(dim > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
 
   // Determine the number of pieces
   int pcs = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     pcs = pcs * 10;
     pcs += (int)(str[cix]-48);
+    if(pcs > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
    
   // Determine the degree
   int deg = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     deg = deg * 10;
     deg += (int)(str[cix]-48);
+    if(deg > slen) {          // cannot be honest, and stops the int overflowing
+      delete [] cstr_buff;
+      return(0);
+    }
     cix++;
   }
   cix++;
@@ -348,7 +368,7 @@ IvPFunction *StringToIvPFunction(const string& str)
   double pwt  = 0.0;
   double frac = 0.1;
   bool   left_of_decimal = true;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     if(str[cix] == '.') {
       left_of_decimal = false;
     }
@@ -370,11 +390,13 @@ IvPFunction *StringToIvPFunction(const string& str)
   cix += 2;
   char buff[5000];
   int  bix = 0;
-  while(str[cix] != ',') {
-    buff[bix] = str[cix];
-    if(buff[bix] == ';')
-      buff[bix] = ',';
-    bix++;
+  while((cix < slen) && (str[cix] != ',')) {
+    if(bix < (int)sizeof(buff)-1) {
+      buff[bix] = str[cix];
+      if(buff[bix] == ';')
+        buff[bix] = ',';
+      bix++;
+    }
     cix++;
   }
   buff[bix] = '\0';
@@ -394,13 +416,29 @@ IvPFunction *StringToIvPFunction(const string& str)
   for(d=0; d<dim; d++) {
     // Determine the grid length for this dimension
     int val = 0;
-    while(str[cix] != ',') {
+    while((cix < slen) && (str[cix] != ',')) {
       val = val * 10;
       val += (int)(str[cix]-48);
       cix++;
     }
     cix++;
     gelbox.setPTS(d,0,val);
+  }
+
+  // dim, pcs and deg all arrive in the payload, accumulated digit by digit
+  // with no ceiling, and are then used as allocation sizes and loop bounds:
+  // PDMap allocates new IvPBox*[pcs], each IvPBox allocates arrays of dim and
+  // of (deg*dim)+1, and IvPBox narrows the dimension to a short int on the
+  // way.  Check them against something before any of that happens.
+  //
+  // The bound on pcs is the length of the payload itself: every piece has to
+  // contribute at least a low bound, a high bound and a coefficient, so a
+  // string of slen bytes cannot honestly describe more than slen pieces.
+  if((dim < 1) || (dim > MAX_IPF_DIMENSIONS) ||
+     (deg < 0) || (deg > MAX_IPF_DEGREE) ||
+     (pcs < 1) || (pcs > slen)) {
+    delete [] cstr_buff;
+    return(0);
   }
 
   // Build the PDMap
@@ -419,7 +457,7 @@ IvPFunction *StringToIvPFunction(const string& str)
 
       // Determine the low value
       int low = 0;
-      while(str[cix] != ',') {
+      while((cix < slen) && (str[cix] != ',')) {
 	low = low * 10;
 	low += (int)(str[cix]-48);
 	cix++;
@@ -433,7 +471,7 @@ IvPFunction *StringToIvPFunction(const string& str)
       }
       // Determine the high value
       int hgh = 0;
-      while(str[cix] != ',') {
+      while((cix < slen) && (str[cix] != ',')) {
 	hgh = hgh * 10;
 	hgh += (int)(str[cix]-48);
 	cix++;
@@ -500,21 +538,28 @@ string StringToIvPContext(const string& str)
 {
   int cix = 2; // To account for the H, in the header
 
+  // as in StringToIvPFunction(): the string may end at any point, and the
+  // declared length is the capacity, not a promise about the field
+  const int slen = (int)str.length();
+
   // Determine the length of the context string
   int cstr_len = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     cstr_len = cstr_len * 10;
     cstr_len += (int)(str[cix]-48);
     cix++;
   }
   cix++;
 
+  if(cstr_len < 0)
+    return("");
+
   // Determine the context string, if any
   char *cstr_buff = new char[cstr_len+10];
   int  cbix = 0;
-  while(str[cix] != ',') {
-    cstr_buff[cbix] = str[cix];
-    cbix++;
+  while((cix < slen) && (str[cix] != ',')) {
+    if(cbix < cstr_len)
+      cstr_buff[cbix++] = str[cix];
     cix++;
   }
   cstr_buff[cbix] = '\0';
@@ -534,22 +579,29 @@ IvPDomain IPFStringToIvPDomain(const string& str)
 {
   int cix = 2; // To account for the H, in the header
 
+  // as elsewhere in this file: the header comes from a MOOS variable and may
+  // end at any point, so every scan has to stop at the end of the string
+  const int slen = (int)str.length();
+
   // Determine the length of the context string
   int cstr_len = 0;
-  while(str[cix] != ',') {
+  while((cix < slen) && (str[cix] != ',')) {
     cstr_len = cstr_len * 10;
     cstr_len += (int)(str[cix]-48);
     cix++;
   }
   cix++;
 
-  while(str[cix] != 'D')
+  while((cix < slen) && (str[cix] != 'D'))
     cix++;
   cix += 2;
   
   int cixx = cix;
-  while(str[cixx] != ',')
+  while((cixx < slen) && (str[cixx] != ','))
     cixx++;
+
+  if(cix > slen)
+    return(IvPDomain());
 
   string domain_str = str.substr(cix, cixx-cix);
   domain_str = findReplace(domain_str, ';', ',');

@@ -31,6 +31,12 @@
 #include "DemuxUnit.h"
 #include "DemuxedResult.h"
 
+// The largest number of packets one multiplexed string may declare.  The
+// figure arrives in the payload and each packet reserves a std::string in the
+// DemuxUnit, so it needs a ceiling.  A real IvP function is a handful of
+// packets; this is generous.
+#define MAX_MUX_PACKETS 1024
+
 class Demuxer {
 public:
   Demuxer() {m_demuxed=true;}
