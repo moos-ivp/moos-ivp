@@ -28,6 +28,12 @@
 #include <map>
 #include <set>
 
+// Limits on what one REALMCAST_REQ may ask for.  Everything in the request is
+// chosen by whoever published it, and every live pipeway is serialised and
+// published on every interval, so none of it may be unbounded.
+#define MAX_PIPEWAY_DURATION 3600    // seconds
+#define MAX_PIPEWAY_VARS     64      // variables in one request
+
 class PipeWay
 {
  public:
