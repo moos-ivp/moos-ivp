@@ -131,9 +131,8 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   bool   non_neg_number = (isNumber(val) && (dval >= 0));
 
   string config_result;
-  if((param=="polygon") || (param=="poly")) {
+  if((param=="polygon") || (param=="poly"))
     config_result = m_obship_model.setGutPoly(val);
-  }
   else if(param == "allowable_ttc")
     config_result = m_obship_model.setAllowableTTC(dval);
   else if(param == "allstop_ttc")
@@ -148,9 +147,9 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
     config_result = m_obship_model.setPwtInnerDist(dval);
   else if((param == "pwt_outer_dist") && non_neg_number)
     config_result = m_obship_model.setPwtOuterDist(dval);
-  else if((param == "completed_dist") && non_neg_number) 
+  else if((param == "completed_dist") && non_neg_number)
     config_result = m_obship_model.setCompletedDist(dval);
-
+  
   else if(param == "holonomic_ok") 
     return(setBooleanOnString(m_holonomic_ok, val));
   else if(param == "sidelock_allowed") 
@@ -278,6 +277,8 @@ void BHV_AvoidObstacleV24::onSetParamComplete()
   m_obship_model.setPlatModel(m_plat_model);
   m_obship_model.setCachedVals(true);
   postConfigStatus();
+
+  m_obship_model.print();
 }
 
 //-----------------------------------------------------------
@@ -716,10 +717,11 @@ bool BHV_AvoidObstacleV24::updatePlatformInfo()
   // nav info. The ObShipModel used in this behavior has direct
   // access to the platform model.
 
-#if 0    
-    bool ok_update = m_obship_model.setPose(m_osx, m_osy, m_osh);
+  string warning_msg;
+  bool ok_update = m_obship_model.setPose(m_osx, m_osy, m_osh);
   if(!ok_update) 
     warning_msg = "Problem updating obship_model pose";
+#if 0
   if(!m_obship_model.getObstacle().is_convex()) 
     warning_msg = "Non-convex Obstacle";
   if(!m_obship_model.getObstacleBuffMin().is_convex()) 
@@ -800,6 +802,9 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   // =======================================================
   // Then expand the macros unique to this behavior
   // =======================================================
+  if(strContains(sdata, "$[TTC]"))
+    sdata = macroExpand(sdata, "TTC", m_obship_model.getGutTTC());
+    
   if(strContains(sdata, "$[GUT_TTC]"))
     sdata = macroExpand(sdata, "GUT_TTC", m_obship_model.getGutTTC());
     
@@ -809,6 +814,9 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   if(strContains(sdata, "$[RNG]"))
     sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
     
+  if(strContains(sdata, "$[GUT_RNG]"))
+    sdata = macroExpand(sdata, "GUT_RNG", m_obship_model.getRange());
+    
   if(strContains(sdata, "$[MID_RNG]"))
     sdata = macroExpand(sdata, "MID_RNG", m_obship_model.getRangeToMidPoly());
     
@@ -816,7 +824,7 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
     sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentBng());
 
   if(strContains(sdata, "$[RBNG]"))
-    sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentRelBng());
+    sdata = macroExpand(sdata, "RBNG", m_obship_model.getObcentRelBng());
 
   if(strContains(sdata, "$[SIDE]"))
     sdata = macroExpand(sdata, "SIDE", m_obship_model.getPassingSide());
@@ -914,9 +922,7 @@ bool BHV_AvoidObstacleV24::applyAbleFilter(string str)
   // Check 4: If obstacle vsource has been set then MUST 
   // match, regardless of other filter factors
   else if(vsource != "") {
-    //cout << "vsource:" << vsource << endl;
     string poly_vsource = m_obship_model.getVSource();
-    //cout << "poly_vsource" << poly_vsource << endl;
     if(tolower(vsource) != tolower(poly_vsource))
       return(true); // Return true since syntax if fine
   }

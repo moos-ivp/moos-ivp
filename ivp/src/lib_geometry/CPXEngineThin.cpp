@@ -161,6 +161,7 @@ double CPXEngineThin::evalTimeCPA(double osh, double osv,
   double xtime = -1;
 
   evalCPA(osh, osv, ostol, xdist, xtime);
+
   return(xtime);
 }
 
@@ -175,20 +176,19 @@ void CPXEngineThin::evalCPA(double osh, double osv, double ostol,
 {
   xdist = m_stat_range;
   xtime = 0;
-
+  
   if((osh >= 360) || (osh < 0))
     osh = angle360(osh);
-
+  
   if(m_stat_cn_to_os_closing) {
     if(osv > m_stat_cn_to_os_spd) {
-      //*      if(osv >= m_os_vthresh_cache_360[(unsigned int)(osh)])
-      if(osv >= os_vthresh_osh((unsigned int)(osh)))
+      if(osv >= os_vthresh_osh((unsigned int)(osh))) 
 	return;
     }
   }
   else {
     //* if(osv <= m_os_vthresh_cache_360[(unsigned int)(osh)]) 
-    if(osv <= os_vthresh_osh((unsigned int)(osh))) 
+    if(osv <= os_vthresh_osh((unsigned int)(osh)))
       return;
   }
 
@@ -226,13 +226,13 @@ void CPXEngineThin::evalCPA(double osh, double osv, double ostol,
     minT = ostol;
 
   //=========================================================
-  // Handle K0 and final calculatoin
+  // Handle K0 and final calculation
   //=========================================================
   double k0 = m_stat_k0;
   //double dist_squared = (k2 * minT * minT) + (k1 * minT) + k0;
   double dist_squared = minT * ((k2 * minT) + k1) + k0;
-  if(dist_squared < 0)
-    return;
+  if(dist_squared < 0)  
+    dist_squared = 0;   // mod mikerb Oct26
 
   xtime = minT;
   xdist = sqrt(dist_squared); 

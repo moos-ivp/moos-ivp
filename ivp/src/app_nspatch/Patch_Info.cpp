@@ -68,6 +68,8 @@ void showHelpAndExit()
   cout << "  -m,--man        Show usage manual.                        " << endl;
   cout << "  --verbose       Write verbose output.                     " << endl;
   cout << "                                                            " << endl;
+  cout << "  --vkey=<str>    A vname key for patch lines               " << endl;
+  cout << "                                                            " << endl;
   cout << "  --stem=stem.moos  Stem moos or behavior file              " << endl;
   cout << "  --targ=targ.moos  Target moos or behavior file            " << endl;
   cout << "                                                            " << endl;

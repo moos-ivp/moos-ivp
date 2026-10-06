@@ -126,16 +126,16 @@ void BHVFile::applyBlock(string bhv, vector<string> lines)
 
 void BHVFile::applyLine(string bhvname, string line)
 {
-   // If this BHVFile has a key set, and if the line begins
-  // with @key, then reject any line the does not key match.
-  // If keymatch, remove the @key component from the line 
+  // If this BHVFile has a key set, and if the line begins
+  // with ~vkey, then reject any line the does not vkey match.
+  // If vkeymatch, remove the ~key component from the line 
   // before proceeding.
-   if(m_key != "") {
+   if(m_vkey != "") {
     string bname = stripBlankEnds(bhvname);
-    if(strBegins(bname, "#")) {
-      biteString(bname, '#');
+    if(strBegins(bname, "~")) {
+      biteString(bname, '~');
       string key = biteString(bname, ' ');
-      if(m_key != key)
+      if(m_vkey != key)
 	return;
       else
 	bhvname = bname;

@@ -33,33 +33,33 @@ class VelocityFilter
   ~VelocityFilter() {}; 
 
  public: // Setters
-  void   setMinSpd(double v)    {m_min_spd=v;}
-  void   setMaxSpd(double v)    {m_max_spd=v;}
-  void   setMinSpdPct(double v) {m_min_spd_pct=v;}
+  bool   setMinSpd(double v);
+  bool   setMaxSpd(double v);
+  bool   setMaxDiscount(double v);
 
-  void   setSpdOS(double v) {m_osv=v;}
-  void   setSpdCN(double v) {m_cnv=v;}
+  void   setEnabled(bool v) {m_enabled=v;}
+  bool   setSpdCN(double v);
   
  public: // Getters
-  double getMinSpd()    const {return(m_min_spd);}
-  double getMaxSpd()    const {return(m_max_spd);}
-  double getMinSpdPct() const {return(m_min_spd_pct);}
-  double getSpdOS()     const {return(m_osv);}
-  double getSpdCN()     const {return(m_cnv);}
+  double getMinSpd() const      {return(m_min_spd);}
+  double getMaxSpd() const      {return(m_max_spd);}
+  double getMaxDiscount() const {return(m_max_discount);}
+  double getSpdCN() const       {return(m_cnv);}
+  bool   isSpdRegulated() const {return(m_enabled && valid());}
 
-  double getFilterPct() const;
+  double spdRegulate(double) const;
   
-  std::string getSpec() const {return("");}
+  std::string getSpec() const;
 
   bool valid() const;
   
  private: // config vars
   double   m_min_spd;       // meters/sec
   double   m_max_spd;       // meters/sec
-  double   m_min_spd_pct;   // range [0,100]
-
+  double   m_max_discount;  // [0,100]
+  bool     m_enabled;   
+  
  private: // state vars
-  double   m_osv;           // meters/sec
   double   m_cnv;           // meters/sec
 };
 

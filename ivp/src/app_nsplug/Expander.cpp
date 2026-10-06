@@ -99,7 +99,7 @@ vector<string> Expander::expandFile(string filename,
   // If xfile is true, first try the input file, with an 'x' at end.
   // For example, meta_shoreside.moosx instead of meta_shoreside.moos
   if(m_xfile) {
-    cout << "Looking for:" << filename <<"x" << endl;
+    //cout << "Looking for:" << filename <<"x" << endl;
     fvector = fileBuffer(filename + "x");
   }
 
