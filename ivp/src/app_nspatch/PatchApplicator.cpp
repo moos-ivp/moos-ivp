@@ -90,7 +90,7 @@ bool PatchApplicator::applyPatchMoos()
   if(!ok2)
     return(false);
   MOOSFile stem_file = pop_stem_file.getMOOSFile();
-  stem_file.setKey(m_key);
+  stem_file.setVKey(m_vkey);
   
   // =====================================================
   // Part 3: Apply the patch file to the stem file
@@ -103,6 +103,8 @@ bool PatchApplicator::applyPatchMoos()
   vector<string> lines = targ_file.getLines();
 
   FILE *f = fopen(m_file_targ_moos.c_str(), "w");
+  if(!f)
+    return(false);
   for(unsigned int i=0; i<lines.size(); i++) {
     fprintf(f, "%s\n", lines[i].c_str());
   }
@@ -135,7 +137,7 @@ bool PatchApplicator::applyPatchBhv()
   if(!ok2)
     return(false);
   BHVFile stem_file = pop_stem_file.getBHVFile();
-  stem_file.setKey(m_key);
+  stem_file.setVKey(m_vkey);
 
   // =====================================================
   // Part 3: Apply the patch file to the stem file
@@ -148,6 +150,8 @@ bool PatchApplicator::applyPatchBhv()
   vector<string> lines = targ_file.getLines();
 
   FILE *f = fopen(m_file_targ_bhv.c_str(), "w");
+  if(!f)
+    return(false);
   for(unsigned int i=0; i<lines.size(); i++) 
     fprintf(f, "%s\n", lines[i].c_str());
   
@@ -236,11 +240,13 @@ void PatchApplicator::printConfig()
   for(unsigned int i=0; i<m_files_xmoos.size(); i++) 
     cout << "  patch: " << m_files_xmoos[i] << endl;
   cout << "  targ: " << m_file_targ_moos << endl;
-
+  cout << "  vkey: " << m_vkey << endl;
+  
   cout << "appplyPatchBHV(): " << endl;
   cout << "  stem: " << m_file_stem_bhv << endl;
   for(unsigned int i=0; i<m_files_xbhv.size(); i++) 
     cout << "  patch: " << m_files_xbhv[i] << endl;
   cout << "  targ: " << m_file_targ_bhv << endl;
+  cout << "  vkey: " << m_vkey << endl;
   
 }

@@ -43,6 +43,13 @@ using namespace std;
 ObShipModelV24::ObShipModelV24(double osx, double osy,
 			       double osh, double osv)
 {
+  cout << "ObShipModelV24 Constructor:" << endl;
+  cout << "osx=" << osx << endl;
+  cout << "osy=" << osy << endl;
+  cout << "osh=" << osh << endl;
+  cout << "osv=" << osv << endl;
+  setPose(osx, osy, osh, osv);
+
   // Config vars (affecting PlatModel and dynamic cache)
   m_min_util = 0;
   m_max_util = 100;
@@ -104,18 +111,22 @@ ObShipModelV24::ObShipModelV24(double osx, double osy,
   m_pause_update_dynamic = false;
 }
 
-
 // ----------------------------------------------------------
 // Procedure: setPose()
 
 bool ObShipModelV24::setPose(double osx, double osy,
-			   double osh, double osv)
+			     double osh, double osv)
 {
   setPoseOSX(osx);
   setPoseOSY(osy);
   setPoseOSH(osh);
   setPoseOSV(osv);
   m_stale_cache = true;
+
+  //cout << "================================================4" << endl;
+  //m_plat_model.print();
+  //cout << "================================================5" << endl;
+
   return(true);
 }
 
@@ -200,9 +211,9 @@ bool ObShipModelV24::setSpdRegulation(double min_spd,
 
 void ObShipModelV24::setMinUtil(double min_util)
 {
-  m_min_util = min_util;
+ m_min_util = min_util;
 
-  if(m_min_util < 0)
+   if(m_min_util < 0)
     m_min_util = 0;
   if(m_max_util < m_min_util)
     m_max_util = m_min_util;
@@ -406,6 +417,14 @@ string ObShipModelV24::setMinUtilCPA(double val)
 }
 
 // ----------------------------------------------------------
+// Procedure: modMinUtilCPA()
+
+string ObShipModelV24::modMinUtilCPA(double delta)
+{
+  return(setMinUtilCPA(m_min_util_cpa + delta));
+}
+
+// ----------------------------------------------------------
 // Procedure: setMaxUtilCPA()
 
 string ObShipModelV24::setMaxUtilCPA(double val)
@@ -430,6 +449,14 @@ string ObShipModelV24::setMaxUtilCPA(double val)
   // updateDynamic();
 
   return("");
+}
+
+// ----------------------------------------------------------
+// Procedure: modMaxUtilCPA()
+
+string ObShipModelV24::modMaxUtilCPA(double delta)
+{
+  return(setMaxUtilCPA(m_max_util_cpa + delta));
 }
 
 // ----------------------------------------------------------
@@ -718,6 +745,7 @@ void ObShipModelV24::print(string key) const
   cout << "osx: " << getOSX() << endl;
   cout << "osy: " << getOSY() << endl;
   cout << "osh: " << getOSH() << endl;
+  cout << "osv: " << getOSV() << endl;
   cout << "range: " << m_range << endl;
   cout << "min_util_cpa: " << m_min_util_cpa << endl;
   cout << "max_util_cpa: " << m_max_util_cpa << endl;
@@ -811,8 +839,8 @@ double ObShipModelV24::evalHdgSpd(double hdg, double spd,
       return(0);
   }
  
-  // For evaluation of spd regulation use the average of the current
-  // vehicle speed and the candidate maneuver spd.
+  // For evaluation of spd regulation use the average of the
+  // current vehicle speed and the candidate maneuver spd.
   double eval_spd = (getOSV() + spd) / 2;
   
   vpct = spdRegulate(eval_spd); // mikerb Aug2526
@@ -1121,7 +1149,7 @@ bool ObShipModelV24::isSpdRegulated() const
   
 //-----------------------------------------------------------
 // Procedure: spdRegulate()
-//   Returns: A value between [0.0, 1.0] b
+//   Returns: A value between [0.0, 1.0]
 //  Examples: Given sreg_min=1, sreg_max=11, max_discount=50
 //         a: given_spd=6,  rval=0.75  (50%  of 50% = 25%.  1-0.25=0.75)
 //         b: given_spd=1,  rval=0.50  (100% of 50% = 50%.  1-0.50=0.50)
@@ -1137,31 +1165,32 @@ double ObShipModelV24::spdRegulate(double given_spd) const
   // Sanity check: Ensure spd regulation is enabled
   if(!isSpdRegulated())
     return(1);
-
+  
   // Sanity check: Recheck the range is >= 0 
   double spd_range = m_sreg_max_spd - m_sreg_min_spd;
   if(spd_range <= 0)
     return(1);
-
+  
   // ----------------------------------------------------------------
   // Part 1: Determine the percentage [0,1] of the available discount
   // ----------------------------------------------------------------
   double pct_discount = 0;  // Be conservative, no discount
-  // No discount
-  if(given_spd > m_sreg_max_spd)
+  
+  if(given_spd > m_sreg_max_spd) {      // No discount
     pct_discount = 0;
-
-  // Full discount
-  if(given_spd < m_sreg_min_spd)
+  }
+  else if(given_spd < m_sreg_min_spd) { // Full discount
     pct_discount = 1;
-
-  // Stuff in between no and full discount (0,1)
-  // eg sreg_max_spd=11 - given_spd=3. delta=8
-  double delta = m_sreg_max_spd - given_spd;  
-
-  // eg delta=8 / rng=10. pct_discount=0.8
-  pct_discount = delta / spd_range;           
-
+  }
+  else {
+    // Stuff in between no and full discount (0,1)
+    // eg sreg_max_spd=11 - given_spd=3. delta=8
+    double delta = m_sreg_max_spd - given_spd;
+    
+    // eg delta=8 / rng=10. pct_discount=0.8
+    pct_discount = delta / spd_range;
+  }
+  
   // ----------------------------------------------------------------
   // Part 2: Convert pct discount to pct of original full value
   // ----------------------------------------------------------------

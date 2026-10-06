@@ -91,6 +91,7 @@ class SplitHandler
   
   // Each map key is a MOOS variable name
   std::map<std::string, FILE*>       m_file_ptr;
+  std::map<std::string, std::string> m_file_last_line;
   std::map<std::string, std::string> m_var_type;
   std::map<std::string, std::set<std::string> > m_var_srcs;
 

@@ -51,6 +51,7 @@ public:
 
   virtual BehaviorReport onRunState(std::string);
   //  virtual void setCPAEngine(const CPAEngine&) {};
+  virtual bool setParam(std::string, double);
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}

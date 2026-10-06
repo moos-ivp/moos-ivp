@@ -65,6 +65,8 @@ class ObShipModelV24
   std::string  setCompletedDist(double);
   std::string  setMinUtilCPA(double);
   std::string  setMaxUtilCPA(double);
+  std::string  modMinUtilCPA(double);
+  std::string  modMaxUtilCPA(double);
   std::string  setAllowableTTC(double);
   std::string  setAllStopTTC(double);
   std::string  setAllStopRange(double);
@@ -200,7 +202,7 @@ protected:
 
   double m_sreg_min_spd;      // m/s
   double m_sreg_max_spd;      // m/s
-  double m_sreg_max_discount; // m/s
+  double m_sreg_max_discount; // pct [0,100]
   bool   m_sreg_enabled;
   
  private: // State (derived) variables

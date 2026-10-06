@@ -441,7 +441,10 @@ bool SplitHandler::handleSplitLine(const std::string& varname,
   // ===============================================================
   // Part 5: Write the line to the appropriate file
   // ===============================================================
-  fprintf(file_ptr, "%s\n", line_raw.c_str());
+  if(m_file_last_line[varname] != line_raw) {
+    fprintf(file_ptr, "%s\n", line_raw.c_str());
+    m_file_last_line[varname] = line_raw;
+  }
   if(!cached_file_ptr)
     fclose(file_ptr);
   return(true);
