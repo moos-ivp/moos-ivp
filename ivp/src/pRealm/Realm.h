@@ -51,6 +51,7 @@ class Realm : public AppCastingMOOSApp
  protected: // Auxilliary functions
 
   void buildRealmCast();
+  void removeExpiredPipeways(bool preserve_grace=true);
   bool buildRealmCastChannel(PipeWay);
   bool buildWatchCast(PipeWay);
   void buildRealmCastSummary();
@@ -115,6 +116,10 @@ class Realm : public AppCastingMOOSApp
 
   // Key is the client, e.g., pmv, umview 
   std::map<std::string, PipeWay> m_map_pipeways;
+
+  // Ceiling on how many distinct clients may hold a pipeway.  Each one is
+  // serialised and published on every interval.
+  unsigned int m_max_pipeways;
 
   std::map<std::string, double> m_map_var_last_wcast;
 
