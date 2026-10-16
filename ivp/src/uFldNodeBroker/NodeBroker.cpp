@@ -38,6 +38,11 @@ using namespace std;
 
 NodeBroker::NodeBroker()
 { 
+  // A TRY_SHORE_HOST arriving on the bus adds a shore route and makes this
+  // node bridge its configured variables to it, and any MOOSDB client can
+  // publish that variable, so accepting one is opt in.
+  m_accept_try_shore_host = false;
+
   // Initialize State Variables
   m_pshare_cmd_posted = 0;
   m_pings_posted      = 0;
@@ -85,11 +90,18 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
       checkMessagingPolicy(sval);
     
     else if(key == "TRY_SHORE_HOST") {
-      bool handled = handleConfigTryShoreHost(sval, false);
-      if(!handled)
-	reportRunWarning("Invalid incoming TRY_SHORE_HOST:"+sval);
-      else
-	registerPingBridges(true);
+      if(!m_accept_try_shore_host) {
+	reportRunWarning("Ignored TRY_SHORE_HOST from " + msg.GetSource() +
+			 ": set accept_try_shore_host = true to allow"
+			 " shore routes to be added at runtime");
+      }
+      else {
+	bool handled = handleConfigTryShoreHost(sval, false);
+	if(!handled)
+	  reportRunWarning("Invalid incoming TRY_SHORE_HOST:"+sval);
+	else
+	  registerPingBridges(true);
+      }
     }
 
     // Only accept an ACK coming from a different community
@@ -162,7 +174,9 @@ bool NodeBroker::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == "try_shore_host") 
+    if(param == "accept_try_shore_host")
+      handled = setBooleanOnString(m_accept_try_shore_host, value);
+    else if(param == "try_shore_host") 
       handled = handleConfigTryShoreHost(value);
     else if(param == "bridge") 
       handled = handleConfigBridge(value);
@@ -448,9 +462,15 @@ void NodeBroker::handleMailAck(string ack_msg)
   HostRecord hrecord = string2HostRecord(ack_msg);
 
   string new_key = hrecord.getKey();
-  unsigned int key_ix = atoi(new_key.c_str());
 
-  if((new_key == "") || !isNumber(new_key) || (key_ix >= m_shore_routes.size())) {
+  // atoi() on a non numeric or negative key still gives a value which then
+  // indexes five parallel vectors, so test the string before converting it
+  // and treat a negative index as bad.
+  int key_int = atoi(new_key.c_str());
+  unsigned int key_ix = (key_int < 0) ? 0 : (unsigned int)key_int;
+
+  if((new_key == "") || !isNumber(new_key) || (key_int < 0) ||
+     (key_ix >= m_shore_routes.size())) {
     m_bad_acks_received++;
     
     string msg = "NODE_BROKER_ACK recvd from " + hrecord.getHostIP();
