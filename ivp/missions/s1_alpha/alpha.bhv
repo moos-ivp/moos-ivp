@@ -11,40 +11,17 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
   endflag   = RETURN = true
+  updates   = WPT_UPDATE
+  perpetual = true
 
-	endflag   = SUMMARY=speed=$[SPEED],time=$[DUR_RUN_TIME]
-	
-	configflag = CRUISE_SPD = $[SPEED]
-
-	activeflag = INFO=$[OWNSHIP]
-	activeflag = INFO=$[BHVNAME]
-	activeflag = INFO=$[BHVTYPE]
-
-	cycleflag = CINFO=$[OSX],$[OSY]
-
-	wptflag = PREV=$(PX),$(PY)
-	wptflag = NEXT=$(NX),$(NY)
-	wptflag = TEST=$(X),$(Y)
-	wptflag = OSPOS=$(OSX),$(OSY)
-	wptflag_on_start = true
-
-  updates    = WPT_UPDATE
-  perpetual  = true
-
-	         speed_alt = 1.2
-       use_alt_speed = true
-                lead = 8
-         lead_damper = 1
-       lead_to_start = true
                speed = 3   // meters per second
         capture_line = true
       capture_radius = 5.0
          slip_radius = 15.0
-	efficiency_measure = all
 	           polygon = 60,-40:60,-160:150,-160:180,-100:150,-40
 
                order = normal
-             repeat  = 0
+              repeat = 0
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
@@ -64,28 +41,9 @@ Behavior=BHV_Waypoint
   updates   = RETURN_UPDATE
   endflag   = RETURN = false
   endflag   = DEPLOY = false
-  endflag   = MISSION = complete
 	
            speed = 2.0
   capture_radius = 2.0
      slip_radius = 8.0
           points = 0,-20
  }
-
-//----------------------------------------------
-Behavior=BHV_ConstantSpeed
-{
-  name      = const_speed
-  pwt       = 200
-  condition = SPD=true
-  condition = DEPLOY = true
-  perpetual = true
-  updates   = SPEED_UPDATE
-  endflag   = SPD = false
-
-           speed = 0.5
-		    duration = 10
-	duration_reset = CONST_SPD_RESET=true
-	
-}
-

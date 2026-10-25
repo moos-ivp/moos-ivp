@@ -113,7 +113,7 @@ for ARGI; do
     elif [ "\${ARGI}" = "--just_make" -o "\${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "\${ARGI}" = "--verbose" -o "\${ARGI}" = "-v" ]; then
-	VERBOSE="yes"
+	VERBOSE=\$ARGI
     elif [ "\${ARGI}" = "--auto" -o "\${ARGI}" = "-a" ]; then
         AUTO_LAUNCHED="yes"
     elif [ "\${ARGI}" = "--nogui" -o "\${ARGI}" = "-n" ]; then
@@ -149,7 +149,7 @@ fi
 #------------------------------------------------------------ 
 #  Part 5: If verbose, show vars and confirm before launching
 #------------------------------------------------------------ 
-if [ "\${VERBOSE}" = "yes" ]; then 
+if [ "\${VERBOSE}" != "" ]; then 
     echo "=================================="
     echo "  launch_shoreside.sh SUMMARY     "
     echo "=================================="

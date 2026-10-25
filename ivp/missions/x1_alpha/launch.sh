@@ -12,15 +12,16 @@ on_exit() { echo; echo "Halting all apps"; kill -- -$$; }
 trap on_exit SIGINT
 
 TIME_WARP=1
-COMMUNITY="alpha"
 
 #----------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-TIME_WARP=1
+#  Part 2: Check for and handle command-line arguments
+
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "launch.sh [SWITCHES] [time_warp]     "
-	echo "  --help, -h                         " 
+	echo "launch.sh [OPTIONS] [time_warp]     "
+	echo "                                    " 
+	echo "Options:                            " 
+	echo "  --help, -h                        " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
@@ -34,9 +35,9 @@ done
 #  Part 3: Launch the processes
 #----------------------------------------------------------
 echo "Launching $COMMUNITY MOOS Community. WARP is" $TIME_WARP
-pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
+pAntler alpha.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 
-uMAC  $COMMUNITY.moos
+uMAC  alpha.moos
 
 echo; echo "Halting all apps"
 kill -- -$$ 

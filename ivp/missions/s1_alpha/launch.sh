@@ -1,39 +1,68 @@
-#!/bin/bash -e
+#!/bin/bash
 #----------------------------------------------------------
 #  Script: launch.sh
 #  Author: Michael Benjamin
-#  LastEd: May 20th 2019
+#  LastEd: May 20th 2024
+#----------------------------------------------------------         
+#  Part 1: Set convenience functions for producing terminal
+#          debugging output, and catching SIGINT (ctrl-c).
 #----------------------------------------------------------
-#  Part 1: Set Exit actions and declare global var defaults
-#----------------------------------------------------------
-TIME_WARP=1
-COMMUNITY="alpha"
-GUI="yes"
+vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "$ME: Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
+trap '' TERM
 
 #----------------------------------------------------------
-#  Part 2: Check for and handle command-line arguments
+#  Part 2: Set global variable default values  
+#----------------------------------------------------------
+ME=`basename "$0"`
+TIME_WARP=1
+VERBOSE=""
+
+#----------------------------------------------------------
+#  Part 3: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+="${ARGI} "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch.sh [SWITCHES] [time_warp]   "
-	echo "  --help, -h           Show this help message            " 
+	echo "$ME: [OPTIONS] [time_warp]               "
+	echo "                                              "
+	echo "Options:                                      "
+	echo "  --help, -h         Show this help message   "
+	echo "  --verbose, -v      Verbose, confirm launch  "
 	exit 0;
-    elif [ "${ARGI}" = "--nogui" ] ; then
-	GUI="no"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+        VERBOSE=$ARGI
     else 
-        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        echo "$ME Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
     fi
 done
 
 
 #----------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #----------------------------------------------------------
-echo "Launching $COMMUNITY MOOS Community with WARP:" $TIME_WARP
-pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
+if [ "${VERBOSE}" != "" ]; then
+    echo "=================================="
+    echo "  launch.sh SUMMARY               "
+    echo "=================================="
+    echo "$ME                               "
+    echo "CMD_ARGS =      [${CMD_ARGS}]     "
+    echo "TIME_WARP =     [${TIME_WARP}]    "
+    echo "----------------------------------"
+    echo -n "Hit any key to continue launch "
+    read ANSWER
+fi
 
-uMAC -t $COMMUNITY.moos
+echo "Launching alpha MOOS Community with WARP:" $TIME_WARP
+pAntler alpha.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
+
+#----------------------------------------------------------
+#  Part 5: Post Launch
+#----------------------------------------------------------
+uMAC -t alpha.moos
 kill -- -$$
+exit 0

@@ -13,7 +13,7 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
 #  Part 2: Set global variable default values
 #------------------------------------------------------------
 ME=`basename "$0"`
-VERBOSE="no"
+VERBOSE=""
 MISSION="generic_mission"
 AUTHOR="Marvin T. Moose"
 DATE=`date "+%b %d %Y"`
@@ -119,7 +119,7 @@ for ARGI; do
     elif [ "\${ARGI//[^0-9]/}" = "\$ARGI" -a "\$TIME_WARP" = 1 ]; then 
         TIME_WARP=\$ARGI
     elif [ "\${ARGI}" = "--verbose" -o "\${ARGI}" = "-v" ]; then
-        VERBOSE="yes"
+        VERBOSE=\$ARGI
     elif [ "\${ARGI}" = "--just_make" -o "\${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "\${ARGI}" = "--log_clean" -o "\${ARGI}" = "-lc" ]; then
@@ -174,7 +174,7 @@ fi
 #------------------------------------------------------------
 #  Part 5: If verbose, show vars and confirm before launching
 #------------------------------------------------------------
-if [ "\${VERBOSE}" = "yes" ]; then 
+if [ "\${VERBOSE}" != "" ]; then 
     echo "============================================"
     echo "     launch_vehicle.sh SUMMARY        \$VNAME"
     echo "============================================"
