@@ -465,6 +465,11 @@ bool HelmIvP::Iterate()
   }
   else
     report = m_helm_report.getReportAsString(m_prev_helm_report); 
+
+  // Added Oct1126: IVPHELM_DOMAIN is key for post-mission tools. Re-post
+  // periodically, arbitrarily every 200 iterations, to ensure logging.
+  if((m_helm_iteration % 200) == 0)
+    Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
   
   Notify("IVPHELM_SUMMARY", report);
   Notify("IVPHELM_IPF_CNT", m_helm_report.getOFNUM());
