@@ -153,7 +153,6 @@ ProcessConfig = pShare
   input  = route = localhost:9201
 	 
   output = src_name=NODE_REPORT_LOCAL, dest_name=NODE_REPORT, route=localhost:9200
-  output = src_name=VIEW_POLYGON, route=localhost:9200
   output = src_name=VIEW_POINT, route=localhost:9200
   output = src_name=VIEW_SEGLIST, route=localhost:9200
   output = src_name=APPCAST, route=localhost:9200
