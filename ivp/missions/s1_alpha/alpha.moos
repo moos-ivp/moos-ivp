@@ -15,7 +15,7 @@ LongOrigin = -70.330400
 //------------------------------------------
 // Antler configuration  block
 
-	ProcessConfig = ANTLER
+ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 

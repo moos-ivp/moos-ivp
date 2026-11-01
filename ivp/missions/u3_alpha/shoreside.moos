@@ -25,7 +25,7 @@ LongOrigin = -70.330400
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = uFldShoreBroker	@ NewConsole = false
-  Run = pHostInf o      @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
   Run = pRealm	        @ NewConsole = false
 }
 

@@ -44,7 +44,7 @@ ProcessConfig = uFldNodeBroker
 
   bridge = src=VIEW_POINT
   bridge = src=VIEW_SEGLIST
-  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_REPORT_LOCAL, alias=NODE_REPORT
 }
 
 //--------------------------------------------------                                        
