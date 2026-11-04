@@ -4,6 +4,7 @@
 #--------------------------------------------------------
 
 SET(SRC
+  BehaviorReport.cpp
   IvPBehavior.cpp
   IvPContactBehavior.cpp
 #  IvPTaskBehavior.cpp
@@ -27,5 +28,5 @@ SET(HEADERS
 # Build Library
 IVP_ADD_LIBRARY(behaviors ${SRC})
 TARGET_LINK_LIBRARIES(behaviors
-  PUBLIC bhvutil geometry helmivp ivpcore logic mbutil
+  PUBLIC bhvutil geometry ivpcore logic mbutil
   PRIVATE ivpbuild)

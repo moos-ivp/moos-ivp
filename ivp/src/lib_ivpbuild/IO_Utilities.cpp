@@ -35,20 +35,6 @@
 using namespace std;
 
 //--------------------------------------------------------------
-// Procedure: saveProblem
-//   Purpose: 
-
-bool saveProblem(IvPProblem *prob, const string& fileStr)
-{
-  bool okw = true;  // fprint returns neg # on error, or num chars outp
-
-  for(int i=0; i<prob->getOFNUM(); i++)
-    okw = okw && saveFunction(prob->getOF(i), fileStr, true);
-
-  return(okw);
-}
-
-//--------------------------------------------------------------
 // Procedure: savePDMap
 //   Purpose: 
 

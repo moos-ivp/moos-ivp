@@ -28,10 +28,13 @@
 #define CONTACT_LEDGER_DEFAULT_MAX_CONTACTS 500
 #endif
 
+#include <functional>
 #include <set>
 #include <string>
 #include <vector>
+#ifdef IVP_CONTACT_LEDGER_MOOS_GEODESY
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+#endif
 #include "NodeRecord.h"
 #include "ColoredPoint.h"
 
@@ -42,8 +45,13 @@ public:
   ~ContactLedger() {};
 
 public: // General configuration
+#ifdef IVP_CONTACT_LEDGER_MOOS_GEODESY
   void setGeodesy(CMOOSGeodesy geodesy);
   bool setGeodesy(double dlat, double dlon);
+#endif
+  // For use without MOOSGeodesy
+  void setGeodesy(std::function<void(double lat, double lon, double& x, double& y)> to_local,
+                  std::function<void(double x, double y, double& lat, double& lon)> to_global);
 
   void setRecord(std::string vname, NodeRecord record);
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
@@ -161,7 +169,8 @@ protected: // State vars
   unsigned int m_total_reports;
   unsigned int m_total_reports_valid;
   
-  CMOOSGeodesy m_geodesy;
+  std::function<void(double lat, double lon, double& x, double& y)> m_to_local;
+  std::function<void(double x, double y, double& lat, double& lon)> m_to_global;
   bool         m_geodesy_init;
   unsigned int m_geodesy_updates;
 };

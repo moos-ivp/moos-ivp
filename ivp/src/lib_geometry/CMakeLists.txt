@@ -157,7 +157,14 @@ SET(HEADERS
   HintHolder.h
 )
 
+IF(IVP_BUILD_HELM_LIBS_ONLY)
+  # The only user of MOOSGeodesy here, and the helm doesn't use it
+  LIST(REMOVE_ITEM SRC CurrentField.cpp)
+ENDIF()
+
 # Build Library
 IVP_ADD_LIBRARY(geometry ${SRC})
-TARGET_LINK_LIBRARIES(geometry
-  PUBLIC mbutil MOOSGeodesy::MOOSGeodesy)
+TARGET_LINK_LIBRARIES(geometry PUBLIC mbutil)
+IF(NOT IVP_BUILD_HELM_LIBS_ONLY)
+  TARGET_LINK_LIBRARIES(geometry PUBLIC MOOSGeodesy::MOOSGeodesy)
+ENDIF()

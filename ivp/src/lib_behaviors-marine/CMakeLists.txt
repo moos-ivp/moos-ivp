@@ -89,5 +89,5 @@ SET(HEADERS
 
 IVP_ADD_LIBRARY(behaviors-marine ${SRC})
 TARGET_LINK_LIBRARIES(behaviors-marine
-  PUBLIC behaviors bhvutil geometry mbutil
-  PRIVATE helmivp ivpbuild ivpcore logic)
+  PUBLIC behaviors bhvutil gen_poly geometry mbutil
+  PRIVATE ivpbuild ivpcore logic)
