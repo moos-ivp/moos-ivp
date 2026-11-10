@@ -77,7 +77,12 @@ if [ "${AUTO_LAUNCHED}" = "no" ]; then
 fi
 
 nsplug meta_shoreside.moos targ_shoreside.moos $NSFLAGS
-       
+
+if [ "${JUST_MAKE}" != "" ]; then
+    echo "$ME: Targ files made; exiting without launch."
+    exit 0
+fi
+
 #---------------------------------------------------------- 
 #  Part 7: Launch the shoreside MOOS community
 #---------------------------------------------------------- 

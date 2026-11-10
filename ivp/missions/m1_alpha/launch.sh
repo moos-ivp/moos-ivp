@@ -38,7 +38,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
         VERBOSE=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
-	JUST_MAKE="yes"
+	JUST_MAKE=$ARGI
     else 
         echo "$ME Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
@@ -67,8 +67,6 @@ POS1="x=0,y=-20,heading=180,speed=0"
 POS2="x=20,y=-20,heading=180,speed=0"
 PATH1="60,-40:60,-160:150,-160:180,-100:150,-40"
 PATH2="80,-60:80,-180:170,-180:200,-120:170,-60"
-START1="x=0,y=-20,heading=180,speed=0"
-START2="x=20,y=-40,heading=180,speed=0"
 
 ./launch_vehicle.sh $ARGS --vname=abe --mport=9001 --pshare=9201 \
 		    --start_pos=$POS1 --vpath=$PATH1
@@ -78,9 +76,14 @@ START2="x=20,y=-40,heading=180,speed=0"
 
 ./launch_shoreside.sh $ARGS
 
+if [ "${JUST_MAKE}" != "" ]; then
+    echo "$ME: Targ files made; exiting without launch."
+    exit 0
+fi
+
 #----------------------------------------------------------
 #  Part 5: Post Launch
 #----------------------------------------------------------
-uMAC -t shoreside.moos
+uMAC -t targ_shoreside.moos
 kill -- -$$
 exit 0
