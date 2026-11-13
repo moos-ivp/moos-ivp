@@ -16,7 +16,6 @@ endif (${WIN32})
 
 SET(SRC
   HelmIvP.cpp
-  HelmEngine.cpp
   HelmIvP_Info.cpp
   main.cpp
 )

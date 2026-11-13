@@ -13,12 +13,12 @@ SET(SRC
   BFactoryStatic.cpp
   BFactoryDynamic.cpp
   BehaviorSpec.cpp
-  BehaviorReport.cpp
   SpecBuild.cpp
   PlatModelGenerator.cpp
   PMGen.cpp
   PMGen_Dubins.cpp
   PMGen_Holonomic.cpp
+  HelmEngine.cpp
 )
 
 SET(HEADERS
@@ -30,16 +30,16 @@ SET(HEADERS
   BFactoryStatic.h
   BFactoryDynamic.h
   BehaviorSpec.h
-  BehaviorReport.h
   SpecBuild.h
   PlatModelGenerator.h
   PMGen.h
   PMGen_Dubins.h
   PMGen_Holonomic.h
+  HelmEngine.h
 )
 
 # Build Library
 IVP_ADD_LIBRARY(helmivp ${SRC})
 TARGET_LINK_LIBRARIES(helmivp
   PUBLIC behaviors geometry ivpcore logic mbutil
-  PRIVATE behaviors-colregs behaviors-marine dep_behaviors genutil ivpbuild ${CMAKE_DL_LIBS})
+  PRIVATE behaviors-colregs behaviors-marine dep_behaviors genutil ivpbuild ivpsolve ${CMAKE_DL_LIBS})
