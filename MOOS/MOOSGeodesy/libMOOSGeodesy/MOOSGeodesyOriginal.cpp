@@ -100,15 +100,28 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
         if(!LocalGrid2LatLong(dfx, dfy, dflat, dflon))
             return false;
 
-        if(!LatLong2LocalUTM(dflat, dflon, dfnewY, dfnewX))
+        // Intermediate estimates can lie beyond the UTM latitude limits.
+        // Project them directly; validate the latitude once we converge.
+        if(!std::isfinite(dflat) || !std::isfinite(dflon) ||
+           dflat <= -90.0 || dflat >= 90.0)
             return false;
+        char tmpUTM[4];
+        LLtoUTM(m_iRefEllipsoid, dflat, dflon, dfnewY, dfnewX, tmpUTM,
+                std::atoi(m_sUTMZone), GetOriginLatitude() < 0.0);
+        dfnewX -= GetOriginEasting();
+        dfnewY -= GetOriginNorthing();
 
         double diffX = dfnewX - dfX;
         double diffY = dfnewY - dfY;
         if(!std::isfinite(diffX) || !std::isfinite(diffY))
             return false;
         if(std::hypot(diffX, diffY) <= eps) {
-            dfLat = dflat;
+            // Allow the solver's millimetre tolerance at the boundary, then
+            // clamp that numerical overshoot to the valid UTM latitude.
+            const double latitudeTolerance = eps / 100000.0;
+            if(dflat < -80.0 - latitudeTolerance || dflat > 84.0 + latitudeTolerance)
+                return false;
+            dfLat = dflat < -80.0 ? -80.0 : (dflat > 84.0 ? 84.0 : dflat);
             dfLong = std::fmod(dflon + 180.0, 360.0);
             if(dfLong < 0.0)
                 dfLong += 360.0;

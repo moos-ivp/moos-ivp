@@ -86,6 +86,29 @@ int main()
                       << "; point " << c.lat << ", " << c.lon << '\n';
     }
 
+    // At the UTM limits, the inverse's initial grid estimate can fall just
+    // outside the latitude range even though the projected point is valid.
+    const double boundaryLatitudes[] = {-80.0, 84.0};
+    const double longitudeOffsets[] = {-0.01, 0.01};
+    for(double boundaryLat : boundaryLatitudes) {
+        check(geodesy.Initialise(boundaryLat, 3.0), "Boundary Initialise failed");
+        for(double longitudeOffset : longitudeOffsets) {
+            const double targetLon = 3.0 + longitudeOffset;
+            check(geodesy.LatLong2LocalUTM(boundaryLat, targetLon, north, east),
+                  "Boundary forward conversion failed");
+            check(geodesy.UTM2LatLong(east, north, lat, lon),
+                  "Boundary round trip failed");
+            check(near(lat, boundaryLat, 2e-8) && near(lon, targetLon, 2e-8),
+                  "Boundary round trip coordinates differ");
+            check(lat >= -80.0 && lat <= 84.0, "Inverse latitude outside UTM limits");
+        }
+        const double outsideLat = boundaryLat + (boundaryLat > 0 ? 0.01 : -0.01);
+        check(!geodesy.LatLong2LocalUTM(outsideLat, 3.0, north, east),
+              "Out-of-range forward latitude accepted");
+        check(!geodesy.UTM2LatLong(0.0, boundaryLat > 0 ? 1000.0 : -1000.0, lat, lon),
+              "Out-of-range inverse latitude accepted");
+    }
+
     const double nan = std::numeric_limits<double>::quiet_NaN();
     const double inf = std::numeric_limits<double>::infinity();
     check(!geodesy.Initialise(nan, 0), "NaN origin accepted");
