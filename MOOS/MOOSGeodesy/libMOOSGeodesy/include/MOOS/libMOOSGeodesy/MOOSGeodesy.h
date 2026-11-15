@@ -62,6 +62,7 @@ public:
 
     double 	GetOriginNorthing();
     double 	GetOriginEasting();
+    // UTM offsets are measured in the origin's zone and hemisphere.
     bool 	LatLong2LocalUTM(double lat, double lon, double & MetersNorth, double & MetersEast);
     bool 	LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon);
     bool 	UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong);
@@ -96,7 +97,10 @@ private:
     void SetOriginEasting(double East);
 
     void SetOriginNorthing(double North);
-    bool LLtoUTM(int ReferenceEllipsoid, const double Lat, const double Long, double &UTMNorthing, double &UTMEasting, char* UTMZone);
+    // fixedZone == 0 selects the zone and hemisphere from Lat/Long.
+    bool LLtoUTM(int ReferenceEllipsoid, const double Lat, const double Long,
+                 double &UTMNorthing, double &UTMEasting, char* UTMZone,
+                 int fixedZone = 0, bool south = false);
     void SetMetersEast(double East);
     void SetMetersNorth(double North);
     char UTMLetterDesignator(double Lat);
