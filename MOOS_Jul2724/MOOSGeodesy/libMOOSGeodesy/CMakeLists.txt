@@ -78,6 +78,8 @@ target_include_directories(${LIBNAME} PUBLIC
 )
 if(MOOSGEODESY_USE_PROJ)
     target_compile_definitions(${LIBNAME} PUBLIC MOOSGEODESY_IMPL=MOOSGEODESY_IMPL_PROJ)
+    # PROJ 6 retains the legacy API but requires explicit acknowledgement.
+    target_compile_definitions(${LIBNAME} PRIVATE ACCEPT_USE_OF_DEPRECATED_PROJ_API_H)
     target_include_directories(${LIBNAME} PRIVATE ${MOOSGEODESY_PROJ_INCLUDE_DIR})
     target_link_libraries(${LIBNAME} LINK_PRIVATE ${MOOSGEODESY_PROJ_LIBRARY})
 else()
