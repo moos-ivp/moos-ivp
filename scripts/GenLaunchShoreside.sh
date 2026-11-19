@@ -68,8 +68,8 @@ trap on_exit SIGINT
 ME=\`basename "\$0"\`
 CMD_ARGS=""
 TIME_WARP=1
-JUST_MAKE="no"
 VERBOSE=""
+JUST_MAKE=""
 AUTO_LAUNCHED="no"
 LAUNCH_GUI="yes"
 
@@ -89,8 +89,8 @@ for ARGI; do
 	echo "                                               "
 	echo "Options:                                       "
 	echo "  --help, -h         Show this help message    " 
-	echo "  --just_make, -j    Only create targ files    " 
 	echo "  --verbose, -v      Verbose, confirm launch   "
+	echo "  --just_make, -j    Only create targ files    " 
 	echo "                                               "
         echo "  --auto, -a                                   "
         echo "    Auto-launched by a script.                 "
@@ -110,10 +110,10 @@ for ARGI; do
 	exit 0
     elif [ "\${ARGI//[^0-9]/}" = "\$ARGI" -a "\$TIME_WARP" = 1 ]; then 
         TIME_WARP=\$ARGI
-    elif [ "\${ARGI}" = "--just_make" -o "\${ARGI}" = "-j" ]; then
-	JUST_MAKE="yes"
     elif [ "\${ARGI}" = "--verbose" -o "\${ARGI}" = "-v" ]; then
 	VERBOSE=\$ARGI
+    elif [ "\${ARGI}" = "--just_make" -o "\${ARGI}" = "-j" ]; then
+	JUST_MAKE="yes"
     elif [ "\${ARGI}" = "--auto" -o "\${ARGI}" = "-a" ]; then
         AUTO_LAUNCHED="yes"
     elif [ "\${ARGI}" = "--nogui" -o "\${ARGI}" = "-n" ]; then
