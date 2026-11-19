@@ -151,6 +151,9 @@
       '("pMapMarkers" "show_markers" "opfile" "marker_size" "marker_shape" "marker_color" "marker_lcolor" "marker_ecolor" "show_mlables" )
 
       '("pMediator" "resend_thresh" "max_tries" "mates" "no_ack_var" "group" "vname" )
+
+      '("uFldMissionWrap" "required_nodes" "patch" "report_column" "report_file" "report_line_format" "mission" "prereport_column")
+
       
 '("pLogger" "AsyncLog" "WildCardLogging" "Log" "LogAuxSrc" "WildCardExclusionLog" "WildCardOmitPattern" "file" "path" "synclog" "filetimestamp" "LoggingDirectorySummaryFile"  "UTCLogDirectories" "DoublePrecision" "MarkExternalCommunityMessages" "MarkDataType" "CompressAlogs" "file")))
 
