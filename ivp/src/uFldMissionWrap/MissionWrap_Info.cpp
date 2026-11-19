@@ -66,14 +66,15 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldMissionWrap Example MOOS Configuration                   ");
+  blu("uFldMissionWrap Example MOOS Configuration                      ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldMissionWrap                              ");
+  blk("ProcessConfig = uFldMissionWrap                                 ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  required_nodes =12                                            ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -87,19 +88,23 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldMissionWrap INTERFACE                                    ");
+  blu("uFldMissionWrap INTERFACE                                       ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  MISSION_WRAP = vname=ben,pass=true,score=83                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  MISSION_COMPLETE  = true                                      ");
+  blk("  MISSION_PASS_ALL  = false                                     ");
+  blk("  MISSION_PASS_PCT  = 0.841                                     ");
+  blk("  MISSION_SCORE_AVG = 25.22                                     ");
+  blk("  MISSION_SCORE_MIN = 11.245                                    ");
+  blk("  MISSION_SCORE_MAX = 41.82                                     ");
   blk("                                                                ");
   exit(0);
 }
