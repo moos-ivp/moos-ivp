@@ -57,7 +57,7 @@ done
 #------------------------------------------------------------
 #  Part 4: Set starting positions, speeds, names, colors, etc
 #------------------------------------------------------------
-INIT_VARS=" --amt=$VAMT $RAND_VPOS $VERBOSE "
+INIT_VARS=" --amt=$VAMT $VERBOSE "
 ./init_field2.sh $INIT_VARS
 
 VEHPOS=(`cat vp_startpos.txt`)
@@ -103,9 +103,10 @@ do
     IVARGS+=" --color=${VCOLOR[$IXX]} "
     vecho "Launching vehicle: $IVARGS"
 
-    CMD="./launch_vehicle.sh $IVARGS"    
-    eval $CMD
-    sleep 0.5
+    ./launch_vehicle.sh $IVARGS && sleep 0.5
+#    CMD="./launch_vehicle.sh $IVARGS"    
+#    eval $CMD
+#    sleep 0.5
 done
 
 

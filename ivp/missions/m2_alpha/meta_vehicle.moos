@@ -86,11 +86,14 @@ ProcessConfig = pNodeReporter
 
 ProcessConfig = pLogger
 {
-  AppTick   = 8
-  CommsTick = 8
+  AppTick   = 5
+  CommsTick = 5
 
-  AsyncLog = true
-
+  File          = LOG_%(VNAME)
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+	
   // For variables that are published in a bundle on their 
   // first post, explicitly declare their logging request
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
@@ -104,6 +107,8 @@ ProcessConfig = pLogger
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
+  WildCardOmitPattern = *_ITER_LEN
+  WildCardOmitPattern = *_ITER_GAP
 }
 
 //------------------------------------------

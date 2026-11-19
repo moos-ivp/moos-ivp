@@ -6,8 +6,10 @@
 #------------------------------------------------------------
 #  Part 1: A convenience function for producing terminal
 #          debugging/status output depending on verbosity.
+#          A convenience function for showing contents of file
 #------------------------------------------------------------
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+vpcat() { echo "$1: "; sed 's/^/  /' $1; }
 
 #------------------------------------------------------------
 #  Part 2: Set global variable default values

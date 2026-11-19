@@ -64,13 +64,19 @@ ProcessConfig = pLogger
   AppTick   = 8
   CommsTick = 8
 
-  AsyncLog = true
-
+	File          = XLOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+  LogAuxSrc     = true
+	
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
+	WildCardOmitPattern = *_ITER_GAP
+  WildCardOmitPattern = *_ITER_LEN
 }
 
 //------------------------------------------
