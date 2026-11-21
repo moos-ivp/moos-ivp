@@ -25,6 +25,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Determine version
+      shell: bash
+      env:
+        VERSION_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        VERSION_BRANCH: ${{ github.head_ref || github.ref_name }}
+      run: |
+        if [[ -n "$VERSION_TAG" ]]; then
+          version="$VERSION_TAG"
+        else
+          version="$(git rev-parse --short HEAD)"
+          if [[ -n "$VERSION_BRANCH" ]]; then
+            version="${VERSION_BRANCH}-${version}"
+          fi
+        fi
+        echo "IVP_VERSION_OVERRIDE=${version}" >> "$GITHUB_ENV"
     - name: Install Dependencies - Debian/Ubuntu
       if: matrix.os-type == 'debian'
       run: |

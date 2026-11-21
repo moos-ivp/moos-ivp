@@ -28,6 +28,9 @@
 
 #include <string>
 
+std::string getReleaseVersion();
+std::string getReleasePackager();
+
 void showReleaseInfo(std::string app_name, std::string license_info);
 void showReleaseInfoAndExit(std::string app_name, std::string license_info);
 
