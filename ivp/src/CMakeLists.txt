@@ -5,7 +5,7 @@ PROJECT(IVP)
 INCLUDE(CMakePackageConfigHelpers)
 
 # Refresh Git metadata on every build, including builds after a new commit/tag.
-FIND_PACKAGE(Git REQUIRED)
+FIND_PACKAGE(Git QUIET)
 SET(IVP_VERSION_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(IVP_VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/IVPVersion.h")
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/IVPVersion.cmake")

@@ -10,7 +10,7 @@ To install MOOS-IvP from source, clone this repository and follow the setup, dep
 * [macOS](./README-OS-X.txt)
 * [Windows](./README-WINDOWS.txt)
 
-CMake derives the MOOS-IvP version from the nearest reachable version tag (with an optional `v` prefix removed). Tagged commits report just the version; later commits report `<version>+git<commits since>.g<commit>`. The version refreshes on each build. Building requires Git and reachable release tags; shallow clones must include sufficient history and tags.
+CMake derives the MOOS-IvP version from the nearest reachable version tag (with an optional `v` prefix removed). Tagged commits report just the version; later commits report `<version>+git<commits since>.g<commit>`. The version refreshes on each build. If Git or reachable release tags are unavailable, the build continues with version `unknown` and a CMake warning. Shallow clones need sufficient history and tags for version information.
 
 ## Project Objectives and Philosophy
 
