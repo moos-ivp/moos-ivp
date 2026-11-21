@@ -19,6 +19,7 @@ SET(HEADERS
 IVP_ADD_LIBRARY(gen_poly ${SRC})
 
 TARGET_LINK_LIBRARIES(gen_poly
+   geometry
    mbutil
 )
 

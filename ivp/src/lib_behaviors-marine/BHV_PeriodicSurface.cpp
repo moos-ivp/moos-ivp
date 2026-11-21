@@ -59,6 +59,7 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
 
   // Behavior State Variable Initial Values:
   m_first_iteration        = true;
+  m_mark_time              = 0;
   m_first_marking_string   = true;
   m_first_marking_double   = true;
   m_amark_extension_time   = 0;

@@ -4,6 +4,17 @@ PROJECT(IVP)
 
 INCLUDE(CMakePackageConfigHelpers)
 
+SET(IVP_BUILD_HELM_LIBS_ONLY OFF CACHE BOOL
+  "Build only lib_helmivp and the libraries it links, without MOOS, MOOSGeodesy, apps, or GUI.")
+IF(BUILD_SHARED_LIBS)
+  # So the installed libraries find each other outside the linker's search path
+  IF(APPLE)
+    SET(CMAKE_INSTALL_RPATH "@loader_path")
+  ELSE()
+    SET(CMAKE_INSTALL_RPATH "$ORIGIN")
+  ENDIF()
+ENDIF()
+
 #======================================================================
 # Part 1: Set Compiler Flags
 #======================================================================
@@ -39,6 +50,7 @@ ENDIF()
 # Part 2: FINDING MOOS' HEADERS AND LIBRARIES...
 #======================================================================
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
+IF(NOT IVP_BUILD_HELM_LIBS_ONLY)
 find_package(MOOS 10.0)
 
 message("+++++++++++++++++++++++++++++++++++++++++")
@@ -56,11 +68,13 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
 message("MOOS_LIBRARIES:   " ${MOOS_LIBRARIES})
 message("+++++++++++++++++++++++++++++++++++++++++")
+ENDIF()
 
 #=====================================================================
 # Part 3: FINDING MOOSGeodesy' HEADERS AND LIBRARIES...  
 #=====================================================================
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
+IF(NOT IVP_BUILD_HELM_LIBS_ONLY)
 find_package(MOOSGeodesy CONFIG REQUIRED)
 SET(MOOSGeodesy_LIBRARIES MOOSGeodesy::MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
@@ -70,6 +84,7 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
 message("MOOSGeodesy_LIBRARY_PATH:" ${MOOSGeodesy_LIBRARY_PATH})
 message("+++++++++++++++++++++++++++++++++++++++++")
+ENDIF()
 
 #=============================================================================
 # Part 4: Set defaults and expose user build options GUI, MinRobot, UTM
@@ -77,6 +92,10 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 SET(IVP_BUILD_GUI_CODE ON CACHE BOOL "Build IvP's GUI-related libs and apps.")
 SET(IVP_BUILD_BOT_CODE_ONLY OFF CACHE BOOL "Build IvP's min set of bot apps.")
 SET(USE_UTM ON CACHE BOOL "Use UTM coordinates vs Local coordinates.")
+
+IF(IVP_BUILD_HELM_LIBS_ONLY)
+  SET(IVP_BUILD_GUI_CODE OFF)
+ENDIF()
 
 IF("${USE_UTM}" STREQUAL "ON")
   ADD_DEFINITIONS(-DUSE_UTM)
@@ -244,6 +263,16 @@ SET(IVP_GUI_APPS
 # app_vzaicview      app_gzaicview
 )
 
+# lib_helmivp and every library it links, and lib_geodaid for ContactLedger
+SET(IVP_HELM_LIBS
+  lib_helmivp        lib_behaviors       lib_behaviors-marine
+  lib_behaviors-colregs                  lib_dep_behaviors
+  lib_bhvutil        lib_ivpbuild        lib_ivpcore
+  lib_ivpsolve       lib_logic           lib_geometry
+  lib_contacts       lib_turngeo         lib_mbutil
+  lib_genutil        lib_gen_poly        lib_geodaid
+)
+
 # We also consider the below to be robot apps just in case needed
 SET(IVP_NON_GUI_APPS_DEPRECATED
   dep_pBasicContactMgr
@@ -282,6 +311,14 @@ ENDIF()
 
 LIST(APPEND IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS_DEPRECATED})
 
+IF(IVP_BUILD_HELM_LIBS_ONLY)
+  SET(IVP_LIBS_TO_BUILD ${IVP_HELM_LIBS})
+  SET(IVP_APPS_TO_BUILD "")
+  message("+++++++++++++++++++++++++++++++++++++++++")
+  message("Only the helm libraries will be built....")
+  message("+++++++++++++++++++++++++++++++++++++++++")
+ENDIF()
+
 message("IVP_LIBS_TO_BUILD: ${IVP_LIBS_TO_BUILD}")
 
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
@@ -318,7 +355,9 @@ FOREACH(A ${IVP_APPS_TO_BUILD_DEPRECATED})
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)
 
-install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION bin USE_SOURCE_PERMISSIONS)
+IF(IVP_APPS_TO_BUILD)
+  install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION bin USE_SOURCE_PERMISSIONS)
+ENDIF()
 install(DIRECTORY ${IVP_LIB_DIRECTORY}/ DESTINATION lib)
 
 message("Include directory: ${IVP_INC_DIRECTORY}")
@@ -339,6 +378,11 @@ install(DIRECTORY ${IVP_INC_DIRECTORY}/ DESTINATION include
 # and provides the legacy IVP_INCLUDE_DIRS and IVP_LIBRARIES variables.
 SET(IVP_CMAKE_INSTALL_DIR lib/cmake/IVP)
 SET(IVP_PACKAGE_HAS_GUI ${IVP_BUILD_GUI_CODE})
+IF(IVP_BUILD_HELM_LIBS_ONLY)
+  SET(IVP_PACKAGE_HAS_MOOS OFF)
+ELSE()
+  SET(IVP_PACKAGE_HAS_MOOS ON)
+ENDIF()
 SET(IVP_PACKAGE_TARGETS "")
 
 # Convert the source-directory names (for example, lib_mbutil) into the

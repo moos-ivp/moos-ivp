@@ -67,6 +67,7 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
+  m_bearing_line_label_show = true;
 
   m_nav_warning_posted = false;
 

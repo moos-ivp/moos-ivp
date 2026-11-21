@@ -29,11 +29,9 @@
 #include <vector>
 #include <string>
 #include <cstdio>
-#include "IvPProblem.h"
 #include "IvPFunction.h"
 #include "ZAIC_PEAK.h"
 
-bool   saveProblem(IvPProblem*, const std::string&);
 bool   saveFunction(IvPFunction *ipf, const std::string&, bool append);
 bool   savePDMap(PDMap*, FILE*);
 

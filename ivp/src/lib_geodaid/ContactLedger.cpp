@@ -50,6 +50,7 @@ ContactLedger::ContactLedger(unsigned int history_size)
   // State vars
   m_curr_utc = 0;
   m_geodesy_init  = false;
+  m_geodesy_updates = 0;
 
   m_total_reports = 0;
   m_total_reports_valid = 0;
@@ -58,13 +59,24 @@ ContactLedger::ContactLedger(unsigned int history_size)
 //---------------------------------------------------------------
 // Procedure: setGeodesy()
 
+#ifdef IVP_CONTACT_LEDGER_MOOS_GEODESY
 void ContactLedger::setGeodesy(CMOOSGeodesy geodesy)
 {
-  m_geodesy = geodesy;
-  m_geodesy_init = true;  
-  m_geodesy_updates++;
-
-  updateLocalCoords();
+  auto to_local = [geodesy](double lat, double lon, double& x, double& y) mutable {
+#ifdef USE_UTM
+    geodesy.LatLong2LocalUTM(lat, lon, y, x);
+#else
+    geodesy.LatLong2LocalGrid(lat, lon, y, x);
+#endif
+  };
+  auto to_global = [geodesy](double x, double y, double& lat, double& lon) mutable {
+#ifdef USE_UTM
+    geodesy.UTM2LatLong(x, y, lat, lon);
+#else
+    geodesy.LocalGrid2LatLong(x, y, lat, lon);
+#endif
+  };
+  setGeodesy(to_local, to_global);
 }
 
 //---------------------------------------------------------------
@@ -72,16 +84,28 @@ void ContactLedger::setGeodesy(CMOOSGeodesy geodesy)
 
 bool ContactLedger::setGeodesy(double dlat, double dlon)
 {
-  bool ok_init = m_geodesy.Initialise(dlat, dlon);
+  CMOOSGeodesy geodesy;
+  bool ok_init = geodesy.Initialise(dlat, dlon);
   if(!ok_init)
     return(false);
-  
+
+  setGeodesy(geodesy);
+  return(true);
+}
+#endif
+
+//---------------------------------------------------------------
+// Procedure: setGeodesy()
+
+void ContactLedger::setGeodesy(std::function<void(double lat, double lon, double& x, double& y)> to_local,
+                               std::function<void(double x, double y, double& lat, double& lon)> to_global)
+{
+  m_to_local = to_local;
+  m_to_global = to_global;
   m_geodesy_init = true;
   m_geodesy_updates++;
 
   updateLocalCoords();
-
-  return(true);
 }
 
 //---------------------------------------------------------------
@@ -1028,15 +1052,14 @@ void ContactLedger::updateLocalCoords()
 
 void ContactLedger::updateLocalCoords(NodeRecord& record)
 {
+  if(!m_geodesy_init)
+    return;
+
   double nav_lat = record.getLat();
   double nav_lon = record.getLon();
   double nav_x, nav_y;
 
-#ifdef USE_UTM
-  m_geodesy.LatLong2LocalUTM(nav_lat, nav_lon, nav_y, nav_x);
-#else
-  m_geodesy.LatLong2LocalGrid(nav_lat, nav_lon, nav_y, nav_x);
-#endif      
+  m_to_local(nav_lat, nav_lon, nav_x, nav_y);
 
   record.setX(nav_x);
   record.setY(nav_y);
@@ -1053,15 +1076,14 @@ void ContactLedger::updateLocalCoords(NodeRecord& record)
 
 void ContactLedger::updateGlobalCoords(NodeRecord& record)
 {
+  if(!m_geodesy_init)
+    return;
+
   double nav_x = record.getX();
   double nav_y = record.getY();
   double nav_lat, nav_lon;
 
-#ifdef USE_UTM
-  m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);
-#else
-  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
-#endif      
+  m_to_global(nav_x, nav_y, nav_lat, nav_lon);
 
   record.setLat(nav_lat);
   record.setLon(nav_lon);  

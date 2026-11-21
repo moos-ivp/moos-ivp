@@ -9,6 +9,7 @@ SET(SRC
   IvPProblem_v2.cpp
   PopulatorIPP.cpp
   Problem.cpp
+  ProblemIO.cpp
 )
 
 SET(HEADERS
@@ -17,6 +18,7 @@ SET(HEADERS
   IvPProblem_v2.h
   PopulatorIPP.h
   Problem.h
+  ProblemIO.h
 )
 
 # Build Library
