@@ -36,6 +36,11 @@ string getReleaseVersion()
   return IVP_VERSION;
 }
 
+string getReleasePackager()
+{
+  return IVP_PACKAGER;
+}
+
 //----------------------------------------------------------------
 // Procedure: showReleaseInfo
 
@@ -47,6 +52,7 @@ void showReleaseInfo(string app, string license_info)
   cout << "******************************************************************" << endl;
   cout << "* " + app + " - Part of the MOOS-IvP Release Bundle   " +  pad +"*" << endl;
   cout << padString("* Version " + getReleaseVersion(), 65, false) << "*" << endl;
+  cout << padString("* Packaged by " + getReleasePackager(), 65, false) << "*" << endl;
   cout << "* M.Benjamin (MIT), P.Newman (Oxford)                            *" << endl;
   if(license_info == "gpl") { 
     cout << "* This is free software; see the source for copying conditions.  *" << endl;

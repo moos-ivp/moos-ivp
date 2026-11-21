@@ -6,6 +6,7 @@ INCLUDE(CMakePackageConfigHelpers)
 
 # Refresh Git metadata on every build, including builds after a new commit/tag.
 FIND_PACKAGE(Git QUIET)
+SET(IVP_PACKAGER "MIT" CACHE STRING "Packager name shown in MOOS-IvP version information")
 SET(IVP_VERSION_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(IVP_VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/IVPVersion.h")
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/IVPVersion.cmake")
@@ -15,6 +16,7 @@ ADD_CUSTOM_TARGET(ivp_version
     "-DGIT_EXECUTABLE=${GIT_EXECUTABLE}"
     "-DIVP_VERSION_SOURCE_DIR=${IVP_VERSION_SOURCE_DIR}"
     "-DIVP_VERSION_HEADER=${IVP_VERSION_HEADER}"
+    "-DIVP_PACKAGER=${IVP_PACKAGER}"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/IVPVersion.cmake"
   BYPRODUCTS "${IVP_VERSION_HEADER}"
   VERBATIM)

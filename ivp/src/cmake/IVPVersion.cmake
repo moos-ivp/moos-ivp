@@ -49,6 +49,9 @@ if(IVP_VERSION STREQUAL "unknown")
   message(WARNING
     "Cannot determine MOOS-IvP version from Git; using 'unknown'. Git and reachable release tags are needed for version information.")
 endif()
-# configure_file changes the timestamp only when the version changes.
+if(NOT DEFINED IVP_PACKAGER)
+  set(IVP_PACKAGER "MIT")
+endif()
+# configure_file changes the timestamp only when the version or packager changes.
 configure_file("${CMAKE_CURRENT_LIST_DIR}/IVPVersion.h.in"
   "${IVP_VERSION_HEADER}" @ONLY ESCAPE_QUOTES)
