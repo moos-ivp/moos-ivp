@@ -51,4 +51,4 @@ if(IVP_VERSION STREQUAL "unknown")
 endif()
 # configure_file changes the timestamp only when the version changes.
 configure_file("${CMAKE_CURRENT_LIST_DIR}/IVPVersion.h.in"
-  "${IVP_VERSION_HEADER}" @ONLY)
+  "${IVP_VERSION_HEADER}" @ONLY ESCAPE_QUOTES)
