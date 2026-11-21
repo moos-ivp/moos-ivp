@@ -1,6 +1,8 @@
 # An explicit version supports packagers and builds without Git history.
-# Example: -DIVP_VERSION=v26.11.0-debian uses v26.11.0-debian unchanged.
-if(NOT DEFINED IVP_VERSION)
+# Example: -DIVP_VERSION_OVERRIDE=v26.11.0-debian uses v26.11.0-debian unchanged.
+if(DEFINED IVP_VERSION_OVERRIDE AND NOT IVP_VERSION_OVERRIDE STREQUAL "")
+  set(IVP_VERSION "${IVP_VERSION_OVERRIDE}")
+else()
   # Example without Git or a valid HEAD: unknown.
   set(IVP_VERSION "unknown")
   if(GIT_EXECUTABLE)
@@ -56,7 +58,7 @@ if(NOT DEFINED IVP_VERSION)
   endif()
   if(IVP_VERSION STREQUAL "unknown")
     message(WARNING
-      "Cannot determine MOOS-IvP version from Git; using 'unknown'. Set IVP_VERSION explicitly or build from a Git checkout.")
+      "Cannot determine MOOS-IvP version from Git; using 'unknown'. Set IVP_VERSION_OVERRIDE explicitly or build from a Git checkout.")
   endif()
 endif()
 if(NOT DEFINED IVP_PACKAGER)

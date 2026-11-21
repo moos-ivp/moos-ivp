@@ -167,8 +167,8 @@ echo "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   "
 
 # CI and Docker can supply a version without requiring Git history.
 CMAKE_VERSION_ARGS=()
-if [ "${IVP_VERSION+x}" = x ]; then
-    CMAKE_VERSION_ARGS+=("-DIVP_VERSION:STRING=${IVP_VERSION}")
+if [ "${IVP_VERSION_OVERRIDE+x}" = x ]; then
+    CMAKE_VERSION_ARGS+=("-DIVP_VERSION_OVERRIDE:STRING=${IVP_VERSION_OVERRIDE}")
 fi
 
 cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \

@@ -28,7 +28,7 @@ FROM base AS minrobot
 
 # If given, use attempt to generate reproducable builds
 ARG SOURCE_DATE_EPOCH=""
-ARG IVP_VERSION
+ARG IVP_VERSION_OVERRIDE
 
 # Build the MOOS-IvP tools
 RUN cd "$HOME/moos-ivp" \

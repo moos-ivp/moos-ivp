@@ -15,7 +15,7 @@ jobs:
     outputs:
       commit_time: ${{ steps.prepare.outputs.COMMIT_TIMESTAMP }}
       registry_image: ${{ steps.prepare.outputs.REGISTRY_IMAGE }}
-      ivp_version: ${{ steps.prepare.outputs.IVP_VERSION }}
+      ivp_version: ${{ steps.prepare.outputs.IVP_VERSION_OVERRIDE }}
       # Only push images on tags or the main branch
       should_push: ${{ (github.ref_type == 'tag') || (github.ref_name == 'main') }}
     steps:
@@ -35,7 +35,7 @@ jobs:
               version="${VERSION_BRANCH}-${version}"
             fi
           fi
-          echo "IVP_VERSION=${version}" >> "$GITHUB_OUTPUT"
+          echo "IVP_VERSION_OVERRIDE=${version}" >> "$GITHUB_OUTPUT"
 
           # Get the commit timestamp
           export "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)"
@@ -102,7 +102,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
-            IVP_VERSION=${{ needs.prepare.outputs.ivp_version }}
+            IVP_VERSION_OVERRIDE=${{ needs.prepare.outputs.ivp_version }}
           file: docker/moos-ivp/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -162,7 +162,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
-            IVP_VERSION=${{ needs.prepare.outputs.ivp_version }}
+            IVP_VERSION_OVERRIDE=${{ needs.prepare.outputs.ivp_version }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
