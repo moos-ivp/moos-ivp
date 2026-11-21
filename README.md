@@ -10,8 +10,6 @@ To install MOOS-IvP from source, clone this repository and follow the setup, dep
 * [macOS](./README-OS-X.txt)
 * [Windows](./README-WINDOWS.txt)
 
-On branches other than `main`, CMake uses `<branch>[-dirty]` as the MOOS-IvP version, adding `-dirty` for staged or unstaged changes to tracked files. Untracked files do not affect the version. On `main` or a detached checkout, CMake derives the version from the nearest reachable version tag (with an optional `v` prefix removed). Tagged commits report just the version; later commits report `<version>+git<commits since>.g<commit>`. The version refreshes on each build. If Git or reachable release tags are unavailable, the build continues with version `unknown` and a CMake warning. Shallow clones need sufficient history and tags for version information.
-
 ## Project Objectives and Philosophy
 
 * Platform Independence: The MOOS-IvP software typically runs on a dedicated computer for autonomy and sensing in the vehicle "payload" section.
