@@ -12,7 +12,7 @@ if(NOT DEFINED IVP_VERSION)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(tag_result STREQUAL "0")
-      # Example at tag v26.11.0: v26.11.0 (also with tracked changes).
+      # Example at a clean tag v26.11.0: v26.11.0.
       set(IVP_VERSION "${git_tag}")
     else()
       execute_process(
@@ -36,18 +36,21 @@ if(NOT DEFINED IVP_VERSION)
           # Example on a clean branch: feature/navigation-9430ddd26.
           set(IVP_VERSION "${git_branch}-${git_sha}")
         endif()
-        # Like git describe --dirty, consider tracked changes only.
-        execute_process(
-          COMMAND "${GIT_EXECUTABLE}" status --porcelain --untracked-files=no
-          WORKING_DIRECTORY "${IVP_VERSION_SOURCE_DIR}"
-          RESULT_VARIABLE status_result
-          OUTPUT_VARIABLE git_status
-          ERROR_QUIET
-          OUTPUT_STRIP_TRAILING_WHITESPACE)
-        if(status_result STREQUAL "0" AND NOT git_status STREQUAL "")
-          # Examples: feature/navigation-9430ddd26-dirty or 9430ddd26-dirty.
-          string(APPEND IVP_VERSION "-dirty")
-        endif()
+      endif()
+    endif()
+    if(NOT IVP_VERSION STREQUAL "unknown")
+      # Like git describe --dirty, consider tracked changes only.
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" status --porcelain --untracked-files=no
+        WORKING_DIRECTORY "${IVP_VERSION_SOURCE_DIR}"
+        RESULT_VARIABLE status_result
+        OUTPUT_VARIABLE git_status
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if(status_result STREQUAL "0" AND NOT git_status STREQUAL "")
+        # Examples: v26.11.0-dirty, feature/navigation-9430ddd26-dirty,
+        # or 9430ddd26-dirty.
+        string(APPEND IVP_VERSION "-dirty")
       endif()
     endif()
   endif()
