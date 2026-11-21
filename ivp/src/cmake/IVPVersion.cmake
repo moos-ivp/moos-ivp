@@ -34,12 +34,12 @@ if(GIT_EXECUTABLE)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(git_result STREQUAL "0" AND
-       git_description MATCHES "^v?([0-9].*)-([0-9]+)-g([0-9a-f]+)$")
+       git_description MATCHES "^(v?[0-9].*)-([0-9]+)-g([0-9a-f]+)$")
       if(CMAKE_MATCH_2 STREQUAL "0")
-        # Example at tag v26.11.0: 26.11.0
+        # Example at tag v26.11.0: v26.11.0
         set(IVP_VERSION "${CMAKE_MATCH_1}")
       else()
-        # Example seven commits after v26.11.0: 26.11.0+git7.g05280d86a
+        # Example seven commits after v26.11.0: v26.11.0+git7.g05280d86a
         set(IVP_VERSION "${CMAKE_MATCH_1}+git${CMAKE_MATCH_2}.g${CMAKE_MATCH_3}")
       endif()
     endif()
