@@ -90,7 +90,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-          push: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
+          push: ${{ (github.ref_type == 'tag') || (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
 
       - name: Set digest output
         id: set_digest
@@ -149,7 +149,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-          push: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
+          push: ${{ (github.ref_type == 'tag') || (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
 
       - name: Set digest output
         id: set_digest
@@ -157,8 +157,8 @@ jobs:
 
   push-to-registry:
     runs-on: ubuntu-latest
-    # Only push images on forks or the main branch
-    if: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
+    # Only push images on tags, forks, or the main branch
+    if: ${{ (github.ref_type == 'tag') || (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
     needs:
       - prepare
       - build-minrobot
