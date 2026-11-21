@@ -1,5 +1,7 @@
 # An explicit version supports packagers and builds without Git history.
+# Example: -DIVP_VERSION=v26.11.0-debian uses v26.11.0-debian unchanged.
 if(NOT DEFINED IVP_VERSION)
+  # Example without Git or a valid HEAD: unknown.
   set(IVP_VERSION "unknown")
   if(GIT_EXECUTABLE)
     execute_process(
@@ -10,6 +12,7 @@ if(NOT DEFINED IVP_VERSION)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(tag_result STREQUAL "0")
+      # Example at tag v26.11.0: v26.11.0 (also with tracked changes).
       set(IVP_VERSION "${git_tag}")
     else()
       execute_process(
@@ -20,6 +23,7 @@ if(NOT DEFINED IVP_VERSION)
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE)
       if(sha_result STREQUAL "0")
+        # Example at an untagged, detached HEAD: 9430ddd26.
         set(IVP_VERSION "${git_sha}")
         execute_process(
           COMMAND "${GIT_EXECUTABLE}" symbolic-ref --quiet --short HEAD
@@ -29,6 +33,7 @@ if(NOT DEFINED IVP_VERSION)
           ERROR_QUIET
           OUTPUT_STRIP_TRAILING_WHITESPACE)
         if(branch_result STREQUAL "0")
+          # Example on a clean branch: feature/navigation-9430ddd26.
           set(IVP_VERSION "${git_branch}-${git_sha}")
         endif()
         # Like git describe --dirty, consider tracked changes only.
@@ -40,6 +45,7 @@ if(NOT DEFINED IVP_VERSION)
           ERROR_QUIET
           OUTPUT_STRIP_TRAILING_WHITESPACE)
         if(status_result STREQUAL "0" AND NOT git_status STREQUAL "")
+          # Examples: feature/navigation-9430ddd26-dirty or 9430ddd26-dirty.
           string(APPEND IVP_VERSION "-dirty")
         endif()
       endif()
