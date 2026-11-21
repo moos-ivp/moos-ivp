@@ -317,11 +317,8 @@ void PIDEngine::setDesiredValues()
   // zero others desired values will automatically be zero too.
   //=============================================================
   m_desired_thrust = setDesiredThrust();
-  
-  if(m_desired_thrust > 0)
-    m_desired_rudder = setDesiredRudder();
-  
-  if(m_desired_thrust > 0 && m_depth_control) 
+  m_desired_rudder = setDesiredRudder();
+  if(m_depth_control)
     m_desired_elevator = setDesiredElevator();
 }
 
@@ -469,9 +466,6 @@ double PIDEngine::setDesiredThrust()
     m_speed_pid.Run(speed_error,  m_curr_time, delta_thrust);
     desired_thrust += delta_thrust;
   }
-  
-  if(desired_thrust < 0.01)
-    desired_thrust = 0;
 
   // Enforce limit on desired thrust
   if(desired_thrust > m_max_thrust)
