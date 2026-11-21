@@ -84,7 +84,8 @@ class BHV_AvdColregsV26 : public IvPContactBehavior {
 
   void         setAvoidModeIndex();
   void         postStatusInfo();
-
+  void         postRangeCircles(bool active=true);
+  
  private: // Configuration Parameters
   double       m_pwt_outer_dist;
   double       m_pwt_inner_dist;
@@ -106,6 +107,8 @@ class BHV_AvdColregsV26 : public IvPContactBehavior {
   bool         m_headon_only;
 
   VelocityFilter m_vfilter;
+
+  bool         m_range_circles_show;
   
  private:  // State Variables
   std::string  m_avoid_mode;
@@ -127,6 +130,8 @@ class BHV_AvdColregsV26 : public IvPContactBehavior {
   bool         m_check_validity;
   double       m_pcheck_thresh;
   bool         m_use_refinery;
+
+  double       m_spd_regulate;
   
   unsigned int m_iterations;
   bool         m_cn_crossed_os_port_star;

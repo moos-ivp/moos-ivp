@@ -388,7 +388,7 @@ SpokeLog PlatModel::getClosestSpokeLog(double px, double py) const
     }
   }
 
-  return(closest_slog);
+  return(closest_slog); 
 }
 
 //----------------------------------------------------------------
@@ -396,6 +396,7 @@ SpokeLog PlatModel::getClosestSpokeLog(double px, double py) const
 
 void PlatModel::print() const
 {
+  cout << "PlatModel: " << endl;
   cout << "id: " << m_id << endl;
   cout << " type: " << m_model_type << endl;
   cout << " osx: " << doubleToString(m_osx,1) << endl;

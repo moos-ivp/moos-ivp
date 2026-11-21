@@ -244,7 +244,7 @@ double CPXEngineOG::evalTimeCPA(double osh, double osv, double ostol) const
 
   if(minT <= 0) 
     minT = 0;
-  
+
   return(minT);
 }
 

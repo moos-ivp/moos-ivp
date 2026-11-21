@@ -38,6 +38,9 @@ using namespace std;
 
 FldNodeComms::FldNodeComms()
 {
+  // So we have an upper limit to both memory usage and all-pairs processing time.
+  m_max_node_count   = 200;
+
   // A NODE_MESSAGE names the node it came from in its own body; require that
   // to match the community the message arrived from.
   m_bind_msg_src_to_community = true;
@@ -262,6 +265,18 @@ bool FldNodeComms::OnStartUp()
       handled = setNonNegDoubleOnString(m_min_msg_interval, value);
     else if(param == "min_rpt_interval") 
       handled = setNonNegDoubleOnString(m_min_rpt_interval, value);
+    else if(param == "max_node_count") {
+      // Every distinct NAME in a NODE_REPORT becomes a ledger entry, and
+      // distributeNodeReportInfo() walks the whole ledger for each new
+      // record, so the work per pass grows with the square of the number of
+      // asserted nodes.  Bound the ledger.
+      if(isNumber(value) && (atoi(value.c_str()) > 0)) {
+	m_max_node_count = (unsigned int)(atoi(value.c_str()));
+	handled = true;
+      }
+      else
+	handled = false;
+    }
     else if(param == "bind_msg_src_to_community")
       handled = setBooleanOnString(m_bind_msg_src_to_community, value);
     else if(param == "max_msg_length")
@@ -321,8 +336,22 @@ void FldNodeComms::registerVariables()
 
 bool FldNodeComms::handleMailNodeReport(const string& str, string& whynot)
 {
+  // A report for a name we have not seen before adds a node to the ledger,
+  // and distributeNodeReportInfo() then walks the whole ledger for it.  The
+  // name is chosen by whoever published the report, so refuse a new one once
+  // the ceiling is reached.  Reports for nodes we already track still go
+  // through, so an established field is unaffected.
+  string rpt_vname = tokStringParse(str, "NAME", ',', '=');
+  if((rpt_vname != "") && !m_ledger.hasVName(rpt_vname) &&
+     (m_ledger.getVNames().size() >= m_max_node_count)) {
+    whynot = "max_node_count (" + uintToString(m_max_node_count) + ") reached";
+    return(false);
+  }
+
   string vname = m_ledger.processNodeReport(str, whynot);
   if(whynot != "")
+    return(false);
+  if(vname == "")
     return(false);
 
   m_map_newrecord[vname] = true;

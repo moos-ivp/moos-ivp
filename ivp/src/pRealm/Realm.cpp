@@ -35,6 +35,7 @@ using namespace std;
 
 Realm::Realm()
 {
+  m_max_pipeways = 64;
   // Init Config Variables
   m_msg_max_hist = 10;
 
@@ -289,6 +290,19 @@ void Realm::handleMailRealmCastReq(string sval)
   string client = pipeway.getClient();
 
   if(m_map_pipeways.count(client) == 0) {
+    // Preserve the expiration grace period while there is room, but reclaim
+    // inactive pipeways before refusing a new client at the ceiling.
+    if(m_map_pipeways.size() >= m_max_pipeways)
+      removeExpiredPipeways(false);
+
+    // Refuse new clients once we're at or past the max
+    // This protects us from rogue requests consuming too much CPU / memory
+    if(m_map_pipeways.size() >= m_max_pipeways) {
+      reportRunWarning("Refused RealmCastReq from " + client +
+		       ": max_pipeways (" + uintToString(m_max_pipeways) +
+		       ") reached");
+      return;
+    }
     m_map_pipeways[client] = pipeway;
   }
   else {  
@@ -347,11 +361,7 @@ void Realm::buildRealmCast()
   if(elapsed < m_relcast_interval)
     return;
   
-  // Part 2: Determine for each client if the pipeway has expired or
-  // not. If not, then generate a realmcast for the channel associated
-  // with that pipeway. If the pipeway has expired, make note of the
-  // client key, and cleanup afterwards. 
-  vector<string> expired_clients;
+  // Part 2: Generate casts for pipeways that have not expired.
        
   map<string, PipeWay>::iterator p;
   for(p=m_map_pipeways.begin(); p!=m_map_pipeways.end(); p++) {
@@ -373,15 +383,30 @@ void Realm::buildRealmCast()
 	m_last_post_relcast = m_curr_time;
       }
     }
-    else if(time_until_expire < -30)
-      expired_clients.push_back(client);
   }
 
-  // Part 3: For client pipeways that have indeed expired, remove
-  // these entries from the map.
-  for(unsigned int i=0; i<expired_clients.size(); i++) {
-    string client = expired_clients[i];
-    m_map_pipeways.erase(client);
+  // Part 3: Clean up expired pipeways after the grace period.
+  removeExpiredPipeways();
+}
+
+//---------------------------------------------------------
+// Procedure: removeExpiredPipeways()
+//   Purpose: Reclaim inactive pipeways, normally retaining the 30-second
+//            grace period. Admission at capacity skips the grace period.
+
+void Realm::removeExpiredPipeways(bool preserve_grace)
+{
+  map<string, PipeWay>::iterator p = m_map_pipeways.begin();
+  while(p != m_map_pipeways.end()) {
+    double time_until_expire = p->second.timeUntilExpire(m_curr_time);
+    bool expired = preserve_grace ? (time_until_expire < -30) :
+                                   (time_until_expire <= 0);
+    if(expired) {
+      map<string, PipeWay>::iterator old = p++;
+      m_map_pipeways.erase(old);
+    }
+    else
+      ++p;
   }
 }
 

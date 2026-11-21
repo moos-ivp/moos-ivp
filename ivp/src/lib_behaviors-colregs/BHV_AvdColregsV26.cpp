@@ -102,6 +102,8 @@ BHV_AvdColregsV26::BHV_AvdColregsV26(IvPDomain gdomain) :
   m_check_plateaus = false;
   m_pcheck_thresh  = 0.001;
 
+  m_spd_regulate = 1;  // 1 means no spd regulated discount
+  
   m_verbose = false;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
@@ -109,6 +111,8 @@ BHV_AvdColregsV26::BHV_AvdColregsV26(IvPDomain gdomain) :
   m_standon_set = false;
 
   m_headon_only = false;
+
+  m_range_circles_show = true;
 
   m_cpa_engine = &m_cpa_engine_pm;
   m_rcpa_engine = &m_rcpa_engine_pm;
@@ -208,6 +212,8 @@ bool BHV_AvdColregsV26::setParam(string param, string value)
     m_pwt_grade = value;
     return(true);
   }  
+  else if(param == "range_circles_show") 
+    return(setBooleanOnString(m_range_circles_show, value));
   else if(param == "can_disable") 
     return(setBooleanOnString(m_can_disable, value));
   else
@@ -306,6 +312,8 @@ void BHV_AvdColregsV26::onCompleteState()
 {
   m_avoid_mode = "complete";
   postStatusInfo();
+  if(m_range_circles_show)
+    postRangeCircles(false);
 }
 
 //-----------------------------------------------------------
@@ -333,15 +341,15 @@ IvPFunction *BHV_AvdColregsV26::onRunState()
 
   bool prev_cn_port_of_os = m_cnos.cn_port_of_os();
 
-  if(!updatePlatformInfo()) 
+  if(!updatePlatformInfo()) {
     return(0);
-  if(!m_cpa_engine)
+  }
+  if(!m_cpa_engine) {
     return(0);
-
+  }
+  
   m_cpa_engine->setPlatModel(m_plat_model);
   
-  m_vfilter.setSpdOS(m_osv);
-  m_vfilter.setSpdCN(m_cnv);
   
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
@@ -365,19 +373,20 @@ IvPFunction *BHV_AvdColregsV26::onRunState()
   double relevance = getRelevance();
 
   if(postingPerContactInfo())
-    postMessage("COL22_RELEVANCE_" + toupper(m_contact), relevance);
+    postRepeatableMessage("COL26_RELEVANCE_" + toupper(m_contact), relevance);
 
   double held_min_util_cpa_dist = m_min_util_cpa_dist;
   double held_max_util_cpa_dist = m_max_util_cpa_dist;
   if(m_vfilter.valid()) {
-    double filter_pct = m_vfilter.getFilterPct();
-    m_min_util_cpa_dist *= filter_pct;
-    m_max_util_cpa_dist *= filter_pct;
+    m_vfilter.setSpdCN(m_cpa_engine->cnSpdInOSPos());
+    m_spd_regulate = m_vfilter.spdRegulate(m_osv);
+    m_min_util_cpa_dist *= m_spd_regulate;
+    m_max_util_cpa_dist *= m_spd_regulate;
   }
 
   IvPFunction *ipf = 0;
   if(relevance > 0) {
-    if(m_avoid_mode == "headon") 
+    if(m_avoid_mode == "headon")
       ipf = buildHeadOnIPF();
     else if(m_avoid_mode == "overtaking") 
       ipf = buildOvertakingIPF();
@@ -390,7 +399,7 @@ IvPFunction *BHV_AvdColregsV26::onRunState()
   }
 
   if(postingPerContactInfo())
-    postMessage("COL22_AVOID_MODE_" + toupper(m_contact), m_avoid_mode);
+    postMessage("COL26_AVOID_MODE_" + toupper(m_contact), m_avoid_mode);
 
   m_min_util_cpa_dist = held_min_util_cpa_dist;
   m_max_util_cpa_dist = held_max_util_cpa_dist;
@@ -404,9 +413,12 @@ IvPFunction *BHV_AvdColregsV26::onRunState()
     
   postStatusInfo();
 
-  if(ipf) 
+  if(ipf) {
     postViewableBearingLine();
-  
+    if(m_range_circles_show)
+      postRangeCircles(true);
+  }
+
   return(ipf);
 }
 
@@ -1180,10 +1192,10 @@ void BHV_AvdColregsV26::checkModeStandOnOT()
 void BHV_AvdColregsV26::checkModeCPA()
 {
   // Part 0: Sanity check. Existing mode must be either "none", or "cpa"
-  if((m_avoid_mode != "cpa") && (m_avoid_mode != "none"))
+  if((m_avoid_mode != "cpa") && (m_avoid_mode != "none")) 
     return;
   if(m_contact_range > m_pwt_outer_dist) {
-    resetAvoidModes();
+    resetAvoidModes("cpa");
     return;
   }
 
@@ -1721,6 +1733,40 @@ void BHV_AvdColregsV26::postStatusInfo()
 
 
 //-----------------------------------------------------------
+// Procedure: postRangeCircles()
+//      Note: The variable m_spd_regulate holds the last value
+//            of spd regulation calculated. Range [0,1].
+
+void BHV_AvdColregsV26::postRangeCircles(bool active)
+{
+  if(!active) {
+    XYPolygon poly1;
+    XYPolygon poly2;
+    poly1.set_label("min_util_cpa_dist_" + m_contact);
+    poly2.set_label("max_util_cpa_dist_" + m_contact);
+    postMessage("VIEW_POLYGON", poly1.get_spec_inactive());
+    postMessage("VIEW_POLYGON", poly2.get_spec_inactive());
+    return;
+  }
+
+  double min_util_cpa_dist = m_min_util_cpa_dist * m_spd_regulate;
+  XYPolygon poly1(m_osx, m_osy, min_util_cpa_dist, 16);
+  poly1.set_label("min_util_cpa_dist_" + m_contact);
+  poly1.set_edge_color("gray50");
+  poly1.set_vertex_color("gray50");
+  poly1.set_label_color("off");
+  postMessage("VIEW_POLYGON", poly1.get_spec());
+
+  double max_util_cpa_dist = m_max_util_cpa_dist * m_spd_regulate;
+  XYPolygon poly2(m_osx, m_osy, max_util_cpa_dist, 16);
+  poly2.set_label("max_util_cpa_dist_" + m_contact);
+  poly2.set_edge_color("gray50");
+  poly2.set_vertex_color("gray50");
+  poly2.set_label_color("off");
+  postMessage("VIEW_POLYGON", poly2.get_spec());
+}
+
+//-----------------------------------------------------------
 // Procedure: expandMacros()
 
 string BHV_AvdColregsV26::expandMacros(string sdata)
@@ -1739,5 +1785,12 @@ string BHV_AvdColregsV26::expandMacros(string sdata)
   sdata = macroExpand(sdata, "MODE_ID", m_avoid_mode_ix);
   sdata = macroExpand(sdata, "FULL_MODE", m_avoid_mode + ":" + m_avoid_submode);
 
+  sdata = macroExpand(sdata, "SPD_REGULATE", m_spd_regulate);
+  
+  if(strContains(sdata, "$[CN_SPD_IN_OS_POS]") && m_cpa_engine) {
+    double cn_spd_in_os_pos = m_cpa_engine->cnSpdInOSPos();
+    sdata = macroExpand(sdata, "CN_SPD_IN_OS_POS", cn_spd_in_os_pos);
+  }
+    
   return(sdata);
 }

@@ -69,7 +69,6 @@ HelmIvP::HelmIvP()
   m_curr_time      = 0;
   m_start_time     = 0;
   m_no_decisions   = 0;
-  m_no_goal_decisions = 0;
 
   // The m_has_control correlates to helm status
   m_has_control     = false;
@@ -556,10 +555,6 @@ bool HelmIvP::Iterate()
   if(changed_update_vars)
     Notify("IVPHELM_UPDATEVARS", m_bhv_set->getUpdateVarSummary());
   
-  if(allstop_msg != "clear")
-    if(m_allow_override && m_park_on_allstop)
-      m_has_control = false;
-
   // Clear the delta vectors now that all behavior have had the 
   // chance to consume delta info.
   m_info_buffer->clearDeltaVectors();
@@ -1732,17 +1727,11 @@ void HelmIvP::postAllStop(string msg)
   if(msg != "")
     m_allstop_msg = msg;
 
-  if((msg == "NothingToDo") || strBegins(msg, "MissingDecVars"))
+  if((msg == "NothingToDo") || (msg == "NoGoalBehavior") ||
+     strBegins(msg, "MissingDecVars"))
     m_no_decisions++;
   else
     m_no_decisions = 0;
-
-  if(msg == "NoGoalBehavior")
-    m_no_goal_decisions++;
-  else
-    m_no_goal_decisions = 0;
-
-
   
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
   Notify("IVPHELM_ALLSTOP", m_allstop_msg);
@@ -1752,21 +1741,18 @@ void HelmIvP::postAllStop(string msg)
 
   // Willing to hold off one iteration if simply no decision. To give
   // helm chance to transition between modes.
-  if(m_no_decisions == 1) {
-    m_allstop_msg = "IncompleteOrEmptyDecision";
+  if(m_no_decisions == 1)
     return;
-  }
 
-  // Willing to hold off one iteration with no goal behavior in play
-  // To give the helm chance to transition between modes.
-  if(m_no_goal_decisions == 1) {
-    m_allstop_msg = "NoActiveGoalBehavior";
-    return;
+  if(m_allow_override && m_park_on_allstop) {
+    if((msg == "BehaviorError") ||
+       (msg == "DisabledByStandbyHelm"))
+      m_has_control = false;
   }
-
+  
   // Post all the Decision Variable Results
-  unsigned int j, dsize = m_ivp_domain.size();
-  for(j=0; j<dsize; j++) {
+  unsigned int dsize = m_ivp_domain.size();
+  for(unsigned int j=0; j<dsize; j++) {
     string domain_var = m_ivp_domain.getVarName(j);
     string post_alias = "DESIRED_"+ toupper(domain_var);
     if(post_alias == "DESIRED_COURSE")

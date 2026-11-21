@@ -152,7 +152,7 @@ double CPXEnginePM::bearingRate(double osh, double osv) const
 // Group A - CPA
 // ===============================================================
 //----------------------------------------------------------------
-// Procedure: evalCPA
+// Procedure: evalCPA()
 //   Purpose: Evaluates the given <Course, Speed, Time-on-leg> tuple 
 //            Determines Closest-Point-of-Approach (CPA)
 
@@ -185,7 +185,7 @@ double CPXEnginePM::evalTimeCPA(double osh, double osv, double ostol) const
 //            Determines Time of Closest-Point-of-Approach (CPA)
 
 void CPXEnginePM::evalCPA(double osh, double osv, double ostol,
-			    double& xdist, double& xtime) const
+			  double& xdist, double& xtime) const
 {
   XYSeglr seglr = m_plat_model.getTurnSeglr(osh);
 
@@ -663,6 +663,10 @@ bool CPXEnginePM::seglrIndex(const XYSeglr& seglr, unsigned int ix,
   if(m_cnv > 0) {
     double cn_dist = time_prior * m_cnv;
     projectPoint(m_cnh, cn_dist, m_cnx, m_cny, cnx, cny);
+  }
+  else {   
+    cnx = m_cnx;  // mod mikerb Oct26
+    cny = m_cny;
   }
     
   // Part 3: Set ownship position

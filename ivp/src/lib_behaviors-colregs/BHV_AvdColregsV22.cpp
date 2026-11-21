@@ -332,9 +332,6 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   if(!updatePlatformInfo()) 
     return(0);
 
-  m_vfilter.setSpdOS(m_osv);
-  m_vfilter.setSpdCN(m_cnv);
-  
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
@@ -362,9 +359,11 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   double held_min_util_cpa_dist = m_min_util_cpa_dist;
   double held_max_util_cpa_dist = m_max_util_cpa_dist;
   if(m_vfilter.valid()) {
-    double filter_pct = m_vfilter.getFilterPct();
-    m_min_util_cpa_dist *= filter_pct;
-    m_max_util_cpa_dist *= filter_pct;
+    if(m_cpa_engine)
+      m_vfilter.setSpdCN(m_cpa_engine->cnSpdInOSPos());
+    double m_spd_regulate = m_vfilter.spdRegulate(m_osv);
+    m_min_util_cpa_dist *= m_spd_regulate;
+    m_max_util_cpa_dist *= m_spd_regulate;
   }
 
   IvPFunction *ipf = 0;

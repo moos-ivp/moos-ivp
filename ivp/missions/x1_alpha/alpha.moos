@@ -11,9 +11,13 @@ Simulator = true
 MOOSTimeWarp = 1
 
 // Forest Lake
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+//LatOrigin  = 43.825300 
+//LongOrigin = -70.330400 
 
+// Popolopen
+LatOrigin  = 41.34928
+LongOrigin = -74.063645
+	
 // MIT Sailing Pavilion (use this one)
 //LatOrigin  = 42.358456 
 //LongOrigin = -71.087589
@@ -203,7 +207,8 @@ ProcessConfig = pMarineViewer
   set_pan_x   = -90
   set_pan_y   = -280
   zoom        = 0.95
-  tiff_file   = forrest19.tif
+  //tiff_file   = forrest19.tif
+  tiff_file   = popolopen_esat_18.tif
   //tiff_file = MIT_SP.tif
   //tiff_file = null.tif
 

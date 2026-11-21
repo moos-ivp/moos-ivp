@@ -125,7 +125,6 @@ protected:
   bool          m_init_vars_done;
 
   unsigned int  m_no_decisions;
-  unsigned int  m_no_goal_decisions;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the

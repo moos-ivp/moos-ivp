@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       showHelpAndExit();
-    if((argi=="-m") || (argi == "--man") || (argi=="-man"))
+    else if((argi=="-m") || (argi == "--man") || (argi=="-man"))
       showManualAndExit();
     else if((argi=="--version") || (argi=="-version")) {
       showReleaseInfo("nspatch", "gpl");
@@ -54,35 +54,78 @@ int main(int argc, char *argv[])
     else if((argi=="--verbose") || (argi == "-v"))
       papp.setVerbose();
 
+    // ---------------------------------------------------
+    // Part 2: Ways of specifying a MOOS or BHV stem file
+    // ---------------------------------------------------
+    // Multipe ways of specifying a MOOS stem file
+    else if(strBegins(argi, "--mstem="))
+      papp.setStemMoosFile(argi.substr(8));
+    else if(strBegins(argi, "-ms="))
+      papp.setStemMoosFile(argi.substr(4));
+    else if(strBegins(argi, "--stem=")) { 
+      if(strEnds(argi, ".moos"))
+	papp.setStemMoosFile(argi.substr(7));
+    }
+
+    // Multipe ways of specifying a BHV stem file
+    else if(strBegins(argi, "--bstem="))
+      papp.setStemBhvFile(argi.substr(8));
+    else if(strBegins(argi, "-bs="))
+      papp.setStemBhvFile(argi.substr(4));
+    else if(strBegins(argi, "--stem=")) {
+      if(strEnds(argi, ".bhv"))
+	papp.setStemBhvFile(argi.substr(7));
+    }
+
+    // ---------------------------------------------------
+    // Part 2: Ways of specifying a MOOS or BHV patch file
+    // ---------------------------------------------------
+    // Multiple ways of specifying a MOOS patch file
     else if(strEnds(argi, ".xmoos"))
       papp.addXMoosFile(argi);
+    else if(strBegins(argi, "--mpatch="))
+      papp.addXMoosFile(argi.substr(9));
+    else if(strBegins(argi, "-mp="))
+      papp.addXMoosFile(argi.substr(4));
 
+    // Multiple ways of specifying a BHV patch file
     else if(strEnds(argi, ".xbhv"))
       papp.addXBhvFile(argi);
+    else if(strBegins(argi, "--bpatch="))
+      papp.addXBhvFile(argi.substr(9));
+    else if(strBegins(argi, "-bp="))
+      papp.addXBhvFile(argi.substr(4));
 
-    else if(strBegins(argi, "--key=")) {
-      string key_str = argi.substr(6);
-      papp.setKey(key_str);
-    }
-      
-    // If --stem=file arg is used, then handle the file
-    // as definitely a stem file, regardless of all
-    else if(strBegins(argi, "--stem=")) {
-      string stem_file = argi.substr(7);
-      if(strEnds(stem_file, ".moos"))
-	papp.setStemMoosFile(stem_file);
-      else if(strEnds(stem_file, ".bhv"))
-	papp.setStemBhvFile(stem_file);
-    }
-      
+    // ---------------------------------------------------
+    // Part 2: Ways of specifying a MOOS or BHV targ file
+    // ---------------------------------------------------
+    // Multiple ways of specifying a MOOS targ file
+    else if(strBegins(argi, "--mtarg="))
+      papp.setTargMoosFile(argi.substr(8));
+    else if(strBegins(argi, "-mt="))
+      papp.setTargMoosFile(argi.substr(4));
     else if(strBegins(argi, "--targ=")) {
       string targ_file = argi.substr(7);
       if(strEnds(targ_file, ".moos") ||
 	 strEnds(targ_file, ".moosx"))
 	papp.setTargMoosFile(targ_file);
-      else if(strEnds(targ_file, ".bhv") ||
-	      strEnds(targ_file, ".bhvx"))
+    }
+
+    // Multiple ways of specifying a BHV targ file
+    else if(strBegins(argi, "--btarg="))
+      papp.setTargBhvFile(argi.substr(8));
+    else if(strBegins(argi, "-bt="))
+      papp.setTargBhvFile(argi.substr(4));
+    else if(strBegins(argi, "--targ=")) {
+      string targ_file = argi.substr(7);
+      if(strEnds(targ_file, ".bhv") ||
+	 strEnds(targ_file, ".bhvx"))
 	papp.setTargBhvFile(targ_file);
+    }
+      
+    else if(strBegins(argi, "--vkey=")) {
+      string vkey_str = argi.substr(7);
+      papp.setVKey(vkey_str);
     }
       
     // If arg ends in .moos, there is ambiguity as to whether the user
@@ -104,6 +147,8 @@ int main(int argc, char *argv[])
       else
 	papp.setTargBhvFile(argi);
     }
+    else
+      handled = false;
     
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
@@ -111,8 +156,11 @@ int main(int argc, char *argv[])
       exit(1);
     }
   }
-    
-  papp.applyPatch();
 
-  return(0);
+  bool ok = papp.applyPatch();
+
+  if(!ok)
+    return(1); // failure
+
+  return(0); // success
 }

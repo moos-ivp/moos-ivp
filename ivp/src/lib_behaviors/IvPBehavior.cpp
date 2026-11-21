@@ -175,6 +175,14 @@ void IvPBehavior::setPriorityWt(double val)
 //-----------------------------------------------------------
 // Procedure: setParam()
 
+bool IvPBehavior::setParam(string param, double dval) 
+{
+  return(setParam(param, doubleToString(dval, 5)));
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam()
+
 bool IvPBehavior::setParam(string g_param, string g_val) 
 {
   g_val   = stripBlankEnds(g_val);

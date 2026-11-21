@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: MOOSFile.cpp                                   */
-/*    DATE: May 7th, 2025                                       */
+/*    FILE: MOOSFile.cpp                                         */
+/*    DATE: May 7th, 2025                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -85,15 +85,15 @@ void MOOSFile::applyBlock(string app, vector<string> lines)
 void MOOSFile::applyLine(string app, string line)
 {
   // If this MOOSFile has a key set, and if the line begins
-  // with @key, then reject any line the doesnt key match. If
-  // keymatch, remove the @key component from the line before
+  // with ~vkey, then reject any line the doesnt vkey match. If
+  // keymatch, remove the ~vkey component from the line before
   // proceeding.
-  if(m_key != "") {
+  if(m_vkey != "") {
     string kapp = stripBlankEnds(app);
-    if(strBegins(kapp, "#")) {
-      biteString(kapp, '#');
+    if(strBegins(kapp, "~")) {
+      biteString(kapp, '~');
       string key = biteString(kapp, ' ');
-      if(m_key != key)
+      if(m_vkey != key)
 	return;
       else
 	app = kapp;
