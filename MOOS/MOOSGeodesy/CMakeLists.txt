@@ -154,6 +154,11 @@ include(GNUInstallDirs)
 
 add_subdirectory(libMOOSGeodesy)
 
+include(CTest)
+if(BUILD_TESTING AND NOT MOOSGEODESY_USE_PROJ)
+    add_subdirectory(tests)
+endif()
+
 #########################
 # Config Script Creation
 #########################

@@ -1,0 +1,4 @@
+add_executable(MOOSGeodesyNativeUTMTest NativeUTMTest.cpp)
+target_link_libraries(MOOSGeodesyNativeUTMTest PRIVATE MOOSGeodesy)
+add_test(NAME MOOSGeodesy.NativeUTM COMMAND MOOSGeodesyNativeUTMTest)
+set_tests_properties(MOOSGeodesy.NativeUTM PROPERTIES TIMEOUT 10)

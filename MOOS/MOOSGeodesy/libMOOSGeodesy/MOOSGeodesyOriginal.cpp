@@ -25,15 +25,16 @@
 
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
-#include <math.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define isnan _isnan
-#endif
+#include <cmath>
+#include <cstdlib>
+#include <limits>
 
 bool CMOOSGeodesy::Initialise(double lat, double lon)
 {
+    if(!std::isfinite(lat) || !std::isfinite(lon) ||
+       lat < -80.0 || lat > 84.0 || lon < -180.0 || lon > 180.0)
+        return false;
+
     // We use the WGS-84 standard reference ellipsoid.
     SetRefEllipsoid(23);
 
@@ -59,27 +60,19 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
                                     double &MetersNorth,
                                     double &MetersEast)
 {
+    MetersNorth = std::numeric_limits<double>::quiet_NaN();
+    MetersEast = std::numeric_limits<double>::quiet_NaN();
+    if(m_sUTMZone[0] == '\0' || !std::isfinite(lat) || !std::isfinite(lon) ||
+       lat < -80.0 || lat > 84.0)
+        return false;
+
     double tmpNorth = 0.0, tmpEast = 0.0;
-    double dN = 0.0, dE = 0.0;
     char tmpUTM[4];
+    LLtoUTM(m_iRefEllipsoid, lat, lon, tmpNorth, tmpEast, tmpUTM,
+            std::atoi(m_sUTMZone), GetOriginLatitude() < 0.0);
 
-    LLtoUTM(m_iRefEllipsoid, lat, lon, tmpNorth, tmpEast, tmpUTM);
-
-    if(m_bSTEP_AFTER_INIT) {
-        dN = tmpNorth - GetOriginNorthing();
-        dE = tmpEast - GetOriginEasting();
-        SetMetersNorth(dN);
-        SetMetersEast(dE);
-        m_bSTEP_AFTER_INIT = !m_bSTEP_AFTER_INIT;
-    } else {
-        double totalNorth = tmpNorth - GetOriginNorthing();
-        dN = totalNorth - GetMetersNorth();
-        SetMetersNorth(dN + GetMetersNorth());
-
-        double totalEast = tmpEast - GetOriginEasting();
-        dE = totalEast - GetMetersEast();
-        SetMetersEast(dE + GetMetersEast());
-    }
+    SetMetersNorth(tmpNorth - GetOriginNorthing());
+    SetMetersEast(tmpEast - GetOriginEasting());
 
     MetersNorth = GetMetersNorth();
     MetersEast = GetMetersEast();
@@ -90,36 +83,54 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY,
                                double& dfLat, double& dfLong)
 {
-    // Written by Henrik Schmidt henrik@mit.edu
-    double err = 1e20;
+    dfLat = std::numeric_limits<double>::quiet_NaN();
+    dfLong = std::numeric_limits<double>::quiet_NaN();
+    if(m_sUTMZone[0] == '\0' || !std::isfinite(dfX) || !std::isfinite(dfY))
+        return false;
+
+    // Written by Henrik Schmidt henrik@mit.edu. Invert the local projection
+    // iteratively, with a limit so out-of-range coordinates cannot hang.
     double dfx = dfX;
     double dfy = dfY;
-    double eps = 1.0;
+    const double eps = 0.001; // metres
 
-    while(err > eps) {
+    for(int iteration = 0; iteration < 100; ++iteration) {
         double dflat, dflon, dfnewX, dfnewY;
 
         if(!LocalGrid2LatLong(dfx, dfy, dflat, dflon))
             return false;
 
-        if(!LatLong2LocalUTM(dflat, dflon, dfnewY, dfnewX))
+        // Intermediate estimates can lie beyond the UTM latitude limits.
+        // Project them directly; validate the latitude once we converge.
+        if(!std::isfinite(dflat) || !std::isfinite(dflon) ||
+           dflat <= -90.0 || dflat >= 90.0)
             return false;
-
-        if(isnan(dflat) || isnan(dflon)) {
-            dflat = 91;
-            dflon = 181;
-            return false;
-        }
+        char tmpUTM[4];
+        LLtoUTM(m_iRefEllipsoid, dflat, dflon, dfnewY, dfnewX, tmpUTM,
+                std::atoi(m_sUTMZone), GetOriginLatitude() < 0.0);
+        dfnewX -= GetOriginEasting();
+        dfnewY -= GetOriginNorthing();
 
         double diffX = dfnewX - dfX;
         double diffY = dfnewY - dfY;
+        if(!std::isfinite(diffX) || !std::isfinite(diffY))
+            return false;
+        if(std::hypot(diffX, diffY) <= eps) {
+            // Allow the solver's millimetre tolerance at the boundary, then
+            // clamp that numerical overshoot to the valid UTM latitude.
+            const double latitudeTolerance = eps / 100000.0;
+            if(dflat < -80.0 - latitudeTolerance || dflat > 84.0 + latitudeTolerance)
+                return false;
+            dfLat = dflat < -80.0 ? -80.0 : (dflat > 84.0 ? 84.0 : dflat);
+            dfLong = std::fmod(dflon + 180.0, 360.0);
+            if(dfLong < 0.0)
+                dfLong += 360.0;
+            dfLong -= 180.0;
+            return true;
+        }
         dfx -= diffX;
         dfy -= diffY;
-        err = hypot(dfnewX - dfX, dfnewY - dfY);
     }
 
-    if(!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
-        return false;
-
-    return true;
+    return false;
 }

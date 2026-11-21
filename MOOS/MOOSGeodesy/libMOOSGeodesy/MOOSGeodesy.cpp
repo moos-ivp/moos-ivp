@@ -110,7 +110,8 @@ double CMOOSGeodesy::GetMetersEast()
 
 bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat, 
                             const double Long, double &UTMNorthing, 
-                            double &UTMEasting, char *UTMZone)
+                            double &UTMEasting, char *UTMZone,
+                            int fixedZone, bool south)
 {
     //converts lat/long to UTM coords.  Equations from USGS Bulletin 1532 
     //East Longitudes are positive, West longitudes are negative. 
@@ -126,8 +127,11 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
     double eccPrimeSquared;
     double N, T, C, A, M;
     
-    //Make sure the longitude is between -180.00 .. 179.9
-    double LongTemp = (Long+180)-int((Long+180)/360)*360-180; // -180.00 .. 179.9;
+    // Normalize longitude, including values west of -180 degrees.
+    double LongTemp = fmod(Long + 180.0, 360.0);
+    if(LongTemp < 0.0)
+        LongTemp += 360.0;
+    LongTemp -= 180.0;
 
     double LatRad = Lat*deg2rad;
     double LongRad = LongTemp*deg2rad;
@@ -147,6 +151,10 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
       else if( LongTemp >= 21.0 && LongTemp < 33.0 ) ZoneNumber = 35;
       else if( LongTemp >= 33.0 && LongTemp < 42.0 ) ZoneNumber = 37;
      }
+    // Local UTM coordinates must use the origin's zone for every point.
+    if(fixedZone != 0)
+        ZoneNumber = fixedZone;
+
     LongOrigin = (ZoneNumber - 1)*6 - 180 + 3;  //+3 puts origin in middle of zone
     LongOriginRad = LongOrigin * deg2rad;
 
@@ -158,7 +166,13 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
     N = a/sqrt(1-eccSquared*sin(LatRad)*sin(LatRad));
     T = tan(LatRad)*tan(LatRad);
     C = eccPrimeSquared*cos(LatRad)*cos(LatRad);
-    A = cos(LatRad)*(LongRad-LongOriginRad);
+    // Use the short longitude difference when crossing the antimeridian.
+    double deltaLong = LongRad - LongOriginRad;
+    if(deltaLong > 180.0 * deg2rad)
+        deltaLong -= 360.0 * deg2rad;
+    else if(deltaLong < -180.0 * deg2rad)
+        deltaLong += 360.0 * deg2rad;
+    A = cos(LatRad)*deltaLong;
 
     M = a*((1    - eccSquared/4        - 3*eccSquared*eccSquared/64    - 5*eccSquared*eccSquared*eccSquared/256)*LatRad 
                 - (3*eccSquared/8    + 3*eccSquared*eccSquared/32    + 45*eccSquared*eccSquared*eccSquared/1024)*sin(2*LatRad)
@@ -171,7 +185,9 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
 
     UTMNorthing = (double)(k0*(M+N*tan(LatRad)*(A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24
                  + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
-    if(Lat < 0)
+    // A fixed projection also keeps the origin's false northing across
+    // the equator, where independently selected hemispheres would jump 10Mm.
+    if(fixedZone != 0 ? south : Lat < 0)
         UTMNorthing += 10000000.0; //10000000 meter offset for southern hemisphere
 
     return true;
