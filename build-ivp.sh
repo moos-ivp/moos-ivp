@@ -165,6 +165,12 @@ echo "Invoking cmake..."
 
 echo "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   "
 
+# CI and Docker can supply a version without requiring Git history.
+CMAKE_VERSION_ARGS=()
+if [ "${IVP_VERSION+x}" = x ]; then
+    CMAKE_VERSION_ARGS+=("-DIVP_VERSION:STRING=${IVP_VERSION}")
+fi
+
 cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DFLTK_SKIP_FLUID=ON                                 \
       -DIVP_BUILD_BOT_CODE_ONLY=${BUILD_BOT_CODE_ONLY}     \
@@ -175,6 +181,7 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"               \
       ${BUILD_WITH_UTM}                                    \
       ${IVP_CMAKE_FLAGS}                                   \
+      "${CMAKE_VERSION_ARGS[@]}"                           \
       "${SRC_ABS_DIR}"
 
 if [ $? -ne 0 ] ; then

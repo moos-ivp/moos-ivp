@@ -7,6 +7,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  IVP_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || format('git-{0}', github.sha) }}
 
 jobs:
   build:

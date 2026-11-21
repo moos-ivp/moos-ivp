@@ -22,6 +22,7 @@ COPY --chown=moos . /home/moos/moos-ivp
 
 # If given, use attempt to generate reproducable builds
 ARG SOURCE_DATE_EPOCH=""
+ARG IVP_VERSION
 
 # Install required MOOS dependencies
 USER root

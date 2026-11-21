@@ -9,6 +9,9 @@ on:
       - '*'
   pull_request:
 
+env:
+  IVP_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || format('git-{0}', github.sha) }}
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -88,6 +91,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
+            IVP_VERSION=${{ env.IVP_VERSION }}
           file: docker/moos-ivp/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -147,6 +151,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
+            IVP_VERSION=${{ env.IVP_VERSION }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
