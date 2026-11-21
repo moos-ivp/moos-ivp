@@ -26,9 +26,15 @@
 #include <iostream>
 #include <cstdlib>
 #include "ReleaseInfo.h"
+#include "IVPVersion.h"
 #include "MBUtils.h"
 
 using namespace std;
+
+string getReleaseVersion()
+{
+  return IVP_VERSION;
+}
 
 //----------------------------------------------------------------
 // Procedure: showReleaseInfo
@@ -40,7 +46,7 @@ void showReleaseInfo(string app, string license_info)
     pad = padString("", (22-app.length()));
   cout << "******************************************************************" << endl;
   cout << "* " + app + " - Part of the MOOS-IvP Release Bundle   " +  pad +"*" << endl;
-  cout << "* Version 24.8                                                   *" << endl;
+  cout << padString("* Version " + getReleaseVersion(), 65, false) << "*" << endl;
   cout << "* M.Benjamin (MIT), P.Newman (Oxford)                            *" << endl;
   if(license_info == "gpl") { 
     cout << "* This is free software; see the source for copying conditions.  *" << endl;

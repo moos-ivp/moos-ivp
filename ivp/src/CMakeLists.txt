@@ -4,6 +4,21 @@ PROJECT(IVP)
 
 INCLUDE(CMakePackageConfigHelpers)
 
+# Refresh Git metadata on every build, including builds after a new commit/tag.
+FIND_PACKAGE(Git REQUIRED)
+SET(IVP_VERSION_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+SET(IVP_VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/IVPVersion.h")
+INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/IVPVersion.cmake")
+MESSAGE(STATUS "MOOS-IvP version: ${IVP_VERSION}")
+ADD_CUSTOM_TARGET(ivp_version
+  COMMAND "${CMAKE_COMMAND}"
+    "-DGIT_EXECUTABLE=${GIT_EXECUTABLE}"
+    "-DIVP_VERSION_SOURCE_DIR=${IVP_VERSION_SOURCE_DIR}"
+    "-DIVP_VERSION_HEADER=${IVP_VERSION_HEADER}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/IVPVersion.cmake"
+  BYPRODUCTS "${IVP_VERSION_HEADER}"
+  VERBATIM)
+
 #======================================================================
 # Part 1: Set Compiler Flags
 #======================================================================
